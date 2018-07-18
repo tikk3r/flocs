@@ -1,0 +1,159 @@
+#
+# base
+#
+FROM centos:7
+
+#
+# common-environment
+#
+ENV USER lofar
+ENV INSTALLDIR /opt/${USER}
+#ENV INSTALLDIR=/opt
+
+#
+# environment
+#
+ENV PYTHON_VERSION 2.7
+
+#
+# versions
+#
+ENV CFITSIO_VERSION 3410
+ENV WCSLIB_VERSION 5.16
+ENV CASACORE_VERSION v2.3.0
+#ENV CASAREST_VERSION v1.3.1
+ENV CASAREST_VERSION v1.4.1
+ENV PYTHON_CASACORE_VERSION v2.1.2
+ENV PYBDSF_VERSION v1.8.12
+ENV AOFLAGGER_VERSION v2.8.0
+#ENV LOFAR_VERSION 2_21_4
+ENV LOFAR_VERSION 2_20_2
+ENV WSCLEAN_VERSION 2.4
+ENV LOG4CPLUS_VERSION 1.1.x
+ENV GCC_VERSION 4.9.3
+ENV BOOST_VERSION 1.60.0
+#ENV HDF5_VERSION 1.10.1
+ENV BLAS_VERSION 0.2.17
+ENV LAPACK_VERSION 3.6.0
+ENV FFTW_VERSION 3.3.4
+ENV GSL_VERSION 1.15
+ENV XMLRUNNER_VERSION 1.7.7
+ENV MONETDB_VERSION 11.19.3.2
+ENV UNITTEST2_VERSION 1.1.0
+ENV PYFITS_VERSION 3.3
+ENV PYWCS_VERSION 1.12
+ENV WSCLEAN_VERSION 2.4
+ENV DYSCO_VERSION v1.0.1
+ENV RMEXTRACT_VERSION v0.1
+ENV LOSOTO_VERSION v1.0
+#
+
+#
+# build environment
+#
+ENV J 2
+
+#
+# base
+#
+RUN yum -y remove iputils
+RUN yum -y update
+RUN yum -y install sudo
+RUN yum -y install git svn wget 
+RUN yum -y install automake-devel aclocal autoconf autotools cmake make
+RUN yum -y install g++ gcc gcc-c++ gcc-gfortran
+RUN yum -y install blas-devel boost-devel fftw3-devel fftw3-libs python-devel lapack-devel libpng-devel libxml2-devel numpy-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools libgsl-devel 
+RUN yum -y install bison flex ncurses tar bzip2 which gettext 
+RUN echo "start install hdf5-devel"
+RUN yum -y install epel-release
+RUN yum-config-manager --enable epel
+RUN yum -y install hdf5-devel
+RUN echo "end install hdf5-devel"
+RUN wget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | python
+RUN pip install pyfits pywcs python-monetdb xmlrunner unittest2
+RUN pip install astropy --no-deps
+
+
+#
+# install-cfitsio
+#
+RUN mkdir -p ${INSTALLDIR}/cfitsio/build
+RUN cd ${INSTALLDIR}/cfitsio && wget --retry-connrefused ftp://anonymous@heasarc.gsfc.nasa.gov/software/fitsio/c/cfitsio${CFITSIO_VERSION}.tar.gz
+RUN cd ${INSTALLDIR}/cfitsio && tar xf cfitsio${CFITSIO_VERSION}.tar.gz
+RUN cd ${INSTALLDIR}/cfitsio/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/cfitsio/ ../cfitsio
+RUN cd ${INSTALLDIR}/cfitsio/build && make -j ${J}
+RUN cd ${INSTALLDIR}/cfitsio/build && make install
+
+#
+# install-wcslib
+#
+RUN mkdir ${INSTALLDIR}/wcslib
+RUN if [ "${WCSLIB_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/wcslib && wget --retry-connrefused ftp://anonymous@ftp.atnf.csiro.au/pub/software/wcslib/wcslib.tar.bz2 -O wcslib-latest.tar.bz2; fi
+RUN if [ "${WCSLIB_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/wcslib && wget --retry-connrefused ftp://anonymous@ftp.atnf.csiro.au/pub/software/wcslib/wcslib-${WCSLIB_VERSION}.tar.bz2; fi
+RUN cd ${INSTALLDIR}/wcslib && tar xf wcslib-*.tar.bz2
+RUN cd ${INSTALLDIR}/wcslib/wcslib* && ./configure --prefix=${INSTALLDIR}/wcslib --with-cfitsiolib=${INSTALLDIR}/cfitsio/lib/ --with-cfitsioinc=${INSTALLDIR}/cfitsio/include/ --without-pgplot
+RUN cd ${INSTALLDIR}/wcslib/wcslib* && make
+RUN cd ${INSTALLDIR}/wcslib/wcslib* && make install
+
+#
+# install-hdf5
+#
+
+#RUN mkdir -p ${INSTALLDIR}/hdf5
+#RUN cd ${INSTALLDIR}/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION%.*}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+#RUN cd ${INSTALLDIR}/hdf5 && tar xf hdf5*.tar.gz
+#RUN cd ${INSTALLDIR}/hdf5/hdf5*/ && ./configure --prefix=${INSTALLDIR}/hdf5 --enable-fortran --enable-threadsafe --enable-cxx --with-pthread --enable-linux-lfs --enable-unsupported
+#RUN cd ${INSTALLDIR}/hdf5/hdf5*/ && make -j ${J}
+#RUN cd ${INSTALLDIR}/hdf5/hdf5*/ && make install
+
+#
+# install-casacore
+#
+RUN mkdir -p ${INSTALLDIR}/casacore/build
+RUN mkdir -p ${INSTALLDIR}/casacore/data
+RUN cd ${INSTALLDIR}/casacore && git clone https://github.com/casacore/casacore.git src
+RUN if [ "${CASACORE_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION}; fi
+RUN cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
+RUN cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar
+#RUN cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DHDF5_ROOT_DIR=${INSTALLDIR}/hdf5 -DUSE_HDF5=True ../src/ 
+RUN cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True ../src/ 
+RUN cd ${INSTALLDIR}/casacore/build && make -j ${J}
+RUN cd ${INSTALLDIR}/casacore/build && make install
+
+#
+# install-casarest
+#
+RUN mkdir -p ${INSTALLDIR}/casarest/build
+RUN cd ${INSTALLDIR}/casarest && git clone https://github.com/casacore/casarest.git src
+RUN if [ "${CASAREST_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casarest/src && git checkout tags/${CASAREST_VERSION}; fi
+#RUN cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DHDF5_ROOT_DIR=${INSTALLDIR}/hdf5 -DHDF5_INCLUDE_DIR=${INSTALLDIR}/hdf5/include -DHDF5_LIBRARY=${INSTALLDIR}/hdf5/lib ../src/
+RUN cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio ../src/
+RUN cd ${INSTALLDIR}/casarest/build && make -j ${J}
+RUN cd ${INSTALLDIR}/casarest/build && make install
+
+#
+# install-python-casacore
+#
+RUN mkdir ${INSTALLDIR}/python-casacore
+RUN cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore
+RUN if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
+RUN cd ${INSTALLDIR}/python-casacore/python-casacore && ./setup.py build_ext -I${INSTALLDIR}/wcslib/include:${INSTALLDIR}/casacore/include/:${INSTALLDIR}/cfitsio/include -L${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/ -R${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/
+RUN mkdir -p ${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages/
+RUN mkdir -p ${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages/
+RUN export PYTHONPATH=${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages:${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages:$PYTHONPATH && cd ${INSTALLDIR}/python-casacore/python-casacore && ./setup.py develop --prefix=${INSTALLDIR}/python-casacore/
+
+#
+# install-log4cplus
+#
+RUN mkdir -p ${INSTALLDIR}/log4cplus/build
+RUN cd ${INSTALLDIR}/log4cplus && git clone https://github.com/log4cplus/log4cplus.git -b ${LOG4CPLUS_VERSION} src
+RUN cd ${INSTALLDIR}/log4cplus/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/log4cplus ../src/
+RUN cd ${INSTALLDIR}/log4cplus/build && make -j ${J}
+RUN cd ${INSTALLDIR}/log4cplus/build && make install
+
+
+#
+# entrypoint
+#
+ENTRYPOINT /bin/bash --init-file /usr/bin/init.sh
+
