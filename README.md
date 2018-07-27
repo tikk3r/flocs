@@ -25,4 +25,15 @@ Set up the nested VM (with graphical interface)
 - Manage > Add Volume (blue + sign) > Select name, filesystem and capacity > choose volume
 - Check manage before install.
 - Make final changes such as architecture etc.
+- To enable proper mouse/keyboard passthrough: change the `Graphics type` default to VNC instead of Spice.
 
+Other software
+--------------
+- PyBDSF can be installed through pip, solves an issue with `PYTHON_BDSF` not being defined.
+- Latest log4cplus requires CMake 3.6, which yum does not install by default.
+
+    yum install -y cmake3
+    
+- Installing log4cplus requires `--recursive` when cloning, otherwise the `catch.hpp` and `threadpool.h` headers are not found.
+
+    
