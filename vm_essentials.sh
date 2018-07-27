@@ -20,6 +20,8 @@ sudo yum-config-manager \
    https://download.docker.com/linux/centos/docker-ce.repo
 sudo yum -y install docker-ce
 
+# Install Singularity dependencies.
+sudo yum install -y build-essential libtool autotools-devel automake autoconf libarchive-devel
 # Install Singularity.
 git clone https://github.com/singularityware/singularity.git
 cd singularity
