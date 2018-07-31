@@ -15,6 +15,7 @@ Include: yum
     export PYTHON_VERSION=2.7
     
     export AOFLAGGER_VERSION=v2.8.0
+    export ARMADILLO_VERSION=8.600.0
     export BLAS_VERSION=0.2.17
     export BOOST_VERSION=1.60.0
     #export CASACORE_VERSION=v2.3.0
@@ -31,10 +32,13 @@ Include: yum
     export LOG4CPLUS_VERSION=1.1.x
     export LOSOTO_VERSION=2.0
     export LSMTOOL_VERSION=v1.2.0
+    export OPENBLAS_VERSION=v0.3.2
     export PYBDSF_VERSION=v1.8.12
     #export PYTHON_CASACORE_VERSION=v2.2.1
     export PYTHON_CASACORE_VERSION=v2.1.2
     export RMEXTRACT_VERSION=v0.1
+    # Do not change, Armadillo wants this version of SuperLU.
+    export SUPERLU_VERSION=v5.2.1
     export UNITTEST2_VERSION=1.1.0
     export XMLRUNNER_VERSION=1.7.7
     export WSCLEAN_VERSION=2.4
@@ -58,6 +62,30 @@ Include: yum
     pip install --upgrade setuptools
     pip install --upgrade numpy astropy
     pip install --upgrade pp progressbar pyfits pywcs python-monetdb xmlrunner unittest2
+    
+    #
+    # Install OpenBLAS
+    #
+    mkdir -p $INSTALLDIR/openblas/
+    cd $INSTALLDIR/openblas/ && git clone https://github.com/xianyi/OpenBLAS.git src && cd src && git checkout $OPENBLAS_VERSION
+    cd $INSTALLDIR/openblas/src && make && make install PREFIX=$INSTALLDIR/openblas
+    rm -rf $INSTALLDIR/openblas/src
+
+    #
+    # Install SuperLU
+    #
+    mkdir -p $INSTALLDIR/superlu/build
+    cd $INSTALLDIR/superlu/ && git clone https://github.com/xiaoyeli/superlu.git src && cd src && git checkout $SUPERLU_VERSION
+    cd $INSTALLDIR/superlu/build && cmake ../src -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/superlu -DUSE_XSDK_DEFAULTS=TRUE -Denable_blaslib=OFF -DBLAS_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so && make && make install
+    rm -rf $INSTALLDIR/superlu/src
+
+    #
+    # Install Armadillo
+    #
+    mkdir -p $INSTALLDIR/armadillo/
+    cd $INSTALLDIR/armadillo && wget http://sourceforge.net/projects/arma/files/armadillo-$ARMADILLO_VERSION.tar.xz && tar xf armadillo-$ARMADILLO_VERSION.tar.xz && rm armadillo-$ARMADILLO_VERSION.tar.xz
+    cd $INSTALLDIR/armadillo/armadillo-$ARMADILLO_VERSION && ./configure && cmake . -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/armadillo -Dopenblas_LIBRARY:FILEPATH=$INSTALLDIR/openblas/lib/libopenblas.so  -DSuperLU_INCLUDE_DIR:PATH=$INSTALLDIR/superlu/include -DSuperLU_LIBRARY:FILEPATH=$INSTALLDIR/superlu/lib64/libsuperlu.so && make && make install
+    
     
     #
     # install-cfitsio
@@ -244,7 +272,7 @@ Include: yum
     echo export PATH=\$PATH\$INSTALLDIR/casacore/bin  >> /usr/bin/init.sh
     echo export PATH=\$PATH:\$INSTALLDIR/dysco/bin  >> /usr/bin/init.sh
     echo export PATH=\$PATH:\$INSTALLDIR/wsclean/bin  >> /usr/bin/init.sh
-    echo export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/dysco/lib  >> /usr/bin/init.sh
+    echo export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64  >> /usr/bin/init.sh
     echo export INSTALLDIR=$INSTALLDIR >> /usr/bin/init.sh
 
     #
