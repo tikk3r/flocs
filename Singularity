@@ -19,23 +19,23 @@ Include: yum
     export BLAS_VERSION=0.2.17
     export BOOST_VERSION=1.60.0
     #export CASACORE_VERSION=v2.3.0
-    export CASACORE_VERSION=v2.3.0
-    #export CASAREST_VERSION=v1.4.1
-    export CASAREST_VERSION=v1.3.1
+    export CASACORE_VERSION=v2.4.1
+    # Leave at latest, release versions crash for some reason.
+    export CASAREST_VERSION=latest
     export CFITSIO_VERSION=3410
     export DYSCO_VERSION=v1.0.1
     export FFTW_VERSION=3.3.4
     export GLS_VERSION=1.15
     export HDF5_VERSION=1.10.1
     export LAPACK_VERSION=3.6.0
-    export LOFAR_VERSION=3_1_0
+    export LOFAR_VERSION=3_1_4
     export LOG4CPLUS_VERSION=1.1.x
     export LOSOTO_VERSION=2.0
     export LSMTOOL_VERSION=v1.2.0
     export OPENBLAS_VERSION=v0.3.2
     export PYBDSF_VERSION=v1.8.12
-    #export PYTHON_CASACORE_VERSION=v2.2.1
-    export PYTHON_CASACORE_VERSION=v2.1.2
+    #export PYTHON_CASACORE_VERSION=v2.1.2
+    export PYTHON_CASACORE_VERSION=v2.2.1
     export RMEXTRACT_VERSION=v0.1
     # Do not change, Armadillo wants this version of SuperLU.
     export SUPERLU_VERSION=v5.2.1
@@ -50,7 +50,7 @@ Include: yum
     yum -y install git svn wget
     yum -y install automake-devel aclocal autoconf autotools cmake cmake3 make
     yum -y install g++ gcc gcc-c++ gcc-gfortran
-    yum -y install blas-devel boost boost-devel boost-python fftw3-devel fftw3-libs python-devel lapack-devel libpng-devel libxml2-devel numpy-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel
+    yum -y install arpack-devel blas-devel boost boost-devel boost-python fftw3-devel fftw3-libs python-devel lapack-devel libpng-devel libxml2-devel numpy-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel
     yum -y install bison flex ncurses tar bzip2 which gettext
     yum -y install epel-release
     yum-config-manager --enable epel
@@ -61,7 +61,7 @@ Include: yum
     pip install --upgrade pip
     pip install --upgrade setuptools
     pip install --upgrade numpy astropy
-    pip install --upgrade pp progressbar pyfits pywcs python-monetdb xmlrunner unittest2
+    pip install --upgrade boost pp progressbar pyfits pywcs python-monetdb xmlrunner unittest2
     
     #
     # Install OpenBLAS
@@ -101,14 +101,14 @@ Include: yum
     # install-wcslib
     #
     mkdir ${INSTALLDIR}/wcslib
-    #if [ "${WCSLIB_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/wcslib && wget --retry-connrefused ftp://anonymous@ftp.atnf.csiro.au/pub/software/wcslib/wcslib.tar.bz2 -O wcslib-latest.tar.bz2; fi
-    #if [ "${WCSLIB_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/wcslib && wget --retry-connrefused ftp://anonymous@ftp.atnf.csiro.au/pub/software/wcslib/wcslib-${WCSLIB_VERSION}.tar.bz2; fi
-    #cd ${INSTALLDIR}/wcslib && tar xf wcslib-*.tar.bz2
-    cd ${INSTALLDIR} && mkdir wcslib && cd wcslib && svn checkout https://github.com/astropy/astropy/trunk/cextern/wcslib
+    if [ "${WCSLIB_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/wcslib && wget --retry-connrefused ftp://anonymous@ftp.atnf.csiro.au/pub/software/wcslib/wcslib.tar.bz2 -O wcslib-latest.tar.bz2; fi
+    if [ "${WCSLIB_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/wcslib && wget --retry-connrefused ftp://anonymous@ftp.atnf.csiro.au/pub/software/wcslib/wcslib-${WCSLIB_VERSION}.tar.bz2; fi
+    cd ${INSTALLDIR}/wcslib && tar xf wcslib-*.tar.bz2
+    #cd ${INSTALLDIR} && mkdir wcslib && cd wcslib && svn checkout https://github.com/astropy/astropy/trunk/cextern/wcslib
     cd ${INSTALLDIR}/wcslib/wcslib* && ./configure --prefix=${INSTALLDIR}/wcslib --with-cfitsiolib=${INSTALLDIR}/cfitsio/lib/ --with-cfitsioinc=${INSTALLDIR}/cfitsio/include/ --without-pgplot
     cd ${INSTALLDIR}/wcslib/wcslib* && make
     cd ${INSTALLDIR}/wcslib/wcslib* && make install
-    yum -y install wcslib wcslib-devel
+    #yum -y install wcslib wcslib-devel
 
     #
     # install-hdf5
@@ -125,12 +125,11 @@ Include: yum
     #
     mkdir -p ${INSTALLDIR}/casacore/build
     mkdir -p ${INSTALLDIR}/casacore/data
-    cd ${INSTALLDIR}/casacore && git clone https://github.com/casacore/casacore.git src
+    cd $INSTALLDIR/casacore && git clone https://github.com/casacore/casacore.git src
     if [ "${CASACORE_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION}; fi
     cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar
-    #cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DHDF5_ROOT_DIR=${INSTALLDIR}/hdf5 -DUSE_HDF5=True ../src/ 
-    cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True ../src/ 
+    cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so ../src/ 
     cd ${INSTALLDIR}/casacore/build && make -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
 
@@ -140,8 +139,7 @@ Include: yum
     mkdir -p ${INSTALLDIR}/casarest/build
     cd ${INSTALLDIR}/casarest && git clone https://github.com/casacore/casarest.git src
     if [ "${CASAREST_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casarest/src && git checkout tags/${CASAREST_VERSION}; fi
-    #cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DHDF5_ROOT_DIR=${INSTALLDIR}/hdf5 -DHDF5_INCLUDE_DIR=${INSTALLDIR}/hdf5/include -DHDF5_LIBRARY=${INSTALLDIR}/hdf5/lib ../src/
-    cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio ../src/
+    cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=$INSTALLDIR/cfitsio -dCfitsIO_DIR=$INSTALLDIR/cfitsio -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so ../src/
     cd ${INSTALLDIR}/casarest/build && make -j ${J}
     cd ${INSTALLDIR}/casarest/build && make install
 
@@ -151,10 +149,10 @@ Include: yum
     mkdir ${INSTALLDIR}/python-casacore
     cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore
     if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
-    cd ${INSTALLDIR}/python-casacore/python-casacore && ./setup.py build_ext -I${INSTALLDIR}/wcslib/include:${INSTALLDIR}/casacore/include/:${INSTALLDIR}/cfitsio/include -L${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/ -R${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/
+    cd ${INSTALLDIR}/python-casacore/python-casacore && ./setup.py build_ext -I${INSTALLDIR}/wcslib/include:${INSTALLDIR}/casacore/include/:${INSTALLDIR}/cfitsio/include -L${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/:/usr/lib64/ 
     mkdir -p ${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages/
     mkdir -p ${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages/
-    export PYTHONPATH=${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages:${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages:$PYTHONPATH && cd ${INSTALLDIR}/python-casacore/python-casacore && ./setup.py develop --prefix=${INSTALLDIR}/python-casacore/
+    export PYTHONPATH=${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages:${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages:$PYTHONPATH && cd ${INSTALLDIR}/python-casacore/python-casacore && ./setup.py install --prefix=${INSTALLDIR}/python-casacore/
 
 
     #
@@ -210,15 +208,15 @@ Include: yum
     ls ${INSTALLDIR}/lofar/build/gnu_opt
     if [ "${LOFAR_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/lofar && svn --non-interactive -q co https://svn.astron.nl/LOFAR/trunk src; fi
     if [ "${LOFAR_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/lofar && svn --non-interactive -q co https://svn.astron.nl/LOFAR/tags/LOFAR-Release-${LOFAR_VERSION} src; fi
-    cd ${INSTALLDIR}/lofar/build/gnu_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_ROOT_DIR=${INSTALLDIR}/aoflagger/ -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DBDSF_ROOT_DIR=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
-    cd ${INSTALLDIR}/lofar/build/gnu_opt && make install
+    cd ${INSTALLDIR}/lofar/build/gnu_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_ROOT_DIR=${INSTALLDIR}/aoflagger/ -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so ${INSTALLDIR}/lofar/src/
+    cd ${INSTALLDIR}/lofar/build/gnu_opt && make -j $J && make install
 
     #
     # install-WSClean
     #
     export CPATH=${INSTALLDIR}/casacore/include:$CPATH
     mkdir ${INSTALLDIR}/wsclean
-    cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION} && ls && mkdir build && cd build && ls && cmake .. -DCMAKE_PREFIX_PATH="${INSTALLDIR}/casacore;${INSTALLDIR}/cfitsio;${INSTALLDIR}/lofar" && make -j ${J}
+    cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION} && ls && mkdir build && cd build && ls && cmake .. -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH="${INSTALLDIR}/casacore;${INSTALLDIR}/cfitsio;${INSTALLDIR}/lofar" && make -j ${J} && make install
     ls ${INSTALLDIR}
 
     #
@@ -271,8 +269,9 @@ Include: yum
     echo export PYTHONPATH=\$PYTHONPATH:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/  >> /usr/bin/init.sh
     echo export PATH=\$PATH\$INSTALLDIR/casacore/bin  >> /usr/bin/init.sh
     echo export PATH=\$PATH:\$INSTALLDIR/dysco/bin  >> /usr/bin/init.sh
+    echo export PATH=\$PATH:$\INSTALLDIR/losoto/bin >> /usr/bin/init.sh
     echo export PATH=\$PATH:\$INSTALLDIR/wsclean/bin  >> /usr/bin/init.sh
-    echo export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64  >> /usr/bin/init.sh
+    echo export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/  >> /usr/bin/init.sh
     echo export INSTALLDIR=$INSTALLDIR >> /usr/bin/init.sh
 
     #

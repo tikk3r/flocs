@@ -22,6 +22,7 @@ sudo yum -y install docker-ce
 
 # Install Singularity dependencies.
 sudo yum install -y build-essential libtool autotools-devel automake autoconf libarchive-devel squashfs-tools
+
 # Install Singularity.
 git clone https://github.com/singularityware/singularity.git
 cd singularity
@@ -29,3 +30,12 @@ cd singularity
 ./configure --prefix=/usr/local
 make
 sudo make install
+
+# Install tools for kvm.
+sudo yum install qemu-kvm qemu-img virt-manager libvirt libvirt-python libvirt-client virt-install virt-viewer bridge-utils
+sudo systemctl start libvirtd
+sudo systemctl enable libvirtd
+sudo usermod --append --groups libvirt $USER
+
+# Necessary for minimal installation, fixes font related things.
+sudo yum -y install "@X Window System" xorg-x11-xauth xorg-x11-fonts-* xorg-x11-utils -y
