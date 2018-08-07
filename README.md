@@ -1,5 +1,6 @@
 # lofar-grid-hpccloud
- The information below will all slowly be moved to the wiki now: https://github.com/tikk3r/lofar-grid-hpccloud/wiki
+The information below is being moved to the [wiki](https://github.com/tikk3r/lofar-grid-hpccloud/wiki).
+----------------------------------------
  
  
 1) Install KVM
