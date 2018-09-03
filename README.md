@@ -1,5 +1,8 @@
 # lofar-grid-hpccloud
-
+The information below is being moved to the [wiki](https://github.com/tikk3r/lofar-grid-hpccloud/wiki).
+----------------------------------------
+ 
+ 
 1) Install KVM
 *) Switch to root
 `sudo su -`
