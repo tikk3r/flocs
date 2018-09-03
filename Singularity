@@ -267,9 +267,9 @@ Include: yum
     #
     echo source \$INSTALLDIR/lofar/lofarinit.sh  > /usr/bin/init.sh
     echo export PYTHONPATH=\$PYTHONPATH:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/  >> /usr/bin/init.sh
-    echo export PATH=\$PATH\$INSTALLDIR/casacore/bin  >> /usr/bin/init.sh
+    echo export PATH=\$PATH:\$INSTALLDIR/casacore/bin  >> /usr/bin/init.sh
     echo export PATH=\$PATH:\$INSTALLDIR/dysco/bin  >> /usr/bin/init.sh
-    echo export PATH=\$PATH:$\INSTALLDIR/losoto/bin >> /usr/bin/init.sh
+    echo export PATH=\$PATH:\$INSTALLDIR/losoto/bin >> /usr/bin/init.sh
     echo export PATH=\$PATH:\$INSTALLDIR/wsclean/bin  >> /usr/bin/init.sh
     echo export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/  >> /usr/bin/init.sh
     echo export INSTALLDIR=$INSTALLDIR >> /usr/bin/init.sh
