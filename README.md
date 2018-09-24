@@ -1,39 +1,13 @@
 # lofar-grid-hpccloud
-The information below is being moved to the [wiki](https://github.com/tikk3r/lofar-grid-hpccloud/wiki).
+Visit the  [wiki](https://github.com/tikk3r/lofar-grid-hpccloud/wiki) for more detailed information.
 ----------------------------------------
+This repository hold resources for deploying the LOFAR software and related tools through Singularity images.
  
  
-1) Install KVM
-*) Switch to root
-`sudo su -`
-
-In case of "Unable to connect ot libvirt" (caused by user vs. root).
-2) Add the user to the libvirt group:
-`usermod --append --groups libvirt <user>`
-
-3) Share Template
-
-4) Enable nested VMs
-- http://www.rdoxenham.com/?p=275
-- Add kernel parameter `kvm-intel.nested=1` (or amd).
-- `grub2-mkconfig -o /boot/grub2/grub.cfg`
-
-Set up the nested VM (with graphical interface)
-----------------------------------------
-1) Add new VM
-- Local install media
-- Use ISO image
-- Allocate memory and CPU
-- "Select or create custom storage"
-- Manage > Add Volume (blue + sign) > Select name, filesystem and capacity > choose volume
-- Check manage before install.
-- Make final changes such as architecture etc.
-- To enable proper mouse/keyboard passthrough: change the `Graphics type` default to VNC instead of Spice.
-
-Other software
---------------
-- PyBDSF can be installed through pip, solves an issue with `PYTHON_BDSF` not being defined.
-- Latest log4cplus requires CMake 3.6, which yum does not install by default.
+Other software related notes
+----------------------------
+- Python CASAcore `setup.py` is broken with regards to finding libraries passed along by the -L flag. This is fixed with the patch.
+- Latest log4cplus requires CMake 3.6:
 
     yum install -y cmake3
     
