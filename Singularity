@@ -7,7 +7,7 @@ Include: yum
 
 %environment
     export INSTALLDIR=/opt/lofar
-    . /usr/bin/init.sh
+    . $INSTALLDIR/init.sh
 
 %post
 	# General environment settings.
@@ -316,4 +316,4 @@ Include: yum
     #
 %runscript
     echo source $INSTALLDIR/init.sh >> $HOME/.bashrc
-    . /usr/bin/init.sh
+    . $INSTALLDIR/init.sh
