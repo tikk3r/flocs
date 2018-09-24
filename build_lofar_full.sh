@@ -164,7 +164,6 @@ if [ "${LOG4CPLUS_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/log4cplus && gi
 cd ${INSTALLDIR}/log4cplus/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/log4cplus ../src/
 cd ${INSTALLDIR}/log4cplus/build && make -j ${J}
 cd ${INSTALLDIR}/log4cplus/build && make install
-module unload cmake/3.9
 
 #
 # install-aoflagger
