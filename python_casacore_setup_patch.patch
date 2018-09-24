@@ -1,0 +1,11 @@
+--- setup_orig.py	2018-09-11 10:11:20.628444498 +0200
++++ setup.py	2018-09-11 10:17:23.584223736 +0200
+@@ -25,7 +25,7 @@
+     args, unknown = parser.parse_known_args()
+     user_libdirs = args.library_dirs.split(':')
+     # Append default search path (not a complete list)
+-    libdirs = user_libdirs+[os.path.join(sys.prefix,'lib'),'/usr/local/lib', '/usr/lib','/usr/lib/x86_64-linux-gnu']
++    libdirs = user_libdirs+[os.path.join(sys.prefix,'lib'),'/usr/local/lib', '/usr/lib','/usr/lib/x86_64-linux-gnu', os.path.expandvars('$INSTALLDIR/casacore/lib'), os.path.expandvars('$INSTALLDIR/boost_1_63_0/lib')]
+     compiler = ccompiler.new_compiler()
+     return compiler.find_library_file(libdirs, libname)
+ 
