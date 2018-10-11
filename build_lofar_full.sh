@@ -11,7 +11,6 @@ export PYTHON_CASACORE_PATCH=/path/to/patch/python_casacore_setup_patch.patch
 export AOFLAGGER_VERSION=latest
 export ARMADILLO_VERSION=8.600.0
 export BLAS_VERSION=0.2.17
-#export BOOST_VERSION=1.60.0
 export BOOST_DOT_VERSION=1.63.0
 export BOOST_VERSION=1_63_0
 export CASACORE_VERSION=v2.4.1
@@ -23,20 +22,19 @@ export FFTW_VERSION=3.3.4
 export GLS_VERSION=1.15
 export HDF5_VERSION=1.10.1
 export LAPACK_VERSION=3.6.0
-export LOFAR_VERSION=3_1_4
+export LOFAR_VERSION=3_2_2
 export LOG4CPLUS_VERSION=1.1.x
 export LOSOTO_VERSION=2.0
 export LSMTOOL_VERSION=v1.2.0
 export OPENBLAS_VERSION=v0.3.2
 export PYBDSF_VERSION=v1.8.12
-#export PYTHON_CASACORE_VERSION=v2.1.2
 export PYTHON_CASACORE_VERSION=v2.2.1
 export RMEXTRACT_VERSION=v0.1
 # Do not change, Armadillo wants this version of SuperLU.
 export SUPERLU_VERSION=v5.2.1
 export UNITTEST2_VERSION=1.1.0
 export XMLRUNNER_VERSION=1.7.7
-export WSCLEAN_VERSION=2.4
+export WSCLEAN_VERSION=latest
 export WCSLIB_VERSION=5.18
 
 ####################################
@@ -53,7 +51,7 @@ mkdir -p $INSTALLDIR
 #
 mkdir -p $INSTALLDIR/boost/src
 cd $INSTALLDIR && wget https://dl.bintray.com/boostorg/release/${BOOST_DOT_VERSION}/source/boost_${BOOST_VERSION}.tar.gz
-cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 install --prefix=$INSTALLDIR/boost --with=all -j $J
+cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install --prefix=$INSTALLDIR/boost --with=all -j $J
 
 #
 # Install OpenBLAS
@@ -121,7 +119,7 @@ cd $INSTALLDIR/casacore && git clone https://github.com/casacore/casacore.git sr
 if [ "${CASACORE_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION}; fi
 cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar
-cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost_1_63_0/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost_1_63_0/include -DBoost_DIR=$INSTALLDIR/boost_1_63_0 -DBoost_INCLUDE_DIR=$INSTALLDIR/boost_1_63_0/include -DBoost_LIBRARY_DIR=$INSTALLDIR/boost_1_63_0/lib ../src/ 
+cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include -DBoost_DIR=$INSTALLDIR/boost -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib ../src/ 
 cd ${INSTALLDIR}/casacore/build && make -j ${J}
 cd ${INSTALLDIR}/casacore/build && make install
 
@@ -131,7 +129,7 @@ cd ${INSTALLDIR}/casacore/build && make install
 mkdir -p ${INSTALLDIR}/casarest/build
 cd ${INSTALLDIR}/casarest && git clone https://github.com/casacore/casarest.git src
 if [ "${CASAREST_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casarest/src && git checkout tags/${CASAREST_VERSION}; fi
-cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=$INSTALLDIR/cfitsio -DCfitsIO_DIR=$INSTALLDIR/cfitsio -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost_1_63_0 -DBOOST_INCLUDEDIR=$INSTALLDIR/boost_1_63_0/include ../src/
+cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=$INSTALLDIR/cfitsio -DCfitsIO_DIR=$INSTALLDIR/cfitsio -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include ../src/
 cd ${INSTALLDIR}/casarest/build && make -j ${J}
 cd ${INSTALLDIR}/casarest/build && make install
 
@@ -143,7 +141,7 @@ export PYTHON_VERSION=2.7
 mkdir ${INSTALLDIR}/python-casacore
 cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore
 if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
-cd ${INSTALLDIR}/python-casacore/python-casacore && patch setup.py $PYTHON_CASACORE_PATCH && ./setup.py build_ext -I${INSTALLDIR}/wcslib/include:${INSTALLDIR}/casacore/include/:${INSTALLDIR}/cfitsio/include:${INSTALLDIR}/boost_1_63_0/include -L${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/:${INSTALLDIR}/boost_1_63_0/lib:/usr/lib64/
+cd ${INSTALLDIR}/python-casacore/python-casacore && patch setup.py $PYTHON_CASACORE_PATCH && ./setup.py build_ext -I${INSTALLDIR}/wcslib/include:${INSTALLDIR}/casacore/include/:${INSTALLDIR}/cfitsio/include:${INSTALLDIR}/boost/include -L${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/:${INSTALLDIR}/boost/lib:/usr/lib64/
 mkdir -p ${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages/
 mkdir -p ${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages/
 export PYTHONPATH=${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages:${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages:$PYTHONPATH && cd ${INSTALLDIR}/python-casacore/python-casacore && ./setup.py install --prefix=${INSTALLDIR}/python-casacore/
@@ -158,12 +156,14 @@ cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DC
 #
 # install-log4cplus
 #
+module load cmake/3.9
 mkdir -p ${INSTALLDIR}/log4cplus/build
 if [ "${LOG4CPLUS_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone --recursive https://github.com/log4cplus/log4cplus.git src; fi
 if [ "${LOG4CPLUS_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone --recursive https://github.com/log4cplus/log4cplus.git src && cd src && git checkout ${LOG4CPLUS_VERSION}; fi
 cd ${INSTALLDIR}/log4cplus/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/log4cplus ../src/
 cd ${INSTALLDIR}/log4cplus/build && make -j ${J}
 cd ${INSTALLDIR}/log4cplus/build && make install
+module unload cmake/3.9
 
 #
 # install-aoflagger
@@ -171,7 +171,7 @@ cd ${INSTALLDIR}/log4cplus/build && make install
 mkdir -p ${INSTALLDIR}/aoflagger/build
 if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger; fi
 if [ "${AOFLAGGER_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger && git checkout tags/${AOFLAGGER_VERSION}; fi
-cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DBUILD_SHARED_LIBS=ON -DBOOST_INCLUDEDIR=$INSTALLDIR/boost_1_63_0/include -DBOOST_LIBRARYDIR=$INSTALLDIR/boost_1_63_0/lib -DBOOST_ROOT=$INSTALLDIR/boost_1_63_0/ -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBLAS_atlas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DPORTABLE=True ../aoflagger
+cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DBUILD_SHARED_LIBS=ON -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_ROOT=$INSTALLDIR/boost/ -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBLAS_atlas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DPORTABLE=True ../aoflagger
 cd ${INSTALLDIR}/aoflagger/build && make -j ${J}
 cd ${INSTALLDIR}/aoflagger/build && make install
 
@@ -216,7 +216,8 @@ cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && make -j $J && make install
 #
 export CPATH=${INSTALLDIR}/casacore/include:$CPATH
 mkdir ${INSTALLDIR}/wsclean
-cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION} && ls && mkdir build && cd build && ls && cmake .. -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH="${INSTALLDIR}/casacore;${INSTALLDIR}/cfitsio;${INSTALLDIR}/lofar" && make -j ${J} && make install
+if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION} && ls && mkdir build && cd build && ls && cmake .. -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH="${INSTALLDIR}/casacore;${INSTALLDIR}/cfitsio;${INSTALLDIR}/lofar" && make -j ${J} && make install; fi
+if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && wget https://sourceforge.net/projects/wsclean/files/latest/download -O wsclean-latest.tar.bz2 && tar -xjf wsclean-latest.tar.bz2 && cd wsclean-latest && ls && mkdir build && cd build && ls && cmake .. -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH="${INSTALLDIR}/casacore;${INSTALLDIR}/cfitsio;${INSTALLDIR}/lofar" && make -j ${J} && make install; fi
 ls ${INSTALLDIR}
 
 #
@@ -242,7 +243,7 @@ ls ${INSTALLDIR}
 #
 # Install-Losoto
 #
-export PYTHONPATH=/opt/lofar/losoto/lib/python2.7/site-packages/:$PYTHONPATH
+export PYTHONPATH=$INSTALLDIR/losoto/lib/python2.7/site-packages/:$PYTHONPATH
 mkdir ${INSTALLDIR}/losoto
 mkdir ${INSTALLDIR}/losoto/build
 mkdir ${INSTALLDIR}/losoto/lib
@@ -262,11 +263,11 @@ cd $INSTALLDIR/lsmtool/lsmtool && python setup.py install --prefix=$INSTALLDIR/l
 #
 # Install WSClean
 #
-mkdir -p $INSTALLDIR/wsclean
-cd $INSTALLDIR/wsclean && wget https://sourceforge.net/projects/wsclean/files/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2
-tar xf wsclean-${WSCLEAN_VERSION}.tar.bz2
-mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH=$INSTALLDIR/lofar -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DCFITSIO_LIBRARY=$INSTALLDIR/cfitsio/lib/libcfitsio.so -DCFITSIO_INCLUDE_DIR=$INSTALLDIR/cfitsio/include -DPORTABLE=True ../wsclean-${WSCLEAN_VERSION}
-make -j $J && make install
+export CPATH=${INSTALLDIR}/casacore/include:$CPATH
+mkdir ${INSTALLDIR}/wsclean
+if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
+if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && mkdir wsclean-latest && wget https://sourceforge.net/projects/wsclean/files/latest/download -O wsclean-latest.tar.bz2 && tar -xjf wsclean-latest.tar.bz2 -C wsclean-latest --strip=1; fi
+mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH=$INSTALLDIR/lofar -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DCFITSIO_LIBRARY=$INSTALLDIR/cfitsio/lib/libcfitsio.so -DCFITSIO_INCLUDE_DIR=$INSTALLDIR/cfitsio/include -DPORTABLE=True ../wsclean-$WSCLEAN_VERSION
 
 echo "Installation directory contents:"
 ls ${INSTALLDIR}
@@ -276,11 +277,13 @@ ls ${INSTALLDIR}
 #
 echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
-echo export PYTHONPATH=\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$PYTHONPATH  >> $INSTALLDIR/init.sh
+
+echo export PYTHONPATH=\$INSTALLDIR/losoto/lib/python2.7/site-packages/:\$INSTALLDIR/lsmtool/lib/python2.7/site-packages/:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$PYTHONPATH  >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
+echo export PATH=\$INSTALLDIR/lsmtool/bin:\$PATH >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
 echo export PATH=/net/lofar1/data1/rvweeren/software/wsclean-code-2.6june27portable/wsclean/build/:\$PATH
-echo export LD_LIBRARY_PATH=\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
+echo export LD_LIBRARY_PATH=\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.shls
