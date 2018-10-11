@@ -266,6 +266,7 @@ mkdir ${INSTALLDIR}/wsclean
 if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
 if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && mkdir wsclean-latest && wget https://sourceforge.net/projects/wsclean/files/latest/download -O wsclean-latest.tar.bz2 && tar -xjf wsclean-latest.tar.bz2 -C wsclean-latest --strip=1; fi
 mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH=$INSTALLDIR/lofar -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DCFITSIO_LIBRARY=$INSTALLDIR/cfitsio/lib/libcfitsio.so -DCFITSIO_INCLUDE_DIR=$INSTALLDIR/cfitsio/include -DPORTABLE=True ../wsclean-$WSCLEAN_VERSION
+make -j $J && make install
 
 echo "Installation directory contents:"
 ls ${INSTALLDIR}
