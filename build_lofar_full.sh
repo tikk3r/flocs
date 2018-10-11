@@ -156,14 +156,12 @@ cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DC
 #
 # install-log4cplus
 #
-module load cmake/3.9
 mkdir -p ${INSTALLDIR}/log4cplus/build
 if [ "${LOG4CPLUS_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone --recursive https://github.com/log4cplus/log4cplus.git src; fi
 if [ "${LOG4CPLUS_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone --recursive https://github.com/log4cplus/log4cplus.git src && cd src && git checkout ${LOG4CPLUS_VERSION}; fi
 cd ${INSTALLDIR}/log4cplus/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/log4cplus ../src/
 cd ${INSTALLDIR}/log4cplus/build && make -j ${J}
 cd ${INSTALLDIR}/log4cplus/build && make install
-module unload cmake/3.9
 
 #
 # install-aoflagger
