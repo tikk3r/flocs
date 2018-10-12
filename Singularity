@@ -22,7 +22,6 @@ Include: yum
 	export AOFLAGGER_VERSION=latest
 	export ARMADILLO_VERSION=8.600.0
 	export BLAS_VERSION=0.2.17
-	#export BOOST_VERSION=1.60.0
 	export BOOST_DOT_VERSION=1.63.0
 	export BOOST_VERSION=1_63_0
 	export CASACORE_VERSION=v2.4.1
@@ -34,13 +33,12 @@ Include: yum
 	export GLS_VERSION=1.15
 	export HDF5_VERSION=1.10.1
 	export LAPACK_VERSION=3.6.0
-	export LOFAR_VERSION=3_1_4
+	export LOFAR_VERSION=3_2_2
 	export LOG4CPLUS_VERSION=1.1.x
 	export LOSOTO_VERSION=2.0
 	export LSMTOOL_VERSION=v1.2.0
 	export OPENBLAS_VERSION=v0.3.2
 	export PYBDSF_VERSION=v1.8.12
-	#export PYTHON_CASACORE_VERSION=v2.1.2
 	export PYTHON_CASACORE_VERSION=v2.2.1
 	export RMEXTRACT_VERSION=v0.1
 	# Do not change, Armadillo wants this version of SuperLU.
@@ -68,7 +66,7 @@ Include: yum
 	yum -y remove numpy
 	pip install --upgrade pip
 	pip install --upgrade setuptools
-	pip install --upgrade numpy astropy
+	pip install --upgrade numpy astropy scipy matplotlib numexpr tables
 	pip install --upgrade boost pp progressbar pyfits pywcs python-monetdb xmlrunner unittest2
 
 	# FACTOR requisites.
@@ -79,7 +77,7 @@ Include: yum
 	#
 	mkdir -p $INSTALLDIR/boost/src
 	cd $INSTALLDIR && wget https://dl.bintray.com/boostorg/release/${BOOST_DOT_VERSION}/source/boost_${BOOST_VERSION}.tar.gz
-	cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 install --prefix=$INSTALLDIR/boost --with=all -j $J
+	cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install --prefix=$INSTALLDIR/boost --with=all -j $J
 
 	#
 	# Install OpenBLAS
@@ -282,10 +280,11 @@ Include: yum
 	#
 	# Install WSClean
 	#
-	mkdir -p $INSTALLDIR/wsclean
-	cd $INSTALLDIR/wsclean && wget https://sourceforge.net/projects/wsclean/files/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2
-	tar xf wsclean-${WSCLEAN_VERSION}.tar.bz2
-	mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH=$INSTALLDIR/lofar -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DCFITSIO_LIBRARY=$INSTALLDIR/cfitsio/lib/libcfitsio.so -DCFITSIO_INCLUDE_DIR=$INSTALLDIR/cfitsio/include -DPORTABLE=True ../wsclean-${WSCLEAN_VERSION}
+	export CPATH=${INSTALLDIR}/casacore/include:$CPATH
+	mkdir ${INSTALLDIR}/wsclean
+	if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
+	if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && mkdir wsclean-latest && wget https://sourceforge.net/projects/wsclean/files/latest/download -O wsclean-latest.tar.bz2 && tar -xjf wsclean-latest.tar.bz2 -C wsclean-latest --strip=1; fi
+	mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH=$INSTALLDIR/lofar -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DCFITSIO_LIBRARY=$INSTALLDIR/cfitsio/lib/libcfitsio.so -DCFITSIO_INCLUDE_DIR=$INSTALLDIR/cfitsio/include -DPORTABLE=True ../wsclean-$WSCLEAN_VERSION
 	make -j $J && make install
 
 	echo "Installation directory contents:"
@@ -302,14 +301,14 @@ Include: yum
 	#
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$PYTHONPATH  >> $INSTALLDIR/init.sh
+	echo export PYTHONPATH=\$INSTALLDIR/losoto/lib/python2.7/site-packages:\$INSTALLDIR/lsmtool/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib64/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/::\$PYTHONPATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=$INSTALLDIR/wsclean/bin:\$PATH >> $INSTALLDIR/init.sh
-	echo export LD_LIBRARY_PATH=\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
+	echo export LD_LIBRARY_PATH=\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
