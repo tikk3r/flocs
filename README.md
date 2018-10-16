@@ -7,7 +7,8 @@ This repository hold resources for deploying the LOFAR software and related tool
 Other software related notes
 ----------------------------
 - Python CASAcore `setup.py` is broken with regards to finding libraries passed along by the -L flag. This is fixed with the patch.
-- Latest log4cplus requires CMake 3.6:
+- Apparently WCSLIB now needs a newer version of GNU Make. It no longer worked with 3.82, tested to work with 4.2.
+- Latest log4cplus (no longer installed) requires CMake 3.6:
 
     yum install -y cmake3
     
