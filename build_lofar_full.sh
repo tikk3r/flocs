@@ -195,13 +195,6 @@ cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES=Offline -DCM
 cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && make -j $J && make install
 
 #
-# install-Dysco
-#
-mkdir ${INSTALLDIR}/dysco 
-cd ${INSTALLDIR}/dysco && git clone https://github.com/aroffringa/dysco.git && cd ${INSTALLDIR}/dysco/dysco && ls && mkdir build && cd build && ls && cmake .. -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/dysco -DCMAKE_PREFIX_PATH="${INSTALLDIR}/casacore;${INSTALLDIR}/cfitsio;${INSTALLDIR}/lofar" && make -j ${J} && make install
-ls ${INSTALLDIR}
-
-#
 # install-RMextract
 #
 export PYTHONPATH=$INSTALLDIR/RMextract/lib64/python2.7/site-packages:$PYTHONPATH
