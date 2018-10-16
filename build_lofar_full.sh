@@ -9,6 +9,7 @@ export PYTHON_CASACORE_PATCH=/path/to/patch/python_casacore_setup_patch.patch
 
 # Settings relevant to the installed software.
 export AOFLAGGER_VERSION=latest
+# Do not change, we want this specific Armadillo.
 export ARMADILLO_VERSION=8.600.0
 export BLAS_VERSION=0.2.17
 export BOOST_DOT_VERSION=1.63.0
@@ -18,22 +19,16 @@ export CASACORE_VERSION=v2.4.1
 export CASAREST_VERSION=latest
 export CFITSIO_VERSION=3410
 export DYSCO_VERSION=v1.0.1
-export FFTW_VERSION=3.3.4
-export GLS_VERSION=1.15
 export HDF5_VERSION=1.10.1
 export LAPACK_VERSION=3.6.0
 export LOFAR_VERSION=3_2_2
 export LOG4CPLUS_VERSION=1.1.x
 export LOSOTO_VERSION=2.0
-export LSMTOOL_VERSION=v1.2.0
 export OPENBLAS_VERSION=v0.3.2
 export PYBDSF_VERSION=v1.8.12
 export PYTHON_CASACORE_VERSION=v2.2.1
-export RMEXTRACT_VERSION=v0.1
 # Do not change, Armadillo wants this version of SuperLU.
 export SUPERLU_VERSION=v5.2.1
-export UNITTEST2_VERSION=1.1.0
-export XMLRUNNER_VERSION=1.7.7
 export WSCLEAN_VERSION=latest
 export WCSLIB_VERSION=5.18
 
@@ -154,16 +149,6 @@ cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
 cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ../src && make -j $J && make install
 
 #
-# install-log4cplus
-#
-mkdir -p ${INSTALLDIR}/log4cplus/build
-if [ "${LOG4CPLUS_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone --recursive https://github.com/log4cplus/log4cplus.git src; fi
-if [ "${LOG4CPLUS_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone --recursive https://github.com/log4cplus/log4cplus.git src && cd src && git checkout ${LOG4CPLUS_VERSION}; fi
-cd ${INSTALLDIR}/log4cplus/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/log4cplus ../src/
-cd ${INSTALLDIR}/log4cplus/build && make -j ${J}
-cd ${INSTALLDIR}/log4cplus/build && make install
-
-#
 # install-aoflagger
 #
 mkdir -p ${INSTALLDIR}/aoflagger/build
@@ -206,17 +191,8 @@ ls ${INSTALLDIR}/lofar/build/gnucxx11_opt
 if [ "${LOFAR_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/trunk src; fi
 if [ "${LOFAR_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/tags/LOFAR-Release-${LOFAR_VERSION} src; fi
 cd $INSTALLDIR/lofar && svn update --depth=infinity $INSTALLDIR/lofar/src/CMake
-cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_LIBRARY=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DAOFLAGGER_LIBRARY_DIR=${INSTALLDIR}/aoflagger/lib -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ${INSTALLDIR}/lofar/src/
+cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DARMADILLO_LIBRARY=$INSTALLDIR/armadillo/lib64 -DARMADILLO_INCLUDE_DIR=$INSTALLDIR/armadillo/include -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_LIBRARY=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DAOFLAGGER_LIBRARY_DIR=${INSTALLDIR}/aoflagger/lib -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DUSE_LOG4CPLUS=OFF -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ${INSTALLDIR}/lofar/src/
 cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && make -j $J && make install
-
-#
-# install-WSClean
-#
-export CPATH=${INSTALLDIR}/casacore/include:$CPATH
-mkdir ${INSTALLDIR}/wsclean
-if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION} && ls && mkdir build && cd build && ls && cmake .. -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH="${INSTALLDIR}/casacore;${INSTALLDIR}/cfitsio;${INSTALLDIR}/lofar" && make -j ${J} && make install; fi
-if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && wget https://sourceforge.net/projects/wsclean/files/latest/download -O wsclean-latest.tar.bz2 && tar -xjf wsclean-latest.tar.bz2 && cd wsclean-latest && ls && mkdir build && cd build && ls && cmake .. -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH="${INSTALLDIR}/casacore;${INSTALLDIR}/cfitsio;${INSTALLDIR}/lofar" && make -j ${J} && make install; fi
-ls ${INSTALLDIR}
 
 #
 # install-Dysco
@@ -284,4 +260,4 @@ echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/lsmtool/bin:\$PATH >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
-echo export LD_LIBRARY_PATH=\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.shls
+echo export LD_LIBRARY_PATH=\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.shls
