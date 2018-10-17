@@ -1,0 +1,12 @@
+*** 2018_10_10/aoflagger/aoflagger/CMakeLists.txt	2018-10-11 17:03:01.878799813 +0200
+--- 2018_16_10_test2/aoflagger/aoflagger/CMakeLists.txt	2018-10-17 14:24:33.969473561 +0200
+***************
+*** 4,9 ****
+--- 4,10 ----
+  
+  project(AOFlagger)
+  
++ add_definitions (-D_GLIBCXX_USE_CXX11_ABI=0)
+  # Casacore has a separate CMake file in this directory
+  set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
+  
