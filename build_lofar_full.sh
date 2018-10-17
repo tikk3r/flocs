@@ -171,18 +171,6 @@ mkdir -p ${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ && mkdi
 #pip install https://github.com/lofar-astron/PyBDSF/archive/v1.8.14.tar.gz
 
 #
-# install-LSMTool
-#
-mkdir -p ${INSTALLDIR}/LSMTool && \
-    cd ${INSTALLDIR}/LSMTool && git clone https://github.com/darafferty/LSMTool.git && \
-    cd ${INSTALLDIR}/LSMTool/LSMTool && \
-    mkdir -p ${INSTALLDIR}/LSMTool/lib/python${PYTHON_VERSION}/site-packages/ && \
-    export PYTHONPATH=${PYTHONPATH}:${INSTALLDIR}/LSMTool/lib/python${PYTHON_VERSION}/site-packages/ && \
-    python setup.py install --prefix=${INSTALLDIR}/LSMTool # && \
-    # bash -c "find ${INSTALLDIR}/LSMTool/lib -name '*.so' | xargs strip || true" && \
-    # bash -c "rm -rf ${INSTALLDIR}/LSMTool/LSMTool"
-
-#
 # install-lofar
 #
 mkdir -p ${INSTALLDIR}/lofar
