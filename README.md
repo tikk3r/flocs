@@ -1,8 +1,8 @@
 # lofar-grid-hpccloud
+
+This repository hold resources for deploying the LOFAR software and related tools through a native install, Singularity images or for use on the HPC Cloud.
+
 Visit the  [wiki](https://github.com/tikk3r/lofar-grid-hpccloud/wiki) for more detailed information.
-----------------------------------------
-This repository hold resources for deploying the LOFAR software and related tools through Singularity images.
- 
  
 Other software related notes
 ----------------------------
