@@ -19,7 +19,7 @@
   # _pyGridder1D.so:  Gridder1D.o 
 --- 1,12 ----
 + NUMPY_LOCATION = $(shell python -c "import numpy; NUM_DIR=numpy.__file__.split('__init__.py')[0]; print(NUM_DIR+'core/include/numpy')")
-+ PYTHON_LIBRARY_LOCATION =$(shell python -c "from sysconfig import get_paths; print(get_paths()['include'])")
++ PYTHON_LIBRARY_LOCATION =/usr/include/python2.7
   # ---- Link --------------------------- 
   _pyGridder.so:  Gridder.o 
   	gcc -fopenmp -pthread -shared Gridder.o -o _pyGridder.so
