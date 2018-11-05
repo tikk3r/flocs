@@ -1,0 +1,107 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%environment
+    export INSTALLDIR=/opt/ddf
+    . $INSTALLDIR/init.sh
+
+%post
+	# General environment settings.
+	export J=6
+	export INSTALLDIR=/opt/ddf
+
+	# Path to where the patch for python-casacore's setup is stored.
+	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
+    export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
+    export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
+    export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
+	export PYTHON_VERSION=2.7
+
+	apt -y update
+	apt -y install software-properties-common
+	add-apt-repository -s ppa:kernsuite/kern-4
+	apt-add-repository multiverse
+	apt -y update
+	apt -y install patch sudo git subversion less vim cmake make
+	apt -y install python-pip
+    apt -y install build-essential cmake gfortran g++ libncurses5-dev libreadline-dev flex bison libblas-dev liblapacke-dev libcfitsio-dev wcslib-dev 
+    apt -y install libhdf5-serial-dev libfftw3-dev python-numpy libboost-python-dev python-dev python3-dev  
+	# Install the LOFAR software.
+	apt -y install casacore-* dysco dyscostma-dev python-casacore lofar lofar-dev factor python-gsm prefactor factor
+
+    mkdir -p $INSTALLDIR/patches
+    cd $INSTALLDIR && git clone https://github.com/tikk3r/lofar-grid-hpccloud.git
+    mv $INSTALLDIR/lofar-grid-hpccloud/patches/* $INSTALLDIR/patches
+    
+    mkdir -p /opt/lsmtool/lib/python2.7/site-packages
+    # Install LSMTool
+    cd /opt/lsmtool
+    git clone https://github.com/darafferty/LSMTool.git
+    export PYTHONPATH=/opt/lsmtool/lib/python2.7/site-packages:$PYTHONPATH
+    cd LSMTool && git checkout tags/v1.1.0 && python setup.py install --prefix=/opt/lsmtool
+
+    mkdir -p /opt/losoto/lib/python2.7/site-packages
+    # Install LSMTool
+    cd /opt/losoto
+    git clone https://github.com/revoltek/losoto.git
+    export PYTHONPATH=/opt/losoto/lib/python2.7/site-packages:$PYTHONPATH
+    cd losoto && python setup.py install --prefix=/opt/losoto
+
+	#python -m pip install --upgrade pip
+	python -m pip install --upgrade setuptools
+	python -m pip install --upgrade numpy astropy scipy matplotlib numexpr tables
+    python -m pip install --upgrade nose cython numpy SharedArray Polygon2 pyFFTW astropy deap ipdb pyephem numexpr astro-kittens meqtrees-cattery owlcat astLib psutil py-cpuinfo tables prettytable pybind11 pyfits
+
+	# FACTOR requisites.
+	python -m pip install pyparsing
+
+    #
+    # Install killMS
+    #
+    mkdir -p $INSTALLDIR
+    cd $INSTALLDIR && git clone --single-branch -b MergeDDFMAster https://github.com/cyriltasse/killMS.git
+    #cd $INSTALLDIR && git clone --single-branch -b MergeDDFMAster git@github.com:cyriltasse/killMS.git 
+    cd killMS
+    patch $INSTALLDIR/killMS/Predict/Makefile $PATCH_KILLMS_MAKEFILE_PREDICT
+    patch $INSTALLDIR/killMS/Array/Dot/Makefile $PATCH_KILLMS_MAKEFILE_ARRAY
+    patch $INSTALLDIR/killMS/Gridder/Makefile $PATCH_KILLMS_MAKEFILE_GRIDDER
+    cd $INSTALLDIR/killMS/Predict && make
+    cd $INSTALLDIR/killMS/Array/Dot && make
+    cd $INSTALLDIR/killMS/Gridder && make
+
+    #
+    # Install DDFacet
+    #
+    mkdir -p $INSTALLDIR/DDFacet
+    cd $INSTALLDIR/DDFacet && git clone --single-branch -b ddf_pipeline_fixes_may18 https://github.com/cyriltasse/DDFacet.git src   
+    #cd $INSTALLDIR/DDFacet && git clone --single-branch -b ddf_pipeline_fixes_may18 git@github.com:cyriltasse/DDFacet.git src   
+    cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
+
+    #
+    # Install ddf-pipeline
+    #
+    cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
+
+	echo "Installation directory contents:"
+	ls ${INSTALLDIR}
+
+    rm -rf ${INSTALLDIR}/lofar/src
+    rm -rf ${INSTALLDIR}/lofar/build/gnu_opt
+    rm -rf ${INSTALLDIR}/casacore/src
+	rm -rf ${INSTALLDIR}/casarest/src
+    apt clean
+    apt autoclean
+    apt autoremove
+
+
+	#
+	# init-lofar
+	#
+    echo source /usr/bin/init.sh >> $HOME/.bashrc
+	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
+	echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
+
+%runscript
+    . $INSTALLDIR/init.sh
