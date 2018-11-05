@@ -1,18 +1,36 @@
 Bootstrap: docker
 From: ubuntu:18.04
 
+%environment
+    . /usr/bin/init.sh
+
 %post
 	# General environment settings.
 	export PYTHON_VERSION=2.7
 
+	apt -y update
 	apt -y install software-properties-common
 	add-apt-repository -s ppa:kernsuite/kern-4
 	apt-add-repository multiverse
 	apt -y update
-	apt -y install patch sudo
+	apt -y install patch sudo git subversion less vim
 	apt -y install python-pip
 	# Install the LOFAR software.
-	apt -y install lofar losoto lsmtool rmextract dysco factor python-gsm
+	apt -y install casacore-* dysco dyscostma-dev python-casacore lofar lofar-dev factor python-gsm prefactor factor
+    
+    mkdir -p /opt/lsmtool/lib/python2.7/site-packages
+    # Install LSMTool
+    cd /opt/lsmtool
+    git clone https://github.com/darafferty/LSMTool.git
+    export PYTHONPATH=/opt/lsmtool/lib/python2.7/site-packages:$PYTHONPATH
+    cd LSMTool && git checkout tags/v1.1.0 && python setup.py install --prefix=/opt/lsmtool
+
+    mkdir -p /opt/losoto/lib/python2.7/site-packages
+    # Install LSMTool
+    cd /opt/losoto
+    git clone https://github.com/revoltek/losoto.git
+    export PYTHONPATH=/opt/losoto/lib/python2.7/site-packages:$PYTHONPATH
+    cd losoto && python setup.py install --prefix=/opt/losoto
 
 	python -m pip install --upgrade pip
 	python -m pip install --upgrade setuptools
@@ -20,3 +38,10 @@ From: ubuntu:18.04
 
 	# FACTOR requisites.
 	python -m pip install pyparsing
+
+    echo source /usr/bin/init.sh >> $HOME/.bashrc
+    echo export PYTHONPATH=/usr/lib/python2.7/dist-packages/lofar:/usr/lib/python2.7/dist-packages/lofarpipe/recipes/plugins/:/usr/lib/prefactor/plugins:/usr/lib/prefactor/scripts:/opt/lsmtool/lib/python2.7/site-packages:/opt/losoto/lib/python2.7/site-packages:\$PYTHONPATH > /usr/bin/init.sh
+    echo export PATH=/opt/lsmtool/bin:/opt/losoto/bin:\$PATH >> /usr/bin/init.sh
+
+%runscript
+    . /usr/bin/init.sh
