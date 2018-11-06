@@ -11,7 +11,6 @@ From: ubuntu:18.04
 	export INSTALLDIR=/opt/ddf
 
 	# Path to where the patch for python-casacore's setup is stored.
-	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
     export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
     export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
     export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
@@ -32,20 +31,6 @@ From: ubuntu:18.04
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone https://github.com/tikk3r/lofar-grid-hpccloud.git
     mv $INSTALLDIR/lofar-grid-hpccloud/patches/* $INSTALLDIR/patches
-    
-    mkdir -p /opt/lsmtool/lib/python2.7/site-packages
-    # Install LSMTool
-    cd /opt/lsmtool
-    git clone https://github.com/darafferty/LSMTool.git
-    export PYTHONPATH=/opt/lsmtool/lib/python2.7/site-packages:$PYTHONPATH
-    cd LSMTool && git checkout tags/v1.1.0 && python setup.py install --prefix=/opt/lsmtool
-
-    mkdir -p /opt/losoto/lib/python2.7/site-packages
-    # Install LSMTool
-    cd /opt/losoto
-    git clone https://github.com/revoltek/losoto.git
-    export PYTHONPATH=/opt/losoto/lib/python2.7/site-packages:$PYTHONPATH
-    cd losoto && python setup.py install --prefix=/opt/losoto
 
 	#python -m pip install --upgrade pip
 	python -m pip install --upgrade setuptools
@@ -92,7 +77,6 @@ From: ubuntu:18.04
     apt clean
     apt autoclean
     apt autoremove
-
 
 	#
 	# init-lofar
