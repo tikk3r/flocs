@@ -7,23 +7,24 @@ From: ubuntu:18.04
 %post
 	# General environment settings.
 	export PYTHON_VERSION=2.7
+    export WSCLEAN_VERSION=2.6
 
 	apt -y update
 	apt -y install software-properties-common
 	add-apt-repository -s ppa:kernsuite/kern-4
 	apt-add-repository multiverse
 	apt -y update
-	apt -y install patch sudo git subversion less vim
+	apt -y install patch sudo git subversion less vim wget cmake
 	apt -y install python-pip
 	# Install the LOFAR software.
-	apt -y install casacore-* dysco dyscostma-dev python-casacore lofar lofar-dev factor python-gsm prefactor factor
+	apt -y install casacore-* hdf5-tools libhdf5-100 libhdf5-dev libboost-all-dev libcfitsio5 libcfitsio-bin libcfitsio-dev libfftw3-bin libfftw3-dev libgsl23 libgsl-dev dysco dyscostma-dev python-casacore lofar lofar-dev factor python-gsm prefactor factor
     
     mkdir -p /opt/lsmtool/lib/python2.7/site-packages
     # Install LSMTool
     cd /opt/lsmtool
     git clone https://github.com/darafferty/LSMTool.git
     export PYTHONPATH=/opt/lsmtool/lib/python2.7/site-packages:$PYTHONPATH
-    cd LSMTool && git checkout tags/v1.1.0 && python setup.py install --prefix=/opt/lsmtool
+    cd LSMTool && python setup.py install --prefix=/opt/lsmtool
 
     mkdir -p /opt/losoto/lib/python2.7/site-packages
     # Install LSMTool
@@ -31,6 +32,9 @@ From: ubuntu:18.04
     git clone https://github.com/revoltek/losoto.git
     export PYTHONPATH=/opt/losoto/lib/python2.7/site-packages:$PYTHONPATH
     cd losoto && python setup.py install --prefix=/opt/losoto
+
+    mkdir /opt/wsclean
+    cd /opt/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION} && ls && mkdir build && cd build && ls && cmake .. -DCMAKE_PREFIX_PATH="/usr/lib" -DCMAKE_INSTALL_PREFIX=/opt/wsclean && make -j ${J} && make install && rm -rf wsclean-${WSCLEAN_VERSION}.tar.bz2
 
 	python -m pip install --upgrade pip
 	python -m pip install --upgrade setuptools
@@ -41,7 +45,8 @@ From: ubuntu:18.04
 
     echo source /usr/bin/init.sh >> $HOME/.bashrc
     echo export PYTHONPATH=/usr/lib/python2.7/dist-packages/lofar:/usr/lib/python2.7/dist-packages/lofarpipe/recipes/plugins/:/usr/lib/prefactor/plugins:/usr/lib/prefactor/scripts:/opt/lsmtool/lib/python2.7/site-packages:/opt/losoto/lib/python2.7/site-packages:\$PYTHONPATH > /usr/bin/init.sh
-    echo export PATH=/opt/lsmtool/bin:/opt/losoto/bin:\$PATH >> /usr/bin/init.sh
+    echo export PATH=/opt/lsmtool/bin:/opt/losoto/bin:/opt/wsclean/bin:\$PATH >> /usr/bin/init.sh
+    echo export LD_LIBRARY_PATH=/opt/wsclean/lib:\$LD_LIBRARY_PATH >> /usr/bin/init.sh
 
 %runscript
     . /usr/bin/init.sh

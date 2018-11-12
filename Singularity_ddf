@@ -6,7 +6,7 @@ Include: yum
 
 
 %environment
-    export INSTALLDIR=/opt/lofar
+    export INSTALLDIR=/opt/ddf
     . $INSTALLDIR/init.sh
 
 %post
@@ -35,6 +35,7 @@ Include: yum
 	export LAPACK_VERSION=3.6.0
 	export OPENBLAS_VERSION=v0.3.2
 	export PYTHON_CASACORE_VERSION=v2.2.1
+	export WCSLIB_VERSION=5.20
 
 	yum -y remove iputils
 	yum -y update
@@ -45,8 +46,10 @@ Include: yum
 	yum -y install arpack-devel blas-devel boost boost-devel boost-python fftw3-devel fftw3-libs python-devel lapack-devel libpng-devel libxml2-devel numpy-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel
 	yum -y install bison flex ncurses tar bzip2 which gettext
 	yum -y install epel-release
+    yum -y install hdf5-devel
 	yum -y install cmake3
 	yum -y install python-pip
+    yum -y groupinstall "Development Tools"
 	yum -y remove numpy
 	pip install --upgrade pip
 	pip install --upgrade setuptools
@@ -58,7 +61,16 @@ Include: yum
 	pip install pyparsing
 
     mkdir -p $INSTALLDIR/patches
-    wget
+    cd $INSTALLDIR && git clone https://github.com/tikk3r/lofar-grid-hpccloud.git
+    mv $INSTALLDIR/lofar-grid-hpccloud/patches/* $INSTALLDIR/patches
+    
+    #
+    # Install make 4
+    #
+    mkdir -p $INSTALLDIR/make
+    cd $INSTALLDIR/make && wget https://ftp.gnu.org/gnu/make/make-4.2.tar.gz && tar xf make-4.2.tar.gz
+    cd make-4.2 && ./configure --prefix=$INSTALLDIR/make && make -j $J && make install
+    export make=$INSTALLDIR/make/bin/make
     
 	#
 	# Install Boost.Python
@@ -72,7 +84,7 @@ Include: yum
 	#
 	mkdir -p $INSTALLDIR/openblas/
 	cd $INSTALLDIR/openblas/ && git clone https://github.com/xianyi/OpenBLAS.git src && cd src && git checkout $OPENBLAS_VERSION
-	cd $INSTALLDIR/openblas/src && make -j $J && make install PREFIX=$INSTALLDIR/openblas
+	cd $INSTALLDIR/openblas/src && $make -j $J && make install PREFIX=$INSTALLDIR/openblas
 	rm -rf $INSTALLDIR/openblas/src
 
 	#
@@ -98,8 +110,8 @@ Include: yum
 	cd ${INSTALLDIR}/cfitsio && wget --retry-connrefused ftp://anonymous@heasarc.gsfc.nasa.gov/software/fitsio/c/cfitsio${CFITSIO_VERSION}.tar.gz
 	cd ${INSTALLDIR}/cfitsio && tar xf cfitsio${CFITSIO_VERSION}.tar.gz
 	cd ${INSTALLDIR}/cfitsio/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/cfitsio/ ../cfitsio
-	cd ${INSTALLDIR}/cfitsio/build && make -j ${J}
-	cd ${INSTALLDIR}/cfitsio/build && make install
+	cd ${INSTALLDIR}/cfitsio/build && $make -j ${J}
+	cd ${INSTALLDIR}/cfitsio/build && $make install
 
 	#
 	# install-wcslib
@@ -110,8 +122,8 @@ Include: yum
 	cd ${INSTALLDIR}/wcslib && tar xf wcslib-*.tar.bz2
 	#cd ${INSTALLDIR} && mkdir wcslib && cd wcslib && svn checkout https://github.com/astropy/astropy/trunk/cextern/wcslib
 	cd ${INSTALLDIR}/wcslib/wcslib* && ./configure --prefix=${INSTALLDIR}/wcslib --with-cfitsiolib=${INSTALLDIR}/cfitsio/lib/ --with-cfitsioinc=${INSTALLDIR}/cfitsio/include/ --without-pgplot
-	cd ${INSTALLDIR}/wcslib/wcslib* && make -j $J
-	cd ${INSTALLDIR}/wcslib/wcslib* && make install
+	cd ${INSTALLDIR}/wcslib/wcslib* && $make -j $J
+	cd ${INSTALLDIR}/wcslib/wcslib* && $make install
 	#yum -y install wcslib wcslib-devel
 
 	#
@@ -124,8 +136,8 @@ Include: yum
 	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost_1_63_0/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost_1_63_0/include ../src/ 
-	cd ${INSTALLDIR}/casacore/build && make -j ${J}
-	cd ${INSTALLDIR}/casacore/build && make install
+	cd ${INSTALLDIR}/casacore/build && $make -j ${J}
+	cd ${INSTALLDIR}/casacore/build && $make install
 
 	#
 	# Install-python-casacore
@@ -149,9 +161,9 @@ Include: yum
     patch $INSTALLDIR/killMS/Predict/Makefile $PATCH_KILLMS_MAKEFILE_PREDICT
     patch $INSTALLDIR/killMS/Array/Dot/Makefile $PATCH_KILLMS_MAKEFILE_ARRAY
     patch $INSTALLDIR/killMS/Gridder/Makefile $PATCH_KILLMS_MAKEFILE_GRIDDER
-    cd $INSTALLDIR/killMS/Predict && make
-    cd $INSTALLDIR/killMS/Array/Dot && make
-    cd $INSTALLDIR/killMS/Gridder && make
+    cd $INSTALLDIR/killMS/Predict && $make
+    cd $INSTALLDIR/killMS/Array/Dot && $make
+    cd $INSTALLDIR/killMS/Gridder && $make
 
     #
     # Install DDFacet
