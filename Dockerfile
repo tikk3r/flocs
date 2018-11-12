@@ -24,21 +24,22 @@ ENV PYTHON_VERSION 2.7
 # versions
 #
 ENV CFITSIO_VERSION 3410
-ENV WCSLIB_VERSION 5.16
+ENV WCSLIB_VERSION 5.20
 ENV CASACORE_VERSION v2.3.0
-#ENV CASAREST_VERSION v1.3.1
-ENV CASAREST_VERSION v1.4.1
+#ENV CASAREST_VERSION v1.4.1
 ENV PYTHON_CASACORE_VERSION v2.1.2
 ENV PYBDSF_VERSION v1.8.12
 ENV LSMTOOL_VERSION v1.2.0
 ENV AOFLAGGER_VERSION v2.8.0
 #ENV LOFAR_VERSION 2_21_4
 #ENV LOFAR_VERSION 2_20_2
-ENV LOFAR_VERSION 2_19_0
-ENV WSCLEAN_VERSION 2.4
+#ENV LOFAR_VERSION 2_19_0
+ENV LOFAR_VERSION 3_2_2
+ENV WSCLEAN_VERSION 2.6
 ENV LOG4CPLUS_VERSION 1.1.x
-ENV GCC_VERSION 4.9.3
-ENV BOOST_VERSION 1.60.0
+#ENV GCC_VERSION 4.9.3
+ENV GCC_VERSION 5.4.0
+ENV BOOST_VERSION 1.63.0
 #ENV HDF5_VERSION 1.10.1
 ENV BLAS_VERSION 0.2.17
 ENV LAPACK_VERSION 3.6.0
@@ -130,13 +131,13 @@ RUN cd ${INSTALLDIR}/casacore/build && make install
 #
 # install-casarest
 #
-RUN mkdir -p ${INSTALLDIR}/casarest/build
-RUN cd ${INSTALLDIR}/casarest && git clone https://github.com/casacore/casarest.git src
-RUN if [ "${CASAREST_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casarest/src && git checkout tags/${CASAREST_VERSION}; fi
+#RUN mkdir -p ${INSTALLDIR}/casarest/build
+#RUN cd ${INSTALLDIR}/casarest && git clone https://github.com/casacore/casarest.git src
+#RUN if [ "${CASAREST_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casarest/src && git checkout tags/${CASAREST_VERSION}; fi
 #RUN cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DHDF5_ROOT_DIR=${INSTALLDIR}/hdf5 -DHDF5_INCLUDE_DIR=${INSTALLDIR}/hdf5/include -DHDF5_LIBRARY=${INSTALLDIR}/hdf5/lib ../src/
-RUN cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio ../src/
-RUN cd ${INSTALLDIR}/casarest/build && make -j ${J}
-RUN cd ${INSTALLDIR}/casarest/build && make install
+#RUN cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio ../src/
+#RUN cd ${INSTALLDIR}/casarest/build && make -j ${J}
+#RUN cd ${INSTALLDIR}/casarest/build && make install
 
 #
 # install-python-casacore
@@ -152,11 +153,11 @@ RUN export PYTHONPATH=${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/
 #
 # install-log4cplus
 #
-RUN mkdir -p ${INSTALLDIR}/log4cplus/build
-RUN cd ${INSTALLDIR}/log4cplus && git clone https://github.com/log4cplus/log4cplus.git -b ${LOG4CPLUS_VERSION} src
-RUN cd ${INSTALLDIR}/log4cplus/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/log4cplus ../src/
-RUN cd ${INSTALLDIR}/log4cplus/build && make -j ${J}
-RUN cd ${INSTALLDIR}/log4cplus/build && make install
+#RUN mkdir -p ${INSTALLDIR}/log4cplus/build
+#RUN cd ${INSTALLDIR}/log4cplus && git clone https://github.com/log4cplus/log4cplus.git -b ${LOG4CPLUS_VERSION} src
+#RUN cd ${INSTALLDIR}/log4cplus/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/log4cplus ../src/
+#RUN cd ${INSTALLDIR}/log4cplus/build && make -j ${J}
+#RUN cd ${INSTALLDIR}/log4cplus/build && make install
 
 
 
@@ -204,7 +205,8 @@ RUN ls ${INSTALLDIR}/lofar
 RUN ls ${INSTALLDIR}/lofar/build/gnu_opt
 RUN if [ "${LOFAR_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/lofar && svn --non-interactive -q co https://svn.astron.nl/LOFAR/trunk src; fi
 RUN if [ "${LOFAR_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/lofar && svn --non-interactive -q co https://svn.astron.nl/LOFAR/tags/LOFAR-Release-${LOFAR_VERSION} src; fi
-RUN cd ${INSTALLDIR}/lofar/build/gnu_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_ROOT_DIR=${INSTALLDIR}/aoflagger/ -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DBDSF_ROOT_DIR=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
+#RUN cd ${INSTALLDIR}/lofar/build/gnu_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_ROOT_DIR=${INSTALLDIR}/aoflagger/ -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DBDSF_ROOT_DIR=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
+RUN cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES="DPPP DP3 StationResponse BBSControl" -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_ROOT_DIR=${INSTALLDIR}/aoflagger/ -DUSE_LOG4CPLUS=OFF -DBDSF_ROOT_DIR=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
 RUN cd ${INSTALLDIR}/lofar/build/gnu_opt && make install
 
 #
