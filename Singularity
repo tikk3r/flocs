@@ -19,35 +19,30 @@ Include: yum
 	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
 	export PATCH_LOFAR=$INSTALLDIR/lofar/lofar.patch
 	
-	# Settings relevant to the installed software.
-	export AOFLAGGER_VERSION=latest
-	export ARMADILLO_VERSION=8.600.0
-	export BLAS_VERSION=0.2.17
-	export BOOST_DOT_VERSION=1.63.0
-	export BOOST_VERSION=1_63_0
-	export CASACORE_VERSION=v2.4.1
-	# Leave at latest, release versions crash for some reason.
-	export CASAREST_VERSION=latest
-	export CFITSIO_VERSION=3410
-	export DYSCO_VERSION=v1.0.1
-	export FFTW_VERSION=3.3.4
-	export GLS_VERSION=1.15
-	export HDF5_VERSION=1.10.1
-	export LAPACK_VERSION=3.6.0
-	export LOFAR_VERSION=3_2_2
-	export LOG4CPLUS_VERSION=1.1.x
-	export LOSOTO_VERSION=2.0
-	export LSMTOOL_VERSION=v1.2.0
-	export OPENBLAS_VERSION=v0.3.2
-	export PYBDSF_VERSION=v1.8.12
-	export PYTHON_CASACORE_VERSION=v2.2.1
-	export RMEXTRACT_VERSION=v0.1
-	# Do not change, Armadillo wants this version of SuperLU.
-	export SUPERLU_VERSION=v5.2.1
-	export UNITTEST2_VERSION=1.1.0
-	export XMLRUNNER_VERSION=1.7.7
-	export WSCLEAN_VERSION=latest
-	export WCSLIB_VERSION=5.20
+    # Settings relevant to the installed software.
+    #export AOFLAGGER_VERSION=latest
+    export AOFLAGGER_VERSION=v2.12.1
+    export ARMADILLO_VERSION=8.600.0
+    export BLAS_VERSION=0.2.17
+    export BOOST_DOT_VERSION=1.63.0
+    export BOOST_VERSION=1_63_0
+    export CASACORE_VERSION=v2.4.1
+    # Leave at latest, release versions crash for some reason.
+    export CASAREST_VERSION=latest
+    export CFITSIO_VERSION=3410
+    export DYSCO_VERSION=v1.0.1
+    export HDF5_VERSION=1.10.4
+    export LAPACK_VERSION=3.6.0
+    #export LOFAR_VERSION=3_1_4
+    export LOFAR_VERSION=3_2_2
+    export LOSOTO_VERSION=2.0
+    export OPENBLAS_VERSION=v0.3.2
+    export PYBDSF_VERSION=v1.8.12
+    export PYTHON_CASACORE_VERSION=v2.2.1
+    # Do not change, Armadillo wants this version of SuperLU.
+    export SUPERLU_VERSION=v5.2.1
+    export WSCLEAN_VERSION=latest
+    export WCSLIB_VERSION=5.20
 
 	yum -y remove iputils
 	yum -y update
@@ -73,8 +68,18 @@ Include: yum
 
 	# FACTOR requisites.
 	pip install pyparsing
-    	export CC=`which gcc`
+    export CC=`which gcc`
 	export CXX=`which g++`
+    export make=$INSTALLDIR/make/bin/make
+
+    mkdir -p $INSTALLDIR
+    #
+    # Install GNU Make 4
+    #
+    mkdir -p $INSTALLDIR/make && cd $INSTALLDIR/make
+    wget http://ftp.gnu.org/gnu/make/make-4.2.tar.gz && tar xf make-4.2.tar.gz && cd make-4.2
+    ./configure --prefix=$INSTALLDIR/make && make -j $J && make install
+
 	#
 	# Install Boost.Python
 	#
@@ -87,7 +92,7 @@ Include: yum
 	#
 	mkdir -p $INSTALLDIR/openblas/
 	cd $INSTALLDIR/openblas/ && git clone https://github.com/xianyi/OpenBLAS.git src && cd src && git checkout $OPENBLAS_VERSION
-	cd $INSTALLDIR/openblas/src && make -j $J && make install PREFIX=$INSTALLDIR/openblas
+	cd $INSTALLDIR/openblas/src && $make -j $J && $make install PREFIX=$INSTALLDIR/openblas
 	rm -rf $INSTALLDIR/openblas/src
 
 	#
@@ -95,7 +100,7 @@ Include: yum
 	#
 	mkdir -p $INSTALLDIR/superlu/build
 	cd $INSTALLDIR/superlu/ && git clone https://github.com/xiaoyeli/superlu.git src && cd src && git checkout $SUPERLU_VERSION
-	cd $INSTALLDIR/superlu/build && cmake ../src -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/superlu -DUSE_XSDK_DEFAULTS=TRUE -Denable_blaslib=OFF -DBLAS_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so && make -j $j && make install
+	cd $INSTALLDIR/superlu/build && cmake ../src -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/superlu -DUSE_XSDK_DEFAULTS=TRUE -Denable_blaslib=OFF -DBLAS_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so && $make -j $j && $make install
 	rm -rf $INSTALLDIR/superlu/src
 
 	#
@@ -103,7 +108,7 @@ Include: yum
 	#
 	mkdir -p $INSTALLDIR/armadillo/
 	cd $INSTALLDIR/armadillo && wget http://sourceforge.net/projects/arma/files/armadillo-$ARMADILLO_VERSION.tar.xz && tar xf armadillo-$ARMADILLO_VERSION.tar.xz && rm armadillo-$ARMADILLO_VERSION.tar.xz
-	cd $INSTALLDIR/armadillo/armadillo-$ARMADILLO_VERSION && ./configure && cmake . -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/armadillo -Dopenblas_LIBRARY:FILEPATH=$INSTALLDIR/openblas/lib/libopenblas.so  -DSuperLU_INCLUDE_DIR:PATH=$INSTALLDIR/superlu/include -DSuperLU_LIBRARY:FILEPATH=$INSTALLDIR/superlu/lib64/libsuperlu.so && make -j $J && make install
+	cd $INSTALLDIR/armadillo/armadillo-$ARMADILLO_VERSION && ./configure && cmake . -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/armadillo -Dopenblas_LIBRARY:FILEPATH=$INSTALLDIR/openblas/lib/libopenblas.so  -DSuperLU_INCLUDE_DIR:PATH=$INSTALLDIR/superlu/include -DSuperLU_LIBRARY:FILEPATH=$INSTALLDIR/superlu/lib64/libsuperlu.so && $make -j $J && $make install
 
 
 	#
@@ -113,8 +118,8 @@ Include: yum
 	cd ${INSTALLDIR}/cfitsio && wget --retry-connrefused ftp://anonymous@heasarc.gsfc.nasa.gov/software/fitsio/c/cfitsio${CFITSIO_VERSION}.tar.gz
 	cd ${INSTALLDIR}/cfitsio && tar xf cfitsio${CFITSIO_VERSION}.tar.gz
 	cd ${INSTALLDIR}/cfitsio/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/cfitsio/ ../cfitsio
-	cd ${INSTALLDIR}/cfitsio/build && make -j ${J}
-	cd ${INSTALLDIR}/cfitsio/build && make install
+	cd ${INSTALLDIR}/cfitsio/build && $make -j ${J}
+	cd ${INSTALLDIR}/cfitsio/build && $make install
 
 	#
 	# install-wcslib
@@ -125,8 +130,8 @@ Include: yum
 	cd ${INSTALLDIR}/wcslib && tar xf wcslib-*.tar.bz2
 	#cd ${INSTALLDIR} && mkdir wcslib && cd wcslib && svn checkout https://github.com/astropy/astropy/trunk/cextern/wcslib
 	cd ${INSTALLDIR}/wcslib/wcslib* && ./configure --prefix=${INSTALLDIR}/wcslib --with-cfitsiolib=${INSTALLDIR}/cfitsio/lib/ --with-cfitsioinc=${INSTALLDIR}/cfitsio/include/ --without-pgplot
-	cd ${INSTALLDIR}/wcslib/wcslib* && make -j $J
-	cd ${INSTALLDIR}/wcslib/wcslib* && make install
+	cd ${INSTALLDIR}/wcslib/wcslib* && $make -j $J
+	cd ${INSTALLDIR}/wcslib/wcslib* && $make install
 	#yum -y install wcslib wcslib-devel
 
 	#
@@ -136,8 +141,8 @@ Include: yum
 	#cd ${INSTALLDIR}/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION%.*}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
 	#cd ${INSTALLDIR}/hdf5 && tar xf hdf5*.tar.gz
 	#cd ${INSTALLDIR}/hdf5/hdf5*/ && ./configure --prefix=${INSTALLDIR}/hdf5 --enable-fortran --enable-threadsafe --enable-cxx --with-pthread --enable-linux-lfs --enable-unsupported
-	#cd ${INSTALLDIR}/hdf5/hdf5*/ && make -j ${J}
-	#cd ${INSTALLDIR}/hdf5/hdf5*/ && make install
+	#cd ${INSTALLDIR}/hdf5/hdf5*/ && $make -j ${J}
+	#cd ${INSTALLDIR}/hdf5/hdf5*/ && $make install
 
 	#
 	# Install CASAcore
@@ -149,18 +154,19 @@ Include: yum
 	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include ../src/ 
-	cd ${INSTALLDIR}/casacore/build && make -j ${J}
-	cd ${INSTALLDIR}/casacore/build && make install
+	cd ${INSTALLDIR}/casacore/build && $make -j ${J}
+	cd ${INSTALLDIR}/casacore/build && $make install
 
 	#
 	# Install CASArest
 	#
-	mkdir -p ${INSTALLDIR}/casarest/build
-	cd ${INSTALLDIR}/casarest && git clone https://github.com/casacore/casarest.git src
-	if [ "${CASAREST_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casarest/src && git checkout tags/${CASAREST_VERSION}; fi
-	cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=$INSTALLDIR/cfitsio -DCfitsIO_DIR=$INSTALLDIR/cfitsio -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include ../src/
-	cd ${INSTALLDIR}/casarest/build && make -j ${J}
-	cd ${INSTALLDIR}/casarest/build && make install
+	#mkdir -p ${INSTALLDIR}/casarest/build
+	#cd ${INSTALLDIR}/casarest && git clone https://github.com/casacore/casarest.git src
+	#if [ "${CASAREST_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casarest/src && git checkout tags/${CASAREST_VERSION}; fi
+	#cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=$INSTALLDIR/cfitsio -DCfitsIO_DIR=$INSTALLDIR/cfitsio -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include ../src/
+	#cd ${INSTALLDIR}/casarest/build && $make -j ${J}
+	#cd ${INSTALLDIR}/casarest/build && $make install
+    
 
 	#
 	# install-python-casacore
@@ -168,7 +174,7 @@ Include: yum
 	# Finding libraries is broken, patch the setup to include the previously installed boost and casacore libraries.
 	export PYTHON_VERSION=2.7
 	mkdir ${INSTALLDIR}/python-casacore
-	cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore && wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/python_casacore_setup_patch.patch
+	cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore && wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/patches/python_casacore_setup_patch.patch
 	if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
 	cd ${INSTALLDIR}/python-casacore/python-casacore && patch setup.py $PYTHON_CASACORE_PATCH && ./setup.py build_ext -I${INSTALLDIR}/wcslib/include:${INSTALLDIR}/casacore/include/:${INSTALLDIR}/cfitsio/include:${INSTALLDIR}/boost/include -L${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/:${INSTALLDIR}/boost/lib:/usr/lib64/
 	mkdir -p ${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages/
@@ -180,7 +186,7 @@ Include: yum
 	#
 	mkdir -p $INSTALLDIR/dysco/build
 	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
-	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ../src && make -j $J && make install
+	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ../src && $make -j $J && $make install
 
 	#
 	# install-log4cplus
@@ -190,8 +196,8 @@ Include: yum
 	#if [ "${LOG4CPLUS_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone --recursive https://github.com/log4cplus/log4cplus.git src && cd src && git checkout ${LOG4CPLUS_VERSION}; fi
 	if [ "${LOG4CPLUS_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone https://github.com/log4cplus/log4cplus.git src && cd src && git checkout ${LOG4CPLUS_VERSION} && git submodule update --init; fi
 	cd ${INSTALLDIR}/log4cplus/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/log4cplus ../src/
-	cd ${INSTALLDIR}/log4cplus/build && make -j ${J}
-	cd ${INSTALLDIR}/log4cplus/build && make install
+	cd ${INSTALLDIR}/log4cplus/build && $make -j ${J}
+	cd ${INSTALLDIR}/log4cplus/build && $make install
 
 	#
 	# install-aoflagger
@@ -200,8 +206,8 @@ Include: yum
 	if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger; fi
 	if [ "${AOFLAGGER_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger && git checkout tags/${AOFLAGGER_VERSION}; fi
 	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DBUILD_SHARED_LIBS=ON -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_ROOT=$INSTALLDIR/boost/ -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBLAS_atlas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DPORTABLE=True ../aoflagger
-	cd ${INSTALLDIR}/aoflagger/build && make -j ${J}
-	cd ${INSTALLDIR}/aoflagger/build && make install
+	cd ${INSTALLDIR}/aoflagger/build && $make -j ${J}
+	cd ${INSTALLDIR}/aoflagger/build && $make install
 
 	#
 	# install-pybdsf
@@ -224,20 +230,11 @@ Include: yum
 	if [ "${LOFAR_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/trunk src; fi
 	if [ "${LOFAR_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/tags/LOFAR-Release-${LOFAR_VERSION} src; fi
 	cd $INSTALLDIR/lofar && svn update --depth=infinity $INSTALLDIR/lofar/src/CMake
-	wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/lofar.patch
+	wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/patches/lofar.patch
 	patch $INSTALLDIR/lofar/src/CMake/variants/GNUCXX11.cmake $PATCH_LOFAR
-	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DARMADILLO_LIBRARY=$INSTALLDIR/armadillo/lib64/libarmadillo.so -DARMADILLO_INCLUDE_DIR=$INSTALLDIR/armadillo/include -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_LIBRARY=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DAOFLAGGER_LIBRARY_DIR=${INSTALLDIR}/aoflagger/lib -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ${INSTALLDIR}/lofar/src/
-	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && make -j $J && make install
-
-	#
-	# Install DP3
-	#
-	#mkdir -p $INSTALLDIR/dppp
-	#cd $INSTALLDIR/dppp && git clone https://github.com/lofar-astron/DP3.git src
-	#mkdir build && cd build
-	#export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/cfitsio/:$INSTALLDIR/dysco:$INSTALLDIR/blas/$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$INSTALLDIR/lofar
-	#export LD_LIBRARY_PATH=$INSTALLDIR/superlu:$LD_LIBRARY_PATH
-	#cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dppp ../src && make -j $J && make install
+	#cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DARMADILLO_LIBRARY=$INSTALLDIR/armadillo/lib64/libarmadillo.so -DARMADILLO_INCLUDE_DIR=$INSTALLDIR/armadillo/include -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_LIBRARY=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DAOFLAGGER_LIBRARY_DIR=${INSTALLDIR}/aoflagger/lib -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ${INSTALLDIR}/lofar/src/
+	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES="DPPP DP3 StationResponse ParmDB pyparmdb" -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DARMADILLO_LIBRARY=$INSTALLDIR/armadillo/lib64/libarmadillo.so -DARMADILLO_INCLUDE_DIR=$INSTALLDIR/armadillo/include -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/ -DAOFLAGGER_LIBRARY=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DAOFLAGGER_LIBRARY_DIR=${INSTALLDIR}/aoflagger/lib -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ${INSTALLDIR}/lofar/src/
+	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && $make -j $J && $make install
 
 	#
 	# install-RMextract
@@ -280,7 +277,7 @@ Include: yum
 	if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
 	if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && mkdir wsclean-latest && wget https://sourceforge.net/projects/wsclean/files/latest/download -O wsclean-latest.tar.bz2 && tar -xjf wsclean-latest.tar.bz2 -C wsclean-latest --strip=1; fi
 	mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH=$INSTALLDIR/lofar -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DCFITSIO_LIBRARY=$INSTALLDIR/cfitsio/lib/libcfitsio.so -DCFITSIO_INCLUDE_DIR=$INSTALLDIR/cfitsio/include -DPORTABLE=True ../wsclean-$WSCLEAN_VERSION
-	make -j $J && make install
+	$make -j $J && $make install
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
@@ -299,7 +296,6 @@ Include: yum
 	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/losoto/lib/python2.7/site-packages:\$INSTALLDIR/lsmtool/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib64/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/::\$PYTHONPATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
-	#echo export PATH=\$INSTALLDIR/dppp/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
