@@ -5,7 +5,7 @@
      user_libdirs = args.library_dirs.split(':')
      # Append default search path (not a complete list)
 -    libdirs = user_libdirs+[os.path.join(sys.prefix,'lib'),'/usr/local/lib', '/usr/lib','/usr/lib/x86_64-linux-gnu']
-+    libdirs = user_libdirs+[os.path.join(sys.prefix,'lib'),'/usr/local/lib', '/usr/lib','/usr/lib/x86_64-linux-gnu', os.path.expandvars('$INSTALLDIR/casacore/lib'), os.path.expandvars('$INSTALLDIR/boost/lib')]
++    libdirs = user_libdirs+[os.path.join(sys.prefix,'lib'),'/usr/local/lib', '/usr/lib','/usr/lib64','/usr/lib/x86_64-linux-gnu', os.path.expandvars('$INSTALLDIR/casacore/lib'), os.path.expandvars('$INSTALLDIR/boost/lib')]
      compiler = ccompiler.new_compiler()
      return compiler.find_library_file(libdirs, libname)
  
