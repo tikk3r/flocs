@@ -19,30 +19,30 @@ Include: yum
 	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
 	export PATCH_LOFAR=$INSTALLDIR/lofar/lofar.patch
 	
-    # Settings relevant to the installed software.
-    #export AOFLAGGER_VERSION=latest
-    export AOFLAGGER_VERSION=v2.12.1
-    export ARMADILLO_VERSION=8.600.0
-    export BLAS_VERSION=0.2.17
-    export BOOST_DOT_VERSION=1.63.0
-    export BOOST_VERSION=1_63_0
-    export CASACORE_VERSION=v2.4.1
-    # Leave at latest, release versions crash for some reason.
-    export CASAREST_VERSION=latest
-    export CFITSIO_VERSION=3410
-    export DYSCO_VERSION=v1.0.1
-    export HDF5_VERSION=1.10.4
-    export LAPACK_VERSION=3.6.0
-    #export LOFAR_VERSION=3_1_4
-    export LOFAR_VERSION=3_2_2
-    export LOSOTO_VERSION=2.0
-    export OPENBLAS_VERSION=v0.3.2
-    export PYBDSF_VERSION=v1.8.12
-    export PYTHON_CASACORE_VERSION=v2.2.1
-    # Do not change, Armadillo wants this version of SuperLU.
-    export SUPERLU_VERSION=v5.2.1
-    export WSCLEAN_VERSION=latest
-    export WCSLIB_VERSION=5.20
+	# Settings relevant to the installed software.
+	#export AOFLAGGER_VERSION=latest
+	export AOFLAGGER_VERSION=v2.12.1
+	export ARMADILLO_VERSION=8.600.0
+	export BLAS_VERSION=0.2.17
+	export BOOST_DOT_VERSION=1.63.0
+	export BOOST_VERSION=1_63_0
+	export CASACORE_VERSION=v2.4.1
+	# Leave at latest, release versions crash for some reason.
+	export CASAREST_VERSION=latest
+	export CFITSIO_VERSION=3410
+	export DYSCO_VERSION=v1.0.1
+	export HDF5_VERSION=1.10.4
+	export LAPACK_VERSION=3.6.0
+	#export LOFAR_VERSION=3_1_4
+	export LOFAR_VERSION=3_2_2
+	export LOSOTO_VERSION=2.0
+	export OPENBLAS_VERSION=v0.3.2
+	export PYBDSF_VERSION=v1.8.12
+	export PYTHON_CASACORE_VERSION=v2.2.1
+	# Do not change, Armadillo wants this version of SuperLU.
+	export SUPERLU_VERSION=v5.2.1
+	export WSCLEAN_VERSION=latest
+	export WCSLIB_VERSION=5.20
 
 	yum -y remove iputils
 	yum -y update
@@ -72,13 +72,13 @@ Include: yum
 	export CXX=`which g++`
     export make=$INSTALLDIR/make/bin/make
 
-    mkdir -p $INSTALLDIR
-    #
-    # Install GNU Make 4
-    #
-    mkdir -p $INSTALLDIR/make && cd $INSTALLDIR/make
-    wget http://ftp.gnu.org/gnu/make/make-4.2.tar.gz && tar xf make-4.2.tar.gz && cd make-4.2
-    ./configure --prefix=$INSTALLDIR/make && make -j $J && make install
+	mkdir -p $INSTALLDIR
+	#
+	# Install GNU Make 4
+	#
+	mkdir -p $INSTALLDIR/make && cd $INSTALLDIR/make
+	wget http://ftp.gnu.org/gnu/make/make-4.2.tar.gz && tar xf make-4.2.tar.gz && cd make-4.2
+	./configure --prefix=$INSTALLDIR/make && make -j $J && make install
 
 	#
 	# Install Boost.Python
@@ -189,17 +189,6 @@ Include: yum
 	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ../src && $make -j $J && $make install
 
 	#
-	# install-log4cplus
-	#
-	mkdir -p ${INSTALLDIR}/log4cplus/build
-	if [ "${LOG4CPLUS_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone --recursive https://github.com/log4cplus/log4cplus.git src; fi
-	#if [ "${LOG4CPLUS_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone --recursive https://github.com/log4cplus/log4cplus.git src && cd src && git checkout ${LOG4CPLUS_VERSION}; fi
-	if [ "${LOG4CPLUS_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/log4cplus && git clone https://github.com/log4cplus/log4cplus.git src && cd src && git checkout ${LOG4CPLUS_VERSION} && git submodule update --init; fi
-	cd ${INSTALLDIR}/log4cplus/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/log4cplus ../src/
-	cd ${INSTALLDIR}/log4cplus/build && $make -j ${J}
-	cd ${INSTALLDIR}/log4cplus/build && $make install
-
-	#
 	# install-aoflagger
 	#
 	mkdir -p ${INSTALLDIR}/aoflagger/build
@@ -233,7 +222,8 @@ Include: yum
 	wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/patches/lofar.patch
 	patch $INSTALLDIR/lofar/src/CMake/variants/GNUCXX11.cmake $PATCH_LOFAR
 	#cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DARMADILLO_LIBRARY=$INSTALLDIR/armadillo/lib64/libarmadillo.so -DARMADILLO_INCLUDE_DIR=$INSTALLDIR/armadillo/include -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_LIBRARY=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DAOFLAGGER_LIBRARY_DIR=${INSTALLDIR}/aoflagger/lib -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ${INSTALLDIR}/lofar/src/
-	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES="DPPP DP3 StationResponse ParmDB pyparmdb" -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DARMADILLO_LIBRARY=$INSTALLDIR/armadillo/lib64/libarmadillo.so -DARMADILLO_INCLUDE_DIR=$INSTALLDIR/armadillo/include -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/ -DAOFLAGGER_LIBRARY=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DAOFLAGGER_LIBRARY_DIR=${INSTALLDIR}/aoflagger/lib -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ${INSTALLDIR}/lofar/src/
+	export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib
+	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES="DPPP DP3 StationResponse ParmDB pyparmdb" -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
 	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && $make -j $J && $make install
 
 	#
