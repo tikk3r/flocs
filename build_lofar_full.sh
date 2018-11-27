@@ -5,9 +5,8 @@ export PYTHON_VERSION=2.7
 export PYTHON_VERSION_NODOT=27
 
 # General compile and build settings.
-export make=/net/lofar1/data1/sweijen/software/make/bin/make
-export cmake=/net/lofar1/data1/sweijen/software/cmake/bin/cmake
-module load gcc/8.1.0
+export make=`which make`
+export cmake=`which cmake`
 export CC=`which gcc`
 export CXX=`which g++`
 export CFLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS"
