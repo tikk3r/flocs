@@ -263,7 +263,7 @@ if [ ! -d $INSTALLDIR/lofar ]; then
     export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib
     #cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && $cmake -DCMAKE_CXX_FLAGS=-D_GLIB_USE_CXX_ABI=1 -DBUILD_PACKAGES=Offline -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True -DBUILD_BBSTools=OFF -DBUILD_Imager=OFF ${INSTALLDIR}/lofar/src/
     # Build only the StationResponse library needed for NDPPP.
-    cd $INSTALLDIR/lofar/build/gnucxx11_opt && $cmake -DCMAKE_CXX_FLAGS=-D_GLIB_USE_CXX_ABI=1 -DBUILD_PACKAGES="StationResponse pystationresponse ParmDB pyparmdb Pipeline" -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True -DBUILD_Imager=OFF ${INSTALLDIR}/lofar/src/
+    cd $INSTALLDIR/lofar/build/gnucxx11_opt && $cmake -DCMAKE_CXX_FLAGS=-D_GLIB_USE_CXX_ABI=1 -DBUILD_PACKAGES="MS StationResponse pystationresponse ParmDB pyparmdb Pipeline" -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True -DBUILD_Imager=OFF ${INSTALLDIR}/lofar/src/
     cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && $make -j $J && $make install
     echo Installed LOFAR.
 else
