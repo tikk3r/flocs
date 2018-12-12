@@ -286,15 +286,16 @@ Include: yum
 	#
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 	#echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$INSTALLDIR/losoto/lib/python2.7/site-packages:\$INSTALLDIR/lsmtool/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib64/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/:\$INSTALLDIR/RMextract/lib64/python2.7/site-packages:\$PYTHONPATH  >> $INSTALLDIR/init.sh
+	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$INSTALLDIR/losoto/lib/python2.7/site-packages:\$INSTALLDIR/lsmtool/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib64/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/:\$INSTALLDIR/RMextract/lib64/python2.7/site-packages:\$INSTALLDIR/DPPP/lib64/python2.7/site-packages/:\$PYTHONPATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
+	echo export PATH=\$INSTALLDIR/DPPP/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/lofar/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib/libaoflagger.so:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
+	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib/libaoflagger.so:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
