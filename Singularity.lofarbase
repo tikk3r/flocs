@@ -25,6 +25,7 @@ Include: yum
 	export OPENBLAS_VERSION=v0.3.2
 	# Do not change, Armadillo wants this version of SuperLU.
 	export SUPERLU_VERSION=v5.2.1
+	export WCSLIB_VERSION=5.20
 
 	yum -y remove iputils
 	yum -y update
