@@ -302,3 +302,18 @@ Include: yum
 %runscript
     echo source $INSTALLDIR/init.sh >> $HOME/.bashrc
     . $INSTALLDIR/init.sh
+
+%help
+    This Singularity image contains an install of LOFAR ${LOFAR_VERSION}. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with all software installed as follows:
+
+    * AOFlagger: $INSTALLDIR/aoflagger
+    * Casacore: $INSTALLDIR/casacore
+    * Dysco: $INSTALLDIR/dysco
+    * LOFAR: $INSTALLDIR/lofar
+    * LoSoTo: $INSTALLDIR/losoto
+    * PyBDSF: $INSTALLDIR/pybdsf
+
+    To execute a command, use
+        singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
+    for example:
+        singularity exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
