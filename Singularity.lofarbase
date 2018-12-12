@@ -62,6 +62,7 @@ Include: yum
 	mkdir -p $INSTALLDIR/make && cd $INSTALLDIR/make
 	wget http://ftp.gnu.org/gnu/make/make-4.2.tar.gz && tar xf make-4.2.tar.gz && cd make-4.2
 	./configure --prefix=$INSTALLDIR/make && make -j $J && make install
+	rm -rf $INSTALLDIR/make/make-4.2.tar.gz
 
 	#
 	# Install CMake
@@ -69,6 +70,7 @@ Include: yum
 	mkdir -p $INSTALLDIR/cmake && cd $INSTALLDIR/cmake
 	wget https://github.com/Kitware/CMake/releases/download/v3.13.1/cmake-3.13.1.tar.gz && tar xf cmake-3.13.1.tar.gz && cd cmake-3.13.1
 	./bootstrap --prefix=$INSTALLDIR/cmake -DCMAKE_BUILD_TYPE:STRING=Release && $make -j $J && $make install
+	rm -rf $INSTALLDIR/cmake/cmake-3.13.1.tar.gz
 	
 	#
 	# Install Boost.Python
@@ -76,6 +78,7 @@ Include: yum
 	mkdir -p $INSTALLDIR/boost/src
 	cd $INSTALLDIR && wget https://dl.bintray.com/boostorg/release/${BOOST_DOT_VERSION}/source/boost_${BOOST_VERSION}.tar.gz
 	cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install toolset=gcc cxxflags=-std=c++11 --prefix=$INSTALLDIR/boost --with=all -j $J
+	rm -rf $INSTALLDIR/boost/src $INSTALLDIR/boost_${BOOST_VERSION}.tar.gz
 
 	#
 	# Install OpenBLAS
@@ -99,6 +102,7 @@ Include: yum
 	mkdir -p $INSTALLDIR/armadillo/
 	cd $INSTALLDIR/armadillo && wget http://sourceforge.net/projects/arma/files/armadillo-$ARMADILLO_VERSION.tar.xz && tar xf armadillo-$ARMADILLO_VERSION.tar.xz && rm armadillo-$ARMADILLO_VERSION.tar.xz
 	cd $INSTALLDIR/armadillo/armadillo-$ARMADILLO_VERSION && ./configure && cmake . -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/armadillo -Dopenblas_LIBRARY:FILEPATH=$INSTALLDIR/openblas/lib/libopenblas.so  -DSuperLU_INCLUDE_DIR:PATH=$INSTALLDIR/superlu/include -DSuperLU_LIBRARY:FILEPATH=$INSTALLDIR/superlu/lib64/libsuperlu.so && $make -j $J && $make install
+	rm -rf $INSTALLDIR/armadillo/armadillo-$ARMADILLO_VERSION.tar.xz
 
 
 	#
@@ -110,6 +114,7 @@ Include: yum
 	cd ${INSTALLDIR}/cfitsio/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/cfitsio/ ../cfitsio
 	cd ${INSTALLDIR}/cfitsio/build && $make -j ${J}
 	cd ${INSTALLDIR}/cfitsio/build && $make install
+	rm -rf $INSTALLDIR/cfitsio/cfitsio${CFITSIO_VERSION}.tar.gz
 
 	#
 	# install-wcslib
@@ -122,7 +127,7 @@ Include: yum
 	cd ${INSTALLDIR}/wcslib/wcslib* && ./configure --prefix=${INSTALLDIR}/wcslib --with-cfitsiolib=${INSTALLDIR}/cfitsio/lib/ --with-cfitsioinc=${INSTALLDIR}/cfitsio/include/ --without-pgplot
 	cd ${INSTALLDIR}/wcslib/wcslib* && $make -j $J
 	cd ${INSTALLDIR}/wcslib/wcslib* && $make install
-	#yum -y install wcslib wcslib-devel
+	rm -rf $INSTALLDIR/wcslib/wcslib-*.tar.bz2
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
