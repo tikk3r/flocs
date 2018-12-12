@@ -1,3 +1,5 @@
+[![https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg](https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg)](https://singularity-hub.org/collections/1999)
+
 # lofar-grid-hpccloud
 
 This repository hold resources for deploying the LOFAR software and related tools through a native install, Singularity images or for use on the HPC Cloud.
