@@ -40,6 +40,7 @@ Include: yum
 	#yum-config-manager --enable epel
 	#yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	yum -y install hdf5-devel
+	#wget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | pythonwget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | python
 	yum -y install python-pip
 	yum -y remove numpy
 	yum -y group install "Development Tools"
@@ -62,6 +63,14 @@ Include: yum
 	wget http://ftp.gnu.org/gnu/make/make-4.2.tar.gz && tar xf make-4.2.tar.gz && cd make-4.2
 	./configure --prefix=$INSTALLDIR/make && make -j $J && make install
 	rm -rf $INSTALLDIR/make/make-4.2.tar.gz
+
+	#
+	# Install CMake
+	#
+	mkdir -p $INSTALLDIR/cmake && cd $INSTALLDIR/cmake
+	wget https://github.com/Kitware/CMake/releases/download/v3.13.1/cmake-3.13.1.tar.gz && tar xf cmake-3.13.1.tar.gz && cd cmake-3.13.1
+	./bootstrap --prefix=$INSTALLDIR/cmake -DCMAKE_BUILD_TYPE:STRING=Release && $make -j $J && $make install
+	rm -rf $INSTALLDIR/cmake/cmake-3.13.1.tar.gz
 	
 	#
 	# Install Boost.Python
