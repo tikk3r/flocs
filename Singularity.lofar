@@ -129,26 +129,9 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	export LD_LIBRARY_PATH=$INSTALLDIR/superlu/lib64:$LD_LIBRARY_PATH
 	export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib
 	export LD_LIBRARY_PATH=$INSTALLDIR/aoflagger/lib:$INSTALLDIR/armadillo/lib64:$INSTALLDIR/boost/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/cfitsio/lib:$INSTALLDIR/dysco/lib:$INSTALLDIR/openblas/lib:$INSTALLDIR/superlu/lib64:$INSTALLDIR/wcslib/lib
-	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="StationResponse ParmDB pyparmdb Pipeline" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
+	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="DPPP DP3 StationResponse ParmDB pyparmdb Pipeline" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
 	$make -j $J
 	$make install
-
-    #
-    # Install DPPP
-    #
-    if [ ! -d $INSTALLDIR/DPPP ]; then
-        echo Installing DPPP...
-        export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:/net/lofar1/data1/sweijen/software/HDF5_1.8:$INSTALLDIR/superlu:$INSTALLDIR/lofar
-        export LD_LIBRARY_PATH=/net/lofar1/data1/sweijen/software/HDF5_1.8/lib:/net/lofar1/data1/sweijen/software/LOFAR/2018_11_05_DP3/superlu/lib64:$LD_LIBRARY_PATH
-        mkdir -p $INSTALLDIR/DPPP/build
-        git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
-        cd $INSTALLDIR/DPPP/build
-        $cmake -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP ../src
-        $make -j $J && $make install
-        echo Installed DPPP.
-    else
-        echo DPPP already installed.
-    fi
 
 	#
 	# install-RMextract
@@ -230,7 +213,6 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
-    * DPPP: $INSTALLDIR/DPPP
     * Dysco: $INSTALLDIR/dysco
     * LOFAR: $INSTALLDIR/lofar
     * LoSoTo: $INSTALLDIR/losoto
