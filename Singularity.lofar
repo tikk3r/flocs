@@ -45,6 +45,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     export CC=`which gcc`
 	export CXX=`which g++`
     export make=$INSTALLDIR/make/bin/make
+    export cmake=$INSTALLDIR/cmake/bin/cmake
 
 	mkdir -p $INSTALLDIR
 
@@ -143,7 +144,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
         mkdir -p $INSTALLDIR/DPPP/build
         git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
         cd $INSTALLDIR/DPPP/build
-        $cmake -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP ../src
+        cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP ../src
         $make -j $J && $make install
         echo Installed DPPP.
     else
