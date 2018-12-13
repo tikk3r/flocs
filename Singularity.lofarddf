@@ -1,0 +1,69 @@
+Bootstrap: shub
+From: shub://tikk3r/lofar-grid-hpccloud:lofar
+
+
+
+%environment
+    export INSTALLDIR=/opt/ddf
+    . $INSTALLDIR/init.sh
+
+%post
+	# General environment settings.
+	export J=2
+	export INSTALLDIR=/opt/lofar/
+	export PYTHON_VERSION=2.7
+
+	# Path to where the patch for python-casacore's setup is stored.
+	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
+    export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
+    export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
+    export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
+
+    mkdir -p $INSTALLDIR/patches
+    cd $INSTALLDIR && git clone https://github.com/tikk3r/lofar-grid-hpccloud.git
+    mv $INSTALLDIR/lofar-grid-hpccloud/patches/* $INSTALLDIR/patches
+    
+    #
+    # Install killMS
+    #
+    mkdir -p $INSTALLDIR
+    #cd $INSTALLDIR && git clone --single-branch -b MergeDDFMAster https://github.com/cyriltasse/killMS.git
+	cd $INSTALLDIR && git clone --single-branch -b lofar-stable https://github.com/saopicc/killMS.git
+    cd killMS
+    patch $INSTALLDIR/killMS/Predict/Makefile $PATCH_KILLMS_MAKEFILE_PREDICT
+    patch $INSTALLDIR/killMS/Array/Dot/Makefile $PATCH_KILLMS_MAKEFILE_ARRAY
+    patch $INSTALLDIR/killMS/Gridder/Makefile $PATCH_KILLMS_MAKEFILE_GRIDDER
+    cd $INSTALLDIR/killMS/Predict && $make
+    cd $INSTALLDIR/killMS/Array/Dot && $make
+    cd $INSTALLDIR/killMS/Gridder && $make
+
+    #
+    # Install DDFacet
+    #
+    export PATH=$INSTALLDIR/casacore/bin:$PATH
+    export PYTHONPATH=$INSTALLDIR/python-casacore/lib/python2.7/site-packages:$INSTALLDIR/python-casacore/lib64/python2.7/site-packages:$PYTHONPATH
+    export LD_LIBRARY_PATH=$INSTALLDIR/casacore/lib:$LD_LIBRARY_PATH
+    mkdir -p $INSTALLDIR/DDFacet
+    #cd $INSTALLDIR/DDFacet && git clone --single-branch -b ddf_pipeline_fixes_may18 https://github.com/cyriltasse/DDFacet.git src
+	cd $INSTALLDIR/DDFacet && git clone --single-branch -b lofar-stable https://github.com/saopicc/DDFacet.git src
+    cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
+
+    #
+    # Install ddf-pipeline
+    #
+    cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
+
+	echo "Installation directory contents:"
+	ls ${INSTALLDIR}
+
+	#
+	# init-lofar
+	#
+	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
+
+    #
+    # entrypoint
+    #
+%runscript
+    echo source $INSTALLDIR/init.sh >> $HOME/.bashrc
+    . $INSTALLDIR/init.sh
