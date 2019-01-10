@@ -139,6 +139,8 @@ Include: yum
 	#
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
+    echo export make=/opt/lofar/make/bin/make >> $INSTALLDIR/init.sh
+    echo export cmake=/opt/lofar/cmake/bin/cmake >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
