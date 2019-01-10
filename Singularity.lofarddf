@@ -27,8 +27,8 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
     # Install killMS
     #
     mkdir -p $INSTALLDIR
-    #cd $INSTALLDIR && git clone --single-branch -b MergeDDFMAster https://github.com/cyriltasse/killMS.git
-	cd $INSTALLDIR && git clone --single-branch -b lofar-stable https://github.com/saopicc/killMS.git
+    cd $INSTALLDIR && git clone --single-branch -b MergeDDFMAster_FixFreqMerge https://github.com/cyriltasse/killMS.git
+	#cd $INSTALLDIR && git clone --single-branch -b lofar-stable https://github.com/saopicc/killMS.git
     cd killMS
     patch $INSTALLDIR/killMS/Predict/Makefile $PATCH_KILLMS_MAKEFILE_PREDICT
     patch $INSTALLDIR/killMS/Array/Dot/Makefile $PATCH_KILLMS_MAKEFILE_ARRAY
@@ -44,22 +44,25 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
     export PYTHONPATH=$INSTALLDIR/python-casacore/lib/python2.7/site-packages:$INSTALLDIR/python-casacore/lib64/python2.7/site-packages:$PYTHONPATH
     export LD_LIBRARY_PATH=$INSTALLDIR/casacore/lib:$LD_LIBRARY_PATH
     mkdir -p $INSTALLDIR/DDFacet
-    #cd $INSTALLDIR/DDFacet && git clone --single-branch -b ddf_pipeline_fixes_may18 https://github.com/cyriltasse/DDFacet.git src
-	cd $INSTALLDIR/DDFacet && git clone --single-branch -b lofar-stable https://github.com/saopicc/DDFacet.git src
+    cd $INSTALLDIR/DDFacet && git clone --single-branch -b ddf_pipeline_fixes_may18 https://github.com/cyriltasse/DDFacet.git src
+	#cd $INSTALLDIR/DDFacet && git clone --single-branch -b lofar-stable https://github.com/saopicc/DDFacet.git src
     cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
 
     #
     # Install ddf-pipeline
     #
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
+    cd $INSTALLDIR/DynSpecMS && git checkout ApplyBeam
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
 
-	#
-	# init-lofar
-	#
-	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
+    #
+    # init-lofar
+    #
+    echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
