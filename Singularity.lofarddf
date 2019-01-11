@@ -4,31 +4,42 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
 
 
 %environment
-    export INSTALLDIR=/opt/ddf
+    export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
 
 %post
 	# General environment settings.
-	export J=2
-	export INSTALLDIR=/opt/lofar/
+	export J=1
+	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
+    export make=/opt/lofar/make/bin/make
+    export cmake=/opt/lofar/cmake/bin/cmake
+    alias make=$make
+    alias cmake=$cmake
 
 	# Path to where the patch for python-casacore's setup is stored.
-	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
     export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
     export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
     export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
 
     mkdir -p $INSTALLDIR/patches
-    cd $INSTALLDIR && git clone https://github.com/tikk3r/lofar-grid-hpccloud.git
+    cd $INSTALLDIR && git clone --single-branch -b stagebuild https://github.com/tikk3r/lofar-grid-hpccloud.git
     mv $INSTALLDIR/lofar-grid-hpccloud/patches/* $INSTALLDIR/patches
+    # Update GCC to enable the use of -std=c++14.
+    yum install -y centos-release-scl
+    yum install -y devtoolset-7-gcc*
+    scl enable devtoolset-7 bash
+    # Order is important here. owlcat tries to install python-casacore, which will fail (and is already in the lofar image anyway). Therefor install its dependencies first, then owlcat, then the rest.
+    export PYTHONPATH=$INSTALLDIR/python-casacore/lib64/python2.7/site-packages:$PYTHONPATH
+    pip install --upgrade future numpy matplotlib pyfits
+    pip install --upgrade owlcat --no-deps
+    pip install --upgrade nose cython numpy SharedArray Polygon2 pyFFTW astropy deap ipdb pyephem numexpr astro-kittens meqtrees-cattery astLib psutil py-cpuinfo tables prettytable pybind11 pyregion sshtunnel PyMySQL
     
     #
     # Install killMS
     #
     mkdir -p $INSTALLDIR
     cd $INSTALLDIR && git clone --single-branch -b MergeDDFMAster_FixFreqMerge https://github.com/cyriltasse/killMS.git
-	#cd $INSTALLDIR && git clone --single-branch -b lofar-stable https://github.com/saopicc/killMS.git
     cd killMS
     patch $INSTALLDIR/killMS/Predict/Makefile $PATCH_KILLMS_MAKEFILE_PREDICT
     patch $INSTALLDIR/killMS/Array/Dot/Makefile $PATCH_KILLMS_MAKEFILE_ARRAY
@@ -45,21 +56,25 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
     export LD_LIBRARY_PATH=$INSTALLDIR/casacore/lib:$LD_LIBRARY_PATH
     mkdir -p $INSTALLDIR/DDFacet
     cd $INSTALLDIR/DDFacet && git clone --single-branch -b ddf_pipeline_fixes_may18 https://github.com/cyriltasse/DDFacet.git src
-	#cd $INSTALLDIR/DDFacet && git clone --single-branch -b lofar-stable https://github.com/saopicc/DDFacet.git src
     cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
+    
+    #   
+    # Install DynSpecMS
+    #   
+    cd $INSTALLDIR && git clone https://github.com/cyriltasse/DynSpecMS.git
+    cd $INSTALLDIR/DynSpecMS && git checkout ApplyBeam
 
     #
     # Install ddf-pipeline
     #
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
-    cd $INSTALLDIR/DynSpecMS && git checkout ApplyBeam
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
 
-    #
-    # init-lofar
-    #
+	#
+	# init-lofar
+	#
     echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
