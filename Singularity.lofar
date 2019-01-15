@@ -18,8 +18,8 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	export PATCH_LOFAR=$INSTALLDIR/lofar/lofar.patch
 	
 	# Settings relevant to the installed software.
-	#export AOFLAGGER_VERSION=latest
-	export AOFLAGGER_VERSION=v2.12.1
+	export AOFLAGGER_VERSION=latest
+	#export AOFLAGGER_VERSION=v2.12.1
 	export ARMADILLO_VERSION=8.600.0
 	export BLAS_VERSION=0.2.17
 	export BOOST_DOT_VERSION=1.63.0
@@ -132,6 +132,15 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="DPPP DP3 StationResponse PyStationResponse ParmDB pyparmdb Pipeline" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
 	$make -j $J
 	$make install
+    
+    #
+    # Install the standalone StationResponse libraries.
+    #   
+    echo Installing LOFARBeam...
+    mkdir -p $INSTALLDIR/LOFARBeam/build
+    cd $INSTALLDIR/LOFARBeam
+    git clone https://github.com/lofar-astron/LOFARBeam.git src
+    cd build && $cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam ../src && $make -j12 && $make install
 
 	#
 	# install-RMextract
@@ -166,15 +175,17 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	cd $INSTALLDIR/lsmtool && git clone https://github.com/darafferty/LSMTool.git lsmtool
 	cd $INSTALLDIR/lsmtool/lsmtool && python setup.py install --prefix=$INSTALLDIR/lsmtool
 
-	#
-	# Install WSClean
-	#
-	export CPATH=${INSTALLDIR}/casacore/include:$CPATH
-	mkdir -p ${INSTALLDIR}/wsclean
-	if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
-	if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && mkdir wsclean-latest && wget https://sourceforge.net/projects/wsclean/files/latest/download -O wsclean-latest.tar.bz2 && tar -xjf wsclean-latest.tar.bz2 -C wsclean-latest --strip=1; fi
-	mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DCMAKE_PREFIX_PATH=$INSTALLDIR/lofar -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DCFITSIO_LIBRARY=$INSTALLDIR/cfitsio/lib/libcfitsio.so -DCFITSIO_INCLUDE_DIR=$INSTALLDIR/cfitsio/include -DPORTABLE=True ../wsclean-$WSCLEAN_VERSION
-	$make -j $J && $make install
+    #
+    # Install-WSClean
+    #
+    export CPATH=${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$CPATH
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/idg:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:/net/lofar1/data1/sweijen/software/HDF5_1.8:/usr/lib64
+    mkdir ${INSTALLDIR}/wsclean
+    if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
+    if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src/wsclean; fi
+    mkdir build && cd build && $cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ..
+    $make -j ${J}
+    $make install
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
