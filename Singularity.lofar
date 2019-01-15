@@ -140,7 +140,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     mkdir -p $INSTALLDIR/LOFARBeam/build
     cd $INSTALLDIR/LOFARBeam
     git clone https://github.com/lofar-astron/LOFARBeam.git src
-    cd build && $cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam ../src && $make -j12 && $make install
+    cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam ../src && $make -j12 && $make install
 
 	#
 	# install-RMextract
@@ -183,7 +183,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     mkdir ${INSTALLDIR}/wsclean
     if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
     if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src/wsclean; fi
-    mkdir build && cd build && $cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ..
+    mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ..
     $make -j ${J}
     $make install
 
