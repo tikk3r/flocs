@@ -11,7 +11,7 @@ Include: yum
 
 %post
 	# General environment settings.
-	export J=1
+	export J=2
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
 	

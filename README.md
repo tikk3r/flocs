@@ -4,7 +4,12 @@
 
 This repository hold resources for deploying the LOFAR software and related tools through a native install, Singularity images or for use on the HPC Cloud.
 
-Visit the  [wiki](https://github.com/tikk3r/lofar-grid-hpccloud/wiki) for more detailed information.
+To build a full LOFAR Singularity image, do the following:
+1) Build Singularity.lofarbase
+2) Build Singularity.lofar
+3) Build Singularity.lofarddf (optional)
+
+Visit the  [wiki](https://github.com/tikk3r/lofar-grid-hpccloud/wiki) for more detailed information and build instructions.
  
 Other software related notes
 ----------------------------

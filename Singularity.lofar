@@ -1,5 +1,8 @@
 Bootstrap: shub
 From: tikk3r/lofar-grid-hpccloud:lofarbase
+# If building from a base image locally enable this instead.
+#Bootstrap: localimage
+#From: lofar_base.simg
 
 
 
@@ -9,7 +12,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 
 %post
 	# General environment settings.
-	export J=1
+	export J=2
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
 
@@ -140,7 +143,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     mkdir -p $INSTALLDIR/LOFARBeam/build
     cd $INSTALLDIR/LOFARBeam
     git clone https://github.com/lofar-astron/LOFARBeam.git src
-    cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam ../src && $make -j12 && $make install
+    cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam ../src && $make -j $J && $make install
 
 	#
 	# install-RMextract
