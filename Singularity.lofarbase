@@ -135,7 +135,7 @@ Include: yum
     mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg
     git clone https://gitlab.com/astron-idg/idg.git src 
     cd src && mkdir build && cd build
-    $cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
     make -j $J
     make install
 
