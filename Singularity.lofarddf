@@ -1,5 +1,7 @@
-Bootstrap: shub
-From: shub://tikk3r/lofar-grid-hpccloud:lofar
+#Bootstrap: shub
+#From: shub://tikk3r/lofar-grid-hpccloud:lofar
+Bootstrap: localimage
+From: lofar.simg
 
 
 
@@ -9,7 +11,7 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
 
 %post
 	# General environment settings.
-	export J=1
+	export J=2
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
     export make=/opt/lofar/make/bin/make
@@ -68,6 +70,10 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
     # Install ddf-pipeline
     #
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
+    # Download DDF catalogues.
+    mkdir -p $INSTALLDIR/DDFCatalogues
+    wget ftp://ftp.strw.leidenuniv.nl/pub/shimwell/bootstrap-cats.tar
+    tar xf bootstrap-cats.tar -C $INSTALLDIR/DDFCatalogues --strip-components 1
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
@@ -75,6 +81,8 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
 	#
 	# init-lofar
 	#
+	echo "# DDF environment settings" >> $INSTALLDIR/init.sh
+    echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
     echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
