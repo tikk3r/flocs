@@ -129,6 +129,16 @@ Include: yum
 	cd ${INSTALLDIR}/wcslib/wcslib* && $make install
 	rm -rf $INSTALLDIR/wcslib/wcslib-*.tar.bz2
 
+    #   
+    # Install Image Domain Gridder (IDG)
+    #   
+    mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg
+    git clone https://gitlab.com/astron-idg/idg.git src 
+    cd src && mkdir build && cd build
+    $cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
+    make -j $J
+    make install
+
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
 
