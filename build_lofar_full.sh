@@ -35,7 +35,7 @@ export LAPACK_VERSION=3.6.0
 export LOFAR_VERSION=3_2_4
 export LOSOTO_VERSION=2.0
 export OPENBLAS_VERSION=v0.3.2
-export PYBDSF_VERSION=v1.8.12
+export PYBDSF_VERSION=v1.8.15
 export PYTHON_CASACORE_VERSION=latest
 # Do not change, Armadillo wants this version of SuperLU.
 export SUPERLU_VERSION=v5.2.1
