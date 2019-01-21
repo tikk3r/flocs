@@ -135,6 +135,17 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="DPPP DP3 StationResponse pystationresponse ParmDB pyparmdb Pipeline" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
 	$make -j $J
 	$make install
+
+    #
+    # Install DPPP
+    #
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/superlu:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam
+    export LD_LIBRARY_PATH=$INSTALLDIR/superlu/lib64:$INSTALLDIR/LOFARBeam/lib:$LD_LIBRARY_PATH
+    mkdir -p $INSTALLDIR/DPPP/build
+    git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
+    cd $INSTALLDIR/DPPP/build
+    $cmake -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ../src
+    make -j $J && make install
     
     #
     # Install the standalone StationResponse libraries.
