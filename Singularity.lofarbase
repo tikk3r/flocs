@@ -41,7 +41,7 @@ Include: yum
 	#yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	yum -y install hdf5-devel
 	#wget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | pythonwget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | python
-	yum -y install python-pip python2-tkinter python3-tkinter
+	yum -y install python-pip tkinter
 
 	yum -y remove numpy
 	yum -y group install "Development Tools"
