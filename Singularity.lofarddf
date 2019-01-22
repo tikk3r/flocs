@@ -72,8 +72,9 @@ From: lofar.simg
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
     # Download DDF catalogues.
     mkdir -p $INSTALLDIR/DDFCatalogues
-    wget ftp://ftp.strw.leidenuniv.nl/pub/shimwell/bootstrap-cats.tar
-    tar xf bootstrap-cats.tar -C $INSTALLDIR/DDFCatalogues --strip-components 1
+    #wget ftp://ftp.strw.leidenuniv.nl/pub/shimwell/bootstrap-cats.tar
+    wget https://surfdrive.surf.nl/files/index.php/s/u7liDZH3SlWalwy/download -O bootstrap-cats.tar
+    tar xf bootstrap-cats.tar -C $INSTALLDIR/DDFCatalogues --strip-components=1
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
@@ -84,6 +85,10 @@ From: lofar.simg
 	echo "# DDF environment settings" >> $INSTALLDIR/init.sh
     echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
     echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo export OMP_NUM_THREADS=1 >> $INSTALLDIR/init.sh
+    echo export OMP_MAX_THREADS=1 >> $INSTALLDIR/init.sh
+    echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
+    echo export OPENBLAS_MAX_THREADS=1 >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DDFacet/src/DDFacet/SkyModel:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
 
