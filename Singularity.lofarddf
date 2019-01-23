@@ -35,7 +35,7 @@ From: lofar.simg
     export PYTHONPATH=$INSTALLDIR/python-casacore/lib64/python2.7/site-packages:$PYTHONPATH
     pip install --upgrade future numpy matplotlib pyfits
     pip install --upgrade owlcat --no-deps
-    pip install --upgrade nose cython numpy SharedArray Polygon2 pyFFTW astropy deap ipdb pyephem numexpr astro-kittens meqtrees-cattery astLib psutil py-cpuinfo tables prettytable pybind11 pyregion sshtunnel PyMySQL
+    pip install --upgrade astropy cython deap emcee nose numpy ipdb Polygon2 pyFFTW SharedArray pyephem numexpr astro-kittens meqtrees-cattery astLib psutil py-cpuinfo tables prettytable pybind11 pyregion sshtunnel PyMySQL reproject
     
     #
     # Install killMS
