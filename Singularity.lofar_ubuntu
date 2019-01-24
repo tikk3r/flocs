@@ -62,7 +62,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase_ubuntu
 	if [ "${CASACORE_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION}; fi
 	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar
-	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include ../src/ 
+	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so ../src/ 
 	cd ${INSTALLDIR}/casacore/build && $make -j ${J}
 	cd ${INSTALLDIR}/casacore/build && $make install
 
@@ -85,7 +85,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase_ubuntu
 	mkdir ${INSTALLDIR}/python-casacore
 	cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore && wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/patches/python_casacore_setup_patch.patch
 	if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
-	cd ${INSTALLDIR}/python-casacore/python-casacore && patch setup.py $PYTHON_CASACORE_PATCH && ./setup.py build_ext -I${INSTALLDIR}/wcslib/include:${INSTALLDIR}/casacore/include/:${INSTALLDIR}/cfitsio/include:${INSTALLDIR}/boost/include -L${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/:${INSTALLDIR}/boost/lib:/usr/lib64/
+	cd ${INSTALLDIR}/python-casacore/python-casacore && patch setup.py $PYTHON_CASACORE_PATCH && ./setup.py build_ext -I${INSTALLDIR}/wcslib/include:${INSTALLDIR}/casacore/include/:${INSTALLDIR}/cfitsio/include -L${INSTALLDIR}/wcslib/lib:${INSTALLDIR}/casacore/lib/:${INSTALLDIR}/cfitsio/lib/:/usr/lib64/
 	mkdir -p ${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages/
 	mkdir -p ${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages/
 	export PYTHONPATH=${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages:${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages:$PYTHONPATH && cd ${INSTALLDIR}/python-casacore/python-casacore && ./setup.py install --prefix=${INSTALLDIR}/python-casacore/
@@ -95,7 +95,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase_ubuntu
 	#
 	mkdir -p $INSTALLDIR/dysco/build
 	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
-	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ../src && $make -j $J && $make install
+	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore ../src && $make -j $J && $make install
 
 	#
 	# install-aoflagger
@@ -103,7 +103,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase_ubuntu
 	mkdir -p ${INSTALLDIR}/aoflagger/build
 	if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger; fi
 	if [ "${AOFLAGGER_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger && git checkout tags/${AOFLAGGER_VERSION}; fi
-	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DBUILD_SHARED_LIBS=ON -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_ROOT=$INSTALLDIR/boost/ -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBLAS_atlas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DPORTABLE=True ../aoflagger
+	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DBUILD_SHARED_LIBS=ON -DBLAS_atlas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DPORTABLE=True ../aoflagger
 	cd ${INSTALLDIR}/aoflagger/build && $make -j ${J}
 	cd ${INSTALLDIR}/aoflagger/build && $make install
 
@@ -132,10 +132,10 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase_ubuntu
 	patch $INSTALLDIR/lofar/src/CMake/variants/GNUCXX11.cmake $PATCH_LOFAR
 	#cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DBUILD_PACKAGES=Offline -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DARMADILLO_LIBRARY=$INSTALLDIR/armadillo/lib64/libarmadillo.so -DARMADILLO_INCLUDE_DIR=$INSTALLDIR/armadillo/include -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore/  -DCASAREST_ROOT_DIR=${INSTALLDIR}/casarest/ -DAOFLAGGER_LIBRARY=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DAOFLAGGER_LIBRARY_DIR=${INSTALLDIR}/aoflagger/lib -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DLOG4CPLUS_ROOT_DIR=${INSTALLDIR}/log4cplus/ -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ${INSTALLDIR}/lofar/src/
 	export LD_LIBRARY_PATH=$INSTALLDIR/superlu/lib64:$LD_LIBRARY_PATH
-	export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib
-	export LD_LIBRARY_PATH=$INSTALLDIR/aoflagger/lib:$INSTALLDIR/armadillo/lib64:$INSTALLDIR/boost/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/cfitsio/lib:$INSTALLDIR/dysco/lib:$INSTALLDIR/openblas/lib:$INSTALLDIR/superlu/lib64:$INSTALLDIR/wcslib/lib
+	export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib
+	export LD_LIBRARY_PATH=$INSTALLDIR/aoflagger/lib:$INSTALLDIR/armadillo/lib64:$INSTALLDIR/casacore/lib:$INSTALLDIR/cfitsio/lib:$INSTALLDIR/dysco/lib:$INSTALLDIR/openblas/lib:$INSTALLDIR/superlu/lib64:$INSTALLDIR/wcslib/lib
 	#cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="DPPP DP3 StationResponse pystationresponse ParmDB pyparmdb Pipeline" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
-	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="StationResponse pystationresponse ParmDB pyparmdb Pipeline MS" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
+	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="StationResponse pystationresponse ParmDB pyparmdb Pipeline MS" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
 	$make -j $J
 	$make install
     
@@ -151,7 +151,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase_ubuntu
     #
     # Install DPPP
     #
-    export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/superlu:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/superlu:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam
     export LD_LIBRARY_PATH=$INSTALLDIR/superlu/lib64:$INSTALLDIR/LOFARBeam/lib:$LD_LIBRARY_PATH
     mkdir -p $INSTALLDIR/DPPP/build
     git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
@@ -196,7 +196,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase_ubuntu
     # Install-WSClean
     #
     export CPATH=${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$CPATH
-    export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/idg:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:/net/lofar1/data1/sweijen/software/HDF5_1.8:/usr/lib64
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/idg:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:/net/lofar1/data1/sweijen/software/HDF5_1.8:/usr/lib64
     mkdir ${INSTALLDIR}/wsclean
     if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
     if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src/wsclean; fi
@@ -227,7 +227,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase_ubuntu
 	echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$INSTALLDIR/openblas/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
+	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$INSTALLDIR/openblas/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
