@@ -18,8 +18,8 @@ Include: yum
 	# Settings relevant to the installed software.
 	export ARMADILLO_VERSION=8.600.0
 	export BLAS_VERSION=0.2.17
-	export BOOST_DOT_VERSION=1.63.0
-	export BOOST_VERSION=1_63_0
+	export BOOST_DOT_VERSION=1.58.0
+	export BOOST_VERSION=1_58_0
 	export CFITSIO_VERSION=3410
 	export LAPACK_VERSION=3.6.0
 	export OPENBLAS_VERSION=v0.3.2
