@@ -77,7 +77,8 @@ Include: yum
 	# Install Boost.Python
 	#
 	mkdir -p $INSTALLDIR/boost/src
-	cd $INSTALLDIR && wget https://dl.bintray.com/boostorg/release/${BOOST_DOT_VERSION}/source/boost_${BOOST_VERSION}.tar.gz
+	cd $INSTALLDIR && wget http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar
+    #wget https://dl.bintray.com/boostorg/release/${BOOST_DOT_VERSION}/source/boost_${BOOST_VERSION}.tar.gz
 	cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install toolset=gcc cxxflags=-std=c++11 --prefix=$INSTALLDIR/boost --with=all -j $J
 	rm -rf $INSTALLDIR/boost/src $INSTALLDIR/boost_${BOOST_VERSION}.tar.gz
 
