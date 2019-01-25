@@ -25,8 +25,8 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	#export AOFLAGGER_VERSION=v2.12.1
 	export ARMADILLO_VERSION=8.600.0
 	export BLAS_VERSION=0.2.17
-	export BOOST_DOT_VERSION=1.63.0
-	export BOOST_VERSION=1_63_0
+	export BOOST_DOT_VERSION=1.58.0
+	export BOOST_VERSION=1_58_0
 	export CASACORE_VERSION=v2.4.1
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
