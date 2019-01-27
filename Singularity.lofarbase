@@ -70,7 +70,7 @@ Include: yum
 	#
 	mkdir -p $INSTALLDIR/cmake && cd $INSTALLDIR/cmake
 	wget https://github.com/Kitware/CMake/releases/download/v3.13.1/cmake-3.13.1.tar.gz && tar xf cmake-3.13.1.tar.gz && cd cmake-3.13.1
-	./bootstrap --prefix=$INSTALLDIR/cmake -DCMAKE_BUILD_TYPE:STRING=Release && $make -j $J && $make install
+	./bootstrap --prefix=$INSTALLDIR/cmake && $make -j $J && $make install
 	rm -rf $INSTALLDIR/cmake/cmake-3.13.1.tar.gz
 	
 	#
