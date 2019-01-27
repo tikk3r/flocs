@@ -1,7 +1,9 @@
-Bootstrap: yum
-OSVersion: 7
-MirrorURL: http://mirror.centos.org/centos-%{OSVERSION}/%{OSVERSION}/os/$basearch/
-Include: yum
+#Bootstrap: yum
+#OSVersion: 7
+#MirrorURL: http://mirror.centos.org/centos-%{OSVERSION}/%{OSVERSION}/os/$basearch/
+#Include: yum
+Bootstrap: docker
+From: centos:7.5.1804
 
 
 
