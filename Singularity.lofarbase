@@ -46,7 +46,7 @@ From: centos:7.5.1804
 	yum -y install python-pip tkinter
 
 	yum -y remove numpy
-	yum -y group install "Development Tools"
+	yum -y groupinstall "Development Tools"
 	pip install --upgrade pip
 	pip install --upgrade setuptools
 	pip install --upgrade numpy astropy scipy matplotlib numexpr tables
