@@ -29,7 +29,7 @@ From: centos:7.5.1804
 	export SUPERLU_VERSION=v5.2.1
 	export WCSLIB_VERSION=5.20
 	
-	yum -y reinstall yum
+	#yum -y reinstall yum
 	createrepo
 	yum -y update
 	yum -y install patch sudo yum-utils
