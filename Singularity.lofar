@@ -94,7 +94,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	#
 	mkdir -p $INSTALLDIR/dysco/build
 	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
-	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include ../src && $make -j $J && $make install
+	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DPORTABLE=True ../src && $make -j $J && $make install
 
 	#
 	# install-aoflagger
