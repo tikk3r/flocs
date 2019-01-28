@@ -48,6 +48,10 @@ From: centos:7.5.1804
 	yum groups mark install "Development Tools"
 	yum groups mark convert "Development Tools"
 	yum -y groupinstall "Development Tools"
+    yum -y install centos-release-scl
+    yum -y install devtoolset-7-gcc*
+    scl enable devtoolset-7 bash
+
 	pip install --upgrade pip
 	pip install --upgrade setuptools
 	pip install --upgrade numpy astropy scipy matplotlib numexpr tables
