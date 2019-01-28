@@ -28,8 +28,9 @@ From: centos:7.5.1804
 	# Do not change, Armadillo wants this version of SuperLU.
 	export SUPERLU_VERSION=v5.2.1
 	export WCSLIB_VERSION=5.20
-
-	yum -y remove iputils
+	
+	yum -y reinstall yum
+	createrepo
 	yum -y update
 	yum -y install patch sudo yum-utils
 	yum -y install git svn wget
