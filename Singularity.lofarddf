@@ -23,6 +23,8 @@ From: lofar.simg
     export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
     export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
     export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
+    
+    yum -y install fpack
 
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone --single-branch -b stagebuild https://github.com/tikk3r/lofar-grid-hpccloud.git
@@ -35,7 +37,7 @@ From: lofar.simg
     export PYTHONPATH=$INSTALLDIR/python-casacore/lib64/python2.7/site-packages:$PYTHONPATH
     pip install --upgrade future numpy matplotlib pyfits
     pip install --upgrade owlcat --no-deps
-    pip install --upgrade astropy cython deap emcee nose numpy ipdb Polygon2 pyFFTW SharedArray pyephem numexpr astro-kittens meqtrees-cattery astLib psutil py-cpuinfo tables prettytable pybind11 pyregion sshtunnel PyMySQL reproject
+    pip install --upgrade aplpy astropy cython deap emcee nose numpy ipdb Polygon2 pyFFTW SharedArray pyephem numexpr astro-kittens meqtrees-cattery astLib psutil py-cpuinfo tables prettytable pybind11 pyregion sshtunnel PyMySQL reproject
     
     #
     # Install killMS
@@ -83,6 +85,8 @@ From: lofar.simg
 	# init-lofar
 	#
 	echo "# DDF environment settings" >> $INSTALLDIR/init.sh
+    echo alias NDPPP="/opt/lofar/DPPP/bin/DPPP"
+    echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
     echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo export OMP_NUM_THREADS=1 >> $INSTALLDIR/init.sh
