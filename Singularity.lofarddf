@@ -1,7 +1,7 @@
-#Bootstrap: shub
-#From: shub://tikk3r/lofar-grid-hpccloud:lofar
-Bootstrap: localimage
-From: lofar.simg
+Bootstrap: shub
+From: shub://tikk3r/lofar-grid-hpccloud:lofar
+#Bootstrap: localimage
+#From: lofar.simg
 
 
 
