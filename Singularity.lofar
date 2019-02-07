@@ -239,10 +239,10 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$INSTALLDIR/openblas/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
-	echo export OPENBLAS_NUM_THREADS=1
-	echo export OPENBLAS_MAX_THREADS=1
-	echo export OMP_NUM_THREADS=1
-	echo export OMP_MAX_THREADS=1
+	echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
+	echo export OPENBLAS_MAX_THREADS=1 >> $INSTALLDIR/init.sh
+	echo export OMP_NUM_THREADS=1 >> $INSTALLDIR/init.sh
+	echo export OMP_MAX_THREADS=1 >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
