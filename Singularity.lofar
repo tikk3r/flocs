@@ -22,7 +22,6 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	
 	# Settings relevant to the installed software.
 	export AOFLAGGER_VERSION=latest
-	#export AOFLAGGER_VERSION=v2.12.1
 	export ARMADILLO_VERSION=8.600.0
 	export BLAS_VERSION=0.2.17
 	export BOOST_DOT_VERSION=1.58.0
@@ -34,8 +33,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	export DYSCO_VERSION=v1.0.1
 	export HDF5_VERSION=1.10.4
 	export LAPACK_VERSION=3.6.0
-	#export LOFAR_VERSION=3_1_4
-	export LOFAR_VERSION=3_2_2
+	export LOFAR_VERSION=3_2_9
 	export LOSOTO_VERSION=2.0
 	export OPENBLAS_VERSION=v0.3.2
 	export PYBDSF_VERSION=v1.8.15
@@ -210,7 +208,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     mkdir ${INSTALLDIR}/wsclean
     if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
     if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src/wsclean; fi
-    mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ..
+    mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ..
     $make -j ${J}
     $make install
 
