@@ -24,7 +24,7 @@ From: centos:7.5.1804
 	export BOOST_VERSION=1_58_0
 	export CFITSIO_VERSION=3410
 	export LAPACK_VERSION=3.6.0
-	export OPENBLAS_VERSION=v0.3.2
+	export OPENBLAS_VERSION=v0.3.5
 	# Do not change, Armadillo wants this version of SuperLU.
 	export SUPERLU_VERSION=v5.2.1
 	export WCSLIB_VERSION=5.20
