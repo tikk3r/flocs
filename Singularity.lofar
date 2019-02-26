@@ -168,7 +168,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	mkdir ${INSTALLDIR}/RMextract/lib64
 	mkdir ${INSTALLDIR}/RMextract/lib64/python2.7
 	mkdir ${INSTALLDIR}/RMextract/lib64/python2.7/site-packages
-	cd ${INSTALLDIR}/RMextract/build && git clone https://github.com/lofar-astron/RMextract.git src && cd src && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/RMextract --add-lofar-utils
+	cd ${INSTALLDIR}/RMextract/build && git clone https://github.com/lofar-astron/RMextract.git src && cd src && python setup.py build --add-lofar-utils && python setup.py install --add-lofar-utils --prefix=${INSTALLDIR}/RMextract
 	ls ${INSTALLDIR}
 
 	#
