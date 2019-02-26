@@ -168,7 +168,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	mkdir ${INSTALLDIR}/RMextract/lib64
 	mkdir ${INSTALLDIR}/RMextract/lib64/python2.7
 	mkdir ${INSTALLDIR}/RMextract/lib64/python2.7/site-packages
-	cd ${INSTALLDIR}/RMextract/build && git clone https://github.com/lofar-astron/RMextract.git src && cd src && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/RMextract
+	cd ${INSTALLDIR}/RMextract/build && git clone https://github.com/lofar-astron/RMextract.git src && cd src && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/RMextract --add-lofar-utils
 	ls ${INSTALLDIR}
 
 	#
@@ -226,6 +226,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	echo export PATH=\$INSTALLDIR/lofar/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
+	echo export PATH=\$INSTALLDIR/RMextract/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/hdf5/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$INSTALLDIR/openblas/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
 	echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
@@ -249,6 +250,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     * LOFAR: $INSTALLDIR/lofar
     * LoSoTo: $INSTALLDIR/losoto
     * PyBDSF: $INSTALLDIR/pybdsf
+    * RMextract: $INSTALLDIR/RMextract
 
     To execute a command, use
         singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
