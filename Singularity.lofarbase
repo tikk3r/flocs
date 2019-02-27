@@ -13,7 +13,7 @@ From: centos:7.5.1804
 
 %post
 	# General environment settings.
-	export J=2
+	export J=4
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
 	
@@ -23,6 +23,7 @@ From: centos:7.5.1804
 	export BOOST_DOT_VERSION=1.58.0
 	export BOOST_VERSION=1_58_0
 	export CFITSIO_VERSION=3410
+	export HDF5_VERSION=1.8.21
 	export LAPACK_VERSION=3.6.0
 	export OPENBLAS_VERSION=v0.3.5
 	# Do not change, Armadillo wants this version of SuperLU.
@@ -79,6 +80,14 @@ From: centos:7.5.1804
 	wget https://github.com/Kitware/CMake/releases/download/v3.13.1/cmake-3.13.1.tar.gz && tar xf cmake-3.13.1.tar.gz && cd cmake-3.13.1
 	./bootstrap --prefix=$INSTALLDIR/cmake && $make -j $J && $make install
 	rm -rf $INSTALLDIR/cmake/cmake-3.13.1.tar.gz
+
+    #
+    # Install HDF5
+    #
+    mkdir -p $INSTALLDIR/hdf5
+    cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/hdf5-1.8.21.tar.gz && tar xf hdf5*.tar.gz
+    #cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.gz && tar xf hdf5*.tar.gz
+    cd hdf5* && ./configure --prefix=$INSTALLDIR/hdf5 --enable-fortran --enable-cxx --enable-threadsfafe --enable-unsupported && $make -j $J && make install
 	
 	#
 	# Install Boost.Python

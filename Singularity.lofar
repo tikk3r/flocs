@@ -12,7 +12,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 
 %post
 	# General environment settings.
-	export J=2
+	export J=4
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
 
@@ -26,7 +26,6 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export DYSCO_VERSION=v1.0.1
-	export HDF5_VERSION=1.8.21
 	export LOFAR_VERSION=3_2_9
 	export LOSOTO_VERSION=2.0
 	export PYBDSF_VERSION=v1.8.15
@@ -43,13 +42,6 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 
 	mkdir -p $INSTALLDIR
 
-    #
-    # Install HDF5
-    #
-    mkdir -p $INSTALLDIR/hdf5
-    cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/hdf5-1.8.21.tar.gz && tar xf hdf5*.tar.gz
-    #cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.gz && tar xf hdf5*.tar.gz
-    cd hdf5* && ./configure --prefix=$INSTALLDIR/hdf5 --enable-fortran --enable-cxx --enable-threadsfafe --enable-unsupported && $make -j $J && make install
 
 	#
 	# Install CASAcore
