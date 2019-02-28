@@ -26,7 +26,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export DYSCO_VERSION=v1.0.1
-	export LOFAR_VERSION=3_2_9
+	export LOFAR_VERSION=3_2_4
 	export LOSOTO_VERSION=2.0
 	export PYBDSF_VERSION=v1.8.15
 	export PYTHON_CASACORE_VERSION=v2.2.1
