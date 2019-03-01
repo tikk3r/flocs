@@ -11,7 +11,7 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
 
 %post
 	# General environment settings.
-	export J=2
+	export J=4
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
     export make=/opt/lofar/make/bin/make
@@ -24,7 +24,7 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
     export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
     export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
     
-    yum -y install fpack
+    yum -y install fpack mariadb-devel
 
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone https://github.com/tikk3r/lofar-grid-hpccloud.git
@@ -33,11 +33,11 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
     yum install -y centos-release-scl
     yum install -y devtoolset-7-gcc*
     scl enable devtoolset-7 bash
-    # Order is important here. owlcat tries to install python-casacore, which will fail (and is already in the lofar image anyway). Therefor install its dependencies first, then owlcat, then the rest.
+    # Order is important here. owlcat tries to install python-casacore, which will fail (and is already in the lofar image anyway). Therefor install its dependencies first, then owlcat..
     export PYTHONPATH=$INSTALLDIR/python-casacore/lib64/python2.7/site-packages:$PYTHONPATH
     pip uninstall -y numpy
     pip install --upgrade future
-    pip install --upgrade aplpy astropy astroquery cython deap emcee lxml nose numpy ipdb Polygon2 pyFFTW SharedArray pyephem numexpr astro-kittens astLib psutil py-cpuinfo tables prettytable pybind11 pyregion sshtunnel PyMySQL reproject
+    pip install --upgrade aplpy astropy astroquery cython deap emcee lxml nose mysqlclient numpy ipdb Polygon2 pyFFTW SharedArray pyephem numexpr astro-kittens astLib psutil py-cpuinfo tables prettytable pybind11 pyregion sshtunnel PyMySQL reproject
     pip install --upgrade "numpy==1.16.0" matplotlib pyfits
     pip install --upgrade meqtrees-cattery
     pip install --upgrade owlcat --no-deps
