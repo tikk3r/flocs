@@ -232,8 +232,9 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     # entrypoint
     #
 %runscript
-    echo source $INSTALLDIR/init.sh >> $HOME/.bashrc
     . $INSTALLDIR/init.sh
+    ulimit -n 4096
+    
 
 %help
     This Singularity image contains an install of LOFAR ${LOFAR_VERSION}. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with all software installed as follows:
