@@ -1,5 +1,6 @@
 [![https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg](https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg)](https://singularity-hub.org/collections/1999)
 <img src="https://img.shields.io/github/release/tikk3r/lofar-grid-hpccloud.svg?logo=github"/>
+<img src="https://img.shields.io/github/license/tikk3r/lofar-grid-hpccloud.svg?logo=github"/>
 
 # lofar-grid-hpccloud
 
