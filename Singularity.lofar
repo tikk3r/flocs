@@ -7,6 +7,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 
 
 %environment
+    export PYTHONPATH=
     export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
     ulimit -n 4096
