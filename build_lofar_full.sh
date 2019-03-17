@@ -60,16 +60,16 @@ export PATCH_AOFLAGGER=$INSTALLDIR/lofar-grid-hpccloud/patches/aoflagger.patch
 #
 # Install HDF5
 #
-: '
+
 mkdir -p ${INSTALLDIR}/hdf5
 cd ${INSTALLDIR}/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION%.*}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
 cd ${INSTALLDIR}/hdf5 && tar xf hdf5*.tar.gz
 cd ${INSTALLDIR}/hdf5/hdf5*/ && ./configure --prefix=${INSTALLDIR}/hdf5 --enable-fortran --enable-cxx
 cd ${INSTALLDIR}/hdf5/hdf5*/ && $make -j ${J}
 cd ${INSTALLDIR}/hdf5/hdf5*/ && $make install
-'
+
 # If using a local install of HDF5, set this to where the HDF5 library is located.
-export HDF5_ROOT_DIR=
+export HDF5_ROOT_DIR=$INSTALLDIR/hdf5
 export HDF5_LIB_PATH=$HDF5_ROOT_DIR/lib
 export HDF5_INCLUDE_PATH=$HDF5_ROOT_DIR/include
 export CMAKE_PREFIX_PATH=$HDF5_LIB_PATH
