@@ -20,13 +20,13 @@ set -e
 
 # Settings relevant to the installed software.
 export AOFLAGGER_VERSION=latest
-# Do not change Armadillo version.
 export ARMADILLO_VERSION=8.600.0
 export BLAS_VERSION=0.2.17
 export BOOST_DOT_VERSION=1.58.0
 export BOOST_VERSION=1_58_0
+#export CASACORE_VERSION=v3.0.0
 export CASACORE_VERSION=v2.4.1
-# Leave at latest.
+# Leave at latest, release versions crash for some reason.
 export CASAREST_VERSION=latest
 export CFITSIO_VERSION=3410
 export DYSCO_VERSION=v1.0.1
@@ -48,6 +48,7 @@ cd $INSTALLDIR && git clone git@github.com:tikk3r/lofar-grid-hpccloud.git
 # Path to where the patch for python-casacore's setup is stored.
 export PYTHON_CASACORE_PATCH=$INSTALLDIR/lofar-grid-hpccloud/patches/patch_python-casacore.patch
 export PATCH_LOFAR=$INSTALLDIR/lofar-grid-hpccloud/patches/lofar.patch
+export PATCH_AOFLAGGER=$INSTALLDIR/lofar-grid-hpccloud/patches/aoflagger.patch
 
 ##################################################
 # The lines below should not need to be modified #
@@ -67,6 +68,11 @@ cd ${INSTALLDIR}/hdf5/hdf5*/ && ./configure --prefix=${INSTALLDIR}/hdf5 --enable
 cd ${INSTALLDIR}/hdf5/hdf5*/ && $make -j ${J}
 cd ${INSTALLDIR}/hdf5/hdf5*/ && $make install
 '
+# If using a local install of HDF5, set this to where the HDF5 library is located.
+export HDF5_ROOT_DIR=
+export HDF5_LIB_PATH=$HDF5_ROOT_DIR/lib
+export HDF5_INCLUDE_PATH=$HDF5_ROOT_DIR/include
+export CMAKE_PREFIX_PATH=$HDF5_LIB_PATH
 
 if [ ! -d $INSTALLDIR/boost ]; then
     #
@@ -160,9 +166,9 @@ fi
 
 
 # Make library and header directories easily available for future CMakes.
-export CMAKE_INCLUDE=$INSTALLDIR/armadillo/include:$INSTALLDIR/boost/include:$INSTALLDIR/cfitsio/include:$INSTALLDIR/openblas/include:$INSTALLDIR/superlu/include:$INSTALLDIR/wcslib/include
-export CMAKE_LIBRARY=$INSTALLDIR/armadillo/lib:$INSTALLDIR/boost/lib:$INSTALLDIR/cfitsio/lib:$INSTALLDIR/openblas/lib:$INSTALLDIR/superlu/lib:$INSTALLDIR/wcslib/lib
-export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib
+export CMAKE_INCLUDE=$INSTALLDIR/armadillo/include:$INSTALLDIR/boost/include:$INSTALLDIR/cfitsio/include:$INSTALLDIR/openblas/include:$INSTALLDIR/superlu/include:$INSTALLDIR/wcslib/include:$HDF5_INCLUDE_PATH
+export CMAKE_LIBRARY=$INSTALLDIR/armadillo/lib:$INSTALLDIR/boost/lib:$INSTALLDIR/cfitsio/lib:$INSTALLDIR/openblas/lib:$INSTALLDIR/superlu/lib:$INSTALLDIR/wcslib/lib:$HDF5_LIB_PATH
+export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$HDF5_ROOT_DIR:/usr/lib64
 
 #########################################
 # Install main LOFAR software packages. #
@@ -195,6 +201,7 @@ if [ ! -d $INSTALLDIR/python-casacore ]; then
     #
     # Finding libraries is broken, patch the setup to include the previously installed boost and casacore libraries.
     export PYTHON_VERSION=2.7
+    export CFLAGS="-std=c++11"
     mkdir ${INSTALLDIR}/python-casacore
     cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore
     if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
@@ -242,7 +249,8 @@ if [ ! -d $INSTALLDIR/aoflagger ]; then
     mkdir -p ${INSTALLDIR}/aoflagger/build
     if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger; fi
     if [ "${AOFLAGGER_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger && git checkout tags/${AOFLAGGER_VERSION}; fi
-    export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib
+    patch $INSTALLDIR/aoflagger/aoflagger/CMakeLists.txt $PATCH_AOFLAGGER
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$HDF5_ROOT_DIR
     cd ${INSTALLDIR}/aoflagger/build && $cmake -DCMAKE_CXX_FLAGS=-D_GLIB_USE_CXX_ABI=1 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../aoflagger
     cd ${INSTALLDIR}/aoflagger/build && make -j ${J}
     cd ${INSTALLDIR}/aoflagger/build && make install
@@ -267,7 +275,7 @@ if [ ! -d $INSTALLDIR/lofar ]; then
     patch $INSTALLDIR/lofar/src/CMake/variants/GNUCXX11.cmake $PATCH_LOFAR
     #cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && $cmake -DCMAKE_CXX_FLAGS=-D_GLIB_USE_CXX_ABI=1 -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DUSE_LOG4CPLUS=OFF -DPYTHON_BDSF=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/ -DUSE_OPENMP=True -DBUILD_Imager=OFF -DBUILD_ACC=OFF -DBUILD_ALC=OFF -DBUILD_AMC=OFF -DBUILD_LCS=OFF -DBUILD_ApplCommon=OFF -DBUILD_BBSControl=OFF -DBUILD_BBSKernel=OFF -DBUILD_BBSTools=OFF -DBUILD_CEP=OFF -DBUILD_Calibration=OFF -DBUILD_Common=OFF -DBUILD_DOCUMENTATION=OFF -DBUILD_DAL=OFF -DBUILD_DP3=OFF -DBUILD_DPPP=OFF -DBUILD_Docker=OFF -DBUILD_ElementResponse=OFF -DBUILD_ExpIon=OFF -DBUILD_GSM=OFF -DBUILD_LAPS=OFF -DBUILD_LMWCommon=OFF -DBUILD_LofarStMan=OFF -DBUILD_MS=OFF -DBUILD_MSLofar=OFF -DBUILD_MessageBus=OFF -DBUILD_OTDB_Services=OFF -DBUILD_PLC=OFF -DBUILD_ParmDB=ON -DBUILD_Pipeline=ON -DBUILD_PyBDSM=ON -DBUILD_PyCommon=OFF -DBUILD_PyMessaging=OFF -DBUILD_PythonDPPP=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_SPW_Combine=OFF -DBUILD_STATIC_EXECUTABLES=OFF -DBUILD_StaticMetaData=OFF -DBUILD_StationResponse=ON -DBUILD_TESTING=ON -DBUILD_TestDynDPPP=OFF -DBUILD_Transport=OFF -DBUILD_pyparameterset=OFF -DBUILD_pyparmdb=OFF -DBUILD_pystationresponse=ON -DBUILD_pytools=OFF ${INSTALLDIR}/lofar/src/
     #cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && $cmake -DCMAKE_CXX_FLAGS=-D_GLIB_USE_CXX_ABI=1 -DBUILD_PACKAGES=StationResponse -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
-    export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$HDF5_ROOT_DIR
     export PYTHONPATH=$INSTALLDIR/python-casacore/lib64/python2.7/site-packages:$PYTHONPATH
     #cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && $cmake -DCMAKE_CXX_FLAGS=-D_GLIB_USE_CXX_ABI=1 -DBUILD_PACKAGES=Offline -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True -DBUILD_BBSTools=OFF -DBUILD_Imager=OFF ${INSTALLDIR}/lofar/src/
     # Build only the StationResponse library needed for NDPPP.
@@ -295,13 +303,14 @@ fi
 #
 if [ ! -d $INSTALLDIR/DPPP ]; then
     echo Installing DPPP...
-    export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/superlu:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam
-    export LD_LIBRARY_PATH=$INSTALLDIR/superlu/lib64:$INSTALLDIR/LOFARBeam/lib:$LD_LIBRARY_PATH
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$HDF5_ROOT_DIR:$INSTALLDIR/superlu:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam
+    export LD_LIBRARY_PATH=$HDF5_LIB_PATH:$INSTALLDIR/superlu/lib64:$INSTALLDIR/LOFARBeam/lib:$LD_LIBRARY_PATH
     mkdir -p $INSTALLDIR/DPPP/build
     git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/build
     $cmake -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ../src
     make -j $J && make install
+    ln -s $INSTALLDIR/DPPP/bin/DPPP $INSTALLDIR/lofar/bin/NDPPP
     echo Installed DPPP.
 else
     echo DPPP already installed.
@@ -328,7 +337,7 @@ if [ ! -d $INSTALLDIR/wsclean ]; then
     # Install-WSClean
     #
     export CPATH=${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$CPATH
-    export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/idg:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/idg:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$HDF5_ROOT_DIR:/usr/lib64
     mkdir ${INSTALLDIR}/wsclean
     if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
     if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src/wsclean; fi
@@ -350,7 +359,7 @@ if [ ! -d $INSTALLDIR/RMextract ]; then
     mkdir ${INSTALLDIR}/RMextract/lib64
     mkdir ${INSTALLDIR}/RMextract/lib64/python2.7
     mkdir ${INSTALLDIR}/RMextract/lib64/python2.7/site-packages
-    cd ${INSTALLDIR}/RMextract/build && git clone https://github.com/lofar-astron/RMextract.git src && cd src && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/RMextract
+    cd ${INSTALLDIR}/RMextract/build && git clone https://github.com/lofar-astron/RMextract.git src && cd src && python setup.py build --add-lofar-utils && python setup.py install --add-lofar-utils --prefix=${INSTALLDIR}/RMextract
 else
     echo RMextract already installed.
 fi
@@ -397,9 +406,7 @@ echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 echo module load gcc/8.1.0 >> $INSTALLDIR/init.sh
 echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
 
-ln -s $INSTALLDIR/DPPP/bin/DPPP $INSTALLDIR/lofar/bin/NDPPP
-
-echo export PYTHONPATH=\$INSTALLDIR/lofar/lib64/python2.7/site-packages/:\$INSTALLDIR/losoto/lib/python2.7/site-packages/:\$INSTALLDIR/lsmtool/lib/python2.7/site-packages/:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/DPPP/lib64/python2.7/site-packages/:\$PYTHONPATH  >> $INSTALLDIR/init.sh
+echo export PYTHONPATH=\$INSTALLDIR/RMextract/lib64/python2.7/site-packages/:\$INSTALLDIR/lofar/lib64/python2.7/site-packages/:\$INSTALLDIR/losoto/lib/python2.7/site-packages/:\$INSTALLDIR/lsmtool/lib/python2.7/site-packages/:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/DPPP/lib64/python2.7/site-packages/:\$PYTHONPATH  >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/DPPP/bin:\$PATH  >> $INSTALLDIR/init.sh
@@ -407,6 +414,4 @@ echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
 echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
-echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
-#echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
-
+echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/lib:$HDF5_ROOT_DIR/lib:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
