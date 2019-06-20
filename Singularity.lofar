@@ -32,7 +32,6 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	export LOSOTO_VERSION=2.0
 	export PYBDSF_VERSION=v1.8.15
 	export PYTHON_CASACORE_VERSION=v2.2.1
-	# Do not change, Armadillo wants this version of SuperLU.
 	export WSCLEAN_VERSION=latest
 
     yum -y install vim
@@ -60,17 +59,6 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include ../src/ 
 	cd ${INSTALLDIR}/casacore/build && $make -j ${J}
 	cd ${INSTALLDIR}/casacore/build && $make install
-
-	#
-	# Install CASArest
-	#
-	#mkdir -p ${INSTALLDIR}/casarest/build
-	#cd ${INSTALLDIR}/casarest && git clone https://github.com/casacore/casarest.git src
-	#if [ "${CASAREST_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casarest/src && git checkout tags/${CASAREST_VERSION}; fi
-	#cd ${INSTALLDIR}/casarest/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casarest -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=$INSTALLDIR/cfitsio -DCfitsIO_DIR=$INSTALLDIR/cfitsio -DWCSLIB_ROOT_DIR=${INSTALLDIR}/wcslib -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include ../src/
-	#cd ${INSTALLDIR}/casarest/build && $make -j ${J}
-	#cd ${INSTALLDIR}/casarest/build && $make install
-    
 
 	#
 	# install-python-casacore
