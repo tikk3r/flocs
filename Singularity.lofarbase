@@ -20,8 +20,8 @@ From: centos:7.5.1804
 	# Settings relevant to the installed software.
 	export ARMADILLO_VERSION=8.600.0
 	export BLAS_VERSION=0.2.17
-	export BOOST_DOT_VERSION=1.58.0
-	export BOOST_VERSION=1_58_0
+	export BOOST_DOT_VERSION=1.63.0
+	export BOOST_VERSION=1_63_0
 	export CFITSIO_VERSION=3410
 	export HDF5_VERSION=1.8.21
 	export LAPACK_VERSION=3.6.0
@@ -93,9 +93,11 @@ From: centos:7.5.1804
 	# Install Boost.Python
 	#
 	mkdir -p $INSTALLDIR/boost/src
-	cd $INSTALLDIR && wget https://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.gz
+	#cd $INSTALLDIR && wget https://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.gz
+	cd $INSTALLDIR && wget https://downloads.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.tar.gz
 	
     #wget https://dl.bintray.com/boostorg/release/${BOOST_DOT_VERSION}/source/boost_${BOOST_VERSION}.tar.gz
+	#cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install toolset=gcc cxxflags=-std=c++11 --prefix=$INSTALLDIR/boost --with=all -j $J
 	cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install toolset=gcc cxxflags=-std=c++11 --prefix=$INSTALLDIR/boost --with=all -j $J
 	rm -rf $INSTALLDIR/boost/src $INSTALLDIR/boost_${BOOST_VERSION}.tar.gz
 
