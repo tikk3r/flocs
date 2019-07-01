@@ -23,6 +23,7 @@ From: centos:7.5.1804
 	export BOOST_DOT_VERSION=1.63.0
 	export BOOST_VERSION=1_63_0
 	export CFITSIO_VERSION=3410
+    export FFTW_VERSION=3.3.8
 	export HDF5_VERSION=1.8.21
 	export LAPACK_VERSION=3.6.0
 	export OPENBLAS_VERSION=v0.3.5
@@ -80,6 +81,15 @@ From: centos:7.5.1804
 	wget https://github.com/Kitware/CMake/releases/download/v3.13.1/cmake-3.13.1.tar.gz && tar xf cmake-3.13.1.tar.gz && cd cmake-3.13.1
 	./bootstrap --prefix=$INSTALLDIR/cmake && $make -j $J && $make install
 	rm -rf $INSTALLDIR/cmake/cmake-3.13.1.tar.gz
+
+    #
+    # Install FFTW
+    #
+    mkdir -p $INSTALLDIR/fftw
+    cd $INSTALLDIR/fftw && wget http://www.fftw.org/fftw-${FFTW_VERSION}.tar.gz && tar xf fftw*.tar.gz
+    cd fftw* && ./configure --prefix=$INSTALLDIR/fftw --enable-threads --enable-shared
+    $make -j $J
+    $make install
 
     #
     # Install HDF5
