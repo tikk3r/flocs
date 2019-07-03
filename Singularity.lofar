@@ -33,6 +33,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	export PYBDSF_VERSION=v1.8.15
 	export PYTHON_CASACORE_VERSION=v2.2.1
 	export WSCLEAN_VERSION=latest
+	export HDF5_USE_FILE_LOCKING=FALSE
 
     yum -y install vim
     yum -y install libsigc++20-devel gtkmm30-devel
@@ -209,7 +210,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	#
 	ln -s /opt/lofar/DPPP/bin/DPPP /opt/lofar/lofar/bin/NDPPP
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
-	echo export HDF5_USE_FILE_LOCKING=False >> $INSTALLDIR/init.sh
+	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
 	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$INSTALLDIR/losoto/lib/python2.7/site-packages:\$INSTALLDIR/lsmtool/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib64/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/:\$INSTALLDIR/RMextract/lib64/python2.7/site-packages:\$INSTALLDIR/DPPP/lib64/python2.7/site-packages/:/usr/lib64/python2.7/site-packages  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
