@@ -43,7 +43,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     export CXXFLAGS="-std=c++11"
     export make=$INSTALLDIR/make/bin/make
     
-    pip install xmlrunner
+    pip install xmlrunner pyvo
 
 	mkdir -p $INSTALLDIR
 
