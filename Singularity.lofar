@@ -14,7 +14,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 
 %post
 	# General environment settings.
-	export J=4
+	export J=3
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
 
