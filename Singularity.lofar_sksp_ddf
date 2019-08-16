@@ -1,5 +1,5 @@
 Bootstrap: shub
-From: shub://tikk3r/lofar-grid-hpccloud:lofar
+From: shub://tikk3r/lofar-grid-hpccloud:lofar_sksp
 #Bootstrap: localimage
 #From: lofar.simg
 
@@ -98,6 +98,7 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar
     echo export OPENBLAS_MAX_THREADS=1 >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DDFacet/src/SkyModel:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
+    echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
