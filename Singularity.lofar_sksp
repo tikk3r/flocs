@@ -1,5 +1,5 @@
 Bootstrap: shub
-From: tikk3r/lofar-grid-hpccloud:lofarbase
+From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
 #Bootstrap: localimage
 #From: lofar_base.simg
@@ -14,7 +14,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 
 %post
 	# General environment settings.
-	export J=4
+	export J=3
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
 
@@ -33,6 +33,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	export PYBDSF_VERSION=v1.8.15
 	export PYTHON_CASACORE_VERSION=v2.2.1
 	export WSCLEAN_VERSION=latest
+	export HDF5_USE_FILE_LOCKING=FALSE
 
     yum -y install vim
     yum -y install libsigc++20-devel gtkmm30-devel
@@ -42,7 +43,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     export CXXFLAGS="-std=c++11"
     export make=$INSTALLDIR/make/bin/make
     
-    pip install xmlrunner
+    pip install xmlrunner pyvo aplpy
 
 	mkdir -p $INSTALLDIR
 
@@ -180,10 +181,10 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
     # Install-WSClean
     #
     export CPATH=${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$CPATH
-    export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/idg:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$INSTALLDIR/hdf5:/usr/lib64
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/idg:$INSTALLDIR/fftw:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$INSTALLDIR/hdf5:/usr/lib64
     mkdir ${INSTALLDIR}/wsclean
     if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
-    if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src/wsclean; git checkout 5b7bdce; fi
+    if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src/wsclean; fi
     mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ..
     $make -j ${J}
     $make install
@@ -209,7 +210,7 @@ From: tikk3r/lofar-grid-hpccloud:lofarbase
 	#
 	ln -s /opt/lofar/DPPP/bin/DPPP /opt/lofar/lofar/bin/NDPPP
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
-	echo export HDF5_FILE_LOCKING=False >> $INSTALLDIR/init.sh
+	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
 	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$INSTALLDIR/losoto/lib/python2.7/site-packages:\$INSTALLDIR/lsmtool/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib/python2.7/site-packages:\$INSTALLDIR/pybdsf/lib64/python2.7/site-packages:\$INSTALLDIR/python-casacore/lib/python2.7/site-packages/:\$INSTALLDIR/python-casacore/lib64/python2.7/site-packages/:\$INSTALLDIR/RMextract/lib64/python2.7/site-packages:\$INSTALLDIR/DPPP/lib64/python2.7/site-packages/:/usr/lib64/python2.7/site-packages  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
