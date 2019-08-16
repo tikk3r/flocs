@@ -43,7 +43,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     export CXXFLAGS="-std=c++11"
     export make=$INSTALLDIR/make/bin/make
     
-    pip install xmlrunner pyvo aplpy
+    pip install aplpy h5py pyvo xmlrunner
+    pip freeze > /opt/lofar/requirements.txt
 
 	mkdir -p $INSTALLDIR
 
@@ -220,6 +221,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/lofar/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/lsmtool/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/RMextract/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
