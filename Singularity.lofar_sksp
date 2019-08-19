@@ -80,14 +80,14 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	# Install Dysco
 	#
 	mkdir -p $INSTALLDIR/dysco/build
-	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
+	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src && cd src && git checkout 7ef0f47
 	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DPORTABLE=True ../src && $make -j $J && $make install
 
 	#
 	# install-aoflagger
 	#
 	mkdir -p ${INSTALLDIR}/aoflagger/build
-	if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger; fi
+	if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger && git checkout d4fa5e; fi
 	if [ "${AOFLAGGER_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger && git checkout tags/${AOFLAGGER_VERSION}; fi
 	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DBUILD_SHARED_LIBS=ON -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_ROOT=$INSTALLDIR/boost/ -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBLAS_atlas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DPORTABLE=True ../aoflagger
 	cd ${INSTALLDIR}/aoflagger/build && $make -j ${J}
@@ -131,8 +131,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     echo Installing LOFARBeam...
     mkdir -p $INSTALLDIR/LOFARBeam/build
     cd $INSTALLDIR/LOFARBeam
-    git clone https://github.com/lofar-astron/LOFARBeam.git src
-    cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam ../src && $make -j $J && $make install
+    git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout ad5d086
+    cd ../build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam ../src && $make -j $J && $make install
 
     #
     # Install DPPP
@@ -141,6 +141,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     export LD_LIBRARY_PATH=$INSTALLDIR/hdf5/lib:$INSTALLDIR/superlu/lib64:$INSTALLDIR/LOFARBeam/lib:$LD_LIBRARY_PATH
     mkdir -p $INSTALLDIR/DPPP/build
     git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
+    cd $INSTALLDIR/DPPP/src && git checkout 8cda70f
     cd $INSTALLDIR/DPPP/build
     cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ../src
     $make -j $J && $make install
@@ -168,15 +169,15 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	mkdir ${INSTALLDIR}/losoto/lib/python2.7
 	mkdir ${INSTALLDIR}/losoto/lib/python2.7/site-packages
 	export PYTHONPATH=$INSTALLDIR/losoto/lib/python2.7/site-packages:$PYTHONPATH
-	cd ${INSTALLDIR}/losoto/build && git clone https://github.com/revoltek/losoto.git src && cd src && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/losoto
+	cd ${INSTALLDIR}/losoto/build && git clone https://github.com/revoltek/losoto.git src && cd src && git checkout a088032 && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/losoto
 
 	#
 	# Install LSMTool.
 	#
 	mkdir -p $INSTALLDIR/lsmtool/lib/python2.7/site-packages
 	export PYTHONPATH=$INSTALLDIR/lsmtool/lib/python2.7/site-packages:$PYTHONPATH
-	cd $INSTALLDIR/lsmtool && git clone https://github.com/darafferty/LSMTool.git lsmtool
-	cd $INSTALLDIR/lsmtool/lsmtool && python setup.py install --prefix=$INSTALLDIR/lsmtool
+	cd $INSTALLDIR/lsmtool && git clone https://github.com/darafferty/LSMTool.git lsmtool 
+	cd $INSTALLDIR/lsmtool/lsmtool && git checkout c1713ec && python setup.py install --prefix=$INSTALLDIR/lsmtool
 
     #
     # Install-WSClean
@@ -185,7 +186,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     export CMAKE_PREFIX_PATH=$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/idg:$INSTALLDIR/fftw:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$INSTALLDIR/hdf5:/usr/lib64
     mkdir ${INSTALLDIR}/wsclean
     if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
-    if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src/wsclean; fi
+    if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src && git checkout 110b67 && cd wsclean; fi
     mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ..
     $make -j ${J}
     $make install
