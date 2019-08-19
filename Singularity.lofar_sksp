@@ -177,7 +177,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	mkdir -p $INSTALLDIR/lsmtool/lib/python2.7/site-packages
 	export PYTHONPATH=$INSTALLDIR/lsmtool/lib/python2.7/site-packages:$PYTHONPATH
 	cd $INSTALLDIR/lsmtool && git clone https://github.com/darafferty/LSMTool.git lsmtool 
-	cd $INSTALLDIR/lsmtool/lsmtool && git checkout c1713ec && python setup.py install --prefix=$INSTALLDIR/lsmtool
+	cd $INSTALLDIR/lsmtool/lsmtool
+	git checkout c1713ec
+	python setup.py install --prefix=$INSTALLDIR/lsmtool
 
     #
     # Install-WSClean
