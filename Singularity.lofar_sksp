@@ -44,6 +44,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     export make=$INSTALLDIR/make/bin/make
     
     pip install aplpy h5py pyvo xmlrunner
+    # Packaged required for cluster catalog.
+    pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
     pip freeze > /opt/lofar/requirements.txt
 
 	mkdir -p $INSTALLDIR
