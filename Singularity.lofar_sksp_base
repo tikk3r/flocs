@@ -173,7 +173,8 @@ From: centos:7.5.1804
     mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg
     git clone https://gitlab.com/astron-idg/idg.git src 
     cd src && mkdir build && cd build
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_LIB_CUDA=ON -DCUDA_KERNEL_DEBUG=ON ..
+    #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_LIB_CUDA=ON -DCUDA_KERNEL_DEBUG=ON ..
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
     make -j $J
     make install
 
