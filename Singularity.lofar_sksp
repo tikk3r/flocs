@@ -172,7 +172,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	mkdir ${INSTALLDIR}/losoto/lib/python2.7
 	mkdir ${INSTALLDIR}/losoto/lib/python2.7/site-packages
 	export PYTHONPATH=$INSTALLDIR/losoto/lib/python2.7/site-packages:$PYTHONPATH
-	cd ${INSTALLDIR}/losoto/build && git clone https://github.com/revoltek/losoto.git src && cd src && git checkout a088032 && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/losoto
+	cd ${INSTALLDIR}/losoto/build && git clone https://github.com/revoltek/losoto.git src && cd src && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/losoto
 
 	#
 	# Install LSMTool.
