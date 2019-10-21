@@ -54,6 +54,11 @@ From: centos:7.5.1804
     yum -y install devtoolset-7-gcc*
     scl enable devtoolset-7 bash
 
+    # Install the Intel Math Kernel libraries to speed up IDG.
+    sudo yum-config-manager --add-repo https://yum.repos.intel.com/mkl/setup/intel-mkl.repo
+    sudo rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
+    yum -y install intel-mkl intel-mkl-64bit
+
 	pip install --upgrade pip
 	pip install --upgrade setuptools
 	pip install --upgrade numpy astropy scipy matplotlib numexpr tables
@@ -174,7 +179,7 @@ From: centos:7.5.1804
     git clone https://gitlab.com/astron-idg/idg.git src 
     cd src && mkdir build && cd build
     #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_LIB_CUDA=ON -DCUDA_KERNEL_DEBUG=ON ..
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON ..
     make -j $J
     make install
 
