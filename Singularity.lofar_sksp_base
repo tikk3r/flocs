@@ -73,7 +73,7 @@ From: centos:7.5.1804
 	mkdir -p $INSTALLDIR
     export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
     export CMAKE_PREFIX_PATH=/opt/intel/mkl/lib/intel64:$CMAKE_PREFIX_PATH
-    export CPATH=/opt/intel/mkl/lib:$CPATH
+    export CPATH=/opt/intel/mkl/include:$CPATH
     # 
     # Install CUDA
     #
