@@ -23,7 +23,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	export PATCH_LOFAR=$INSTALLDIR/lofar/lofar.patch
 	
 	# Settings relevant to the installed software.
-	export AOFLAGGER_VERSION=latest
+	export AOFLAGGER_VERSION=v2.14.0
 	export CASACORE_VERSION=v2.4.1
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
