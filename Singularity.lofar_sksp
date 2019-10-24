@@ -246,17 +246,21 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     
 
 %help
-    This Singularity image contains an install of LOFAR ${LOFAR_VERSION}. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with all software installed as follows:
+    This Singularity image contains an install of LOFAR 3.2.9. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with all software installed as follows:
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
+    * DP3: $INSTALLDIR/DPPP
+    * DS9: $INSTALLDIR/DS9
     * Dysco: $INSTALLDIR/dysco
     * LOFAR: $INSTALLDIR/lofar
     * LoSoTo: $INSTALLDIR/losoto
+    * LSMTool: $INSTALLDIR/lsmtool
     * PyBDSF: $INSTALLDIR/pybdsf
     * RMextract: $INSTALLDIR/RMextract
+    * WSClean: $INSTALLDIR/wsclean
 
     To execute a command, use
         singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
     for example:
-        #singularity exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
+        singularity exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
