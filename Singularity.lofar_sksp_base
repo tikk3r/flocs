@@ -45,6 +45,7 @@ From: centos:7.5.1804
 	yum -y install hdf5-devel
 	#wget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | pythonwget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | python
 	yum -y install python-pip tkinter
+	sudo yum -y remove python-numpy python3-numpy
 
 	pip install --upgrade pip
 	pip install --upgrade setuptools
