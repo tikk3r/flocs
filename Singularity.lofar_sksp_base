@@ -46,6 +46,11 @@ From: centos:7.5.1804
 	#wget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | pythonwget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | python
 	yum -y install python-pip tkinter
 
+	pip install --upgrade pip
+	pip install --upgrade setuptools
+	pip install --upgrade numpy astropy scipy matplotlib numexpr "tables<3.6"
+	pip install --upgrade boost mock pp progressbar python-monetdb xmlrunner unittest2
+
 	yum -y remove numpy
 	yum groups mark install "Development Tools"
 	yum groups mark convert "Development Tools"
@@ -58,14 +63,6 @@ From: centos:7.5.1804
     sudo yum-config-manager --add-repo https://yum.repos.intel.com/mkl/setup/intel-mkl.repo
     sudo rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
     yum -y install intel-mkl intel-mkl-64bit
-
-    pip install virtualenv
-    python -m virtualenv /opt/lofar/.pyvenv
-    source /opt/lofar/.pyvenv/bin/activate
-	pip install --upgrade pip
-	pip install --upgrade setuptools
-	pip install --upgrade numpy astropy scipy matplotlib numexpr tables
-	pip install --upgrade boost mock pp progressbar python-monetdb xmlrunner unittest2
 
 	# FACTOR requisites.
 	pip install pyparsing
