@@ -37,7 +37,7 @@ From: shub://tikk3r/lofar-grid-hpccloud:lofar_sksp
     export PYTHONPATH=$INSTALLDIR/python-casacore/lib64/python2.7/site-packages:$PYTHONPATH
     pip uninstall -y numpy
     pip install --upgrade future
-    pip install --upgrade aplpy astropy astroquery cython deap emcee lxml nose mysqlclient numpy ipdb Polygon2 pyFFTW SharedArray pyephem numexpr astro-kittens astLib psutil py-cpuinfo tables prettytable pybind11 pyregion sshtunnel PyMySQL reproject
+    pip install --upgrade aplpy astropy astroquery cython deap emcee lxml nose mysqlclient numpy ipdb Polygon2 pyFFTW SharedArray pyephem numexpr astro-kittens astLib psutil py-cpuinfo "tables<3.6" prettytable pybind11 pyregion sshtunnel PyMySQL reproject
     pip install --upgrade "numpy==1.16.0" matplotlib pyfits
     pip install --upgrade meqtrees-cattery
     pip install --upgrade owlcat --no-deps
