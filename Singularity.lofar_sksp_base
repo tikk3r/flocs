@@ -59,6 +59,9 @@ From: centos:7.5.1804
     sudo rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
     yum -y install intel-mkl intel-mkl-64bit
 
+    pip install virtualenv
+    python -m virtualenv /opt/lofar/.pyvenv
+    source /opt/lofar/.pyvenv/bin/activate
 	pip install --upgrade pip
 	pip install --upgrade setuptools
 	pip install --upgrade numpy astropy scipy matplotlib numexpr tables
@@ -198,6 +201,7 @@ From: centos:7.5.1804
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
     echo export make=/opt/lofar/make/bin/make >> $INSTALLDIR/init.sh
     echo export cmake=/opt/lofar/cmake/bin/cmake >> $INSTALLDIR/init.sh
+    echo export source /opt/lofar/.pyvenv/bin/activate >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
