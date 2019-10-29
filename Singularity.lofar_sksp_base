@@ -33,7 +33,7 @@ From: centos:7.5.1804
 	
 	yum -y update
 	yum -y install patch sudo yum-utils
-	yum -y install git svn wget
+	yum -y install git svn wget vim nano
 	yum -y install automake-devel aclocal autoconf autotools cmake make
 	yum -y install g++ gcc gcc-c++ gcc-gfortran
 	yum -y install arpack-devel blas-devel boost boost-devel boost-python fftw3-devel fftw3-libs python-devel lapack-devel libpng-devel libxml2-devel numpy-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
@@ -47,6 +47,7 @@ From: centos:7.5.1804
 	yum -y install python-pip tkinter
 	sudo yum -y remove python-numpy python3-numpy
 	yum -y remove numpy
+    yum clean packages
 	
 	pip install --upgrade pip
 	pip install --upgrade setuptools
