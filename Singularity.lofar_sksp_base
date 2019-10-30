@@ -52,7 +52,7 @@ From: centos:7.5.1804
 	pip install --upgrade pip
 	pip install --upgrade setuptools
 	pip install --upgrade numpy astropy scipy matplotlib numexpr "tables<3.6"
-	pip install --upgrade boost mock pp progressbar python-monetdb xmlrunner unittest2
+	pip install --upgrade boost mock pp progressbar python-monetdb xmlrunner unittest2 regions
 	
 	yum groups mark install "Development Tools"
 	yum groups mark convert "Development Tools"
