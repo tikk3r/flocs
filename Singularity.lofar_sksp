@@ -247,7 +247,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 %test
     echo == Running some checks ==
     echo Checking AOFlagger
-    /opt/lofar/aoflagger/bin/aoflagger -h
+    /opt/lofar/aoflagger/bin/aoflagger -v
     echo Checking DP3
     /opt/lofar/DPPP/bin/DPPP -h
     echo Checking WSClean
