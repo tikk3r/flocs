@@ -107,6 +107,7 @@ From: centos:7.5.1804
     cd fftw* && ./configure --prefix=$INSTALLDIR/fftw --enable-threads --enable-shared
     $make -j $J
     $make install
+    rm -rf $INSTALLDIR/fftw/*.tar.gz
 
     #
     # Install HDF5
@@ -115,6 +116,7 @@ From: centos:7.5.1804
     cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/hdf5-1.8.21.tar.gz && tar xf hdf5*.tar.gz
     #cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.gz && tar xf hdf5*.tar.gz
     cd hdf5* && ./configure --prefix=$INSTALLDIR/hdf5 --enable-fortran --enable-cxx --enable-threadsfafe --enable-unsupported && $make -j $J && make install
+    rm -rf hdf5*
 	
 	#
 	# Install Boost.Python
@@ -126,7 +128,7 @@ From: centos:7.5.1804
     #wget https://dl.bintray.com/boostorg/release/${BOOST_DOT_VERSION}/source/boost_${BOOST_VERSION}.tar.gz
 	#cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install toolset=gcc cxxflags=-std=c++11 --prefix=$INSTALLDIR/boost --with=all -j $J
 	cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install toolset=gcc cxxflags=-std=c++11 --prefix=$INSTALLDIR/boost --with=all -j $J
-	rm -rf $INSTALLDIR/boost/src $INSTALLDIR/boost_${BOOST_VERSION}.tar.gz
+	rm -rf $INSTALLDIR/boost/src $INSTALLDIR/boost_${BOOST_VERSION}.tar.gz $INSTALLDIR/boost_${BOOST_VERSION}.tar.gz
 
 	#
 	# Install OpenBLAS
