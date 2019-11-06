@@ -192,7 +192,6 @@ From: centos:7.5.1804
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
 
-    yum autoremove
     yum -y clean all
 
 	#
