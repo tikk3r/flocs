@@ -110,24 +110,24 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	#
 	# install-lofar
 	#
-	mkdir -p ${INSTALLDIR}/lofar
-	mkdir -p ${INSTALLDIR}/lofar/build
-	mkdir -p ${INSTALLDIR}/lofar/build/gnucxx11_opt
-	ls ${INSTALLDIR}
-	ls ${INSTALLDIR}/lofar
-	ls ${INSTALLDIR}/lofar/build/gnucxx11_opt
-	if [ "${LOFAR_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/trunk src; fi
-	if [ "${LOFAR_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/tags/LOFAR-Release-${LOFAR_VERSION} src; fi
-	cd $INSTALLDIR/lofar && svn update --depth=infinity $INSTALLDIR/lofar/src/CMake
-	wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/patches/lofar.patch
-	patch $INSTALLDIR/lofar/src/CMake/variants/GNUCXX11.cmake $PATCH_LOFAR
-	export LD_LIBRARY_PATH=$INSTALLDIR/superlu/lib64:$LD_LIBRARY_PATH
-	export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$INSTALLDIR/hdf5
-	export LD_LIBRARY_PATH=$INSTALLDIR/aoflagger/lib:$INSTALLDIR/armadillo/lib64:$INSTALLDIR/boost/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/cfitsio/lib:$INSTALLDIR/dysco/lib:$INSTALLDIR/openblas/lib:$INSTALLDIR/superlu/lib64:$INSTALLDIR/wcslib/lib
-	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="StationResponse pystationresponse ParmDB pyparmdb Pipeline MS" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
-	$make -j $J
-	$make install
-    rm -rf $INSTALLDIR/lofar/src
+	#mkdir -p ${INSTALLDIR}/lofar
+	#mkdir -p ${INSTALLDIR}/lofar/build
+	#mkdir -p ${INSTALLDIR}/lofar/build/gnucxx11_opt
+	#ls ${INSTALLDIR}
+	#ls ${INSTALLDIR}/lofar
+	#ls ${INSTALLDIR}/lofar/build/gnucxx11_opt
+	#if [ "${LOFAR_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/trunk src; fi
+	#if [ "${LOFAR_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/tags/LOFAR-Release-${LOFAR_VERSION} src; fi
+	#cd $INSTALLDIR/lofar && svn update --depth=infinity $INSTALLDIR/lofar/src/CMake
+	#wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/patches/lofar.patch
+	#patch $INSTALLDIR/lofar/src/CMake/variants/GNUCXX11.cmake $PATCH_LOFAR
+	#export LD_LIBRARY_PATH=$INSTALLDIR/superlu/lib64:$LD_LIBRARY_PATH
+	#export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$INSTALLDIR/hdf5
+	#export LD_LIBRARY_PATH=$INSTALLDIR/aoflagger/lib:$INSTALLDIR/armadillo/lib64:$INSTALLDIR/boost/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/cfitsio/lib:$INSTALLDIR/dysco/lib:$INSTALLDIR/openblas/lib:$INSTALLDIR/superlu/lib64:$INSTALLDIR/wcslib/lib
+	#cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="StationResponse pystationresponse ParmDB pyparmdb Pipeline MS" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
+	#$make -j $J
+	#$make install
+    #rm -rf $INSTALLDIR/lofar/src
     
     #
     # Install the standalone StationResponse libraries.
