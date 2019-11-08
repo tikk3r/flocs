@@ -142,8 +142,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #
     # Install DPPP
     #
+    export CPATH=/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$CPATH
     export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/hdf5:$INSTALLDIR/superlu:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/hdf5
-    export LD_LIBRARY_PATH=$INSTALLDIR/hdf5/lib:$INSTALLDIR/superlu/lib64:$INSTALLDIR/LOFARBeam/lib:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=$INSTALLDIR/hdf5/lib:$INSTALLDIR/superlu/lib64:$INSTALLDIR/LOFARBeam/lib:$INSTALLDIR/aoflagger/lib:$LD_LIBRARY_PATH
     mkdir -p $INSTALLDIR/DPPP/build
     git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/src && git checkout 8cda70f
@@ -190,7 +191,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #
     # Install-WSClean
     #
-    export CPATH=/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$INSTALLDIR/idg/include:$CPATH
     export CMAKE_PREFIX_PATH=/opt/intel/mkl/lib/intel64:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/idg:$INSTALLDIR/fftw:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$INSTALLDIR/hdf5:/usr/lib64
     mkdir ${INSTALLDIR}/wsclean
     if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
