@@ -248,15 +248,6 @@ o
 %runscript
     . $INSTALLDIR/init.sh
     ulimit -n 4096
-    
-%test
-    echo == Running some checks ==
-    echo Checking AOFlagger
-    /opt/lofar/aoflagger/bin/aoflagger -v
-    echo Checking DP3
-    /opt/lofar/DPPP/bin/DPPP -h
-    echo Checking WSClean
-    /opt/lofar/wsclean/bin/wsclean --version
 
 %help
     This Singularity image contains an install of LOFAR 3.2.9. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with all software installed as follows:
