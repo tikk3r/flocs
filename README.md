@@ -9,7 +9,6 @@ This repository hold resources for deploying the LOFAR software and related tool
 To build a full LOFAR Singularity image, do the following:
 1) Build Singularity.lofarbase
 2) Build Singularity.lofar
-3) Build Singularity.lofarddf (optional)
 
 `lofarbase` and `lofar` are available on Singularity-hub, and can be downloaded with
 
