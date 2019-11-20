@@ -134,7 +134,7 @@ From: centos:7.5.1804
 	#
 	mkdir -p $INSTALLDIR/openblas/
 	cd $INSTALLDIR/openblas/ && git clone https://github.com/xianyi/OpenBLAS.git src && cd src && git checkout $OPENBLAS_VERSION
-	cd $INSTALLDIR/openblas/src && $make -j $J && $make install PREFIX=$INSTALLDIR/openblas USE_OPENMP=1
+	cd $INSTALLDIR/openblas/src && $make -j $J && $make install PREFIX=$INSTALLDIR/openblas USE_OPENMP=1 NUM_THREADS=64
 	rm -rf $INSTALLDIR/openblas/src
 
 	#
