@@ -187,7 +187,7 @@ From: centos:7.5.1804
 	pip install --upgrade pip
 	pip install --upgrade setuptools
 	pip install --upgrade numpy astropy scipy matplotlib numexpr
-    pip install --no-binary "tables<3.6"
+    pip install "tables<3.5"
 	pip install --upgrade boost mock pp progressbar python-monetdb xmlrunner unittest2 regions
 
 	echo "Installation directory contents:"
