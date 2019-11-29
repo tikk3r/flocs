@@ -48,11 +48,6 @@ From: centos:7.5.1804
 	sudo yum -y remove python-numpy python3-numpy
 	yum -y remove numpy
 	
-	pip install --upgrade pip
-	pip install --upgrade setuptools
-	pip install --upgrade numpy astropy scipy matplotlib numexpr "tables<3.6"
-	pip install --upgrade boost mock pp progressbar python-monetdb xmlrunner unittest2 regions
-	
 	yum groups mark install "Development Tools"
 	yum groups mark convert "Development Tools"
 	yum -y groupinstall "Development Tools"
@@ -188,6 +183,12 @@ From: centos:7.5.1804
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON ..
     make -j $J
     make install
+
+	pip install --upgrade pip
+	pip install --upgrade setuptools
+	pip install --upgrade numpy astropy scipy matplotlib numexpr
+    pip install --no-binary "tables<3.6"
+	pip install --upgrade boost mock pp progressbar python-monetdb xmlrunner unittest2 regions
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
