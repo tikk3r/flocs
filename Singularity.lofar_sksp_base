@@ -186,9 +186,19 @@ From: centos:7.5.1804
 
 	pip install --upgrade pip
 	pip install --upgrade setuptools
-	pip install --upgrade numpy astropy scipy matplotlib numexpr
+	pip install --upgrade astropy
+	pip install --upgrade scipy
+	pip install --upgrade matplotlib
+    pip install --upgrade numexpr
     pip install "tables<3.5"
-	pip install --upgrade boost mock pp progressbar python-monetdb xmlrunner unittest2 regions
+	pip install --upgrade boost
+	pip install --upgrade mock
+	pip install --upgrade pp
+	pip install --upgrade progressbar
+	pip install --upgrade python-monetdb
+	pip install --upgrade xmlrunner
+	pip install --upgrade unittest2
+	pip install --upgrade regions
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
