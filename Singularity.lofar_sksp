@@ -17,6 +17,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	export J=3
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
+	# Enable MKL on AMD CPUs
+	export MKL_DEBUG_CPU_TYPE=5
 
 	# Path to where the patch for python-casacore's setup is stored.
 	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
@@ -242,6 +244,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export OPENBLAS_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
+	echo export MKL_DEBUG_CPU_TYPE=5 >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
