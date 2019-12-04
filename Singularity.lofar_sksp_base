@@ -109,7 +109,7 @@ From: centos:7.5.1804
     # Install HDF5
     #
     mkdir -p $INSTALLDIR/hdf5
-    cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/hdf5-1.8.21.tar.gz && tar xf hdf5*.tar.gz
+    cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.18/src/hdf5-1.8.18.tar.gz && tar xf hdf5*.tar.gz
     #cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.gz && tar xf hdf5*.tar.gz
     cd hdf5* && ./configure --prefix=$INSTALLDIR/hdf5 --enable-fortran --enable-cxx --enable-threadsfafe --enable-unsupported && $make -j $J && make install
     rm -rf $INSTALLDIR/hdf5/hdf5*
