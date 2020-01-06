@@ -232,6 +232,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     git clone https://github.com/tikk3r/lofar-h5plot.git
     cp lofar-h5plot/h5plot.py /usr/bin/h5plot.py
     rm -r lofar-h5plot
+    chmod 755 /usr/bin/h5plot.py
 
     yum -y clean all
     
