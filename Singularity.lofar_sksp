@@ -226,7 +226,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #
     # Install H5plot
     #
-    wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py
+    yum -y install PyQt5
+    python3 -m pip install --upgrade pip
     python3 -m pip install --upgrade https://github.com/revoltek/losoto/archive/pref3.zip
     python3 -m pip install --upgrade lofar-h5plot
 
