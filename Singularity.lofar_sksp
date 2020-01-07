@@ -226,16 +226,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #
     # Install H5plot
     #
-    python3 -m pip install --upgrade pyqt5
-    python3 -m pip install --upgrade matplotlib
-    python3 -m pip install --upgrade numpy
-    python3 -m pip install --upgrade pyparsing
-    python3 -m pip install --upgrade https://github.com/revoltek/losoto/archive/master.zip
-    cd $INSTALLDIR
-    git clone https://github.com/tikk3r/lofar-h5plot.git
-    cp lofar-h5plot/h5plot.py /usr/bin/h5plot.py
-    rm -r lofar-h5plot
-    chmod 755 /usr/bin/h5plot.py
+    wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py
+    python3 -m pip install --upgrade https://github.com/revoltek/losoto/archive/pref3.zip
+    python3 -m pip install --upgrade lofar-h5plot
 
     yum -y clean all
     
@@ -265,7 +258,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export MKL_DEBUG_CPU_TYPE=5 >> $INSTALLDIR/init.sh
-	echo 'alias h5plot="PYTHONPATH=/usr/lib64/python3.6/site-packages /usr/bin/h5plot.py"' >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
