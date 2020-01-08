@@ -223,14 +223,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     rm -rf ${INSTALLDIR}/casacore/src
 	rm -rf ${INSTALLDIR}/casarest/src
 
-    #
-    # Install H5plot
-    #
-    yum -y install PyQt5
-    python3 -m pip install --upgrade pip
-    python3 -m pip install --upgrade https://github.com/revoltek/losoto/archive/pref3.zip
-    python3 -m pip install --upgrade lofar-h5plot
-
     yum -y clean all
     
 	#
@@ -281,10 +273,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     * PyBDSF: $INSTALLDIR/pybdsf
     * RMextract: $INSTALLDIR/RMextract
     * WSClean: $INSTALLDIR/wsclean
-
-    Additional available software is:
-
-    * H5plot: h5plot <h5parm>
 
     To execute a command directly, use
         singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
