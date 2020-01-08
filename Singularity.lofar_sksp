@@ -209,6 +209,12 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     cd $INSTALLDIR/ds9 && wget http://ds9.si.edu/download/centos7/ds9.centos7.8.0.1.tar.gz
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
 
+    #
+    # Install h5plot
+    #
+    PYTHONPATH=/usr/local/lib/python3.6/site-packages/:/usr/local/lib64/python3.6/site-packages/ python3 -m pip install https://github.com/revoltek/losoto/archive/pref3.zip
+    PYTHONPATH=/usr/local/lib/python3.6/site-packages/:/usr/local/lib64/python3.6/site-packages/ python3 -m pip install h5plot
+
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
 
@@ -243,6 +249,7 @@ o
 	echo export OPENBLAS_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
+    echo alias h5plot=\"PYTHONPATH=/usr/local/lib/python3.6/site-packages/:/usr/local/lib64/python3.6/site-packages/ h5plot\"
 
     #
     # entrypoint
