@@ -39,6 +39,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
     yum -y install vim
     yum -y install libsigc++20-devel gtkmm30-devel
+    yum -y install pgplot
     scl enable devtoolset-7 bash
     export CC=`which gcc`
 	export CXX=`which g++`
@@ -251,6 +252,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export MKL_DEBUG_CPU_TYPE=5 >> $INSTALLDIR/init.sh
+
+    echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
+    echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
