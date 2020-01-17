@@ -61,6 +61,24 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
 	mkdir -p $INSTALLDIR
 
+    #
+    # Install difmap
+    #
+    mkdir -p $INSTALLDIR/difmap
+    cd $INSTALLDIR/difmap
+    wget ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
+    tar xf difmap2.5e.tar.gz
+    cd uvf_difmap
+    wget https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
+
+    sed -i.bak -e '97d' configure
+    sed -i.bak -e '97 i PGPLOT_LIB=/usr/lib64/libpgplot.so.5' configure
+    ./configure linux-i486-gcc
+    export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
+    export CFLAGS="-L/usr/lib64/libpgplot.so.5"
+    ./makeall
+
+    export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
 
 	#
 	# Install CASAcore
@@ -240,6 +258,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/DPPP/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/lofar/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
