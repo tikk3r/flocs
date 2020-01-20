@@ -164,7 +164,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     echo Installing LOFARBeam...
     mkdir -p $INSTALLDIR/LOFARBeam/build
     cd $INSTALLDIR/LOFARBeam
-    git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src
+    git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout db8d082
     cd ../build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore ../src && $make -j $J && $make install
     rm -rf $INSTALLDIR/LOFARBeam/src
 
