@@ -49,7 +49,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     export CXXFLAGS="-std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export make=$INSTALLDIR/make/bin/make
     
-    pip install aplpy h5py pyvo xmlrunner
+    pip install aplpy
+    pip install xmlrunner
     pip install h5py
     pip install pyvo
     pip install pyregion
