@@ -1,0 +1,11 @@
+--- AsyncProcessPool.py	2020-03-05 10:17:14.633842350 +0100
++++ AsyncProcessPool_patched	2020-03-05 10:16:52.933088312 +0100
+@@ -259,7 +259,7 @@
+             print>> log, "Parent and I/O affinities not specified, leaving unset"
+         else:
+             print>> log, ModColor.Str("Fixing parent process to vthread %d" % self.parent_affinity, col="green")
+-        psutil.Process().cpu_affinity(range(self.ncpu) if not self.parent_affinity else [self.parent_affinity])
++        psutil.Process().cpu_affinity([] if not self.parent_affinity else [self.parent_affinity])
+ 
+         # if NCPU is 0, set to number of CPUs on system
+         if not self.ncpu:
