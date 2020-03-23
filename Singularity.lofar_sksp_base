@@ -64,6 +64,8 @@ From: centos:7.5.1804
 	pip install pyparsing
     export CC=`which gcc`
 	export CXX=`which g++`
+    export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+    export CXXFLAGS="-std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export make=$INSTALLDIR/make/bin/make
 
 	mkdir -p $INSTALLDIR
@@ -110,7 +112,7 @@ From: centos:7.5.1804
     # Install HDF5
     #
     mkdir -p $INSTALLDIR/hdf5
-    cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/hdf5-1.8.21.tar.gz && tar xf hdf5*.tar.gz
+    cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.18/src/hdf5-1.8.18.tar.gz && tar xf hdf5*.tar.gz
     #cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.gz && tar xf hdf5*.tar.gz
     cd hdf5* && ./configure --prefix=$INSTALLDIR/hdf5 --enable-fortran --enable-cxx --enable-threadsfafe --enable-unsupported && $make -j $J && make install
     rm -rf $INSTALLDIR/hdf5/hdf5*
@@ -189,9 +191,19 @@ From: centos:7.5.1804
 
 	pip install --upgrade pip
 	pip install --upgrade setuptools
-	pip install --upgrade numpy astropy scipy matplotlib numexpr
+	pip install --upgrade astropy
+	pip install --upgrade scipy
+	pip install --upgrade matplotlib
+    pip install --upgrade numexpr
     pip install "tables<3.5"
-	pip install --upgrade boost mock pp progressbar python-monetdb xmlrunner unittest2 regions
+	pip install --upgrade boost
+	pip install --upgrade mock
+	pip install --upgrade pp
+	pip install --upgrade progressbar
+	pip install --upgrade python-monetdb
+	pip install --upgrade xmlrunner
+	pip install --upgrade unittest2
+	pip install --upgrade regions
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
