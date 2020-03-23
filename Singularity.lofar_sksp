@@ -17,6 +17,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	export J=3
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
+	# Enable MKL on AMD CPUs
+	export MKL_DEBUG_CPU_TYPE=5
 
 	# Path to where the patch for python-casacore's setup is stored.
 	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
@@ -37,6 +39,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
     yum -y install vim
     yum -y install libsigc++20-devel gtkmm30-devel
+    yum -y install --nogpgcheck https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    yum -y install --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
+    yum -y install pgplot
     scl enable devtoolset-7 bash
     export CC=`which gcc`
 	export CXX=`which g++`
@@ -44,14 +49,37 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     export CXXFLAGS="-std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export make=$INSTALLDIR/make/bin/make
     
-    pip install aplpy h5py pyvo xmlrunner
+    pip install aplpy
+    pip install xmlrunner
+    pip install h5py
+    pip install --no-deps "pyvo==0.9.3"
     pip install pyregion
     # Packaged required for cluster catalog.
-    pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+    pip install --upgrade google-api-python-client
+    pip install --upgrade google-auth-httplib2
+    pip install --upgrade google-auth-oauthlib
     pip freeze > /opt/lofar/requirements.txt
 
 	mkdir -p $INSTALLDIR
 
+    #
+    # Install difmap
+    #
+    mkdir -p $INSTALLDIR/difmap
+    cd $INSTALLDIR/difmap
+    wget ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
+    tar xf difmap2.5e.tar.gz
+    cd uvf_difmap
+    wget https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
+
+    sed -i.bak -e '97d' configure
+    sed -i.bak -e '97 i PGPLOT_LIB=/usr/lib64/libpgplot.so.5' configure
+    ./configure linux-i486-gcc
+    export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
+    export CFLAGS="-L/usr/lib64/libpgplot.so.5"
+    ./makeall
+
+    export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
 
 	#
 	# Install CASAcore
@@ -64,7 +92,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar
     export CMAKE_PREFIX_PATH=$INSTALLDIR/hdf5
 	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DWCSLIB_ROOT_DIR=/${INSTALLDIR}/wcslib/ -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio/ -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBLAS_blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include ../src/ 
-	cd ${INSTALLDIR}/casacore/build && $make -j ${J}
+	cd ${INSTALLDIR}/casacore/build && $make -s -j ${J}
 	cd ${INSTALLDIR}/casacore/build && $make install
     rm -rf $INSTALLDIR/casacore/src
 
@@ -86,7 +114,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	#
 	mkdir -p $INSTALLDIR/dysco/build
 	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src && cd src
-	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DPORTABLE=True ../src && $make -j $J && $make install
+	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DPORTABLE=True ../src && $make -s -j $J && $make install
     rm -rf $INSTALLDIR/dysco/src
 
 	#
@@ -96,7 +124,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger; fi
 	if [ "${AOFLAGGER_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger && git checkout tags/${AOFLAGGER_VERSION}; fi
 	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DCFITSIO_ROOT_DIR=${INSTALLDIR}/cfitsio -DBUILD_SHARED_LIBS=ON -DBOOST_INCLUDEDIR=$INSTALLDIR/boost/include -DBOOST_LIBRARYDIR=$INSTALLDIR/boost/lib -DBOOST_ROOT=$INSTALLDIR/boost/ -DBoost_INCLUDE_DIR=$INSTALLDIR/boost/include -DBoost_LIBRARY_DIR=$INSTALLDIR/boost/lib -DBLAS_atlas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_f77blas_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DBLAS_goto2_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so -DPORTABLE=True ../aoflagger
-	cd ${INSTALLDIR}/aoflagger/build && $make -j ${J}
+	cd ${INSTALLDIR}/aoflagger/build && $make -s -j ${J}
 	cd ${INSTALLDIR}/aoflagger/build && $make install
     rm -rf $INSTALLDIR/aoflagger/src
 
@@ -127,7 +155,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib:$INSTALLDIR/hdf5
 	export LD_LIBRARY_PATH=$INSTALLDIR/aoflagger/lib:$INSTALLDIR/armadillo/lib64:$INSTALLDIR/boost/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/cfitsio/lib:$INSTALLDIR/dysco/lib:$INSTALLDIR/openblas/lib:$INSTALLDIR/superlu/lib64:$INSTALLDIR/wcslib/lib
 	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt && cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/armadillo:$INSTALLDIR/boost:$INSTALLDIR/casacore:$INSTALLDIR/casarest:$INSTALLDIR/cfitsio:$INSTALLDIR/dysco:$INSTALLDIR/openblas:$INSTALLDIR/superlu:$INSTALLDIR/wcslib -DBUILD_PACKAGES="StationResponse pystationresponse ParmDB pyparmdb Pipeline MS" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
-	$make -j $J
+	$make -s -j $J
 	$make install
     rm -rf $INSTALLDIR/lofar/src
     
@@ -137,7 +165,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     echo Installing LOFARBeam...
     mkdir -p $INSTALLDIR/LOFARBeam/build
     cd $INSTALLDIR/LOFARBeam
-    git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src
+    git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout db8d082
     cd ../build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore ../src && $make -j $J && $make install
     rm -rf $INSTALLDIR/LOFARBeam/src
 
@@ -153,7 +181,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #cd $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/build
     cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DBoost_INCLUDE_DIR:PATH=$INSTALLDIR/boost/include -DBoost_LIBRARY_DIR_RELEASE:PATH=$INSTALLDIR/boost/lib -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so ../src
-    $make -j $J && $make install
+    $make -s -j $J && $make install
     rm -rf $INSTALLDIR/DPPP/src
 
 	#
@@ -179,7 +207,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	mkdir ${INSTALLDIR}/losoto/lib/python2.7
 	mkdir ${INSTALLDIR}/losoto/lib/python2.7/site-packages
 	export PYTHONPATH=$INSTALLDIR/losoto/lib/python2.7/site-packages:$PYTHONPATH
-	cd ${INSTALLDIR}/losoto/build && git clone https://github.com/revoltek/losoto.git src && cd src && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/losoto
+	cd ${INSTALLDIR}/losoto/build && git clone https://github.com/revoltek/losoto.git src && cd src && git checkout pref3 && python setup.py build && python setup.py install --prefix=${INSTALLDIR}/losoto
 
 	#
 	# Install LSMTool.
@@ -216,8 +244,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     rm -rf ${INSTALLDIR}/lofar/build/gnu_opt
     rm -rf ${INSTALLDIR}/casacore/src
 	rm -rf ${INSTALLDIR}/casarest/src
+
     yum -y clean all
-o
+    
 	#
 	# init-lofar
 	#
@@ -230,6 +259,7 @@ o
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/DPPP/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/lofar/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
@@ -243,6 +273,10 @@ o
 	echo export OPENBLAS_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
+	echo export MKL_DEBUG_CPU_TYPE=5 >> $INSTALLDIR/init.sh
+
+    echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
+    echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
@@ -266,7 +300,9 @@ o
     * RMextract: $INSTALLDIR/RMextract
     * WSClean: $INSTALLDIR/wsclean
 
-    To execute a command, use
+    To execute a command directly, use
         singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
-    for example:
+    for example, to run a genericpipeline parset, the following command can be used:
         singularity exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
+    To enter a shell within the image, use
+        singularity shell -B <paths,that,need,to,be,accessible> <path to image>
