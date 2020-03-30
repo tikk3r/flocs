@@ -52,6 +52,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     pip install aplpy
     pip install xmlrunner
     pip install h5py
+    pip install six requests mimeparse
     pip install --no-deps "pyvo==0.9.3"
     pip install pyregion
     # Packaged required for cluster catalog.
