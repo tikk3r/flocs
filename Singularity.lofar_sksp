@@ -2,7 +2,7 @@ Bootstrap: shub
 From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
 #Bootstrap: localimage
-#From: lofar_base.simg
+#From: lofar-grid-hpccloud_lofar_sksp_base.sif
 
 
 
@@ -43,9 +43,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     yum -y install --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
     yum -y install pgplot
     scl enable devtoolset-7 bash
-    export CC=`which gcc`
-	export CXX=`which g++`
-    export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+    export CC=/opt/rh/devtoolset-7/root/bin/gcc
+	export CXX=/opt/rh/devtoolset-7/root/bin/gcc
+    export CFLAGS=`which gcc`
     export CXXFLAGS="-std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export make=$INSTALLDIR/make/bin/make
     
@@ -53,6 +53,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     pip install xmlrunner
     pip install h5py
     pip install six requests mimeparse
+    pip install astropy-helpers
     pip install --no-deps "pyvo==0.9.3"
     pip install pyregion
     # Packaged required for cluster catalog.
