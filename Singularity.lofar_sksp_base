@@ -3,9 +3,10 @@
 #MirrorURL: http://mirror.centos.org/centos-%{OSVERSION}/%{OSVERSION}/os/$basearch/
 #Include: yum
 Bootstrap: docker
-From: centos:7.5.1804
+From: fedora:30
 
-
+%files
+    /home/frits/software/lofar-grid-hpccloud/requirements.txt /tmp/requirements.txt
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -20,8 +21,8 @@ From: centos:7.5.1804
 	# Settings relevant to the installed software.
 	export ARMADILLO_VERSION=8.600.0
 	export BLAS_VERSION=0.2.17
-	export BOOST_DOT_VERSION=1.63.0
-	export BOOST_VERSION=1_63_0
+	export BOOST_DOT_VERSION=1.69.0
+	export BOOST_VERSION=1_69_0
 	export CFITSIO_VERSION=3410
     export FFTW_VERSION=3.3.8
 	export HDF5_VERSION=1.8.21
@@ -29,44 +30,65 @@ From: centos:7.5.1804
 	export OPENBLAS_VERSION=v0.3.5
 	# Do not change, Armadillo wants this version of SuperLU.
 	export SUPERLU_VERSION=v5.2.1
-	export WCSLIB_VERSION=5.20
-	
-	yum -y update
-	yum -y install patch sudo yum-utils
-	yum -y install git svn wget vim nano
-	yum -y install automake-devel aclocal autoconf autotools cmake make
-	yum -y install g++ gcc gcc-c++ gcc-gfortran
-	yum -y install arpack-devel blas-devel boost boost-devel boost-python fftw3-devel fftw3-libs python-devel lapack-devel libpng-devel libxml2-devel numpy-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
-	yum -y install bison flex ncurses tar bzip2 which gettext
-	yum -y install epel-release
-	yum -y install cmake3
-	#yum-config-manager --enable epel
-	#yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	yum -y install hdf5-devel
-	#wget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | pythonwget --retry-connrefused https://bootstrap.pypa.io/get-pip.py -O - | python
-	yum -y install python-pip tkinter
-	sudo yum -y remove python-numpy python3-numpy
-	yum -y remove numpy
-	
-	yum groups mark install "Development Tools"
-	yum groups mark convert "Development Tools"
-	yum -y groupinstall "Development Tools"
-    yum -y install centos-release-scl
-    yum -y install devtoolset-7-gcc*
-    scl enable devtoolset-7 bash
+	export WCSLIB_VERSION=7.2
+    export DEBIAN_FRONTEND=noninteractive
 
-    # Install the Intel Math Kernel libraries to speed up IDG.
-    sudo yum-config-manager --add-repo https://yum.repos.intel.com/mkl/setup/intel-mkl.repo
-    sudo rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
-    yum -y install intel-mkl intel-mkl-64bit
+    #
+    # System installs
+	#
+	dnf -y update
+    dnf -y install dnf-plugins-core
+	dnf -y install patch sudo yum-utils
+	dnf -y install git svn wget vim nano
+	dnf -y install automake autoconf cmake make
+	dnf -y install g++ gcc gcc-c++ gcc-gfortran
+	dnf -y install arpack-devel python-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
+	dnf -y install bison flex ncurses tar bzip2 which gettext
+	dnf -y install cmake3
+	dnf -y install hdf5-devel
+    dnf -y install python
+	dnf -y install python-pip tkinter
 
-	# FACTOR requisites.
-	pip install pyparsing
+    #
+    # Install Boost
+    #
+    dnf -y install boost boost-devel boost-python2 boost-python2-devel boost-python3 boost-python3-devel
+
+    #
+    # Install FFTW
+    #
+    dnf -y install fftw-devel fftw-libs
+
+	#
+	# Install OpenBLAS
+	#
+	dnf -y install blas-devel
+
+	#
+	# Install SuperLU
+	#
+	dnf -y install SuperLU SuperLU-devel
+
+	#
+	# Install Armadillo
+	#
+	dnf -y install armadillo armadillo-devel
+
+    #
+    # Setup the Python environment.
+    #
+    #wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/ubuntu/requirements.txt
+    pip install -r /tmp/requirements.txt
+    #mv requirements.txt > /opt/lofar/requirements.txt
+    
+    # 
+    # Setup environment variables used during build
+    #
     export CC=`which gcc`
 	export CXX=`which g++`
     export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export CXXFLAGS="-std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-    export make=$INSTALLDIR/make/bin/make
+    export make=`which make`
 
 	mkdir -p $INSTALLDIR
     export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
@@ -75,108 +97,25 @@ From: centos:7.5.1804
     export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export CXXFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
 
-    # 
-    # Install CUDA
-    #
-    wget https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-10.1.243-1.x86_64.rpm
-    rpm -i cuda-*.rpm
-    yum install -y cuda
+    ###################
+    # Source installs #
+    ###################
+	#
+	# Install cfitsio
+	#
+    dnf -y install cfitsio cfitsio-devel
 
 	#
-	# Install GNU Make 4
+	# Install wcslib
 	#
-	mkdir -p $INSTALLDIR/make && cd $INSTALLDIR/make
-	wget http://ftp.gnu.org/gnu/make/make-4.2.tar.gz && tar xf make-4.2.tar.gz && cd make-4.2
-	./configure --prefix=$INSTALLDIR/make && make -j $J && make install
-	rm -rf $INSTALLDIR/make/make-4.2.tar.gz
-
-	#
-	# Install CMake
-	#
-	mkdir -p $INSTALLDIR/cmake && cd $INSTALLDIR/cmake
-	wget https://github.com/Kitware/CMake/releases/download/v3.13.1/cmake-3.13.1.tar.gz && tar xf cmake-3.13.1.tar.gz && cd cmake-3.13.1
-	./bootstrap --prefix=$INSTALLDIR/cmake && $make -j $J && $make install
-	rm -rf $INSTALLDIR/cmake/cmake-*
+    dnf -y install wcslib wcslib-devel 
 
     #
-    # Install FFTW
+    # Install Intel MKL
     #
-    mkdir -p $INSTALLDIR/fftw
-    cd $INSTALLDIR/fftw && wget http://www.fftw.org/fftw-${FFTW_VERSION}.tar.gz && tar xf fftw*.tar.gz
-    cd fftw* && ./configure --prefix=$INSTALLDIR/fftw --enable-threads --enable-shared
-    $make -j $J
-    $make install
-    rm -rf $INSTALLDIR/fftw/*.tar.gz
-
-    #
-    # Install HDF5
-    #
-    mkdir -p $INSTALLDIR/hdf5
-    cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.18/src/hdf5-1.8.18.tar.gz && tar xf hdf5*.tar.gz
-    #cd $INSTALLDIR/hdf5 && wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.gz && tar xf hdf5*.tar.gz
-    cd hdf5* && ./configure --prefix=$INSTALLDIR/hdf5 --enable-fortran --enable-cxx --enable-threadsfafe --enable-unsupported && $make -j $J && make install
-    rm -rf $INSTALLDIR/hdf5/hdf5*
-	
-	#
-	# Install Boost.Python
-	#
-	mkdir -p $INSTALLDIR/boost/src
-	#cd $INSTALLDIR && wget https://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.gz
-	cd $INSTALLDIR && wget https://downloads.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.tar.gz
-	
-    #wget https://dl.bintray.com/boostorg/release/${BOOST_DOT_VERSION}/source/boost_${BOOST_VERSION}.tar.gz
-	#cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install toolset=gcc cxxflags=-std=c++11 --prefix=$INSTALLDIR/boost --with=all -j $J
-	cd $INSTALLDIR && tar xzf boost_${BOOST_VERSION}.tar.gz -C boost && cd boost/boost_${BOOST_VERSION} && ./bootstrap.sh --prefix=$INSTALLDIR/boost && ./b2 headers && ./b2 install toolset=gcc cxxflags=-std=c++11 --prefix=$INSTALLDIR/boost --with=all -j $J
-	rm -rf $INSTALLDIR/boost/src $INSTALLDIR/boost_${BOOST_VERSION}.tar.gz $INSTALLDIR/boost/boost_*
-
-	#
-	# Install OpenBLAS
-	#
-	mkdir -p $INSTALLDIR/openblas/
-	cd $INSTALLDIR/openblas/ && git clone https://github.com/xianyi/OpenBLAS.git src && cd src && git checkout $OPENBLAS_VERSION
-	cd $INSTALLDIR/openblas/src && $make -j $J && $make install PREFIX=$INSTALLDIR/openblas USE_OPENMP=1 NUM_THREADS=64
-	rm -rf $INSTALLDIR/openblas/src
-
-	#
-	# Install SuperLU
-	#
-	mkdir -p $INSTALLDIR/superlu/build
-	cd $INSTALLDIR/superlu/ && git clone https://github.com/xiaoyeli/superlu.git src && cd src && git checkout $SUPERLU_VERSION
-	cd $INSTALLDIR/superlu/build && cmake ../src -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/superlu -DUSE_XSDK_DEFAULTS=TRUE -Denable_blaslib=OFF -DBLAS_LIBRARY=$INSTALLDIR/openblas/lib/libopenblas.so && $make -j $j && $make install
-	rm -rf $INSTALLDIR/superlu/src
-
-	#
-	# Install Armadillo
-	#
-	mkdir -p $INSTALLDIR/armadillo/
-	cd $INSTALLDIR/armadillo && wget http://sourceforge.net/projects/arma/files/armadillo-$ARMADILLO_VERSION.tar.xz && tar xf armadillo-$ARMADILLO_VERSION.tar.xz && rm armadillo-$ARMADILLO_VERSION.tar.xz
-	cd $INSTALLDIR/armadillo/armadillo-$ARMADILLO_VERSION && ./configure && cmake . -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/armadillo -Dopenblas_LIBRARY:FILEPATH=$INSTALLDIR/openblas/lib/libopenblas.so  -DSuperLU_INCLUDE_DIR:PATH=$INSTALLDIR/superlu/include -DSuperLU_LIBRARY:FILEPATH=$INSTALLDIR/superlu/lib64/libsuperlu.so && $make -j $J && $make install
-	rm -rf $INSTALLDIR/armadillo/armadillo-$ARMADILLO_VERSION.tar.xz
-
-
-	#
-	# install-cfitsio
-	#
-	mkdir -p ${INSTALLDIR}/cfitsio/build
-	cd ${INSTALLDIR}/cfitsio && wget --retry-connrefused https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio${CFITSIO_VERSION}.tar.gz
-	cd ${INSTALLDIR}/cfitsio && tar xf cfitsio${CFITSIO_VERSION}.tar.gz
-	cd ${INSTALLDIR}/cfitsio/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/cfitsio/ ../cfitsio
-	cd ${INSTALLDIR}/cfitsio/build && $make -j ${J}
-	cd ${INSTALLDIR}/cfitsio/build && $make install
-	rm -rf $INSTALLDIR/cfitsio/cfitsio${CFITSIO_VERSION}.tar.gz
-
-	#
-	# install-wcslib
-	#
-	mkdir ${INSTALLDIR}/wcslib
-	if [ "${WCSLIB_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/wcslib && wget --retry-connrefused ftp://anonymous@ftp.atnf.csiro.au/pub/software/wcslib/wcslib.tar.bz2 -O wcslib-latest.tar.bz2; fi
-	if [ "${WCSLIB_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/wcslib && wget --retry-connrefused ftp://anonymous@ftp.atnf.csiro.au/pub/software/wcslib/wcslib-${WCSLIB_VERSION}.tar.bz2; fi
-	cd ${INSTALLDIR}/wcslib && tar xf wcslib-*.tar.bz2
-	#cd ${INSTALLDIR} && mkdir wcslib && cd wcslib && svn checkout https://github.com/astropy/astropy/trunk/cextern/wcslib
-	cd ${INSTALLDIR}/wcslib/wcslib* && ./configure --prefix=${INSTALLDIR}/wcslib --with-cfitsiolib=${INSTALLDIR}/cfitsio/lib/ --with-cfitsioinc=${INSTALLDIR}/cfitsio/include/ --without-pgplot
-	cd ${INSTALLDIR}/wcslib/wcslib* && $make -j $J
-	cd ${INSTALLDIR}/wcslib/wcslib* && $make install
-	rm -rf $INSTALLDIR/wcslib/wcslib-*.tar.bz2
+    sudo dnf config-manager --add-repo https://yum.repos.intel.com/mkl/setup/intel-mkl.repo
+    sudo rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
+    dnf -y install intel-mkl intel-mkl-64bit
 
     #   
     # Install Image Domain Gridder (IDG)
@@ -186,37 +125,23 @@ From: centos:7.5.1804
     cd src && mkdir build && cd build
     #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_LIB_CUDA=ON -DCUDA_KERNEL_DEBUG=ON ..
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON ..
+    #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF ..
     make -j $J
     make install
-
-	pip install --upgrade pip
-	pip install --upgrade setuptools
-	pip install --upgrade astropy
-	pip install --upgrade scipy
-	pip install --upgrade matplotlib
-    pip install --upgrade numexpr
-    pip install "tables<3.5"
-	pip install --upgrade boost
-	pip install --upgrade mock
-	pip install --upgrade pp
-	pip install --upgrade progressbar
-	pip install --upgrade python-monetdb
-	pip install --upgrade xmlrunner
-	pip install --upgrade unittest2
-	pip install --upgrade regions
+    rm -rf $INSTALLDIR/idg/src
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
 
-    yum -y clean all
+    #
+    # Wrap up installation, remove unnecessary stuff.
+    dnf -y autoremove
+    dnf -y clean all
 
 	#
 	# init-lofar
 	#
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
-	echo export LD_LIBRARY_PATH=\$INSTALLDIR/armadillo/lib64:\$INSTALLDIR/boost/lib:\$INSTALLDIR/cfitsio/lib:\$INSTALLDIR/superlu/lib64:\$INSTALLDIR/wcslib/:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
-    echo export make=/opt/lofar/make/bin/make >> $INSTALLDIR/init.sh
-    echo export cmake=/opt/lofar/cmake/bin/cmake >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
@@ -226,7 +151,7 @@ From: centos:7.5.1804
     . $INSTALLDIR/init.sh
 
 %help
-    This Singularity image acts as a base for the LOFAR installation. It has CentOS 7.5 setup, with the required dependencies installed. These are:
+    This Singularity image acts as a base for the LOFAR installation. It has Ubuntu 18.04 setup, with the required dependencies installed. These are:
     
     * Armadillo $ARMADILLO_VERSION
     * Boost $BOOST_VERSION
