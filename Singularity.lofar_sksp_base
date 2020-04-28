@@ -5,9 +5,6 @@
 Bootstrap: docker
 From: fedora:30
 
-%files
-    /home/frits/software/lofar-grid-hpccloud/requirements.txt /tmp/requirements.txt
-
 %environment
     export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
@@ -77,8 +74,9 @@ From: fedora:30
     #
     # Setup the Python environment.
     #
-    #wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/ubuntu/requirements.txt
+    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O /tmp/requirements.txt
     pip install -r /tmp/requirements.txt
+    pip freeze > /opt/lofar/requirements.txt
     #mv requirements.txt > /opt/lofar/requirements.txt
     
     # 
