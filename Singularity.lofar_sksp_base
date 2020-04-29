@@ -35,12 +35,17 @@ From: fedora:30
 	dnf -y install git svn wget vim nano
 	dnf -y install automake autoconf cmake make
 	dnf -y install g++ gcc gcc-c++ gcc-gfortran
-	dnf -y install arpack-devel python-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
+	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
 	dnf -y install bison flex ncurses tar bzip2 which gettext
 	dnf -y install cmake3
 	dnf -y install hdf5-devel
     dnf -y install python
 	dnf -y install python-pip tkinter
+    dnf -y install libsigc++20-devel gtkmm30-devel
+    dnf -y install python3-devel
+    dnf -y install lua lua-devel
+    dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    dnf -y install pgplot
 
     #
     # Install Boost
@@ -88,6 +93,7 @@ From: fedora:30
     #
     wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
     pip install -r $INSTALLDIR/requirements.txt
+    pip3 install boost
     
 
     ###################
