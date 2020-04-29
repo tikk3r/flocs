@@ -74,10 +74,8 @@ From: fedora:30
     #
     # Setup the Python environment.
     #
-    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O /tmp/requirements.txt
-    pip install -r /tmp/requirements.txt
-    pip freeze > /opt/lofar/requirements.txt
-    #mv requirements.txt > /opt/lofar/requirements.txt
+    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
+    pip install -r $INSTALLDIR/requirements.txt
     
     # 
     # Setup environment variables used during build
