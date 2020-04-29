@@ -1,7 +1,3 @@
-#Bootstrap: yum
-#OSVersion: 7
-#MirrorURL: http://mirror.centos.org/centos-%{OSVERSION}/%{OSVERSION}/os/$basearch/
-#Include: yum
 Bootstrap: docker
 From: fedora:30
 
@@ -71,12 +67,6 @@ From: fedora:30
 	#
 	dnf -y install armadillo armadillo-devel
 
-    #
-    # Setup the Python environment.
-    #
-    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
-    pip install -r $INSTALLDIR/requirements.txt
-    
     # 
     # Setup environment variables used during build
     #
@@ -92,6 +82,13 @@ From: fedora:30
     export CPATH=/opt/intel/mkl/include:$CPATH
     export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export CXXFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+
+    #
+    # Setup the Python environment.
+    #
+    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
+    pip install -r $INSTALLDIR/requirements.txt
+    
 
     ###################
     # Source installs #
