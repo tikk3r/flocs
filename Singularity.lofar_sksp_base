@@ -93,8 +93,7 @@ From: fedora:30
     #
     wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
     pip install -r $INSTALLDIR/requirements.txt
-    pip3 install boost
-    
+    pip3 install boost psycopg2 xmlrunner
 
     ###################
     # Source installs #
