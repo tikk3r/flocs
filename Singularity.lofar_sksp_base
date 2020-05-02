@@ -46,6 +46,7 @@ From: fedora:30
     dnf -y install lua lua-devel
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install pgplot
+    dnf -y install python3-numpy-f2py
 
     #
     # Install Boost
@@ -92,8 +93,9 @@ From: fedora:30
     # Setup the Python environment.
     #
     wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
+    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
     pip install -r $INSTALLDIR/requirements.txt
-    pip3 install boost psycopg2 xmlrunner
+    pip3 install -r $INSTALLDIR/requirements3.txt
 
     ###################
     # Source installs #
