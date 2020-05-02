@@ -1,8 +1,8 @@
-#Bootstrap: shub
-#From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
+Bootstrap: shub
+From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
-Bootstrap: localimage
-From: lofar_sksp_base.sif
+#Bootstrap: localimage
+#From: lofar_sksp_base.sif
 
 
 %files
