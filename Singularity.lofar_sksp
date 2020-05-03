@@ -60,6 +60,14 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	ln -s /usr/lib64/libboost_numpy27.so /usr/lib64/libboost_numpy.so
 
     #
+    # Setup the Python environment.
+    #
+    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
+    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    pip install -r $INSTALLDIR/requirements.txt
+    pip3 install -r $INSTALLDIR/requirements3.txt
+
+    #
     # Install difmap
     #
     mkdir -p $INSTALLDIR/difmap
