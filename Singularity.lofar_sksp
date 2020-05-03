@@ -246,9 +246,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     # Clean up unnecessary packages
     # 
     export PYTHONPATH=$OLD_PYTHONPATH
-    dnf -y remove 
-    dnf -y remove $(rpm -qa "*-devel")
-    #dnf -y remove dnf-plugins-core patch sudo yum-utils git svn wget automake autoconf cmake make g++ gcc gcc-c++ gcc-gfortran
     dnf -y remove dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
     dnf -y clean all
     
