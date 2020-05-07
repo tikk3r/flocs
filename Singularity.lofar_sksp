@@ -4,9 +4,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 #Bootstrap: localimage
 #From: lofar_sksp_base.sif
 
-
-%files
-    /home/frits/software/lofar-grid-hpccloud/requirements3.txt /tmp/requirements3.txt
 %environment
     export PYTHONPATH=
     export INSTALLDIR=/opt/lofar
