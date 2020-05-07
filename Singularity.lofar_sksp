@@ -66,6 +66,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
     pip install -r $INSTALLDIR/requirements.txt
     pip3 install -r $INSTALLDIR/requirements3.txt
+    pip3 install lofar-h5plot
 
     #
     # Install difmap
