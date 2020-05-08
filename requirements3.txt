@@ -21,6 +21,7 @@ google-api-python-client
 google-auth
 google-auth-httplib2
 google-auth-oauthlib
+--no-binary=h5py
 h5py
 httplib2
 idna
@@ -47,7 +48,7 @@ pyasn1
 pyasn1-modules
 pyparsing
 pyregion
-pytest
+"pytest<3.7"
 python-dateutil
 python-magic
 python-monetdb
