@@ -9,10 +9,11 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
     ulimit -n 4096
+    source $INSTALLDIR/pyenv-py2/bin/activate
 
 %post
 	# General environment settings.
-	export J=3
+	export J=6
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=3.7
 	# Enable MKL on AMD CPUs
@@ -61,9 +62,18 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #
     wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
     wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    dnf -y install qt5
+    pip --no-cache-dir install "virtualenv<20"
+    virtualenv $INSTALLDIR/pyenv-py3 --python=python3
+    source $INSTALLDIR/pyenv-py3/bin/activate
+    pip install numpy
+    pip install -r $INSTALLDIR/requirements3.txt
+    pip install lofar-h5plot
+    deactivate
+    virtualenv $INSTALLDIR/pyenv-py2 --python=python2
+    source $INSTALLDIR/pyenv-py2/bin/activate
+    pip install numpy
     pip install -r $INSTALLDIR/requirements.txt
-    pip3 install -r $INSTALLDIR/requirements3.txt
-    pip3 install lofar-h5plot
 
     #
     # Install difmap
@@ -92,9 +102,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	if [ "${PYBDSF_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION}; fi
 	mkdir -p ${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages/
     mkdir -p ${INSTALLDIR}/pybdsf/lib64/python${PYTHON_VERSION}/site-packages/
-    export PYTHONPATH=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages:${INSTALLDIR}/pybdsf/lib64/python${PYTHON_VERSION}/site-packages:$PYTHONPATH
+    #export PYTHONPATH=${INSTALLDIR}/pybdsf/lib/python${PYTHON_VERSION}/site-packages:${INSTALLDIR}/pybdsf/lib64/python${PYTHON_VERSION}/site-packages:$PYTHONPATH
     cd ${INSTALLDIR}/pybdsf/pybdsf
-    python3 setup.py install --prefix=${INSTALLDIR}/pybdsf
+    python setup.py install # --prefix=${INSTALLDIR}/pybdsf
 
 	#
 	# Install CASAcore
@@ -119,12 +129,12 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore && wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/patches/python_casacore_setup_patch.patch
 	if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
 	cd ${INSTALLDIR}/python-casacore/python-casacore
-    python3 setup.py build_ext -I${INSTALLDIR}/casacore/include/:/usr/include/python2.7 -L${INSTALLDIR}/casacore/lib/:/usr/lib64/
+    python setup.py build_ext -I${INSTALLDIR}/casacore/include/:/usr/include/python2.7 -L${INSTALLDIR}/casacore/lib/:/usr/lib64/
 	mkdir -p ${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages/
 	mkdir -p ${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages/
-	export PYTHONPATH=${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages:${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages:$PYTHONPATH
+	#export PYTHONPATH=${INSTALLDIR}/python-casacore/lib/python${PYTHON_VERSION}/site-packages:${INSTALLDIR}/python-casacore/lib64/python${PYTHON_VERSION}/site-packages:$PYTHONPATH
     cd ${INSTALLDIR}/python-casacore/python-casacore
-    python3 setup.py install --prefix=${INSTALLDIR}/python-casacore/
+    python setup.py install #--prefix=${INSTALLDIR}/python-casacore/
 
 	#
 	# Install Dysco
@@ -182,39 +192,101 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     $make -s -j $J && $make install
     rm -rf $INSTALLDIR/DPPP/src
 
+    ############################################
+    # Install Python packages for Python 2 now #
+    ############################################
 	#
 	# Install RMextract
 	#
-	export PYTHONPATH=$INSTALLDIR/RMextract/lib64/python$PYTHON_VERSION/site-packages:$PYTHONPATH
+	#export PYTHONPATH=$INSTALLDIR/RMextract/lib64/python$PYTHON_VERSION/site-packages:$PYTHONPATH
 	mkdir -p ${INSTALLDIR}/RMextract/build
-	mkdir -p ${INSTALLDIR}/RMextract/lib64/python$PYTHON_VERSION/site-packages
+	#mkdir -p ${INSTALLDIR}/RMextract/lib64/python$PYTHON_VERSION/site-packages
 	cd ${INSTALLDIR}/RMextract/build
     git clone https://github.com/lofar-astron/RMextract.git src
     cd src
-    python3 setup.py build --add-lofar-utils
-    python3 setup.py install --add-lofar-utils --prefix=${INSTALLDIR}/RMextract
+    python setup.py build --add-lofar-utils
+    python setup.py install --add-lofar-utils #--prefix=${INSTALLDIR}/RMextract
 
 	#
 	# Install LoSoTo
 	#
-	export PYTHONPATH=/opt/lofar/losoto/lib/python$PYTHON_VERSION/site-packages/:$PYTHONPATH
+	#export PYTHONPATH=/opt/lofar/losoto/lib/python$PYTHON_VERSION/site-packages/:$PYTHONPATH
 	mkdir -p ${INSTALLDIR}/losoto/build
-	mkdir -p ${INSTALLDIR}/losoto/lib/python$PYTHON_VERSION/site-packages
-	export PYTHONPATH=$INSTALLDIR/losoto/lib/python$PYTHON_VERSION/site-packages:$PYTHONPATH
+	#mkdir -p ${INSTALLDIR}/losoto/lib/python$PYTHON_VERSION/site-packages
 	cd ${INSTALLDIR}/losoto/build
     git clone https://github.com/revoltek/losoto.git src
     cd src
-    python3 setup.py build
-    python3 setup.py install --prefix=${INSTALLDIR}/losoto
+    python setup.py build
+    python setup.py install #--prefix=${INSTALLDIR}/losoto
 
 	#
 	# Install LSMTool.
 	#
 	mkdir -p $INSTALLDIR/lsmtool/lib/python$PYTHON_VERSION/site-packages
-	export PYTHONPATH=$INSTALLDIR/lsmtool/lib/python$PYTHON_VERSION/site-packages:$PYTHONPATH
-	cd $INSTALLDIR/lsmtool && git clone https://github.com/darafferty/LSMTool.git lsmtool 
+	#export PYTHONPATH=$INSTALLDIR/lsmtool/lib/python$PYTHON_VERSION/site-packages:$PYTHONPATH
+	cd $INSTALLDIR/lsmtool
+    git clone https://github.com/darafferty/LSMTool.git lsmtool 
 	cd $INSTALLDIR/lsmtool/lsmtool
-	python3 setup.py install --prefix=$INSTALLDIR/lsmtool
+	python setup.py install #--prefix=$INSTALLDIR/lsmtool
+
+
+    ############################################
+    # Install Python packages for Python 3 now #
+    ############################################
+    deactivate
+    source $INSTALLDIR/pyenv-py3/bin/activate
+	#
+	# Install Python-CASAcore
+	#
+	# Finding libraries is broken, patch the setup to include the previously installed boost and casacore libraries.
+	rm -rf ${INSTALLDIR}/python-casacore
+	mkdir ${INSTALLDIR}/python-casacore
+	cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore && wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/patches/python_casacore_setup_patch.patch
+	if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
+	cd ${INSTALLDIR}/python-casacore/python-casacore
+    python setup.py build_ext -I${INSTALLDIR}/casacore/include/:/usr/include/python2.7 -L${INSTALLDIR}/casacore/lib/:/usr/lib64/
+    cd ${INSTALLDIR}/python-casacore/python-casacore
+    python setup.py install #--prefix=${INSTALLDIR}/python-casacore/
+
+	#
+	# Install RMextract
+	#
+	#export PYTHONPATH=$INSTALLDIR/RMextract/lib64/python$PYTHON_VERSION/site-packages:$PYTHONPATH
+	rm -rf ${INSTALLDIR}/RMextract/build
+	mkdir -p ${INSTALLDIR}/RMextract/build
+	#mkdir -p ${INSTALLDIR}/RMextract/lib64/python$PYTHON_VERSION/site-packages
+	cd ${INSTALLDIR}/RMextract/build
+    git clone https://github.com/lofar-astron/RMextract.git src
+    cd src
+    python setup.py build --add-lofar-utils
+    python setup.py install --add-lofar-utils #--prefix=${INSTALLDIR}/RMextract
+
+	#
+	# Install LoSoTo
+	#
+	#export PYTHONPATH=/opt/lofar/losoto/lib/python$PYTHON_VERSION/site-packages/:$PYTHONPATH
+	rm -rf ${INSTALLDIR}/losoto/build
+	mkdir -p ${INSTALLDIR}/losoto/build
+	#mkdir -p ${INSTALLDIR}/losoto/lib/python$PYTHON_VERSION/site-packages
+	cd ${INSTALLDIR}/losoto/build
+    git clone https://github.com/revoltek/losoto.git src
+    cd src
+    python setup.py build
+    python setup.py install #--prefix=${INSTALLDIR}/losoto
+
+	#
+	# Install LSMTool.
+	#
+	#mkdir -p $INSTALLDIR/lsmtool/lib/python$PYTHON_VERSION/site-packages
+	#export PYTHONPATH=$INSTALLDIR/lsmtool/lib/python$PYTHON_VERSION/site-packages:$PYTHONPATH
+	cd $INSTALLDIR/lsmtool
+    #git clone https://github.com/darafferty/LSMTool.git lsmtool 
+	cd $INSTALLDIR/lsmtool/lsmtool
+	python setup.py install #--prefix=$INSTALLDIR/lsmtool
+    
+    # Switch back to py2 to wrap up installation
+    deactivate
+    source $INSTALLDIR/pyenv-py2/bin/activate
 
     #
     # Install-WSClean
@@ -244,7 +316,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     # Clean up unnecessary packages
     # 
     export PYTHONPATH=$OLD_PYTHONPATH
-    dnf -y remove dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
+    #dnf -y remove dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
     dnf -y clean all
     
 	#
@@ -254,7 +326,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/losoto/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/lsmtool/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/pybdsf/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/pybdsf/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/python-casacore/lib/python$PYTHON_VERSION/site-packages/:\$INSTALLDIR/python-casacore/lib64/python$PYTHON_VERSION/site-packages/:\$INSTALLDIR/RMextract/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DPPP/lib64/python$PYTHON_VERSION/site-packages/:/usr/lib64/python$PYTHON_VERSION/site-packages  >> $INSTALLDIR/init.sh
+	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python3.7/site-packages
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
@@ -262,10 +334,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/lofar/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/losoto/bin:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/lsmtool/bin:\$PATH >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/pybdsf/bin:\$PATH >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/RMextract/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
@@ -290,14 +358,11 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
+    * Difmap: $INSTALLDIR/difmap
     * DP3: $INSTALLDIR/DPPP
     * DS9: $INSTALLDIR/DS9
     * Dysco: $INSTALLDIR/dysco
     * LOFAR: $INSTALLDIR/lofar
-    * LoSoTo: $INSTALLDIR/losoto
-    * LSMTool: $INSTALLDIR/lsmtool
-    * PyBDSF: $INSTALLDIR/pybdsf
-    * RMextract: $INSTALLDIR/RMextract
     * WSClean: $INSTALLDIR/wsclean
 
     To execute a command directly, use
