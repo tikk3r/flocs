@@ -1,8 +1,12 @@
-Bootstrap: shub
-From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
+#Bootstrap: shub
+#From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
-#Bootstrap: localimage
-#From: lofar_sksp_base.sif
+Bootstrap: localimage
+From: lofar_sksp_fedora_base.sif
+
+%files
+    /home/frits/software/lofar-grid-hpccloud/requirements.txt /opt/lofar
+    /home/frits/software/lofar-grid-hpccloud/requirements3.txt /opt/lofar
 
 %environment
     export PYTHONPATH=
@@ -60,19 +64,23 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #
     # Setup the Python environment.
     #
-    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
-    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
-    dnf -y install qt5
+    #wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
+    #wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    pip install xmlrunner
+    pip3 install xmlrunner
     pip --no-cache-dir install "virtualenv<20"
     virtualenv $INSTALLDIR/pyenv-py3 --python=python3
     source $INSTALLDIR/pyenv-py3/bin/activate
     pip install numpy
+    export HDF5_VERSION=1.8.20
+    pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
     deactivate
     virtualenv $INSTALLDIR/pyenv-py2 --python=python2
     source $INSTALLDIR/pyenv-py2/bin/activate
     pip install numpy
+    pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements.txt
 
     #
@@ -153,6 +161,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../aoflagger
 	cd ${INSTALLDIR}/aoflagger/build && $make -s -j ${J}
 	cd ${INSTALLDIR}/aoflagger/build && $make install
+    rm -rf $INSTALLDIR/aoflagger/build
     rm -rf $INSTALLDIR/aoflagger/src
 
 	#
@@ -169,6 +178,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/dysco -DBUILD_PACKAGES="Pipeline" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True -DBUILD_PYTHON3=OFF ${INSTALLDIR}/lofar/src/
 	$make -s -j $J
 	$make install
+    rm -rf $INSTALLDIR/lofar/build
     rm -rf $INSTALLDIR/lofar/src
     
     #
@@ -342,6 +352,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export MKL_DEBUG_CPU_TYPE=5 >> $INSTALLDIR/init.sh
+    echo alias h5plot=\$INSTALLDIR/pyenv-py3/bin/h5plot >> $INSTALLDIR/init.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh

@@ -1,6 +1,9 @@
 Bootstrap: docker
 From: fedora:30
 
+%files
+    /home/frits/software/lofar-grid-hpccloud/requirements.txt $INSTALLDIR/requirements.txt
+    /home/frits/software/lofar-grid-hpccloud/requirements3.txt $INSTALLDIR/requirements3.txt
 %environment
     export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
@@ -38,6 +41,7 @@ From: fedora:30
 	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
 	dnf -y install bison flex ncurses tar bzip2 which gettext
 	dnf -y install cmake3
+    dnf -y install hdf5
 	dnf -y install hdf5-devel
     dnf -y install python
 	dnf -y install python-pip tkinter
@@ -47,6 +51,7 @@ From: fedora:30
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install pgplot
     dnf -y install python3-numpy-f2py
+    dnf -y install qt5
 
     #
     # Install Boost
@@ -88,14 +93,6 @@ From: fedora:30
     export CPATH=/opt/intel/mkl/include:$CPATH
     export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export CXXFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-
-    #
-    # Setup the Python environment.
-    #
-    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
-    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
-    pip install -r $INSTALLDIR/requirements.txt
-    pip3 install -r $INSTALLDIR/requirements3.txt
 
     ###################
     # Source installs #
