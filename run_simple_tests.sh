@@ -88,7 +88,7 @@ printf ${Cyan}"LoSoTo: "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py2/bin/losoto -h > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off}|| printf ${Red}"FAIL "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py3/bin/losoto -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 printf ${Cyan}"LSMTool: "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py2/bin/lsmtool -h > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off}|| printf ${Red}"FAIL "${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py2/bin/lsmtool -h > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off}|| printf ${Red}"FAIL (EXPECTED) "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py3/bin/lsmtool -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 printf ${Cyan}"WSClean: "${Color_Off}
 singularity exec $SIMG wsclean --version 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
