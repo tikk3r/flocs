@@ -1,12 +1,8 @@
-#Bootstrap: shub
-#From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
+Bootstrap: shub
+From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
-Bootstrap: localimage
-From: lofar_sksp_fedora_base.sif
-
-%files
-    /home/frits/software/lofar-grid-hpccloud/requirements.txt /opt/lofar
-    /home/frits/software/lofar-grid-hpccloud/requirements3.txt /opt/lofar
+#Bootstrap: localimage
+#From: lofar_sksp_fedora_base.sif
 
 %environment
     export PYTHONPATH=
@@ -64,8 +60,8 @@ From: lofar_sksp_fedora_base.sif
     #
     # Setup the Python environment.
     #
-    #wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
-    #wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
+    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
     pip install xmlrunner
     pip3 install xmlrunner
     pip --no-cache-dir install "virtualenv<20"

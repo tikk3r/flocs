@@ -71,7 +71,7 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
-SIMG=lofar_sksp_fedora.sif
+SIMG=lofar_sksp_fedora_ddf.sif
 
 printf ${Green}"Running test 1 / 2 - software builds\n"${Color_Off}
 printf ${Cyan}"AOFlagger: "${Color_Off}
