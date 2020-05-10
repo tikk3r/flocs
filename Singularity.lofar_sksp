@@ -329,6 +329,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	# init-lofar
 	#
 	ln -s /opt/lofar/DPPP/bin/DPPP /opt/lofar/lofar/bin/NDPPP
+    ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
@@ -348,7 +349,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export MKL_DEBUG_CPU_TYPE=5 >> $INSTALLDIR/init.sh
-    echo alias h5plot=\$INSTALLDIR/pyenv-py3/bin/h5plot >> $INSTALLDIR/init.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
