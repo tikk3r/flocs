@@ -190,7 +190,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     $make -j $J
     $make install
     # This is needed to allow importing the module.
-    touch $INSTALLDIR/LOFARBeam/lib64/python2.7/site-packages/lofar/__init__.py
+    touch $INSTALLDIR/LOFARBeam/lib64/python3.7/site-packages/lofar/__init__.py
     rm -rf $INSTALLDIR/LOFARBeam/src
 
     #
@@ -240,6 +240,23 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     git clone https://github.com/darafferty/LSMTool.git lsmtool 
 	cd $INSTALLDIR/lsmtool/lsmtool
 	python setup.py install #--prefix=$INSTALLDIR/lsmtool
+
+    #
+    # Install the standalone StationResponse libraries.
+    #   
+    echo Installing LOFARBeam...
+    rm -rf $INSTALLDIR/LOFARBeam/build
+    mkdir -p $INSTALLDIR/LOFARBeam/build
+    cd $INSTALLDIR/LOFARBeam
+    #git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout db8d082
+    #git clone https://github.com/lofar-astron/LOFARBeam.git src
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/pyenv-py2 ../src
+    $make -j $J
+    $make install
+    # This is needed to allow importing the module.
+    touch $INSTALLDIR/LOFARBeam/lib64/python3.7/site-packages/lofar/__init__.py
+    rm -rf $INSTALLDIR/LOFARBeam/src
 
 
     ############################################
