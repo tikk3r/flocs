@@ -186,11 +186,10 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout db8d082
     git clone https://github.com/lofar-astron/LOFARBeam.git src
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam ../src
+    # Install in the existing lofar python folder
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
     $make -j $J
     $make install
-    # This is needed to allow importing the module.
-    touch $INSTALLDIR/LOFARBeam/lib64/python3.7/site-packages/lofar/__init__.py
     rm -rf $INSTALLDIR/LOFARBeam/src
 
     #
@@ -255,7 +254,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     $make -j $J
     $make install
     # This is needed to allow importing the module.
-    touch $INSTALLDIR/LOFARBeam/lib64/python3.7/site-packages/lofar/__init__.py
+    touch $INSTALLDIR/pyenv-py2/lib64/python2.7/site-packages/lofar/__init__.py
     rm -rf $INSTALLDIR/LOFARBeam/src
 
 
