@@ -189,6 +189,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/LOFARBeam ../src
     $make -j $J
     $make install
+    # This is needed to allow importing the module.
+    touch $INSTALLDIR/LOFARBeam/lib64/python2.7/site-packages/lofar/__init__.py
     rm -rf $INSTALLDIR/LOFARBeam/src
 
     #
