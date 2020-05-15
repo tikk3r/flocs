@@ -240,24 +240,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	cd $INSTALLDIR/lsmtool/lsmtool
 	python setup.py install #--prefix=$INSTALLDIR/lsmtool
 
-    #
-    # Install the standalone StationResponse libraries.
-    #   
-    echo Installing LOFARBeam...
-    rm -rf $INSTALLDIR/LOFARBeam/build
-    mkdir -p $INSTALLDIR/LOFARBeam/build
-    cd $INSTALLDIR/LOFARBeam
-    #git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout db8d082
-    git clone https://github.com/lofar-astron/LOFARBeam.git src
-    cd build
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/pyenv-py2 ../src
-    $make -j $J
-    $make install
-    # This is needed to allow importing the module.
-    touch $INSTALLDIR/pyenv-py2/lib64/python2.7/site-packages/lofar/__init__.py
-    rm -rf $INSTALLDIR/LOFARBeam/src
-
-
     ############################################
     # Install Python packages for Python 3 now #
     ############################################
@@ -275,6 +257,24 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     python setup.py build_ext -I${INSTALLDIR}/casacore/include/:/usr/include/python2.7 -L${INSTALLDIR}/casacore/lib/:/usr/lib64/
     cd ${INSTALLDIR}/python-casacore/python-casacore
     python setup.py install #--prefix=${INSTALLDIR}/python-casacore/
+
+    #
+    # Install the standalone StationResponse libraries.
+    #   
+    echo Installing LOFARBeam...
+    rm -rf $INSTALLDIR/LOFARBeam/build
+    mkdir -p $INSTALLDIR/LOFARBeam/build
+    cd $INSTALLDIR/LOFARBeam
+    #git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout db8d082
+    git clone https://github.com/lofar-astron/LOFARBeam.git src
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/pyenv-py3 ../src
+    $make -j $J
+    $make install
+    # This is needed to allow importing the module.
+    touch $INSTALLDIR/pyenv-py3/lib64/python2.7/site-packages/lofar/__init__.py
+    rm -rf $INSTALLDIR/LOFARBeam/src
+
 
 	#
 	# Install RMextract
