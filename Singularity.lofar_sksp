@@ -248,7 +248,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     mkdir -p $INSTALLDIR/LOFARBeam/build
     cd $INSTALLDIR/LOFARBeam
     #git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout db8d082
-    #git clone https://github.com/lofar-astron/LOFARBeam.git src
+    git clone https://github.com/lofar-astron/LOFARBeam.git src
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/pyenv-py2 ../src
     $make -j $J
