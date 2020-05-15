@@ -45,7 +45,7 @@ From: lofar_sksp_fedora.sif
     #pip --no-cache-dir install "virtualenv<20"
     #virtualenv $INSTALLDIR/pyenv-ddf
     source $INSTALLDIR/pyenv-py2/bin/activate
-    pip --no-cache-dir install --upgrade "numpy==1.16.0"
+    pip --no-cache-dir install --upgrade "numpy==1.16.3"
     pip --no-cache-dir install -r $INSTALLDIR/requirements.txt
     
     pip --no-cache-dir install --upgrade wheel
