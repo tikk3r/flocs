@@ -121,7 +121,7 @@ From: fedora:30
     git clone https://gitlab.com/astron-idg/idg.git src 
     cd src && mkdir build && cd build
     #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_LIB_CUDA=ON -DCUDA_KERNEL_DEBUG=ON ..
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON ..
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON ..
     #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF ..
     make -j $J
     make install
