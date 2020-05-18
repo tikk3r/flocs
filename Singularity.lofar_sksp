@@ -1,8 +1,8 @@
-Bootstrap: shub
-From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
+#Bootstrap: shub
+#From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
-#Bootstrap: localimage
-#From: lofar_sksp_fedora_base.sif
+Bootstrap: localimage
+From: lofar_sksp_fedora_base.sif
 
 %environment
     export PYTHONPATH=
@@ -190,6 +190,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
     $make -j $J
     $make install
+    touch /opt/lofar/lofar/lib64/python2.7/site-packages/lofar/__init__.py
     rm -rf $INSTALLDIR/LOFARBeam/src
 
     #
@@ -199,7 +200,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/src && git checkout 8cda70f
     cd $INSTALLDIR/DPPP/build
-    cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so ../src
+    #cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/LOFARBeam/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/LOFARBeam/lib/libstationresponse.so -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so ../src
+    cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/lofar/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/lofar/lib/libstationresponse.so -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so ../src
     $make -s -j $J && $make install
     rm -rf $INSTALLDIR/DPPP/src
 
@@ -268,11 +270,12 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout db8d082
     git clone https://github.com/lofar-astron/LOFARBeam.git src
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/pyenv-py3 ../src
+    #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/pyenv-py3 ../src
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
     $make -j $J
     $make install
     # This is needed to allow importing the module.
-    touch $INSTALLDIR/pyenv-py3/lib64/python2.7/site-packages/lofar/__init__.py
+    #touch $INSTALLDIR/pyenv-py3/lib64/python3.7/site-packages/lofar/__init__.py
     rm -rf $INSTALLDIR/LOFARBeam/src
 
 
@@ -334,7 +337,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     # Install DS9
     #
     mkdir -p $INSTALLDIR/ds9/bin
-    cd $INSTALLDIR/ds9 && wget http://ds9.si.edu/download/centos7/ds9.centos7.8.0.1.tar.gz
+    cd $INSTALLDIR/ds9
+    wget http://ds9.si.edu/download/fedora30/ds9.fedora30.8.1.tar.gz 
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
 
 	echo "Installation directory contents:"
@@ -356,7 +360,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python3.7/site-packages
+	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python3.7/site-packages >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
@@ -365,13 +369,16 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/lofar/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
+	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 	echo export OPENBLAS_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OPENBLAS_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export MKL_DEBUG_CPU_TYPE=5 >> $INSTALLDIR/init.sh
+
+	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages >> $INSTALLDIR/init_py2.sh
+    echo source \$INSTALLDIR/pyenv-py2/bin/activate >> $INSTALLDIR/init_py2.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
