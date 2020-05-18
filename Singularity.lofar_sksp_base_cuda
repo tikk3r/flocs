@@ -108,6 +108,14 @@ From: fedora:30
     dnf -y install wcslib wcslib-devel 
 
     #
+    # Install CUDA
+    #
+    sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora29/x86_64/cuda-fedora29.repo
+    sudo dnf -y clean all
+    #sudo dnf -y install cuda-libraries-10-2 cuda-libraries-dev-10-2
+    sudo dnf -y install cuda
+
+    #
     # Install Intel MKL
     #
     sudo dnf config-manager --add-repo https://yum.repos.intel.com/mkl/setup/intel-mkl.repo
@@ -120,8 +128,9 @@ From: fedora:30
     mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg
     git clone https://gitlab.com/astron-idg/idg.git src 
     cd src && mkdir build && cd build
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_LIB_CUDA=ON -DCUDA_KERNEL_DEBUG=ON ..
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON ..
+    #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_LIB_CUDA=ON -DCUDA_KERNEL_DEBUG=ON ..
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include ..
+    #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF ..
     make -j $J
     make install
     rm -rf $INSTALLDIR/idg/src
