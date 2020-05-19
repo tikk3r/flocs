@@ -377,7 +377,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export MKL_DEBUG_CPU_TYPE=5 >> $INSTALLDIR/init.sh
 
-	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages >> $INSTALLDIR/init_py2.sh
+	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$PYTHONPATH >> $INSTALLDIR/init_py2.sh
     echo source \$INSTALLDIR/pyenv-py2/bin/activate >> $INSTALLDIR/init_py2.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
