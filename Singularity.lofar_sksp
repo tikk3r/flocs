@@ -357,6 +357,10 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	ln -s /opt/lofar/DPPP/bin/DPPP /opt/lofar/lofar/bin/NDPPP
 	ln -s /opt/lofar/DPPP/bin/makesourcedb /opt/lofar/lofar/bin/makesourcedb
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
+
+    # Dirty hack to get generic pipeline available, seems to work
+    ln -s $INSTALLDIR/lofar/lib64/python3.7/site-packages/lofarpipe $INSTALLDIR/lofar/lib64/python2.7/site-packages/
+
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
@@ -391,16 +395,19 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     ulimit -n 4096
 
 %help
-    This Singularity image contains an install of LOFAR 3.2.9. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with all software installed as follows:
+    This Singularity image contains an install of LOFAR 4.0.17. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
     * Difmap: $INSTALLDIR/difmap
     * DP3: $INSTALLDIR/DPPP
-    * DS9: $INSTALLDIR/DS9
+    * Dysco: $INSTALLDIR/dysco
+    * DS9: $INSTALLDIR/ds9
     * Dysco: $INSTALLDIR/dysco
     * LOFAR: $INSTALLDIR/lofar
     * WSClean: $INSTALLDIR/wsclean
+
+    Python packages such as losoto, lsmtool and RMextract are available in the respective virtual environments: /opt/lofar/pyenv-py2 and /opt/lofar/pyenv-py3. These can be activated by sourcing /opt/lofar/pyenv-py{2,3}/bin/activate. By default the Python 3 environment is active.
 
     To execute a command directly, use
         singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
