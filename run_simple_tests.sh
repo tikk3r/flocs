@@ -71,25 +71,32 @@ On_IPurple='\033[0;105m'  # Purple
 On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
-SIMG=lofar_sksp_fedora.sif
+SIMG=$1
 
 printf ${Green}"Running test 1 / 2 - software builds\n"${Color_Off}
 printf ${Cyan}"AOFlagger: "${Color_Off}
 singularity exec $SIMG aoflagger --version 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+
 printf ${Cyan}"Difmap: "${Color_Off}
-singularity exec $SIMG which difmap 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+singularity exec $SIMG which difmap > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+
 printf ${Cyan}"DPPP: "${Color_Off}
-singularity exec $SIMG DPPP 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+singularity exec $SIMG DPPP > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+
 printf ${Cyan}"DS9: "${Color_Off}
-singularity exec $SIMG which ds9 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+singularity exec $SIMG ds9 -help > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+
 printf ${Cyan}"Generic Pipeline: "${Color_Off}
 singularity exec $SIMG genericpipeline.py -h  | grep "LOFAR/WSRT pipeline framework" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+
 printf ${Cyan}"LoSoTo: "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py2/bin/losoto -h > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off}|| printf ${Red}"FAIL "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py3/bin/losoto -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+
 printf ${Cyan}"LSMTool: "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py2/bin/lsmtool -h > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off}|| printf ${Red}"FAIL (EXPECTED) "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py3/bin/lsmtool -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+
 printf ${Cyan}"WSClean: "${Color_Off}
 singularity exec $SIMG wsclean --version 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
@@ -97,17 +104,21 @@ printf "\n"
 printf ${Green}"Running test 2 / 2 - python imports\n"${Color_Off}
 printf ${Green}"<MODULE> <PY2> <PY3>\n"${Color_off}
 printf ${Cyan}"Python-casacore: "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import casacore" /dev/null 2>&1 && printf ${Green}"OK "${Color_Off} || printf ${Red}"FAIL "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import casacore" /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import casacore" > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off} || printf ${Red}"FAIL "${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import casacore" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
 
 printf ${Cyan}"LoSoTo: "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import losoto" /dev/null 2>&1 && printf ${Green}"OK "${Color_Off} || printf ${Red}"FAIL "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import losoto" /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import losoto" > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off} || printf ${Red}"FAIL "${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import losoto" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
+
+printf ${Cyan}"LOFARBeam: "${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import lofar.stationresponse" > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off} || printf ${Red}"FAIL "${Color_Off}
+singularity exec $SIMG PYTHONPATH=\$INSTALLDIR/lofar/lib64/python3.7/site-packages:\$PYTHONPATH /opt/lofar/pyenv-py3/bin/python -c "import lofar.stationresponse" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
 
 printf ${Cyan}"LSMTool: "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import lsmtool" /dev/null 2>&1 && printf ${Green}"OK "${Color_Off} || printf ${Red}"FAIL "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import lsmtool" /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import lsmtool" > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off} || printf ${Red}"FAIL "${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import lsmtool" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
 
 printf ${Cyan}"RMextract: "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import RMextract" /dev/null 2>&1 && printf ${Green}"OK "${Color_Off} || printf ${Red}"FAIL "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import RMextract" /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import RMextract" > /dev/null 2>&1 && printf ${Green}"OK "${Color_Off} || printf ${Red}"FAIL "${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import RMextract" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
