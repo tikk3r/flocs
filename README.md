@@ -22,11 +22,11 @@ Pre-built containers are public hosted at [SURFSara](https://lofar-webdav.grid.s
 
 For buid purposes `lofar_sksp_base` and `lofar_sksp` are available on Singularity-hub, and can be downloaded with
 
-    singularity pull --name customname.sif shub://tikk3r/lofar-grid-hpccloud:<image>[@<specific has>]
+    singularity pull --name customname.sif shub://tikk3r/lofar-grid-hpccloud:<image>[@<specific hash>]
 
 The hash is optional. By default the latest version is downloaded. An example command is `singularity pull --name lofar.simg shub://tikk3r/lofar-grid-hpccloud:lofar_sksp`.
 
-** Please do \_NOT\_ pull from Singularity Hub unless absolutely necessary. Downloads are rate limited to 100 per week. **
+**Please do \_NOT\_ pull from Singularity Hub unless absolutely necessary. Downloads are rate limited to 100 per week.**
 
 
 Visit the  [wiki](https://github.com/tikk3r/lofar-grid-hpccloud/wiki) for more detailed information and build instructions.
