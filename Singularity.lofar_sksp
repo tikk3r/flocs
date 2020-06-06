@@ -1,21 +1,21 @@
-Bootstrap: shub
-From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
+#Bootstrap: shub
+#From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
-#Bootstrap: localimage
-#From: lofar_sksp_fedora_base.sif
+Bootstrap: localimage
+From: lofar_sksp_fedora27_base.sif
 
 %environment
     export PYTHONPATH=
     export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
     ulimit -n 4096
-    source $INSTALLDIR/pyenv-py3/bin/activate
+    source $INSTALLDIR/pyenv-py2/bin/activate
 
 %post
 	# General environment settings.
 	export J=6
 	export INSTALLDIR=/opt/lofar
-	export PYTHON_VERSION=3.7
+	export PYTHON_VERSION=2.7
 	# Enable MKL on AMD CPUs
 	export MKL_DEBUG_CPU_TYPE=5
 
@@ -25,16 +25,16 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	
 	# Settings relevant to the installed software.
 	export AOFLAGGER_VERSION=v2.15.0
-	export CASACORE_VERSION=v3.3.0
+	export CASACORE_VERSION=v2.4.1
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export DYSCO_VERSION=v1.0.1
-	#export LOFAR_VERSION=3_2_9
-	export LOFAR_VERSION=4_0_17
+	export LOFAR_VERSION=3_2_18
+	#export LOFAR_VERSION=4_0_17
 	export LOSOTO_VERSION=2.0
     # Haven't figured out how to successfully build 1.9.2 yet...
 	export PYBDSF_VERSION=6ce374d
-	export PYTHON_CASACORE_VERSION=v3.3.0
+	export PYTHON_CASACORE_VERSION=v2.2.1
 	export WSCLEAN_VERSION=latest
 	export HDF5_USE_FILE_LOCKING=FALSE
 
@@ -52,10 +52,16 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
 	mkdir -p $INSTALLDIR
 
-	ln -s /usr/lib64/libboost_python37.so /usr/lib64/libboost_python3.so
-	ln -s /usr/lib64/libboost_numpy37.so /usr/lib64/libboost_numpy3.so
-	ln -s /usr/lib64/libboost_python27.so /usr/lib64/libboost_python.so
-	ln -s /usr/lib64/libboost_numpy27.so /usr/lib64/libboost_numpy.so
+    # Symlinks required for Fedora 31
+	#ln -s /usr/lib64/libboost_python37.so /usr/lib64/libboost_python3.so
+	#ln -s /usr/lib64/libboost_numpy37.so /usr/lib64/libboost_numpy3.so
+	#ln -s /usr/lib64/libboost_python27.so /usr/lib64/libboost_python.so
+	#ln -s /usr/lib64/libboost_numpy27.so /usr/lib64/libboost_numpy.so
+	# Symlinks required for Fedora 27
+	ln -s /usr/lib64/libboost_python3.so /usr/lib64/libboost_python36.so
+	ln -s /usr/lib64/libboost_numpy3.so /usr/lib64/libboost_numpy36.so
+	ln -s /usr/lib64/libboost_python.so /usr/lib64/libboost_python27.so
+	ln -s /usr/lib64/libboost_numpy.so /usr/lib64/libboost_numpy27.so
 
     #
     # Setup the Python environment.
@@ -95,6 +101,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
     export CFLAGS="-L/usr/lib64/libpgplot.so.5"
     ./makeall
+    rm -rf $INSTALLDIR/difmap/*.tar.gz
 
     export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
 
@@ -117,9 +124,12 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	mkdir -p ${INSTALLDIR}/casacore/data
 	cd $INSTALLDIR/casacore && git clone https://github.com/casacore/casacore.git src
 	if [ "${CASACORE_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION}; fi
+    # Backport patch UVFITS for LOFAR. This is fixed in recent versions > May 26 2020
+    wget https://patch-diff.githubusercontent.com/raw/casacore/casacore/pull/1033.patch -O $INSTALLDIR/casacore/1033.patch
+    cd $INSTALLDIR/casacore/src && patch --fuzz 3 -p1 < $INSTALLDIR/casacore/1033.patch
 	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar
-	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=True ../src/ 
+	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=False ../src/ 
 	cd ${INSTALLDIR}/casacore/build && $make -s -j ${J}
 	cd ${INSTALLDIR}/casacore/build && $make install
     rm -rf $INSTALLDIR/casacore/src
@@ -248,51 +258,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     deactivate
     source $INSTALLDIR/pyenv-py3/bin/activate
 	#
-	# Install Python-CASAcore
-	#
-	# Finding libraries is broken, patch the setup to include the previously installed boost and casacore libraries.
-	rm -rf ${INSTALLDIR}/python-casacore
-	mkdir ${INSTALLDIR}/python-casacore
-	cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore && wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/master/patches/python_casacore_setup_patch.patch
-	if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
-	cd ${INSTALLDIR}/python-casacore/python-casacore
-    python setup.py build_ext -I${INSTALLDIR}/casacore/include/:/usr/include/python2.7 -L${INSTALLDIR}/casacore/lib/:/usr/lib64/
-    cd ${INSTALLDIR}/python-casacore/python-casacore
-    python setup.py install #--prefix=${INSTALLDIR}/python-casacore/
-
-    #
-    # Install the standalone StationResponse libraries.
-    #   
-    echo Installing LOFARBeam...
-    rm -rf $INSTALLDIR/LOFARBeam/build
-    mkdir -p $INSTALLDIR/LOFARBeam/build
-    cd $INSTALLDIR/LOFARBeam
-    #git clone https://github.com/lofar-astron/LOFARBeam.git src && cd src && git checkout db8d082
-    git clone https://github.com/lofar-astron/LOFARBeam.git src
-    cd build
-    #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/pyenv-py3 ../src
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
-    $make -j $J
-    $make install
-    # This is needed to allow importing the module.
-    #touch $INSTALLDIR/pyenv-py3/lib64/python3.7/site-packages/lofar/__init__.py
-    rm -rf $INSTALLDIR/LOFARBeam/src
-
-
-	#
-	# Install RMextract
-	#
-	#export PYTHONPATH=$INSTALLDIR/RMextract/lib64/python$PYTHON_VERSION/site-packages:$PYTHONPATH
-	rm -rf ${INSTALLDIR}/RMextract/build
-	mkdir -p ${INSTALLDIR}/RMextract/build
-	#mkdir -p ${INSTALLDIR}/RMextract/lib64/python$PYTHON_VERSION/site-packages
-	cd ${INSTALLDIR}/RMextract/build
-    git clone https://github.com/lofar-astron/RMextract.git src
-    cd src
-    python setup.py build --add-lofar-utils
-    python setup.py install --add-lofar-utils #--prefix=${INSTALLDIR}/RMextract
-
-	#
 	# Install LoSoTo
 	#
 	#export PYTHONPATH=/opt/lofar/losoto/lib/python$PYTHON_VERSION/site-packages/:$PYTHONPATH
@@ -305,16 +270,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     python setup.py build
     python setup.py install #--prefix=${INSTALLDIR}/losoto
 
-	#
-	# Install LSMTool.
-	#
-	#mkdir -p $INSTALLDIR/lsmtool/lib/python$PYTHON_VERSION/site-packages
-	#export PYTHONPATH=$INSTALLDIR/lsmtool/lib/python$PYTHON_VERSION/site-packages:$PYTHONPATH
-	cd $INSTALLDIR/lsmtool
-    #git clone https://github.com/darafferty/LSMTool.git lsmtool 
-	cd $INSTALLDIR/lsmtool/lsmtool
-	python setup.py install #--prefix=$INSTALLDIR/lsmtool
-    
     # Switch back to py2 to wrap up installation
     deactivate
     source $INSTALLDIR/pyenv-py2/bin/activate
@@ -358,13 +313,10 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	ln -s /opt/lofar/DPPP/bin/makesourcedb /opt/lofar/lofar/bin/makesourcedb
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
 
-    # Dirty hack to get generic pipeline available, seems to work
-    ln -s $INSTALLDIR/lofar/lib64/python3.7/site-packages/lofarpipe $INSTALLDIR/lofar/lib64/python2.7/site-packages/
-
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python3.7/site-packages >> $INSTALLDIR/init.sh
+	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
