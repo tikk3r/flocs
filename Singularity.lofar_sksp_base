@@ -1,9 +1,6 @@
 Bootstrap: docker
 From: fedora:27
 
-%files
-    /home/frits/software/lofar-grid-hpccloud/requirements.txt $INSTALLDIR/requirements.txt
-    /home/frits/software/lofar-grid-hpccloud/requirements3.txt $INSTALLDIR/requirements3.txt
 %environment
     export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
@@ -15,18 +12,18 @@ From: fedora:27
 	export PYTHON_VERSION=2.7
 	
 	# Settings relevant to the installed software.
-	export ARMADILLO_VERSION=8.600.0
-	export BLAS_VERSION=0.2.17
-	export BOOST_DOT_VERSION=1.69.0
-	export BOOST_VERSION=1_69_0
-	export CFITSIO_VERSION=3410
-    export FFTW_VERSION=3.3.8
-	export HDF5_VERSION=1.8.21
-	export LAPACK_VERSION=3.6.0
-	export OPENBLAS_VERSION=v0.3.5
+	export ARMADILLO_VERSION=9.100.5
+	export BLAS_VERSION=3.8.0
+	export BOOST_DOT_VERSION=1.64.0
+	export BOOST_VERSION=1_64_0
+	export CFITSIO_VERSION=2337
+    export FFTW_VERSION=3.5.5
+	export HDF5_VERSION=1.8.18
+	export LAPACK_VERSION=3.8.0
+	export OPENBLAS_VERSION=v0.3.2
 	# Do not change, Armadillo wants this version of SuperLU.
-	export SUPERLU_VERSION=v5.2.1
-	export WCSLIB_VERSION=7.2
+	export SUPERLU_VERSION=v5.1
+	export WCSLIB_VERSION=5.16
     export DEBIAN_FRONTEND=noninteractive
 
     #
@@ -126,7 +123,7 @@ From: fedora:27
     rm -rf $INSTALLDIR/idg/src
 
 	echo "Installation directory contents:"
-	ls ${INSTALLDIR}
+	ls $INSTALLDIR
 
     #
     # Wrap up installation, remove unnecessary stuff.
