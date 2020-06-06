@@ -5,29 +5,28 @@
 
 # lofar-grid-hpccloud
 
-This repository hold resources for deploying the LOFAR software and related tools through a native install, Singularity images or for use on the HPC Cloud, or other systems.
+This repository hold resources for deploying the LOFAR software (genericpipeline) and related tools through Singularity containers. These containers are general, but at the same time somewhat tailored for SKSP use.
+
+The `master` branch is empty. Currently the images are based on the Fedora 27 Linux distribution, which is available from [DockerHub](https://hub.docker.com/_/fedora). Recipes to build this container can be found on the `fedora` branch.
 
 To build a full LOFAR Singularity image, do the following:
 1) Build Singularity.lofarbase
-2) Build Singularity.lofar
 
-`lofarbase` and `lofar` are available on Singularity-hub, and can be downloaded with
+    sudo singularity build lofar_sksp_base.sif Singularity.lofar_sksp_base
 
-    singularity pull --name customname.simg shub://tikk3r/lofar-grid-hpccloud:<image>[@<specific has>]
+2) Build Singularity.lofar (use the `From: localimage` part instead of the Singularity Hub part)
 
-The hash is optional. By default the latest version is downloaded. An example command is `singularity pull --name lofar.simg shub://tikk3r/lofar-grid-hpccloud:lofar`.
+    sudo singularity build lofar_sksp.sif Singularity.lofar_sksp
+
+Pre-built containers are public hosted at [SURFSara](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/). Sort by date to find the latest container there.
+
+For buid purposes `lofar_sksp_base` and `lofar_sksp` are available on Singularity-hub, and can be downloaded with
+
+    singularity pull --name customname.sif shub://tikk3r/lofar-grid-hpccloud:<image>[@<specific has>]
+
+The hash is optional. By default the latest version is downloaded. An example command is `singularity pull --name lofar.simg shub://tikk3r/lofar-grid-hpccloud:lofar_sksp`.
+
+** Please do \_NOT\_ pull from Singularity Hub unless absolutely necessary. Downloads are rate limited to 100 per week. **
+
 
 Visit the  [wiki](https://github.com/tikk3r/lofar-grid-hpccloud/wiki) for more detailed information and build instructions.
- 
-Other software related notes
-----------------------------
-- LOFAR software ignores compilers and resorts just to /usr/bin/gcc and /usr/bin/g++. This is fixed with `lofar.patch`.
-- Python CASAcore `setup.py` is broken with regards to finding libraries passed along by the -L flag. This is fixed with the patch.
-- Apparently WCSLIB now needs a newer version of GNU Make. It no longer worked with 3.82, tested to work with 4.2.
-- Latest log4cplus (no longer installed) requires CMake 3.6:
-
-    yum install -y cmake3
-    
-- Installing log4cplus requires `--recursive` when cloning, otherwise the `catch.hpp` and `threadpool.h` headers are not found.
-
-    
