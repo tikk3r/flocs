@@ -136,6 +136,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	# Install Python-CASAcore
 	#
 	mkdir ${INSTALLDIR}/python-casacore
+    cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore
 	if [ "$PYTHON_CASACORE_VERSION" != "latest" ]; then cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION}; fi
 	cd ${INSTALLDIR}/python-casacore/python-casacore
     python setup.py build_ext -I${INSTALLDIR}/casacore/include/:/usr/include/python2.7 -L${INSTALLDIR}/casacore/lib/:/usr/lib64/
