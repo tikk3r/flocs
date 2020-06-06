@@ -3,8 +3,12 @@
 <a href="https://zenodo.org/badge/latestdoi/136925861"><img src="https://zenodo.org/badge/136925861.svg"/></a>
 
 # lofar-grid-hpccloud
-
 This repository hold resources for deploying LOFAR-related software through Singularity or Docker containers. These containers are general, but at the same time somewhat tailored for SKSP use.
+=======
+This repository hold resources for deploying the LOFAR software (genericpipeline) and related tools through Singularity containers. These containers are general, but at the same time somewhat tailored for SKSP use.
+
+The `master` branch is empty. Currently the images are based on the Fedora 27 Linux distribution, which is available from [DockerHub](https://hub.docker.com/_/fedora). Recipes to build this container can be found on the `fedora` branch.
+>>>>>>> c431650 (Update information)
 
 The `master` branch is empty. Currently the images on this branch (`fedora-py3`) are based on the Fedora 34 Linux distribution, which is available from [DockerHub](https://hub.docker.com/_/fedora). 
 
@@ -12,6 +16,7 @@ As this branch no longer includes Python 2, the genericpipeline framework is _no
 
 ## Singularity
 To build a full LOFAR Singularity image, do the following:
+<<<<<<< HEAD
 
 1) Turn on MKL and/or CUDA in **singularity/Singularity**, if desired, by setting `HAS_MKL=true` and/or `HAS_CUDA=true`. Set them to `false` if you do not require those.
 
