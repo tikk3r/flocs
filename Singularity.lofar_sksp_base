@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:30
+From: fedora:27
 
 %files
     /home/frits/software/lofar-grid-hpccloud/requirements.txt $INSTALLDIR/requirements.txt
@@ -37,14 +37,14 @@ From: fedora:30
 	dnf -y install patch sudo yum-utils
 	dnf -y install git svn wget vim nano
 	dnf -y install automake autoconf cmake make
-	dnf -y install g++ gcc gcc-c++ gcc-gfortran
+	dnf -y install gcc gcc-c++ gcc-gfortran
 	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
 	dnf -y install bison flex ncurses tar bzip2 which gettext
 	dnf -y install cmake3
     dnf -y install hdf5
 	dnf -y install hdf5-devel
     dnf -y install python
-	dnf -y install python-pip tkinter
+	dnf -y install python-pip python2-tkinter python3-tkinter
     dnf -y install libsigc++20-devel gtkmm30-devel
     dnf -y install python3-devel
     dnf -y install lua lua-devel
@@ -56,7 +56,7 @@ From: fedora:30
     #
     # Install Boost
     #
-    dnf -y install boost boost-devel boost-python2 boost-python2-devel boost-python3 boost-python3-devel
+    dnf -y install boost boost-devel boost-python boost-python-devel boost-python3 boost-python3-devel
 
     #
     # Install FFTW
@@ -148,7 +148,7 @@ From: fedora:30
     . $INSTALLDIR/init.sh
 
 %help
-    This Singularity image acts as a base for the LOFAR installation. It has Ubuntu 18.04 setup, with the required dependencies installed. These are:
+    This Singularity image acts as a base for the LOFAR installation. It has Fedora 31 setup, with the required dependencies installed. These are:
     
     * Armadillo $ARMADILLO_VERSION
     * Boost $BOOST_VERSION
