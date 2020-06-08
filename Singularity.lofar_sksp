@@ -72,7 +72,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     virtualenv $INSTALLDIR/pyenv-py3 --python=python3
     source $INSTALLDIR/pyenv-py3/bin/activate
     pip install numpy
-    export HDF5_VERSION=1.8.20
+    export HDF5_VERSION=1.8.18
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
@@ -111,6 +111,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	if [ "${PYBDSF_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION}; fi
     cd ${INSTALLDIR}/pybdsf/pybdsf
     python setup.py install
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/pybdsf/pybdsf
 
 	#
@@ -129,6 +130,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=False ../src/ 
 	cd ${INSTALLDIR}/casacore/build && $make -s -j ${J}
 	cd ${INSTALLDIR}/casacore/build && $make install
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/casacore/build
     rm -rf $INSTALLDIR/casacore/src
 
@@ -142,6 +144,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     python setup.py build_ext -I${INSTALLDIR}/casacore/include/:/usr/include/python2.7 -L${INSTALLDIR}/casacore/lib/:/usr/lib64/
     cd $INSTALLDIR/python-casacore/python-casacore
     python setup.py install #--prefix=${INSTALLDIR}/python-casacore/
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/python-casacore/python-casacore
 
 	#
@@ -150,6 +153,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	mkdir -p $INSTALLDIR/dysco/build
 	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src && cd src
 	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && $make -s -j $J && $make install
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/dysco/build
     rm -rf $INSTALLDIR/dysco/src
 
@@ -162,6 +166,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../aoflagger
 	cd ${INSTALLDIR}/aoflagger/build && $make -s -j ${J}
 	cd ${INSTALLDIR}/aoflagger/build && $make install
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/aoflagger/aoflagger
     rm -rf $INSTALLDIR/aoflagger/build
     rm -rf $INSTALLDIR/aoflagger/src
@@ -180,6 +185,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/dysco -DBUILD_PACKAGES="Pipeline" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True -DBUILD_PYTHON3=OFF ${INSTALLDIR}/lofar/src/
 	$make -s -j $J
 	$make install
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/lofar/build
     rm -rf $INSTALLDIR/lofar/src
     
@@ -196,6 +202,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     $make -j $J
     $make install
     touch /opt/lofar/lofar/lib64/python2.7/site-packages/lofar/__init__.py
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/LOFARBeam/build
     rm -rf $INSTALLDIR/LOFARBeam/src
 
@@ -204,10 +211,11 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #
     mkdir -p $INSTALLDIR/DPPP/build
     git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
-    cd $INSTALLDIR/DPPP/src # && git checkout 8cda70f
+    cd $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/build
     cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/lofar/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/lofar/lib/libstationresponse.so -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so ../src
     $make -s -j $J && $make install
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/DPPP/build
     rm -rf $INSTALLDIR/DPPP/src
 
@@ -223,6 +231,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     cd src
     python setup.py build --add-lofar-utils
     python setup.py install --add-lofar-utils
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/RMextract
 
 	#
@@ -234,16 +243,18 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     cd src
     python setup.py build
     python setup.py install
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/losoto
 
 	#
 	# Install LSMTool.
 	#
-	mdkir -p $INSTALLDIR/lsmtool
+	mkdir -p $INSTALLDIR/lsmtool
 	cd $INSTALLDIR/lsmtool
     git clone https://github.com/darafferty/LSMTool.git lsmtool 
 	cd $INSTALLDIR/lsmtool/lsmtool
 	python setup.py install
+    cd $INSTALLDIR
 	rm -rf $INSTALLDIR/lsmtool
 
     ############################################
@@ -261,6 +272,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     cd src
     python setup.py build
     python setup.py install
+    cd $INSTALLDIR
 	rm -rf $INSTALLDIR/losoto
 
     # Switch back to py2 to wrap up installation
@@ -277,6 +289,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include ..
     $make -j ${J}
     $make install
+    cd $INSTALLDIR
     rm -rf $INSTALLDIR/wsclean/src
 
     #
