@@ -1,7 +1,7 @@
 #Bootstrap: shub
 #From: tikk3r/lofar-grid-hpccloud:lofar_sksp
 Bootstrap: localimage
-From: lofar_sksp_fedora.sif
+From: lofar_sksp_fedora27.sif
 
 
 
@@ -29,7 +29,7 @@ From: lofar_sksp_fedora.sif
 
     # Update GCC to enable the use of -std=c++14.
     dnf -y install dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
-    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make g++ gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel
+    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel
 
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone https://github.com/tikk3r/lofar-grid-hpccloud.git
@@ -45,7 +45,6 @@ From: lofar_sksp_fedora.sif
     #pip --no-cache-dir install "virtualenv<20"
     #virtualenv $INSTALLDIR/pyenv-ddf
     source $INSTALLDIR/pyenv-py2/bin/activate
-    pip --no-cache-dir install --upgrade "numpy==1.16.3"
     pip --no-cache-dir install -r $INSTALLDIR/requirements.txt
     
     pip --no-cache-dir install --upgrade wheel
@@ -110,6 +109,8 @@ From: lofar_sksp_fedora.sif
     # Install ddf-pipeline
     #
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
+    # Commits after this break the pipeline, because they contain Python 3 preparations that NumPy 1.16.0 (required for MeqTrees) does not like.
+    cd ddf-pipeline && git checkout fe5393d && cd ..
     # Download DDF catalogues.
     mkdir -p $INSTALLDIR/DDFCatalogues
     #wget ftp://ftp.strw.leidenuniv.nl/pub/shimwell/bootstrap-cats.tar
