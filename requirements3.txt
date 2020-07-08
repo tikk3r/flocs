@@ -62,6 +62,7 @@ SQLAlchemy
 subprocess32
 tables
 traceback2
+tqdm
 unittest2
 uritemplate
 urllib3
