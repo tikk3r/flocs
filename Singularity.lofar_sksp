@@ -61,7 +61,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	ln -s /usr/lib64/libboost_python.so /usr/lib64/libboost_python27.so
 	ln -s /usr/lib64/libboost_numpy.so /usr/lib64/libboost_numpy27.so
 
-    sudo dnf -y install rsync
+    dnf -y install rsync
 
     #
     # Setup the Python environment.
