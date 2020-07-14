@@ -290,8 +290,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src && cd wsclean; fi
     mkdir build && cd build
     # Switch to mpicc for a minute
-    export CC=mpicc
-    export CXX=mpi++
+    export CC=`which mpicc`
+    export CXX=`which mpi++`
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include ..
     $make -j ${J}
     $make install
