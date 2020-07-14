@@ -62,6 +62,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	ln -s /usr/lib64/libboost_numpy.so /usr/lib64/libboost_numpy27.so
 
     dnf -y install rsync
+    dnf -y install openmpi
 
     #
     # Setup the Python environment.
@@ -288,11 +289,17 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
     if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src && cd wsclean; fi
     mkdir build && cd build
+    # Switch to mpicc for a minute
+    export CC=mpicc
+    export CXX=mpi++
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include ..
     $make -j ${J}
     $make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/wsclean/src
+    # Switch back to normal compilers
+    export CC=`which gcc`
+	export CXX=`which g++`
 
     #
     # Install DS9
