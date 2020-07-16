@@ -41,10 +41,10 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
     export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export CXXFLAGS="-std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-    export CPLUS_INCLUDE_PATH="/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio"
-    export CPATH=/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$CPATH
-    export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam
-    export LD_LIBRARY_PATH=$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:$INSTALLDIR/LOFARBeam/lib:LD_LIBRARY_PATH
+    export CPLUS_INCLUDE_PATH="/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio"
+    export CPATH=/usr/include/openmpi-x86_64/:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$CPATH
+    export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:/usr/lib64/openmpi
+    export LD_LIBRARY_PATH=$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:$INSTALLDIR/LOFARBeam/lib:/usr/lib64/openmpi/lib/:LD_LIBRARY_PATH
     export make=`which make`
     export OLD_PYTHONPATH=$PYTHONPATH
 
@@ -62,7 +62,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	ln -s /usr/lib64/libboost_numpy.so /usr/lib64/libboost_numpy27.so
 
     dnf -y install rsync
-    dnf -y install openmpi
+    dnf -y install openmpi openmpi-devel
+    #module load mpi
 
     #
     # Setup the Python environment.
@@ -291,7 +292,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     mkdir build && cd build
     # Switch to mpicc for a minute
     export CC=`which mpicc`
-    export CXX=`which mpi++`
+    export CXX=`which mpic++`
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include ..
     $make -j ${J}
     $make install
@@ -343,6 +344,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$INSTALLDIR/LOFARBeam/lib:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 	echo export OPENBLAS_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OPENBLAS_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
@@ -354,6 +356,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
+    #echo module load mpi >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
