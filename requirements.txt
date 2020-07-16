@@ -44,6 +44,7 @@ progressbar==2.5
 py==1.8.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
+py-cpuinfo==3.3.0
 pyliblzma==0.5.3
 pyparsing==2.4.5
 pyregion==2.0
