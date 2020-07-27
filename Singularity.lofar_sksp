@@ -127,8 +127,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     git clone https://github.com/casacore/casacore.git src
 	if [ "${CASACORE_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION}; fi
     # Backport patch UVFITS for LOFAR. This is fixed in recent versions > May 26 2020
-    wget https://patch-diff.githubusercontent.com/raw/casacore/casacore/pull/1033.patch -O $INSTALLDIR/casacore/1033.patch
-    cd $INSTALLDIR/casacore/src && patch --fuzz 3 -p1 < $INSTALLDIR/casacore/1033.patch
+    #wget https://patch-diff.githubusercontent.com/raw/casacore/casacore/pull/1033.patch -O $INSTALLDIR/casacore/1033.patch
+    #cd $INSTALLDIR/casacore/src && patch --fuzz 3 -p1 < $INSTALLDIR/casacore/1033.patch
 	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=False ../src/ 
