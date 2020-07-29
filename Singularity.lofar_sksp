@@ -247,6 +247,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	cd ${INSTALLDIR}/losoto/build
     git clone https://github.com/revoltek/losoto.git src
     cd src
+    git checkout c8fbd61
     python setup.py build
     python setup.py install
     cd $INSTALLDIR
