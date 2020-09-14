@@ -64,6 +64,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
     dnf -y install rsync
     dnf -y install openmpi openmpi-devel
+    dnf -y install top htop
     #module load mpi
 
     #
