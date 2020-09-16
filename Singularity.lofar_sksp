@@ -201,7 +201,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     mkdir -p $INSTALLDIR/msoverview/src
     cd $INSTALLDIR/msoverview/src
     svn export https://svn.astron.nl/LOFAR/tags/LOFAR-Release-3_2_18/CEP/MS/src/msoverview.cc
-    gcc -I/opt/lofar/casacore/include/casacore/ -L/opt/lofar/casacore/lib msoverview.cc -o $INSTALLDIR/lofar/lofar/bin/msoverview -lcasa_casa -lcasa_ms -lcasa_tables -lstdc++
+    gcc -I/opt/lofar/casacore/include/casacore/ -L/opt/lofar/casacore/lib msoverview.cc -o $INSTALLDIR/lofar/bin/msoverview -lcasa_casa -lcasa_ms -lcasa_tables -lstdc++
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/msoverview
     
