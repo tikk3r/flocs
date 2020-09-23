@@ -18,8 +18,8 @@
                                       else ",".join(map(str, self.affinity)) if isinstance(self.affinity, list)
 -                                     else "disabled"))
 -            print>>log,ModColor.Str("Falling back to NCPU=%d" % (maxcpu))
-+                                     else "disabled")), file=log)
-+            print(ModColor.Str("Falling back to NCPU=%d" % (maxcpu)), file=log)
++                                     else "disabled")))
++            print(ModColor.Str("Falling back to NCPU=%d" % (maxcpu)))
              self.ncpu = maxcpu
          self.procinfo = psutil.Process()  # this will be used to control CPU affinity
  
