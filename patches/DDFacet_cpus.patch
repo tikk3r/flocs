@@ -1,47 +1,47 @@
---- DDFacet/Other/AsyncProcessPool.py	2020-09-23 18:36:16.989634477 +0200
-+++ AsyncProcessPool_original.py	2020-09-23 18:36:31.232447610 +0200
-@@ -261,27 +261,23 @@
+--- AsyncProcessPool_original.py	2020-09-23 18:36:31.232447610 +0200
++++ DDFacet/Other/AsyncProcessPool.py	2020-09-23 18:36:16.989634477 +0200
+@@ -261,23 +261,27 @@
              print>> log, ModColor.Str("Fixing parent process to vthread %d" % self.parent_affinity, col="green")
          psutil.Process().cpu_affinity(range(self.ncpu) if not self.parent_affinity else [self.parent_affinity])
  
--        avail_cores = psutil.Process().cpu_affinity()
--        psutil.Process().cpu_affinity(avail_cores[:self.ncpu] if not self.parent_affinity else [self.parent_affinity])
--
++        avail_cores = psutil.Process().cpu_affinity()
++        psutil.Process().cpu_affinity(avail_cores[:self.ncpu] if not self.parent_affinity else [self.parent_affinity])
++
          # if NCPU is 0, set to number of CPUs on system
          if not self.ncpu:
              self.ncpu = maxcpu
          elif self.ncpu > maxcpu:
--            print(ModColor.Str("NCPU=%d is too high for this setup (%d cores, affinity %s)" %
-+            print>>log,ModColor.Str("NCPU=%d is too high for this setup (%d cores, affinity %s)" %
+-            print>>log,ModColor.Str("NCPU=%d is too high for this setup (%d cores, affinity %s)" %
++            print(ModColor.Str("NCPU=%d is too high for this setup (%d cores, affinity %s)" %
                                      (self.ncpu, psutil.cpu_count(),
                                       str(self.affinity) if isinstance(self.affinity, int)
                                       else ",".join(map(str, self.affinity)) if isinstance(self.affinity, list)
--                                     else "disabled")), file=log)
--            print(ModColor.Str("Falling back to NCPU=%d" % (maxcpu)), file=log)
-+                                     else "disabled"))
-+            print>>log,ModColor.Str("Falling back to NCPU=%d" % (maxcpu))
+-                                     else "disabled"))
+-            print>>log,ModColor.Str("Falling back to NCPU=%d" % (maxcpu))
++                                     else "disabled")), file=log)
++            print(ModColor.Str("Falling back to NCPU=%d" % (maxcpu)), file=log)
              self.ncpu = maxcpu
          self.procinfo = psutil.Process()  # this will be used to control CPU affinity
  
          # create a queue for compute-bound tasks
          # generate list of CPU cores for workers to run on
          if isinstance(self.affinity, int) and (not self.affinity or self.affinity == 1):
--            # cores = range(self.ncpu)
--            cores = avail_cores[:self.ncpu]
-+            cores = range(self.ncpu)
+-            cores = range(self.ncpu)
++            # cores = range(self.ncpu)
++            cores = avail_cores[:self.ncpu]
          elif isinstance(self.affinity, int) and self.affinity == 2:
              cores = range(0, self.ncpu * 2, 2)
          elif isinstance(self.affinity, int) and self.affinity == -2:
-@@ -289,10 +285,9 @@
+@@ -285,9 +289,10 @@
          elif isinstance(self.affinity, list):
              cores = self.affinity[:self.ncpu]
          elif not self.affinity:
--            # cores = range(self.ncpu)
--            cores =  avail_cores[:self.ncpu]
-+            cores = range(self.ncpu)
+-            cores = range(self.ncpu)
++            # cores = range(self.ncpu)
++            cores =  avail_cores[:self.ncpu]
          else:
--            raise ValueError("unknown affinity setting")
-+            raise ValueError, "unknown affinity setting"
+-            raise ValueError, "unknown affinity setting"
++            raise ValueError("unknown affinity setting")
          if not self.affinity:
              print>> log, "Worker affinities not specified, leaving unset"
          else:
