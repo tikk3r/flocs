@@ -27,6 +27,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	export CASACORE_VERSION=v2.4.1
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
+    export DPPP_VERSION=v4.2
 	export DYSCO_VERSION=v1.0.1
 	export LOFAR_VERSION=3_2_18
 	export LOSOTO_VERSION=2.0
@@ -228,7 +229,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     mkdir -p $INSTALLDIR/DPPP/build
     git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/src
-    git checkout tags/v4.2
+    git checkout tags/${DPPP_VERSION}
     cd $INSTALLDIR/DPPP/build
     cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/lofar/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/lofar/lib/libstationresponse.so -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so ../src
     $make -s -j $J && $make install
