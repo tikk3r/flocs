@@ -29,6 +29,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	export CASAREST_VERSION=latest
     export DPPP_VERSION=v4.2
 	export DYSCO_VERSION=v1.2
+    export EVERYBEAM_VERSION=0cc64a81
 	export LOFAR_VERSION=3_2_18
     # Don't change LOSOTO2_VERSION. This is the last commit that plays nice with Python 2.
 	export LOSOTO2_VERSION=c8fbd61
@@ -228,6 +229,20 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     rm -rf $INSTALLDIR/LOFARBeam/build
     rm -rf $INSTALLDIR/LOFARBeam/src
 
+
+    #
+    # Install EveryBeam library
+    #
+    echo Installing EveryBeam
+    mkdir -p $INSTALLDIR/EveryBeam/build
+    cd $INSTALLDIR/EveryBeam
+    git clone https://git.astron.nl/RD/EveryBeam.git src
+    cd src && git checkout $EVERYBEAM_VERSION
+    cd $INSTALLDIR/EveryBeam/build
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam ../src
+    $make -j $J
+    $make install
+
     #
     # Install DPPP
     #
@@ -309,8 +324,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     # Install-WSClean
     #
     mkdir $INSTALLDIR/wsclean
-    if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && wget http://downloads.sourceforge.net/project/wsclean/wsclean-${WSCLEAN_VERSION}/wsclean-${WSCLEAN_VERSION}.tar.bz2 && tar -xjf wsclean-${WSCLEAN_VERSION}.tar.bz2 && cd wsclean-${WSCLEAN_VERSION}; fi
-    if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone git://git.code.sf.net/p/wsclean/code src && cd src && cd wsclean; fi
+    if [ "$WSCLEAN_VERSION" != "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone https://gitlab.com/aroffringa/wsclean.git && cd wsclean && git checkout $WSCLEAN_VERSION; fi
+    if [ "$WSCLEAN_VERSION" = "latest" ]; then cd ${INSTALLDIR}/wsclean && git clone https://gitlab.com/aroffringa/wsclean.git && cd wsclean; fi
     mkdir build && cd build
     # Switch to mpicc for a minute
     export CC=`which mpicc`
@@ -319,7 +334,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     $make -j ${J}
     $make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/wsclean/src
+    rm -rf $INSTALLDIR/wsclean/wsclean
     # Switch back to normal compilers
     export CC=`which gcc`
 	export CXX=`which g++`
