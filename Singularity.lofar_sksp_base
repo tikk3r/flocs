@@ -12,18 +12,8 @@ From: fedora:27
 	export PYTHON_VERSION=2.7
 	
 	# Settings relevant to the installed software.
-	export ARMADILLO_VERSION=9.100.5
-	export BLAS_VERSION=3.8.0
-	export BOOST_DOT_VERSION=1.64.0
-	export BOOST_VERSION=1_64_0
-	export CFITSIO_VERSION=2337
-    export FFTW_VERSION=3.5.5
+    export IDG_VERSION=3c948d5
 	export HDF5_VERSION=1.8.18
-	export LAPACK_VERSION=3.8.0
-	export OPENBLAS_VERSION=v0.3.2
-	# Do not change, Armadillo wants this version of SuperLU.
-	export SUPERLU_VERSION=v5.1
-	export WCSLIB_VERSION=5.16
     export DEBIAN_FRONTEND=noninteractive
 
     #
@@ -49,6 +39,7 @@ From: fedora:27
     dnf -y install pgplot
     dnf -y install python3-numpy-f2py
     dnf -y install qt5
+    dnf -y install perf
 
     #
     # Install Boost
@@ -80,8 +71,6 @@ From: fedora:27
     #
     export CC=`which gcc`
 	export CXX=`which g++`
-    export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-    export CXXFLAGS="-std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export make=`which make`
 
 	mkdir -p $INSTALLDIR
@@ -109,14 +98,14 @@ From: fedora:27
     #
     sudo dnf config-manager --add-repo https://yum.repos.intel.com/mkl/setup/intel-mkl.repo
     sudo rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
-    dnf -y install intel-mkl intel-mkl-64bit
+    dnf -y install intel-mkl-2020.0-088 intel-mkl-64bit-2020.0-088
 
     #   
     # Install Image Domain Gridder (IDG)
     #   
     mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg
     git clone https://gitlab.com/astron-idg/idg.git src 
-    cd src && mkdir build && cd build
+    cd src && git checkout $IDG_VERSION && mkdir build && cd build
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON ..
     make -j $J
     make install
@@ -134,6 +123,7 @@ From: fedora:27
 	# init-lofar
 	#
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
@@ -141,7 +131,7 @@ From: fedora:27
 %runscript
     echo source $INSTALLDIR/init.sh >> $HOME/.bashrc
     echo export PATH=\$PATH >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     . $INSTALLDIR/init.sh
 
 %help
