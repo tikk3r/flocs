@@ -33,6 +33,7 @@ Mastodon.py==1.5.0
 matplotlib==2.2.4
 mimeparse==0.1.3
 mock==3.0.5
+montage-wrapper=0.9.9
 more-itertools==5.0.0
 nose==1.3.7
 numexpr==2.7.0
