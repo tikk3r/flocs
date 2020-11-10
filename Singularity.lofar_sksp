@@ -29,7 +29,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	export CASAREST_VERSION=latest
     export DPPP_VERSION=v4.2
 	export DYSCO_VERSION=v1.2
-    export EVERYBEAM_VERSION=0cc64a81
+    #export EVERYBEAM_VERSION=0cc64a81
+    export EVERYBEAM_VERSION=master
     export IDG_VERSION=3c948d5
 	export HDF5_VERSION=1.8.18
 	export LOFAR_VERSION=3_2_18
