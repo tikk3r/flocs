@@ -2,7 +2,7 @@ Bootstrap: shub
 From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
 #Bootstrap: localimage
-#From: lofar_sksp_fedora27_base.sif
+#From: lofar_sksp_base_skylake.sif
 
 %environment
     export PYTHONPATH=
@@ -30,6 +30,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     export DPPP_VERSION=v4.2
 	export DYSCO_VERSION=v1.2
     export EVERYBEAM_VERSION=0cc64a81
+    export IDG_VERSION=3c948d5
+	export HDF5_VERSION=1.8.18
 	export LOFAR_VERSION=3_2_18
     # Don't change LOSOTO2_VERSION. This is the last commit that plays nice with Python 2.
 	export LOSOTO2_VERSION=c8fbd61
@@ -57,11 +59,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
 	mkdir -p $INSTALLDIR
 
-    # Symlinks required for Fedora 31
-	#ln -s /usr/lib64/libboost_python37.so /usr/lib64/libboost_python3.so
-	#ln -s /usr/lib64/libboost_numpy37.so /usr/lib64/libboost_numpy3.so
-	#ln -s /usr/lib64/libboost_python27.so /usr/lib64/libboost_python.so
-	#ln -s /usr/lib64/libboost_numpy27.so /usr/lib64/libboost_numpy.so
 	# Symlinks required for Fedora 27
 	ln -s /usr/lib64/libboost_python3.so /usr/lib64/libboost_python36.so
 	ln -s /usr/lib64/libboost_numpy3.so /usr/lib64/libboost_numpy36.so
@@ -71,6 +68,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     dnf -y install rsync
     dnf -y install openmpi openmpi-devel
     dnf -y install htop
+    dnf -y install python3-pybind11 pybind11-devel
     #module load mpi
 
     #
