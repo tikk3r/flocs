@@ -95,6 +95,17 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     pip install -r $INSTALLDIR/requirements.txt
 
     #
+    # Install Montage
+    #
+    mkdir -p /opt/montage
+    cd /opt/montage
+    wget https://github.com/Caltech-IPAC/Montage/archive/v6.0.tar.gz -O Montage_v6.0.tar.gz
+    tar xf Montage_v6.0.tar.gz
+    cd Montage_v6.0
+    make -j $J
+    
+
+    #
     # Install difmap
     #
     mkdir -p $INSTALLDIR/difmap
@@ -370,6 +381,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
 	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages >> $INSTALLDIR/init.sh
+	echo export PATH=/opt/montage/Montage_v0.6/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
