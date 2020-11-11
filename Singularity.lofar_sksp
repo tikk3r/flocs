@@ -381,7 +381,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
 	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages >> $INSTALLDIR/init.sh
-	echo export PATH=/opt/montage/Montage-0.6/bin:\$PATH  >> $INSTALLDIR/init.sh
+	echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
