@@ -68,7 +68,7 @@ paramiko==2.7.2
 pathlib2==2.3.5
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==6.2.2
+Pillow==7.1.0
 pluggy==0.7.1
 Polygon2==2.0.8
 pp==1.6.5
