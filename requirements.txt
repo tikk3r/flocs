@@ -50,7 +50,7 @@ kitchen==1.1.1
 kittens==0.1.2
 kiwisolver==1.1.0
 linecache2==1.0.0
-lxml==4.6.1
+lxml==4.6.2
 Mastodon.py==1.5.0
 matplotlib==2.2.4
 meqtrees-cattery==1.7.0
