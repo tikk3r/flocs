@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:27
+From: fedora:31
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -12,8 +12,17 @@ From: fedora:27
 	export PYTHON_VERSION=2.7
 	
 	# Settings relevant to the installed software.
-    export IDG_VERSION=3c948d5
-	export HDF5_VERSION=1.8.18
+	export ARMADILLO_VERSION=9.900.3
+	export BLAS_VERSION=3.8.0
+	export BOOST_DOT_VERSION=1.69.0
+	export BOOST_VERSION=1_69_0
+	export CFITSIO_VERSION=7.3.47
+    export FFTW_VERSION=3.5.8
+	export HDF5_VERSION=1.10.5
+	export LAPACK_VERSION=3.8.0
+	export OPENBLAS_VERSION=3.8.0
+	export SUPERLU_VERSION=5.2.1
+	export WCSLIB_VERSION=6.4
     export DEBIAN_FRONTEND=noninteractive
 
     #
@@ -25,7 +34,7 @@ From: fedora:27
 	dnf -y install git svn wget vim nano
 	dnf -y install automake autoconf cmake make
 	dnf -y install gcc gcc-c++ gcc-gfortran
-	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
+	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
 	dnf -y install bison flex ncurses tar bzip2 which gettext
 	dnf -y install cmake3
     dnf -y install hdf5
@@ -44,7 +53,7 @@ From: fedora:27
     #
     # Install Boost
     #
-    dnf -y install boost boost-devel boost-python boost-python-devel boost-python3 boost-python3-devel
+    dnf -y install boost boost-devel boost-python2 boost-python2-devel boost-python3 boost-python3-devel
 
     #
     # Install FFTW
@@ -74,9 +83,13 @@ From: fedora:27
     export make=`which make`
 
 	mkdir -p $INSTALLDIR
-    export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
-    export CMAKE_PREFIX_PATH=/opt/intel/mkl/lib/intel64:$CMAKE_PREFIX_PATH
-    export CPATH=/opt/intel/mkl/include:$CPATH
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
+    export CMAKE_PREFIX_PATH=/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:$CMAKE_PREFIX_PATH
+    export CPATH=/usr/local/cuda/include:/opt/intel/mkl/include:$CPATH
+    # Use these flags instead for an architecture optimized build.
+    #export CFLAGS="-march=skylake-avx512 -mtune=skylake-avx512"
+    #export CXXFLAGS="-march=skylake-avx512 -mtune=skylake-avx512"
+    # Disable AVX512 instructions and build a generic architecture.
     export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export CXXFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
 
@@ -93,20 +106,13 @@ From: fedora:27
 	#
     dnf -y install wcslib wcslib-devel 
 
-    #
-    # Install Intel MKL
-    #
-    sudo dnf config-manager --add-repo https://yum.repos.intel.com/mkl/setup/intel-mkl.repo
-    sudo rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
-    dnf -y install intel-mkl-2020.0-088 intel-mkl-64bit-2020.0-088
-
     #   
     # Install Image Domain Gridder (IDG)
     #   
     mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg
     git clone https://gitlab.com/astron-idg/idg.git src 
     cd src && git checkout $IDG_VERSION && mkdir build && cd build
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON ..
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
     make -j $J
     make install
     rm -rf $INSTALLDIR/idg/src
@@ -130,15 +136,19 @@ From: fedora:27
     #
 %runscript
     echo source $INSTALLDIR/init.sh >> $HOME/.bashrc
-    echo export PATH=\$PATH >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    echo export PATH=/usr/local/cuda/bin:\$PATH >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     . $INSTALLDIR/init.sh
 
 %help
     This Singularity image acts as a base for the LOFAR installation. It has Fedora 31 setup, with the required dependencies installed. These are:
     
-    * Armadillo $ARMADILLO_VERSION
-    * Boost $BOOST_VERSION
-    * CFITSIO $CFITSIO_VERSION
-    * SuperLU $SUPERLU_VERSION
-    * WCSLIB $WCSLIB_VERSION
+    * Armadillo 9.900.3
+    * Boost 1.69.0
+    * CFITSIO 7.3.47
+    * FFTW 3.5.8
+    * HDF5 1.10.5
+    * LAPACK 3.8.0
+    * OpenBLAS 3.8.0
+    * SuperLU 5.2.1
+    * WCSLIB 6.4
