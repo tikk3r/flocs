@@ -1,8 +1,8 @@
 Bootstrap: shub
-From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
+From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base_mkl_cuda
 # If building from a base image locally enable this instead.
 #Bootstrap: localimage
-#From: lofar_sksp_base_skylake.sif
+#From: lofar_sksp_base_skylake-avx512_cuda_11-1_fedora28.sif
 
 %environment
     export PYTHONPATH=
@@ -15,8 +15,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	export J=6
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=2.7
-	# Enable MKL on AMD CPUs
-	export MKL_DEBUG_CPU_TYPE=5
 
 	# Path to where the patch for python-casacore's setup is stored.
 	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
@@ -24,25 +22,33 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	
 	# Settings relevant to the installed software.
 	export AOFLAGGER_VERSION=v2.15.0
+	export ARMADILLO_VERSION=9.900.3
+	export BLAS_VERSION=3.8.0
+	export BOOST_VERSION=1.69.0
 	export CASACORE_VERSION=v2.4.1
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
+	export CFITSIO_VERSION=7.3.47
     export DPPP_VERSION=v4.2
 	export DYSCO_VERSION=v1.2
     #export EVERYBEAM_VERSION=0cc64a81
     export EVERYBEAM_VERSION=master
-    export IDG_VERSION=3c948d5
-	export HDF5_VERSION=1.8.18
+    export FFTW_VERSION=3.5.8
+	export HDF5_VERSION=1.10.5
+    export IDG_VERSION=master
+	export LAPACK_VERSION=3.8.0
 	export LOFAR_VERSION=3_2_18
     # Don't change LOSOTO2_VERSION. This is the last commit that plays nice with Python 2.
 	export LOSOTO2_VERSION=c8fbd61
 	export LOSOTO3_VERSION=latest
     export LSMTOOL_VERSION=v1.4.2
-    # Haven't figured out how to successfully build 1.9.2 yet...
-	export PYBDSF_VERSION=6ce374d
+	export OPENBLAS_VERSION=3.8.0
+	export PYBDSF_VERSION=master
 	export PYTHON_CASACORE_VERSION=v2.2.1
     export RMEXTRACT_VERSION=4c61232
+	export SUPERLU_VERSION=5.2.1
 	export WSCLEAN_VERSION=latest
+	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
 
     export CC=`which gcc`
@@ -50,6 +56,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
     export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     export CXXFLAGS="-std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+    # Use below to optimize for a specific architecture
+    #export CFLAGS="-march=skylake-avx512 -mtune=skylake-avx512"
+    #export CXXFLAGS="-march=skylake-avx512 -mtune=skylake-avx512"
     export CPLUS_INCLUDE_PATH="/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include"
     export CPATH="/usr/include/openmpi-x86_64/:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:$CPATH"
     export CMAKE_PREFIX_PATH="$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
@@ -60,11 +69,12 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 
 	mkdir -p $INSTALLDIR
 
-	# Symlinks required for Fedora 27
-	ln -s /usr/lib64/libboost_python3.so /usr/lib64/libboost_python36.so
-	ln -s /usr/lib64/libboost_numpy3.so /usr/lib64/libboost_numpy36.so
-	ln -s /usr/lib64/libboost_python.so /usr/lib64/libboost_python27.so
-	ln -s /usr/lib64/libboost_numpy.so /usr/lib64/libboost_numpy27.so
+	# Symlinks required for Fedora 31
+	ln -s /usr/lib64/libboost_python37.so /usr/lib64/libboost_python3.so
+	ln -s /usr/lib64/libboost_numpy37.so /usr/lib64/libboost_numpy3.so
+	ln -s /usr/lib64/libboost_python27.so /usr/lib64/libboost_python.so
+	ln -s /usr/lib64/libboost_numpy27.so /usr/lib64/libboost_numpy.so
+    ln -s /usr/lib64/libnsl.so.2.0.0 /usr/lib64/libnsl.so
 
     dnf -y install rsync
     dnf -y install openmpi openmpi-devel
@@ -83,7 +93,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     virtualenv $INSTALLDIR/pyenv-py3 --python=python3
     source $INSTALLDIR/pyenv-py3/bin/activate
     pip install numpy
-    export HDF5_VERSION=1.8.18
+    export HDF5_VERSION=1.10.5
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
@@ -93,6 +103,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     pip install numpy
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements.txt
+    pip install --no-deps "reproject==0.5.1"
 
     #
     # Install Montage
@@ -139,6 +150,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	#
 	# Install CASAcore
 	#
+	# Casacore 2.4.1 does not seem to deal well with AVX512 instructions, so disable them if needed
+    #export CFLAGS="-march=skylake -mtune=skylake -mno-avx512f"
+    #export CXXFLAGS="-march=skylake -mtune=skylake -mno-avx512f"
 	mkdir -p ${INSTALLDIR}/casacore/build
 	mkdir -p ${INSTALLDIR}/casacore/data
 	cd $INSTALLDIR/casacore
@@ -168,6 +182,9 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     python setup.py install #--prefix=${INSTALLDIR}/python-casacore/
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/python-casacore/python-casacore
+    # and then reset the flags again if needed
+    #export CFLAGS="-march=skylake-avx512 -mtune=skylake-avx512"
+    #export CXXFLAGS="-march=skylake-avx512 -mtune=skylake-avx512"
 
 	#
 	# Install Dysco
@@ -354,7 +371,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     #
     mkdir -p $INSTALLDIR/ds9/bin
     cd $INSTALLDIR/ds9
-    wget http://ds9.si.edu/download/fedora27/ds9.fedora27.8.1.tar.gz
+    wget http://ds9.si.edu/download/fedora30/ds9.fedora30.8.1.tar.gz 
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
@@ -369,6 +386,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*
     dnf -y clean all
+    unset J
     
 	#
 	# init-lofar
@@ -398,7 +416,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 	echo export OPENBLAS_MAX_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_NUM_THREADS=64 >> $INSTALLDIR/init.sh
 	echo export OMP_MAX_THREADS=64 >> $INSTALLDIR/init.sh
-	echo export MKL_DEBUG_CPU_TYPE=5 >> $INSTALLDIR/init.sh
 
 	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$PYTHONPATH >> $INSTALLDIR/init_py2.sh
     echo source \$INSTALLDIR/pyenv-py2/bin/activate >> $INSTALLDIR/init_py2.sh
@@ -423,6 +440,8 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
     * Dysco: $INSTALLDIR/dysco
     * DS9: $INSTALLDIR/ds9
     * Dysco: $INSTALLDIR/dysco
+    * EveryBeam: $INSTALLDIR/EveryBeam
+    * IDG: $INSTALLDIR/idg
     * LOFAR: $INSTALLDIR/lofar
     * WSClean: $INSTALLDIR/wsclean
 
@@ -434,3 +453,15 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
         singularity exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
     To enter a shell within the image, use
         singularity shell -B <paths,that,need,to,be,accessible> <path to image>
+
+    The container base is Fedora 31 and relevant key dependencies have the following versions:
+
+    * Armadillo 9.900.3
+    * Boost 1.69.0
+    * CFITSIO 7.3.47
+    * FFTW 3.5.8
+    * HDF5 1.10.5
+    * LAPACK 3.8.0
+    * OpenBLAS 3.8.0
+    * SuperLU 5.2.1
+    * WCSLIB 6.4
