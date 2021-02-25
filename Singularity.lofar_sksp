@@ -371,7 +371,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base_mkl_cuda
     #
     mkdir -p $INSTALLDIR/ds9/bin
     cd $INSTALLDIR/ds9
-    wget http://ds9.si.edu/download/fedora30/ds9.fedora30.8.1.tar.gz 
+    wget http://ds9.si.edu/download/fedora30/ds9.fedora30.8.2.1.tar.gz 
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
