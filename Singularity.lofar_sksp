@@ -79,7 +79,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base_mkl_cuda
     dnf -y install rsync
     dnf -y install openmpi openmpi-devel
     dnf -y install htop
-    dnf -y install python3-pybind11 pybind11-devel mysql-server
+    dnf -y install python3-pybind11 pybind11-devel mysql mysql-devel
     #module load mpi
 
     #
