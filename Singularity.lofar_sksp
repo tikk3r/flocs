@@ -148,6 +148,19 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base_mkl_cuda
     rm -rf $INSTALLDIR/pybdsf/pybdsf
 
 	#
+	# Install Dysco
+	#
+	mkdir -p $INSTALLDIR/dysco/build
+	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
+    if [ "$DYDSCO_VERSION" != "latest" ]; then cd src && git checkout $DYSCO_VERSION; fi
+	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && $make -s -j $J && $make install
+    cd $INSTALLDIR
+    rm -rf $INSTALLDIR/dysco/build
+    rm -rf $INSTALLDIR/dysco/src
+
+    export LD_LIBRARY_PATH=$INSTALLDIR/dysco/lib:$LD_LIBRARY_PATH
+
+	#
 	# Install CASAcore
 	#
 	# Casacore 2.4.1 does not seem to deal well with AVX512 instructions, so disable them if needed
@@ -185,17 +198,6 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base_mkl_cuda
     # and then reset the flags again if needed
     #export CFLAGS="-march=skylake-avx512 -mtune=skylake-avx512"
     #export CXXFLAGS="-march=skylake-avx512 -mtune=skylake-avx512"
-
-	#
-	# Install Dysco
-	#
-	mkdir -p $INSTALLDIR/dysco/build
-	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
-    if [ "$DYDSCO_VERSION" != "latest" ]; then cd src && git checkout $DYSCO_VERSION; fi
-	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && $make -s -j $J && $make install
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/dysco/build
-    rm -rf $INSTALLDIR/dysco/src
 
 	#
 	# Install AOFlagger
