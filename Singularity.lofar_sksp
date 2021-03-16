@@ -1,5 +1,5 @@
 Bootstrap: shub
-From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base_mkl_cuda
+From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
 #Bootstrap: localimage
 #From: lofar_sksp_base_skylake-avx512_cuda_11-1_fedora28.sif
@@ -114,6 +114,7 @@ From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base_mkl_cuda
     tar xf Montage_v6.0.tar.gz
     cd Montage-6.0
     make -j $J
+    rm -rf /opt/montage/Montage_v6.0.tar.gz
     
 
     #
