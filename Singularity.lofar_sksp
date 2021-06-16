@@ -1,8 +1,8 @@
 #Bootstrap: shub
 #From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
-Bootstrap: localimage
-From: lofar-grid-hpccloud_lofar_sksp_base.sif
+Bootstrap: library
+From: tikker/remote-builds/rb-608fc47136a73749849bd324:latest
 
 %environment
     export PYTHONPATH=
@@ -240,7 +240,7 @@ From: lofar-grid-hpccloud_lofar_sksp_base.sif
     git clone https://github.com/lofar-astron/LofarStMan.git
     cd LofarStMan
     mkdir build && cd build
-    cmake -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofarstman
+    cmake -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofarstman ..
     make -j$J
     make install
     cd $INSTALLDIR
