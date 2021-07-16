@@ -48,7 +48,7 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
 	export PYTHON_CASACORE_VERSION=v2.2.1
     export RMEXTRACT_VERSION=4c61232
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=latest
+	export WSCLEAN_VERSION=v2.10.1
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
 
@@ -240,7 +240,7 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
 	$make -s -j $J
 	$make install
     # Patch jobserver.py
-	wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/patches/patch_lofar_jobserver.patch
+	wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/patches/patch_lofar_jobserver.patch -O $PATCH_LOFAR_JOBSERVER
     patch $INSTALLDIR/lofar/lib64/python2.7/site-packages/lofarpipe/support/jobserver.py $PATCH_LOFAR_JOBSERVER
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/lofar/build
