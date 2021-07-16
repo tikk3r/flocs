@@ -388,7 +388,7 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
     # Switch to mpicc for a minute
     export CC=`which mpicc`
     export CXX=`which mpic++`
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include ..
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include ..
     $make -j ${J}
     $make install
     cd $INSTALLDIR
