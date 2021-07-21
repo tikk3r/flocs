@@ -24,6 +24,8 @@ From: fedora:31
 	export SUPERLU_VERSION=5.2.1
 	export WCSLIB_VERSION=6.4
     export DEBIAN_FRONTEND=noninteractive
+    export HAS_CUDA=true
+    export HAS_MKL=true
 
     #
     # System installs
@@ -106,13 +108,40 @@ From: fedora:31
 	#
     dnf -y install wcslib wcslib-devel 
 
+    if [ $HAS_MKL ]; then
+        #
+        # Install Intel MKL
+        #
+        sudo dnf config-manager --add-repo https://yum.repos.intel.com/mkl/setup/intel-mkl.repo
+        sudo rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
+        dnf -y install intel-mkl-2020.0-088 intel-mkl-64bit-2020.0-088
+    fi
+
+    if [ $HAS_CUDA ]; then
+        #
+        # Install CUDA 11.3
+        #
+        sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora33/x86_64/cuda-fedora33.repo
+        sudo dnf -y clean all
+        sudo dnf -y upgrade
+        sudo dnf -y install cuda-11-3
+    fi
+
     #   
     # Install Image Domain Gridder (IDG)
     #   
     mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg
     git clone https://gitlab.com/astron-idg/idg.git src 
     cd src && git checkout $IDG_VERSION && mkdir build && cd build
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
+    if [ $HAS_CUDA ] && [ $HAS_MKL ]; then
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include ..
+    elif [ ! $HAS_CUDA ] && [ $HAS_MKL ]; then
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON ..
+    elif [ $HAS_CUDA ] && [ ! $HAS_MKL ]; then
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include ..
+    else
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
+    fi
     make -j $J
     make install
     rm -rf $INSTALLDIR/idg/src
