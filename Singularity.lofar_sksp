@@ -22,7 +22,6 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
     export PATCH_LOFAR_JOBSERVER=$INSTALLDIR/lofar/patch_lofar_jobserver.patch
 	
 	# Settings relevant to the installed software.
-	#export AOFLAGGER_VERSION=v2.15.0
 	export AOFLAGGER_VERSION=v3.1.0
 	export ARMADILLO_VERSION=9.900.3
 	export BLAS_VERSION=3.8.0
@@ -31,8 +30,7 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    #export DPPP_VERSION=v4.2
-    export DPPP_VERSION=master
+    export DPPP_VERSION=v4.2
 	export DYSCO_VERSION=v1.2
     #export EVERYBEAM_VERSION=0cc64a81
     export EVERYBEAM_VERSION=master
@@ -222,6 +220,7 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
 	#
 	# Install AOFlagger
 	#
+    source $INSTALLDIR/pyenv-py3/bin/activate
 	mkdir -p ${INSTALLDIR}/aoflagger/build
 	if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src; fi
 	if [ "${AOFLAGGER_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION}; fi
@@ -232,6 +231,8 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
     rm -rf $INSTALLDIR/aoflagger/aoflagger
     rm -rf $INSTALLDIR/aoflagger/build
     rm -rf $INSTALLDIR/aoflagger/src
+	deactivate
+    source $INSTALLDIR/pyenv-py2/bin/activate
 
 	#
 	# Install LOFAR
