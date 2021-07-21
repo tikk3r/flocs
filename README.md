@@ -6,7 +6,7 @@
 
 This repository hold resources for deploying the LOFAR software (genericpipeline) and related tools through Singularity containers. These containers are general, but at the same time somewhat tailored for SKSP use.
 
-The `master` branch is empty. Currently the images are based on the Fedora 27 Linux distribution, which is available from [DockerHub](https://hub.docker.com/_/fedora). Recipes to build this container can be found on the `fedora` branch.
+The `master` branch is empty. Currently the images are based on the Fedora 31 Linux distribution, which is available from [DockerHub](https://hub.docker.com/_/fedora). Recipes to build this container can be found on the `fedora` branch.
 
 To build a full LOFAR Singularity image, do the following:
 1) Build Singularity.lofarbase
