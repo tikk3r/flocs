@@ -127,25 +127,6 @@ From: fedora:31
         sudo dnf -y install cuda-11-3
     fi
 
-    #   
-    # Install Image Domain Gridder (IDG)
-    #   
-    mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg
-    git clone https://gitlab.com/astron-idg/idg.git src 
-    cd src && git checkout $IDG_VERSION && mkdir build && cd build
-    if [ $HAS_CUDA ] && [ $HAS_MKL ]; then
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include ..
-    elif [ ! $HAS_CUDA ] && [ $HAS_MKL ]; then
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON ..
-    elif [ $HAS_CUDA ] && [ ! $HAS_MKL ]; then
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include ..
-    else
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
-    fi
-    make -j $J
-    make install
-    rm -rf $INSTALLDIR/idg/src
-
 	echo "Installation directory contents:"
 	ls $INSTALLDIR
 
