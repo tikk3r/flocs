@@ -22,7 +22,8 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
     export PATCH_LOFAR_JOBSERVER=$INSTALLDIR/lofar/patch_lofar_jobserver.patch
 	
 	# Settings relevant to the installed software.
-	export AOFLAGGER_VERSION=v2.15.0
+	#export AOFLAGGER_VERSION=v2.15.0
+	export AOFLAGGER_VERSION=v3.1.0
 	export ARMADILLO_VERSION=9.900.3
 	export BLAS_VERSION=3.8.0
 	export BOOST_VERSION=1.69.0
@@ -30,7 +31,8 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=v4.2
+    #export DPPP_VERSION=v4.2
+    export DPPP_VERSION=master
 	export DYSCO_VERSION=v1.2
     #export EVERYBEAM_VERSION=0cc64a81
     export EVERYBEAM_VERSION=master
@@ -85,7 +87,7 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
     dnf -y install rsync
     dnf -y install openmpi openmpi-devel
     dnf -y install htop
-    dnf -y install python3-pybind11 pybind11-devel mysql mysql-devel
+    dnf -y install python3-pybind11 pybind11-devel mysql mysql-devel python-devel python3-devel
     #module load mpi
 
     #
@@ -93,9 +95,25 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
     #
     wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements.txt -O $INSTALLDIR/requirements.txt
     wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    pip2 --version
+    pip --version
+    pip2 install --upgrade "pip<21.0"
+    pip2 install --upgrade setuptools
+    pip2 install xmlrunner typing
+    pip install --upgrade setuptools
     pip install xmlrunner
-    pip3 install xmlrunner
-    pip --no-cache-dir install "virtualenv<20"
+    pip2 --no-cache-dir install "virtualenv<21"
+    pip --no-cache-dir install virtualenv
+
+    python2 -m virtualenv -h
+    virtualenv $INSTALLDIR/pyenv-py2 --python=python2 --pip=20.3.4 --system-site-packages
+    source $INSTALLDIR/pyenv-py2/bin/activate
+    python -m pip --version
+    python -m pip install --no-binary h5py h5py
+    python -m pip install --no-deps -r $INSTALLDIR/requirements.txt
+    python -m pip install --no-deps "reproject==0.5.1"
+    deactivate
+
     virtualenv $INSTALLDIR/pyenv-py3 --python=python3
     source $INSTALLDIR/pyenv-py3/bin/activate
     pip install numpy
@@ -104,12 +122,8 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
     deactivate
-    virtualenv $INSTALLDIR/pyenv-py2 --python=python2
+
     source $INSTALLDIR/pyenv-py2/bin/activate
-    pip install numpy
-    pip install --no-binary h5py h5py
-    pip install --no-deps -r $INSTALLDIR/requirements.txt
-    pip install --no-deps "reproject==0.5.1"
 
     #
     # Install Montage
@@ -209,9 +223,9 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
 	# Install AOFlagger
 	#
 	mkdir -p ${INSTALLDIR}/aoflagger/build
-	if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger; fi
-	if [ "${AOFLAGGER_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone git://git.code.sf.net/p/aoflagger/code aoflagger && cd ${INSTALLDIR}/aoflagger/aoflagger && git checkout tags/${AOFLAGGER_VERSION}; fi
-	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../aoflagger
+	if [ "${AOFLAGGER_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src; fi
+	if [ "${AOFLAGGER_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION}; fi
+	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
 	cd ${INSTALLDIR}/aoflagger/build && $make -s -j ${J}
 	cd ${INSTALLDIR}/aoflagger/build && $make install
     cd $INSTALLDIR
@@ -305,9 +319,10 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
     # Install DPPP
     #
     mkdir -p $INSTALLDIR/DPPP/build
-    git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
+    #git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
+    git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/src
-    git checkout tags/${DPPP_VERSION}
+    git checkout ${DPPP_VERSION}
     cd $INSTALLDIR/DPPP/build
     cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/lofar/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/lofar/lib/libstationresponse.so -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so ../src
     $make -s -j $J && $make install
