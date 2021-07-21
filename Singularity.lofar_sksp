@@ -30,9 +30,8 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=v4.2
+    export DPPP_VERSION=v5.1
 	export DYSCO_VERSION=v1.2
-    #export EVERYBEAM_VERSION=0cc64a81
     export EVERYBEAM_VERSION=master
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.10.5
@@ -320,7 +319,6 @@ From: lofar_sksp_base_x86-64_generic_cuda_fedora31.sif
     # Install DPPP
     #
     mkdir -p $INSTALLDIR/DPPP/build
-    #git clone https://github.com/lofar-astron/DP3.git $INSTALLDIR/DPPP/src
     git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/src
     git checkout ${DPPP_VERSION}
