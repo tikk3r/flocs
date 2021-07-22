@@ -464,6 +464,10 @@ From: test_3.3_base.sif
 	ln -s /opt/lofar/DPPP/bin/makesourcedb /opt/lofar/lofar/bin/makesourcedb
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
 
+    echo $'export MARCH_MACHINE=$(gcc -march=native -Q --help=target | grep "\-march=" | head -n 1 | awk \'{print $2}\')' >> $INSTALLDIR/init.sh
+    echo $'export MTUNE_MACHINE=$(gcc -mtune=native -Q --help=target | grep "\-mtune=" | head -n 1 | awk \'{print $2}\')' >> $INSTALLDIR/init.sh
+    echo $'if [ "$MARCH_MACHINE" != "$MARCH" ]; then echo "WARNING - software has been build with -march=$MARCH but current machine reports -march=$MARCH_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
+    echo $'if [ "$MTUNE_MACHINE" != "$MTUNE" ]; then echo "WARNING - software has been build with -mtune=$MTUNE but current machine -mtune=$MTUNE_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
 	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
