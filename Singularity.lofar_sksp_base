@@ -142,6 +142,8 @@ From: fedora:31
     echo export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export HAS_CUDA=true >> $INSTALLDIR/init.sh
     echo export HAS_MKL=true >> $INSTALLDIR/init.sh
+    echo export MARCH=$MARCH >> $INSTALLDIR/init.sh
+    echo export MTUNE=$MTUNE >> $INSTALLDIR/init.sh
 
     #
     # entrypoint
@@ -152,6 +154,8 @@ From: fedora:31
     echo export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export HAS_CUDA=true >> $INSTALLDIR/init.sh
     echo export HAS_MKL=true >> $INSTALLDIR/init.sh
+    echo export MARCH=$MARCH >> $INSTALLDIR/init.sh
+    echo export MTUNE=$MTUNE >> $INSTALLDIR/init.sh
     . $INSTALLDIR/init.sh
 
 %help
