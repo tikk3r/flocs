@@ -38,6 +38,7 @@ nose
 numexpr
 numpy
 oauthlib
+pandas
 pluggy<0.7
 progressbar
 psycopg2
