@@ -45,6 +45,7 @@ psycopg2
 py
 pyasn1
 pyasn1-modules
+pylru==1.2.0
 pyparsing
 pyregion
 pytest<3.6.4
