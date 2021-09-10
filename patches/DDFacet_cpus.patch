@@ -2,7 +2,7 @@
 +++ DDFacet/Other/AsyncProcessPool.py	2020-09-23 18:36:16.989634477 +0200
 @@ -261,23 +261,27 @@
              print>> log, ModColor.Str("Fixing parent process to vthread %d" % self.parent_affinity, col="green")
-         psutil.Process().cpu_affinity(range(self.ncpu) if not self.parent_affinity else [self.parent_affinity])
+-        psutil.Process().cpu_affinity(range(self.ncpu) if not self.parent_affinity else [self.parent_affinity])
  
 +        avail_cores = psutil.Process().cpu_affinity()
 +        psutil.Process().cpu_affinity(avail_cores[:self.ncpu] if not self.parent_affinity else [self.parent_affinity])
