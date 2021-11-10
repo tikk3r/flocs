@@ -59,6 +59,31 @@ From: fedora:31
     dnf -y install python3-pybind11 pybind11-devel mysql mysql-devel python-devel python3-devel
     dnf -y install gdb
 
+    #
+    # Install Boost
+    #
+    dnf -y install boost boost-devel boost-python2 boost-python2-devel boost-python3 boost-python3-devel
+
+    #
+    # Install FFTW
+    #
+    dnf -y install fftw-devel fftw-libs
+
+	#
+	# Install OpenBLAS
+	#
+	dnf -y install blas-devel
+
+	#
+	# Install SuperLU
+	#
+	dnf -y install SuperLU SuperLU-devel
+
+	#
+	# Install Armadillo
+	#
+	dnf -y install armadillo armadillo-devel
+
     # 
     # Setup environment variables used during build
     #
@@ -72,11 +97,8 @@ From: fedora:31
     #export CPATH=/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:$CPATH
     #export PATH=/usr/lib64/openmpi/bin:$PATH
 
-    # Run gcc -march=native -Q --help=target to figure out these values.
-    #export MARCH='x86-64'
-    #export MTUNE='generic'
-    export MARCH='cascadelake'
-    export MTUNE='cascadelake'
+    export MARCH='x86-64'
+    export MTUNE='generic'
     export NOAVX512=false
 
     if [ $NOAVX512 ]; then
@@ -91,31 +113,6 @@ From: fedora:31
     export CMAKE_PREFIX_PATH="$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
     export LD_LIBRARY_PATH="$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:$INSTALLDIR/LOFARBeam/lib:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:LD_LIBRARY_PATH"
     export PATH="/usr/lib64/openmpi/bin:$PATH"
-
-    #
-    # Install Boost
-    #
-    dnf -y install boost boost-devel boost-python2 boost-python2-devel boost-python3 boost-python3-devel
-
-    #
-    # Install FFTW
-    #
-    dnf -y install fftw-devel fftw-libs
-
-	#
-	# Install OpenBLAS
-	#
-	dnf -y install openblas openblas-devel
-
-	#
-	# Install SuperLU
-	#
-	dnf -y install SuperLU SuperLU-devel
-
-	#
-	# Install Armadillo
-	#
-	dnf -y install armadillo armadillo-devel
 
     ###################
     # Source installs #
@@ -162,12 +159,12 @@ From: fedora:31
 
     if [ $HAS_CUDA ]; then
         #
-        # Install CUDA 11.5
+        # Install CUDA 11.3
         #
-        sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora34/x86_64/cuda-fedora34.repo
+        sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora33/x86_64/cuda-fedora33.repo
         sudo dnf -y clean all
         sudo dnf -y upgrade
-        sudo dnf -y install cuda-11-5
+        sudo dnf -y install cuda-11-3
     fi
 
 	echo "Installation directory contents:"
@@ -188,7 +185,7 @@ From: fedora:31
     echo export HAS_MKL=true >> $INSTALLDIR/init.sh
 
 %runscript
-    echo Base container built from LOFAR-SKSP Singularity v3.3.1
+    echo Base container built from LOFAR-SKSP Singularity v3.3
 
 %help
     This Singularity image acts as a base for the LOFAR installation. It has Fedora 31 setup, with the required dependencies installed. These are:
