@@ -2,20 +2,17 @@
 #From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
 Bootstrap: localimage
-From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
+From: lofar_sksp_v3.3.2_x86-64_generic_cuda_11_3_base.sif
 
-#%environment
-    #export PYTHONPATH=
-    #export INSTALLDIR=/opt/lofar
-    #. $INSTALLDIR/init.sh
-    #source $INSTALLDIR/pyenv-py2/bin/activate
+%environment
+    . $INSTALLDIR/init.sh
 
 %post
     . $INSTALLDIR/init.sh
 	# General environment settings.
 	export J=6
 	export INSTALLDIR=/opt/lofar
-	export PYTHON_VERSION=2.7
+	export PYTHON_VERSION=3.7.9
     export OPENBLAS_NUM_THREADS=1
 
 	# Path to where the patch for python-casacore's setup is stored.
@@ -106,6 +103,7 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
     pip2 --no-cache-dir install "virtualenv<21"
     pip --no-cache-dir install virtualenv
 
+    # Keep a Python 2.7 env handy just in case.
     python2 -m virtualenv -h
     virtualenv $INSTALLDIR/pyenv-py2 --python=python2 --pip=20.3.4 --system-site-packages
     source $INSTALLDIR/pyenv-py2/bin/activate
@@ -124,9 +122,6 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
     pip install legacystamps
-    deactivate
-
-    source $INSTALLDIR/pyenv-py2/bin/activate
 
     #
     # Install Montage
@@ -189,7 +184,7 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
     #cd $INSTALLDIR/casacore/src && patch --fuzz 3 -p1 < $INSTALLDIR/casacore/1033.patch
 	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
-	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=False ../src/ 
+	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=True ../src/ 
 	cd ${INSTALLDIR}/casacore/build && $make -s -j ${J}
 	cd ${INSTALLDIR}/casacore/build && $make install
     cd $INSTALLDIR
@@ -228,7 +223,6 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
 	#
 	# Install AOFlagger
 	#
-    source $INSTALLDIR/pyenv-py3/bin/activate
 	mkdir -p ${INSTALLDIR}/aoflagger/build
 	cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
 	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
@@ -238,35 +232,34 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
     rm -rf $INSTALLDIR/aoflagger/aoflagger
     rm -rf $INSTALLDIR/aoflagger/build
     rm -rf $INSTALLDIR/aoflagger/src
-	deactivate
-    source $INSTALLDIR/pyenv-py2/bin/activate
 
 	#
 	# Install LOFAR
 	#
-	mkdir -p ${INSTALLDIR}/lofar/build/gnucxx11_opt
-	if [ "${LOFAR_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/trunk src; fi
-	if [ "${LOFAR_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/tags/LOFAR-Release-${LOFAR_VERSION} src; fi
-	cd $INSTALLDIR/lofar && svn update --depth=infinity $INSTALLDIR/lofar/src/CMake
-	wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/patches/lofar.patch
-	patch $INSTALLDIR/lofar/src/CMake/variants/GNUCXX11.cmake $PATCH_LOFAR
-    # makesourcedb and showsourcedb are covered by DPPP already.
-    rm ${INSTALLDIR}/lofar/src/CEP/ParmDB/src/makesourcedb.cc
-    #rm ${INSTALLDIR}/lofar/src/CEP/ParmDB/src/showsourcedb.cc
-    sed -i '/makesourcedb/d' $INSTALLDIR/lofar/src/CEP/ParmDB/src/CMakeLists.txt
-    sed -i '/makesourcedb/d' $INSTALLDIR/lofar/src/CEP/ParmDB/test/CMakeLists.txt
-    #sed '/showsourcedb/d' $INSTALLDIR/lofar/src/CEP/ParmDB/src/CMakeLists.txt > ${INSTALLDIR}/lofar/src/CEP/ParmDB/src/CMakeLists.txt
-	cd ${INSTALLDIR}/lofar/build/gnucxx11_opt
-    #cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/dysco -DBUILD_PACKAGES="StationResponse pystationresponse ParmDB pyparmdb Pipeline MS" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
-    cmake -DBUILD_PACKAGES="Pipeline ParmDB pyparmdb" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True -DBUILD_PYTHON3=OFF ${INSTALLDIR}/lofar/src/
-	$make -s -j $J
-	$make install
-    # Patch jobserver.py
-	wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/patches/patch_lofar_jobserver.patch -O $PATCH_LOFAR_JOBSERVER
-    patch $INSTALLDIR/lofar/lib64/python2.7/site-packages/lofarpipe/support/jobserver.py $PATCH_LOFAR_JOBSERVER
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/lofar/build
-    rm -rf $INSTALLDIR/lofar/src
+	# Doesn't work with Python 3.
+	#mkdir -p ${INSTALLDIR}/lofar/build/gnucxx11_opt
+	#if [ "${LOFAR_VERSION}" = "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/trunk src; fi
+	#if [ "${LOFAR_VERSION}" != "latest" ]; then cd ${INSTALLDIR}/lofar && svn checkout https://svn.astron.nl/LOFAR/tags/LOFAR-Release-${LOFAR_VERSION} src; fi
+	#cd $INSTALLDIR/lofar && svn update --depth=infinity $INSTALLDIR/lofar/src/CMake
+	#wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/patches/lofar.patch
+	#patch $INSTALLDIR/lofar/src/CMake/variants/GNUCXX11.cmake $PATCH_LOFAR
+    ## makesourcedb and showsourcedb are covered by DPPP already.
+    #rm ${INSTALLDIR}/lofar/src/CEP/ParmDB/src/makesourcedb.cc
+    ##rm ${INSTALLDIR}/lofar/src/CEP/ParmDB/src/showsourcedb.cc
+    #sed -i '/makesourcedb/d' $INSTALLDIR/lofar/src/CEP/ParmDB/src/CMakeLists.txt
+    #sed -i '/makesourcedb/d' $INSTALLDIR/lofar/src/CEP/ParmDB/test/CMakeLists.txt
+    ##sed '/showsourcedb/d' $INSTALLDIR/lofar/src/CEP/ParmDB/src/CMakeLists.txt > ${INSTALLDIR}/lofar/src/CEP/ParmDB/src/CMakeLists.txt
+	#cd ${INSTALLDIR}/lofar/build/gnucxx11_opt
+    ##cmake -DCMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/dysco -DBUILD_PACKAGES="StationResponse pystationresponse ParmDB pyparmdb Pipeline MS" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True ${INSTALLDIR}/lofar/src/
+    #cmake -DBUILD_PACKAGES="Pipeline ParmDB pyparmdb" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar/ -DUSE_LOG4CPLUS=OFF -DUSE_OPENMP=True -DBUILD_PYTHON3=OFF ${INSTALLDIR}/lofar/src/
+	#$make -s -j $J
+	#$make install
+    ## Patch jobserver.py
+	#wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/patches/patch_lofar_jobserver.patch -O $PATCH_LOFAR_JOBSERVER
+    #patch $INSTALLDIR/lofar/lib64/python2.7/site-packages/lofarpipe/support/jobserver.py $PATCH_LOFAR_JOBSERVER
+    #cd $INSTALLDIR
+    #rm -rf $INSTALLDIR/lofar/build
+    #rm -rf $INSTALLDIR/lofar/src
 
     #
     # Install LofarStMan
@@ -295,21 +288,22 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
     #
     # Install the standalone StationResponse libraries.
     #   
-    echo Installing LOFARBeam...
-    mkdir -p $INSTALLDIR/LOFARBeam/build
-    cd $INSTALLDIR/LOFARBeam
-    git clone https://github.com/lofar-astron/LOFARBeam.git src
-    cd src
-    echo export LOFARBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ../build
-    # Install in the existing lofar python folder
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
-    $make -j $J
-    $make install
-    touch /opt/lofar/lofar/lib64/python2.7/site-packages/lofar/__init__.py
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/LOFARBeam/build
-    rm -rf $INSTALLDIR/LOFARBeam/src
+    # Deprecated in favour of EveryBeam
+    #echo Installing LOFARBeam...
+    #mkdir -p $INSTALLDIR/LOFARBeam/build
+    #cd $INSTALLDIR/LOFARBeam
+    #git clone https://github.com/lofar-astron/LOFARBeam.git src
+    #cd src
+    #echo export LOFARBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    #cd ../build
+    ## Install in the existing lofar python folder
+    #cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
+    #$make -j $J
+    #$make install
+    #touch /opt/lofar/lofar/lib64/python2.7/site-packages/lofar/__init__.py
+    #cd $INSTALLDIR
+    #rm -rf $INSTALLDIR/LOFARBeam/build
+    #rm -rf $INSTALLDIR/LOFARBeam/src
 
     #
     # Install EveryBeam library
@@ -387,8 +381,10 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
     rm -rf $INSTALLDIR/RMextract
 
 	#
-	# Install LoSoTo
+	# Install LoSoTo Py 2
 	#
+    deactivate
+    source $INSTALLDIR/pyenv-py2/bin/activate
 	mkdir -p $INSTALLDIR/losoto/build
 	cd ${INSTALLDIR}/losoto/build
     git clone https://github.com/revoltek/losoto.git src
@@ -398,6 +394,20 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
     python setup.py install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/losoto
+    deactivate
+    source $INSTALLDIR/pyenv-py3/bin/activate
+
+	#
+	# Install LoSoTo Py 3
+	#
+	mkdir -p $INSTALLDIR/losoto/build
+	cd $INSTALLDIR/losoto/build
+    git clone https://github.com/revoltek/losoto.git src
+    cd src
+    python setup.py build
+    python setup.py install
+    cd $INSTALLDIR
+	rm -rf $INSTALLDIR/losoto
 
 	#
 	# Install LSMTool.
@@ -410,28 +420,6 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
 	python setup.py install
     cd $INSTALLDIR
 	rm -rf $INSTALLDIR/lsmtool
-
-    ############################################
-    # Install Python packages for Python 3 now #
-    ############################################
-    deactivate
-    source $INSTALLDIR/pyenv-py3/bin/activate
-
-	#
-	# Install LoSoTo
-	#
-	mkdir -p $INSTALLDIR/losoto/build
-	cd $INSTALLDIR/losoto/build
-    git clone https://github.com/revoltek/losoto.git src
-    cd src
-    python setup.py build
-    python setup.py install
-    cd $INSTALLDIR
-	rm -rf $INSTALLDIR/losoto
-
-    # Switch back to py2 to wrap up installation
-    deactivate
-    source $INSTALLDIR/pyenv-py2/bin/activate
 
     #
     # Install-WSClean
@@ -532,6 +520,7 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
 	echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
 
 	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$PYTHONPATH >> $INSTALLDIR/init_py2.sh
+    echo source \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
     echo source \$INSTALLDIR/pyenv-py2/bin/activate >> $INSTALLDIR/init_py2.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
@@ -541,7 +530,7 @@ From: lofar_sksp_base_v3.3.1_x86-64_generic_avx512_cuda_11_3.sif
     # entrypoint
     #
 %runscript
-    echo LOFAR-SKSP Singularity Container v3.3.1
+    echo LOFAR-SKSP Singularity Container v3.3.2
 
 %help
     This Singularity image contains an install of LOFAR 3.2.18. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
