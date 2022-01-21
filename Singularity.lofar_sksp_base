@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:31
+From: fedora:35
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -24,7 +24,7 @@ From: fedora:31
 	export WCSLIB_VERSION=6.4
     export DEBIAN_FRONTEND=noninteractive
     export HAS_CUDA=true
-    export HAS_MKL=true
+    export HAS_MKL=false
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
@@ -99,6 +99,8 @@ From: fedora:31
 
     export MARCH='x86-64'
     export MTUNE='generic'
+    #export MARCH='cascadelake'
+    #export MTUNE='cascadelake'
     export NOAVX512=false
 
     if [ $NOAVX512 ]; then
@@ -159,12 +161,12 @@ From: fedora:31
 
     if [ $HAS_CUDA ]; then
         #
-        # Install CUDA 11.3
+        # Install CUDA 11.6
         #
-        sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora33/x86_64/cuda-fedora33.repo
+        sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora35/x86_64/cuda-fedora35.repo
         sudo dnf -y clean all
         sudo dnf -y upgrade
-        sudo dnf -y install cuda-11-3
+        sudo dnf -y install cuda-11-6
     fi
 
 	echo "Installation directory contents:"
@@ -185,7 +187,7 @@ From: fedora:31
     echo export HAS_MKL=true >> $INSTALLDIR/init.sh
 
 %runscript
-    echo Base container built from LOFAR-SKSP Singularity v3.3
+    echo Base container built from LOFAR-SKSP Singularity v3.3.2
 
 %help
     This Singularity image acts as a base for the LOFAR installation. It has Fedora 31 setup, with the required dependencies installed. These are:
