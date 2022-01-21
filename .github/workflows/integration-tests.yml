@@ -26,7 +26,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Check dependency installation
       run: |
-        sudo apt -y install postgresql-dev
+        sudo apt -y install postgresql-12
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest wheel
         if [ -f requirements.txt ]; then pip install -r requirements3.txt; fi
