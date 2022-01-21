@@ -28,6 +28,6 @@ jobs:
       run: |
         apt -y install postgresql-dev
         python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
+        python -m pip install flake8 pytest wheel
         if [ -f requirements.txt ]; then pip install -r requirements3.txt; fi
         python -m pip install .
