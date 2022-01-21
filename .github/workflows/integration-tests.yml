@@ -30,4 +30,3 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 numpy pytest wheel
         if [ -f requirements.txt ]; then pip install -r requirements3.txt; fi
-        python -m pip install .
