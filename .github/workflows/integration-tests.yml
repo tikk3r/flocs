@@ -5,9 +5,9 @@ name: integration tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ fedora-py3 ]
   pull_request:
-    branches: [ master ]
+    branches: [ fedora-py3 ]
 
 jobs:
   build:
