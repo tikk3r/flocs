@@ -2,7 +2,7 @@
 #From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
 # If building from a base image locally enable this instead.
 Bootstrap: localimage
-From: test_fedora35_cuda_11.6_base.sif
+From: test_fedora34_cuda_11.5_base.sif
 
 %environment
     . $INSTALLDIR/init.sh
@@ -19,20 +19,21 @@ From: test_fedora35_cuda_11.6_base.sif
 	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
 	
 	# Settings relevant to the installed software.
-	export AOFLAGGER_VERSION=v3.1.0
+	#export AOFLAGGER_VERSION=v3.1.0
+	export AOFLAGGER_VERSION=master
 	export ARMADILLO_VERSION=9.900.3
 	export BLAS_VERSION=3.8.0
 	export BOOST_VERSION=1.69.0
-	export CASACORE_VERSION=v2.4.1
+	export CASACORE_VERSION=v3.4.0
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    #export DPPP_VERSION=v5.1
-    export DPPP_VERSION=e5eff2e
+    #export DPPP_VERSION=e5eff2e
+    export DPPP_VERSION=master
 	export DYSCO_VERSION=v1.2
     #export EVERYBEAM_VERSION=v0.1.3
     #export EVERYBEAM_VERSION=0c26c65d
-    export EVERYBEAM_VERSION=14f35c85
+    export EVERYBEAM_VERSION=master
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.10.5
     #export IDG_VERSION=master
@@ -42,10 +43,11 @@ From: test_fedora35_cuda_11.6_base.sif
     export LSMTOOL_VERSION=v1.4.2
 	export OPENBLAS_VERSION=3.8.0
 	export PYBDSF_VERSION=master
-	export PYTHON_CASACORE_VERSION=v2.2.1
+	export PYTHON_CASACORE_VERSION=v3.4.0
     export RMEXTRACT_VERSION=4c61232
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=c0a654ca
+	#export WSCLEAN_VERSION=c0a654ca
+	export WSCLEAN_VERSION=master
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
 
@@ -53,16 +55,18 @@ From: test_fedora35_cuda_11.6_base.sif
 	export CXX=`which g++`
     export MARCH='x86-64'
     export MTUNE='generic'
+    export HAS_CUDA=true
+    export HAS_MKL=false
     #export MARCH='cascadelake'
     #export MTUNE='cascadelake'
     export NOAVX512=false
 
-    if [ $NOAVX512 ]; then
+    if [ $NOAVX512 = true ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++14 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11"
+        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++14"
     fi
     export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include"
     export CPATH="/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:$CPATH"
@@ -87,7 +91,7 @@ From: test_fedora35_cuda_11.6_base.sif
     #
     wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
     pip --version
-    pip install --upgrade setuptools
+    #pip install --upgrade setuptools
     pip install xmlrunner
     pip --no-cache-dir install virtualenv
 
@@ -104,13 +108,13 @@ From: test_fedora35_cuda_11.6_base.sif
     #
     # Install Montage
     #
-    mkdir -p /opt/montage
-    cd /opt/montage
-    wget https://github.com/Caltech-IPAC/Montage/archive/v6.0.tar.gz -O Montage_v6.0.tar.gz
-    tar xf Montage_v6.0.tar.gz
-    cd Montage-6.0
-    make -j $J
-    rm -rf /opt/montage/Montage_v6.0.tar.gz
+    #mkdir -p /opt/montage
+    #cd /opt/montage
+    #wget https://github.com/Caltech-IPAC/Montage/archive/v6.0.tar.gz -O Montage_v6.0.tar.gz
+    #tar xf Montage_v6.0.tar.gz
+    #cd Montage-6.0
+    #make -j $J
+    #rm -rf /opt/montage/Montage_v6.0.tar.gz
     
 
     #
@@ -140,7 +144,8 @@ From: test_fedora35_cuda_11.6_base.sif
 	mkdir -p ${INSTALLDIR}/pybdsf
 	cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION} && echo export PYBDSF_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/pybdsf/pybdsf
-    python setup.py install
+    #python setup.py install
+    pip install bdsf
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/pybdsf/pybdsf
 
@@ -162,7 +167,7 @@ From: test_fedora35_cuda_11.6_base.sif
     #cd $INSTALLDIR/casacore/src && patch --fuzz 3 -p1 < $INSTALLDIR/casacore/1033.patch
 	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
-	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=True -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=True ../src/ 
+	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=False -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=True ../src/ 
 	cd ${INSTALLDIR}/casacore/build && $make -s -j ${J}
 	cd ${INSTALLDIR}/casacore/build && $make install
     cd $INSTALLDIR
@@ -228,12 +233,12 @@ From: test_fedora35_cuda_11.6_base.sif
     #
     # Install msoverview separately
     #
-    mkdir -p $INSTALLDIR/msoverview/src
-    cd $INSTALLDIR/msoverview/src
-    svn export https://svn.astron.nl/LOFAR/tags/LOFAR-Release-3_2_18/CEP/MS/src/msoverview.cc
-    gcc -I/opt/lofar/casacore/include/casacore/ -L/opt/lofar/casacore/lib msoverview.cc -o $INSTALLDIR/lofar/bin/msoverview -lcasa_casa -lcasa_ms -lcasa_tables -lstdc++
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/msoverview
+    #mkdir -p $INSTALLDIR/msoverview/src
+    #cd $INSTALLDIR/msoverview/src
+    #svn export https://svn.astron.nl/LOFAR/tags/LOFAR-Release-4_0_17/CEP/MS/src/msoverview.cc
+    #gcc -Dcasacore -I/opt/lofar/casacore/include/casacore/ -L/opt/lofar/casacore/lib msoverview.cc -o $INSTALLDIR/lofar/bin/msoverview -lcasa_casa -lcasa_ms -lcasa_tables -lstdc++
+    #cd $INSTALLDIR
+    #rm -rf $INSTALLDIR/msoverview
 
     #
     # Install EveryBeam library
@@ -256,14 +261,14 @@ From: test_fedora35_cuda_11.6_base.sif
     #git clone https://gitlab.com/astron-idg/idg.git src 
     git clone https://git.astron.nl/RD/idg.git src
         cd src && git checkout $IDG_VERSION && echo export IDG_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh && mkdir build && cd build
-    if [ $HAS_CUDA ] && [ $HAS_MKL ]; then
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
-    elif [ ! $HAS_CUDA ] && [ $HAS_MKL ]; then
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DCMAKE_BUILD_TYPE=Debug ..
-    elif [ $HAS_CUDA ] && [ ! $HAS_MKL ]; then
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
+    if [ $HAS_CUDA = true ] && [ $HAS_MKL = true ]; then
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
+    elif [ $HAS_CUDA = false ] && [ $HAS_MKL = true ]; then
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DCMAKE_BUILD_TYPE=Debug ..
+    elif [ $HAS_CUDA = false] && [ ! $HAS_MKL = false ]; then
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
     else
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
     fi
     make -j $J
     make install
@@ -274,9 +279,11 @@ From: test_fedora35_cuda_11.6_base.sif
     # Install DPPP
     #
     # Temporarily get rid of MKL. Throws an error about needing a not-OpenMP version of OpenBLAS and MKL's multithreaded stuff uses OpenMP from what I can tell.
-    export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
-    export CPATH=$(echo $CPATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
-    export CMAKE_PREFIX_PATH=$(echo $CMAKE_PREFIX_PATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
+    if [ $HAS_MKL = true ]; then
+        export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
+        export CPATH=$(echo $CPATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
+        export CMAKE_PREFIX_PATH=$(echo $CMAKE_PREFIX_PATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
+    fi
 
     mkdir -p $INSTALLDIR/DPPP/build
     git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DPPP/src
@@ -285,14 +292,18 @@ From: test_fedora35_cuda_11.6_base.sif
     echo export DPPP_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/DPPP/build
     # Link to libopenblasp.so (note the p) and not libopenblas.so so we get the multi-threaded version.
-    cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ../src
-    $make -s -j $J && $make install
+    #cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ../src
+    cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ../src
+    # Boost 1.75 requires c++14, so override this during make
+    $make CFLAGS="-fPIC -std=c++14" CXX_FLAGS="-fPIC -std=c++14" -s -j $J && $make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/DPPP/build
     rm -rf $INSTALLDIR/DPPP/src
-    export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
-    export CPATH=/opt/intel/mkl/include:$CPATH
-    export CMAKE_PREFIX_PATH=/opt/intel/mkl/lib/intel64:$CMAKE_PREFIX_PATH
+    if [ $HAS_MKL = true ]; then
+        export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
+        export CPATH=/opt/intel/mkl/include:$CPATH
+        export CMAKE_PREFIX_PATH=/opt/intel/mkl/lib/intel64:$CMAKE_PREFIX_PATH
+    fi
 
 	#
 	# Install RMextract
@@ -375,8 +386,6 @@ From: test_fedora35_cuda_11.6_base.sif
 	#
 	# init-lofar
 	#
-	ln -f -s /opt/lofar/DPPP/bin/DP3 /opt/lofar/lofar/bin/NDPPP
-	ln -s /opt/lofar/DPPP/bin/makesourcedb /opt/lofar/lofar/bin/makesourcedb
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
 
     # Store version information.
@@ -404,7 +413,6 @@ From: test_fedora35_cuda_11.6_base.sif
     echo $'if [ "$MTUNE_MACHINE" != "$MTUNE" ]; then echo "WARNING - software has been build with -mtune=$MTUNE but current machine -mtune=$MTUNE_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
 	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
-	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
 	echo export PYTHONPATH=\$INSTALLDIR/dppp >> $INSTALLDIR/init.sh
 	echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
@@ -414,7 +422,6 @@ From: test_fedora35_cuda_11.6_base.sif
     echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=/opt/hdf5/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/lofar/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/EveryBeam/lib:/opt/hdf5/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
