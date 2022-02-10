@@ -8,7 +8,6 @@ From: test_fedora34_cuda_11.5_base.sif
     . $INSTALLDIR/init.sh
 
 %post
-    . $INSTALLDIR/init.sh
 	# General environment settings.
 	export J=6
 	export INSTALLDIR=/opt/lofar
@@ -54,8 +53,6 @@ From: test_fedora34_cuda_11.5_base.sif
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
-    export CC=`which gcc`
-	export CXX=`which g++`
     export MARCH='x86-64'
     export MTUNE='generic'
     export HAS_CUDA=true
@@ -93,6 +90,9 @@ From: test_fedora34_cuda_11.5_base.sif
 	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
 	dnf -y install bison flex ncurses tar bzip2 which gettext
 	dnf -y install cmake3
+
+    export CC=`which gcc`
+	export CXX=`which g++`
     
     #dnf -y install hdf5
 	#dnf -y install hdf5-devel
