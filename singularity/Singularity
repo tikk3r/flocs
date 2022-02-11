@@ -465,7 +465,7 @@ From: test_fedora34_cuda_11.5_base.sif
     #
     mkdir -p $INSTALLDIR/ds9/bin
     cd $INSTALLDIR/ds9
-    wget http://ds9.si.edu/download/fedora30/ds9.fedora30.8.2.1.tar.gz 
+    wget https://ds9.si.edu/download/fedora33/ds9.fedora33.8.3.tar.gz 
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
