@@ -3,12 +3,7 @@
 <a href="https://zenodo.org/badge/latestdoi/136925861"><img src="https://zenodo.org/badge/136925861.svg"/></a>
 
 # lofar-grid-hpccloud
-This repository hold resources for deploying LOFAR-related software through Singularity or Docker containers. These containers are general, but at the same time somewhat tailored for SKSP use.
-=======
 This repository hold resources for deploying the LOFAR software (genericpipeline) and related tools through Singularity containers. These containers are general, but at the same time somewhat tailored for SKSP use.
-
-The `master` branch is empty. Currently the images are based on the Fedora 27 Linux distribution, which is available from [DockerHub](https://hub.docker.com/_/fedora). Recipes to build this container can be found on the `fedora` branch.
->>>>>>> c431650 (Update information)
 
 The `master` branch is empty. Currently the images on this branch (`fedora-py3`) are based on the Fedora 34 Linux distribution, which is available from [DockerHub](https://hub.docker.com/_/fedora). 
 
@@ -16,7 +11,6 @@ As this branch no longer includes Python 2, the genericpipeline framework is _no
 
 ## Singularity
 To build a full LOFAR Singularity image, do the following:
-<<<<<<< HEAD
 
 1) Turn on MKL and/or CUDA in **singularity/Singularity**, if desired, by setting `HAS_MKL=true` and/or `HAS_CUDA=true`. Set them to `false` if you do not require those.
 
@@ -31,22 +25,8 @@ Pre-built containers are public hosted at [SURFSara](https://lofar-webdav.grid.s
 ## Docker
 To build a full LOFAR Docker, do the following:
 
-<<<<<<< HEAD
     sudo docker build -t lofar_sksp -f docker/Docker
-=======
-    singularity pull --name customname.sif shub://tikk3r/lofar-grid-hpccloud:<image>[@<specific hash>]
->>>>>>> 741f16d (Fix README typos)
 
 Intel MKL and Nvida's CUDA libraries can be added by specifying `WITH_MKL` and/or `WITH_CUDA` as build arguments, with values ON or OFF (default):
 
-<<<<<<< HEAD
     sudo docker build -t lofar_sksp -f docker/Docker --build-arg WITH_MKL=ON --build-arg WITH_CUDA=ON
-=======
-**Please do \_NOT\_ pull from Singularity Hub unless absolutely necessary. Downloads are rate limited to 100 per week.**
->>>>>>> 741f16d (Fix README typos)
-
-A target architecture can be specified by adjusting the `MARCH` and `MTUNE` variables inside the recipe, or as build arguments:
-
-    sudo docker build -t lofar_sksp -f docker/Docker --build-arg WITH_MKL=ON --build-arg WITH_CUDA=ON --build-arg MARCH=x86-64 --build-arg MTUNE=generic
-
-The defaults are `MARCH=x86-64` and `MTUNE=generic`.
