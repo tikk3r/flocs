@@ -8,7 +8,7 @@ This repository hold resources for deploying LOFAR-related software through Sing
 
 The `master` branch is empty. Currently the images on this branch (`fedora-py3`) are based on the Fedora 34 Linux distribution, which is available from [DockerHub](https://hub.docker.com/_/fedora). 
 
-As this branch no longer includes Python 2, the genericpipeline framework is _not_ included in these recipes anymore. Pipelines like prefactor are moving to CWL.
+As this branch no longer includes Python 2, the genericpipeline framework is _not_ included in these recipes anymore (see the [fedora branch](https://github.com/tikk3r/lofar-grid-hpccloud/tree/fedora) for that). Pipelines like prefactor are moving to CWL (to be included).
 
 ## Singularity
 To build a full LOFAR Singularity image, do the following:
