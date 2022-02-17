@@ -13,36 +13,18 @@ ENV OPENBLAS_NUM_THREADS=1
 ENV PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
 
 # Settings relevant to the installed software.
-#ENV AOFLAGGER_VERSION=v3.1.0
-ENV AOFLAGGER_VERSION=master
 ENV ARMADILLO_VERSION=9.900.3
 ENV BLAS_VERSION=3.8.0
 ENV BOOST_DOT_VERSION=1.69.0
 ENV BOOST_VERSION=1.69.0
-ENV CASACORE_VERSION=v3.4.0
-# Leave at latest, release versions crash for some reason.
+# Leave casarest at latest, release versions crash for some reason.
 ENV CASAREST_VERSION=latest
 ENV CFITSIO_VERSION=7.3.47
-#ENV DPPP_VERSION=e5eff2e
-ENV DPPP_VERSION=master
-ENV DYSCO_VERSION=v1.2
-#ENV EVERYBEAM_VERSION=v0.1.3
-#ENV EVERYBEAM_VERSION=0c26c65d
-ENV EVERYBEAM_VERSION=master
 ENV FFTW_VERSION=3.5.8
 ENV HDF5_VERSION=1.10.5
-#ENV IDG_VERSION=master
-ENV IDG_VERSION=03b30672
 ENV LAPACK_VERSION=3.8.0
-ENV LOSOTO3_VERSION=latest
-ENV LSMTOOL_VERSION=v1.4.2
 ENV OPENBLAS_VERSION=3.8.0
-ENV PYBDSF_VERSION=master
-ENV PYTHON_CASACORE_VERSION=v3.4.0
-ENV RMEXTRACT_VERSION=4c61232
 ENV SUPERLU_VERSION=5.2.1
-#ENV WSCLEAN_VERSION=c0a654ca
-ENV WSCLEAN_VERSION=master
 ENV WCSLIB_VERSION=6.4
 ENV HDF5_USE_FILE_LOCKING=FALSE
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
@@ -175,6 +157,7 @@ RUN mkdir -p $INSTALLDIR/difmap &&\
 #
 # Install PyBDSF
 #
+ENV PYBDSF_VERSION=master
 RUN mkdir -p ${INSTALLDIR}/pybdsf &&\
     cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION} && echo export PYBDSF_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh &&\
     cd ${INSTALLDIR}/pybdsf/pybdsf &&\
@@ -186,6 +169,7 @@ RUN mkdir -p ${INSTALLDIR}/pybdsf &&\
 #   
 # Install CASAcore
 #   
+ENV CASACORE_VERSION=v3.4.0
 RUN mkdir -p ${INSTALLDIR}/casacore/build &&\
     mkdir -p ${INSTALLDIR}/casacore/data &&\
     cd $INSTALLDIR/casacore &&\
@@ -206,6 +190,7 @@ RUN mkdir -p ${INSTALLDIR}/casacore/build &&\
 #   
 # Install Python-CASAcore
 #   
+ENV PYTHON_CASACORE_VERSION=v3.4.0
 RUN mkdir -p ${INSTALLDIR}/python-casacore &&\
     cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore &&\
     cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION} && echo export PYTHON_CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh &&\
@@ -219,6 +204,7 @@ RUN mkdir -p ${INSTALLDIR}/python-casacore &&\
 #
 # Install Dysco
 #
+ENV DYSCO_VERSION=v1.2
 RUN mkdir -p ${INSTALLDIR}/dysco/build &&\
     cd ${INSTALLDIR}/dysco && git clone https://github.com/aroffringa/dysco.git src &&\
     cd src && git checkout $DYSCO_VERSION && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> ${INSTALLDIR}/init.sh &&\
@@ -230,6 +216,8 @@ RUN mkdir -p ${INSTALLDIR}/dysco/build &&\
 #
 # Install AOFlagger
 #
+#ENV AOFLAGGER_VERSION=v3.1.0
+ENV AOFLAGGER_VERSION=master
 RUN mkdir -p ${INSTALLDIR}/aoflagger/build &&\
     cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh &&\
     cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src &&\
@@ -257,6 +245,9 @@ RUN mkdir -p $INSTALLDIR/lofarstman &&\
 #
 # Install EveryBeam library
 #
+#ENV EVERYBEAM_VERSION=v0.1.3
+#ENV EVERYBEAM_VERSION=0c26c65d
+ENV EVERYBEAM_VERSION=master
 RUN mkdir -p $INSTALLDIR/EveryBeam/build &&\
     cd $INSTALLDIR/EveryBeam &&\
     git clone https://git.astron.nl/RD/EveryBeam.git src &&\
@@ -270,6 +261,8 @@ RUN mkdir -p $INSTALLDIR/EveryBeam/build &&\
 #   
 # Install Image Domain Gridder (IDG)
 #   
+ENV IDG_VERSION=master
+#ENV IDG_VERSION=03b30672
 RUN mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg &&\
     #git clone https://gitlab.com/astron-idg/idg.git src  &&\
     git clone https://git.astron.nl/RD/idg.git src &&\
@@ -283,6 +276,8 @@ RUN mkdir -p $INSTALLDIR/idg && cd $INSTALLDIR/idg &&\
 #
 # Install DPPP
 #
+ENV DPPP_VERSION=master
+#ENV DPPP_VERSION=e5eff2e
 RUN mkdir -p $INSTALLDIR/DPPP/build &&\
     git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DPPP/src &&\
     cd $INSTALLDIR/DPPP/src &&\
@@ -301,6 +296,7 @@ RUN mkdir -p $INSTALLDIR/DPPP/build &&\
 #
 # Install RMextract
 #
+ENV RMEXTRACT_VERSION=4c61232
 RUN mkdir -p $INSTALLDIR/RMextract/build &&\
     cd $INSTALLDIR/RMextract/build &&\
     git clone https://github.com/lofar-astron/RMextract.git src &&\
@@ -314,6 +310,7 @@ RUN mkdir -p $INSTALLDIR/RMextract/build &&\
 #
 # Install LoSoTo Py 3
 #
+ENV LOSOTO3_VERSION=latest
 RUN mkdir -p $INSTALLDIR/losoto/build &&\
     cd $INSTALLDIR/losoto/build &&\
     git clone https://github.com/revoltek/losoto.git src &&\
@@ -326,6 +323,7 @@ RUN mkdir -p $INSTALLDIR/losoto/build &&\
 #
 # Install LSMTool.
 #
+ENV LSMTOOL_VERSION=v1.4.2
 RUN mkdir -p $INSTALLDIR/lsmtool &&\
     cd $INSTALLDIR/lsmtool &&\
     git clone https://github.com/darafferty/LSMTool.git lsmtool &&\
@@ -338,6 +336,8 @@ RUN mkdir -p $INSTALLDIR/lsmtool &&\
 #
 # Install-WSClean
 #
+#ENV WSCLEAN_VERSION=c0a654ca
+ENV WSCLEAN_VERSION=master
 RUN mkdir $INSTALLDIR/wsclean &&\
     cd ${INSTALLDIR}/wsclean && git clone https://gitlab.com/aroffringa/wsclean.git && cd wsclean && git checkout $WSCLEAN_VERSION && echo export WSCLEAN_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh &&\
     mkdir build && cd build &&\
