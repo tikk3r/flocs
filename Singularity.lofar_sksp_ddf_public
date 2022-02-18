@@ -1,7 +1,7 @@
 #Bootstrap: shub
 #From: tikk3r/lofar-grid-hpccloud:lofar_sksp
 Bootstrap: localimage
-From: lofar_sksp.sif
+From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5.sif
 
 
 
@@ -15,6 +15,9 @@ From: lofar_sksp.sif
 	# General environment settings.
 	export J=4
 	export INSTALLDIR=/opt/lofar
+    export DDFACET_VERSION=v0.5.3.1
+    #export DDFACET_VERSION=v0.6.0
+    export KILLMS_VERSION=v3.0.1
 	export PYTHON_VERSION=2.7
 	export PYTHON_CASACORE_VERSION=v3.3.0
     export make=/opt/lofar/make/bin/make
@@ -93,23 +96,29 @@ From: lofar_sksp.sif
     #
     # Install DDFacet
     #
-    export PATH=$INSTALLDIR/casacore/bin:$PATH
-    export PYTHONPATH=$INSTALLDIR/python-casacore2/lib/python2.7/site-packages:$INSTALLDIR/python-casacore2/lib64/python2.7/site-packages:$PYTHONPATH
-    export LD_LIBRARY_PATH=$INSTALLDIR/casacore/lib:$LD_LIBRARY_PATH
     mkdir -p $INSTALLDIR/DDFacet
     cd $INSTALLDIR/DDFacet
-    git clone --single-branch -b v0.5.3.1 https://github.com/saopicc/DDFacet.git src
-    #find . -type f -exec sed -i 's/c++14/c++11/g' {} \;
-    # Figure out how to adapt this patch
-    #patch $INSTALLDIR/DDFacet/src/DDFacet/Other/AsyncProcessPool.py $PATCH_DDFACET_CPUS
-    wget https://raw.githubusercontent.com/saopicc/DDFacet/729e52675cf0dc4684881bef0c9e60e0a0b3677e/setup.py -O $INSTALLDIR/DDFacet/src/setup.py
-    cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
+    git clone --single-branch -b $DDFACET_VERSION https://github.com/saopicc/DDFacet.git src
+    cd src
+    python setup.py install --prefix=$INSTALLDIR/DDFacet
+    #export PATH=$INSTALLDIR/casacore/bin:$PATH
+    #export PYTHONPATH=$INSTALLDIR/python-casacore2/lib/python2.7/site-packages:$INSTALLDIR/python-casacore2/lib64/python2.7/site-packages:$PYTHONPATH
+    #export LD_LIBRARY_PATH=$INSTALLDIR/casacore/lib:$LD_LIBRARY_PATH
+    #mkdir -p $INSTALLDIR/DDFacet
+    #cd $INSTALLDIR/DDFacet
+    #git clone --single-branch -b v0.5.3.1 https://github.com/saopicc/DDFacet.git src
+    ##find . -type f -exec sed -i 's/c++14/c++11/g' {} \;
+    ## Figure out how to adapt this patch
+    ##patch $INSTALLDIR/DDFacet/src/DDFacet/Other/AsyncProcessPool.py $PATCH_DDFACET_CPUS
+    #wget https://raw.githubusercontent.com/saopicc/DDFacet/729e52675cf0dc4684881bef0c9e60e0a0b3677e/setup.py -O $INSTALLDIR/DDFacet/src/setup.py
+    #cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
     
     #   
     # Install DynSpecMS
     #   
     cd $INSTALLDIR && git clone https://github.com/cyriltasse/DynSpecMS.git
-    cd $INSTALLDIR/DynSpecMS && git checkout ApplyBeam
+    #cd $INSTALLDIR && git clone https://github.com/cyriltasse/DynSpecMS.git
+    #cd $INSTALLDIR/DynSpecMS && git checkout ApplyBeam
 
     #
     # Install ddf-pipeline

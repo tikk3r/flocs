@@ -24,7 +24,7 @@ From: fedora:31
 	export WCSLIB_VERSION=6.4
     export DEBIAN_FRONTEND=noninteractive
     export HAS_CUDA=true
-    export HAS_MKL=true
+    export HAS_MKL=false
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
@@ -148,7 +148,7 @@ From: fedora:31
 	export CXX=`which g++`
 
 
-    if [ $HAS_MKL ]; then
+    if [ $HAS_MKL = true]; then
         #
         # Install Intel MKL
         #
@@ -157,7 +157,7 @@ From: fedora:31
         dnf -y install intel-mkl-2020.0-088 intel-mkl-64bit-2020.0-088
     fi
 
-    if [ $HAS_CUDA ]; then
+    if [ $HAS_CUDA = true]; then
         #
         # Install CUDA 11.3
         #
@@ -181,8 +181,8 @@ From: fedora:31
 	echo export INSTALLDIR=$INSTALLDIR > $INSTALLDIR/init.sh
     echo export PATH=/usr/local/cuda/bin:/opt/hdf5/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/hdf5/lib:/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    echo export HAS_CUDA=true >> $INSTALLDIR/init.sh
-    echo export HAS_MKL=true >> $INSTALLDIR/init.sh
+    echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
+    echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
 
 %runscript
     echo Base container built from LOFAR-SKSP Singularity v3.3
