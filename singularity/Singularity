@@ -1,8 +1,5 @@
-#Bootstrap: shub
-#From: tikk3r/lofar-grid-hpccloud:lofar_sksp_base
-# If building from a base image locally enable this instead.
-Bootstrap: localimage
-From: test_fedora34_cuda_11.5_base.sif
+Bootstrap: docker
+From: fedora:34
 
 %environment
     . $INSTALLDIR/init.sh
@@ -55,18 +52,19 @@ From: test_fedora34_cuda_11.5_base.sif
 
     export MARCH='x86-64'
     export MTUNE='generic'
-    export HAS_CUDA=true
+    export HAS_CUDA=false
     export HAS_MKL=false
     #export MARCH='cascadelake'
     #export MTUNE='cascadelake'
     export NOAVX512=false
+    export CPPSTD=c++17
 
     if [ $NOAVX512 = true ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++14 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++14"
+        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
     fi
     export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include"
     export CPATH="/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:$CPATH"
@@ -264,7 +262,7 @@ From: test_fedora34_cuda_11.5_base.sif
 	# Casacore 2.4.1 did not seem to deal well with AVX512 instructions, so disable them if they are available
     if [ ! $NOAVX512 ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     fi
 	mkdir -p ${INSTALLDIR}/casacore/build
 	mkdir -p ${INSTALLDIR}/casacore/data
@@ -277,8 +275,8 @@ From: test_fedora34_cuda_11.5_base.sif
 	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=False -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=True ../src/ 
-	cd ${INSTALLDIR}/casacore/build && $make -s -j ${J}
-	cd ${INSTALLDIR}/casacore/build && $make install
+	cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
+	cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/casacore/build
     rm -rf $INSTALLDIR/casacore/src
@@ -298,7 +296,7 @@ From: test_fedora34_cuda_11.5_base.sif
     # and then reset the flags again if needed
     if [ ! $NOAVX512 ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11"
+        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
     fi
     
 	#
@@ -307,7 +305,7 @@ From: test_fedora34_cuda_11.5_base.sif
 	mkdir -p $INSTALLDIR/dysco/build
 	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
     cd src && git checkout $DYSCO_VERSION && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && $make -s -j $J && $make install
+	cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/dysco/build
     rm -rf $INSTALLDIR/dysco/src
@@ -318,8 +316,8 @@ From: test_fedora34_cuda_11.5_base.sif
 	mkdir -p ${INSTALLDIR}/aoflagger/build
 	cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
 	cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
-	cd ${INSTALLDIR}/aoflagger/build && $make -s -j ${J}
-	cd ${INSTALLDIR}/aoflagger/build && $make install
+	cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
+	cd ${INSTALLDIR}/aoflagger/build && make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/aoflagger/aoflagger
     rm -rf $INSTALLDIR/aoflagger/build
@@ -350,8 +348,8 @@ From: test_fedora34_cuda_11.5_base.sif
     echo export EVERYBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/EveryBeam/build
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam ../src
-    $make -j $J
-    $make install
+    make -j $J
+    make install
 
     #   
     # Install Image Domain Gridder (IDG)
@@ -394,7 +392,8 @@ From: test_fedora34_cuda_11.5_base.sif
     #cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ../src
     cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ../src
     # Boost 1.75 requires c++14, so override this during make
-    $make CFLAGS="-fPIC -std=c++14" CXX_FLAGS="-fPIC -std=c++14" -s -j $J && $make install
+    #make CFLAGS="-fPIC -std=${CPPSTD}" CXX_FLAGS="-fPIC -std=${CPPSTD}" -s -j $J && make install
+    make -s -j $J && make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/DPPP/build
     rm -rf $INSTALLDIR/DPPP/src
@@ -452,8 +451,8 @@ From: test_fedora34_cuda_11.5_base.sif
     export CXX=`which mpic++`
     # TARGET_CPU is a WSClean 2.10.2 feature. Change to PORTABLE=TRUE if using and older version to avoid -march=native being triggered.
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include ..
-    $make -j ${J}
-    $make install
+    make -j ${J}
+    make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/wsclean/wsclean
     # Switch back to normal compilers
