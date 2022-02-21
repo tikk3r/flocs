@@ -66,8 +66,8 @@ From: fedora:34
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
         export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
     fi
-    export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include"
-    export CPATH="/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:$CPATH"
+    export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPLUS_INCLUDE_PATH"
+    export CPATH="/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPATH"
     export CMAKE_PREFIX_PATH="$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:/opt/hdf5:$INSTALLDIR/lofar:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
     export LD_LIBRARY_PATH="$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:/opt/hdf5/lib:$INSTALLDIR/idg/lib:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
