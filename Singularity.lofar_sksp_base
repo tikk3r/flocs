@@ -23,7 +23,7 @@ From: fedora:31
 	export SUPERLU_VERSION=5.2.1
 	export WCSLIB_VERSION=6.4
     export DEBIAN_FRONTEND=noninteractive
-    export HAS_CUDA=true
+    export HAS_CUDA=false
     export HAS_MKL=false
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
@@ -101,7 +101,7 @@ From: fedora:31
     export MTUNE='generic'
     export NOAVX512=false
 
-    if [ $NOAVX512 ]; then
+    if [ $NOAVX512 = true]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
         export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
@@ -183,6 +183,7 @@ From: fedora:31
     echo export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/hdf5/lib:/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
     echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
+    echo export NOAVX512=$NOAVX512 >> $INSTALLDIR/init.sh
 
 %runscript
     echo Base container built from LOFAR-SKSP Singularity v3.3
