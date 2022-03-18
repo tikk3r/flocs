@@ -153,11 +153,12 @@ From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5_base.sif
     sed -i.bak -e '97 i PGPLOT_LIB=/usr/lib64/libpgplot.so.5' configure
     ./configure linux-i486-gcc
     export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
+    export CFLAGS_OLD=$CFLAGS
     export CFLAGS="-L/usr/lib64/libpgplot.so.5"
     ./makeall
     rm -rf $INSTALLDIR/difmap/*.tar.gz
+    export CFLAGS=$CFLAGS_OLD
 
-    export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
 
 	#
 	# Install PyBDSF
@@ -202,11 +203,6 @@ From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5_base.sif
     python setup.py install #--prefix=${INSTALLDIR}/python-casacore/
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/python-casacore/python-casacore
-    # and then reset the flags again if needed
-    if [ ! $NOAVX512 ]; then
-        export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11"
-    fi
     
 	#
 	# Install Dysco
