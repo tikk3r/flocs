@@ -114,3 +114,6 @@ singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import lsmtool" > /de
 
 printf ${Cyan}"RMextract: "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py2/bin/python -c "import RMextract" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
+
+printf ${Cyan}"MakeMask.py: "${Color_Off}
+singularity exec $SIMG MakeMask.py -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}

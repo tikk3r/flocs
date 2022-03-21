@@ -20,6 +20,8 @@ From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5.sif
     export KILLMS_VERSION=v3.0.1
 	export PYTHON_VERSION=2.7
 	export PYTHON_CASACORE_VERSION=v3.3.0
+	#export PYBDSF_VERSION=v1.8.15
+	export PYBDSF_VERSION=master
     export make=/opt/lofar/make/bin/make
     export cmake=/opt/lofar/cmake/bin/cmake
     alias make=$make
@@ -33,7 +35,8 @@ From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5.sif
 
     # Update GCC to enable the use of -std=c++14.
     dnf -y install dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
-    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel
+    #dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel
+    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make redhat-rpm-config python-devel python3-devel wget postgresql-devel
 
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/lofar-grid-hpccloud.git
@@ -68,17 +71,29 @@ From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5.sif
     export CC=`which gcc`
 	export CXX=`which g++`
     export make=`which make`
-    if [ $NOAVX512 ]; then
+    if [ $NOAVX512 = true ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
         export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
         export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11"
     fi
-    export CPLUS_INCLUDE_PATH="/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio"
+    #export CPLUS_INCLUDE_PATH="/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio"
+    export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio"
     export CPATH=/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$CPATH
     export CMAKE_PREFIX_PATH=$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam
     export LD_LIBRARY_PATH=$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:$INSTALLDIR/LOFARBeam/lib:LD_LIBRARY_PATH
+	#
+	#
+	# Install PyBDSF
+	#
+	rm -rf ${INSTALLDIR}/pybdsf
+	mkdir -p ${INSTALLDIR}/pybdsf
+	cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION} && echo export PYBDSF_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd ${INSTALLDIR}/pybdsf/pybdsf
+    python setup.py install
+    cd $INSTALLDIR
+    rm -rf $INSTALLDIR/pybdsf/pybdsf
 
     #
     # Install killMS
@@ -100,6 +115,7 @@ From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5.sif
     cd $INSTALLDIR/DDFacet
     git clone --single-branch -b $DDFACET_VERSION https://github.com/saopicc/DDFacet.git src
     cd src
+    sed -i '/bdsf/d' setup.py
     python setup.py install --prefix=$INSTALLDIR/DDFacet
     #export PATH=$INSTALLDIR/casacore/bin:$PATH
     #export PYTHONPATH=$INSTALLDIR/python-casacore2/lib/python2.7/site-packages:$INSTALLDIR/python-casacore2/lib64/python2.7/site-packages:$PYTHONPATH
