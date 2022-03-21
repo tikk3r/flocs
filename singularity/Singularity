@@ -260,10 +260,6 @@ From: fedora:34
 	# Install CASAcore
 	#
 	# Casacore 2.4.1 did not seem to deal well with AVX512 instructions, so disable them if they are available
-    if [ ! $NOAVX512 ]; then
-        export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-    fi
 	mkdir -p ${INSTALLDIR}/casacore/build
 	mkdir -p ${INSTALLDIR}/casacore/data
 	cd $INSTALLDIR/casacore
@@ -294,10 +290,6 @@ From: fedora:34
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/python-casacore/python-casacore
     # and then reset the flags again if needed
-    if [ ! $NOAVX512 ]; then
-        export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
-    fi
     
 	#
 	# Install Dysco
