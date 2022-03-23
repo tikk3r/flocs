@@ -239,7 +239,7 @@ From: fedora:34
     ./configure linux-i486-gcc
     export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
     export CFLAGS="-L/usr/lib64/libpgplot.so.5"
-    ./makeall
+    CC=`which gcc` ./makeall
     rm -rf $INSTALLDIR/difmap/*.tar.gz
 
     export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
