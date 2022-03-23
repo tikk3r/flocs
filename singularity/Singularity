@@ -2,6 +2,7 @@ Bootstrap: docker
 From: fedora:34
 
 %environment
+    export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
 
 %post
