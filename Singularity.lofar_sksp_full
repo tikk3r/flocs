@@ -10,6 +10,8 @@ From: fedora:31
     # Most likely to change user settings
     export HAS_CUDA=false
     export HAS_MKL=false
+    export MARCH='x86-64'
+    export MTUNE='generic'
     export NOAVX512=false
 
 	# Settings relevant to the installed software.
@@ -141,14 +143,6 @@ From: fedora:31
     export make=`which make`
 
 	mkdir -p $INSTALLDIR
-    #export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/hdf5/lib:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$LD_LIBRARY_PATH
-    #export CMAKE_PREFIX_PATH=/usr/local/cuda/lib64:/opt/hdf5/lib:/opt/intel/mkl/lib/intel64:$CMAKE_PREFIX_PATH
-    #export CPATH=/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:$CPATH
-    #export PATH=/usr/lib64/openmpi/bin:$PATH
-
-    export MARCH='x86-64'
-    export MTUNE='generic'
-    export NOAVX512=false
 
     if [ $NOAVX512 = true]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
