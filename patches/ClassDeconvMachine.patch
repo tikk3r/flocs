@@ -1,0 +1,14 @@
+--- ClassDeconvMachine.py	2022-03-31 14:58:12.133064514 +0200
++++ ClassDeconvMachine.py.fix	2022-03-31 15:00:01.244524658 +0200
+@@ -103,7 +103,10 @@
+     global user_stopped
+     user_stopped = True
+ 
+-signal.signal(signal.SIGUSR1, handler=handle_user_stop_signal)
++if six.PY3:
++    signal.signal(signal.SIGUSR1, handler=handle_user_stop_signal)
++else:
++    signal.signal(signal.SIGUSR1, handle_user_stop_signal)
+ 
+ class ClassImagerDeconv():
+     def __init__(self, GD=None,
