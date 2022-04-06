@@ -115,6 +115,7 @@ From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5.sif
     cd $INSTALLDIR/DDFacet
     git clone --single-branch -b $DDFACET_VERSION https://github.com/saopicc/DDFacet.git src
     cd src
+    patch DDFacet/Imager/ClassDeconvMachine.py < $INSTALLDIR/patches/ClassDeconvMachine.patch
     sed -i '/bdsf/d' setup.py
     python setup.py install --prefix=$INSTALLDIR/DDFacet
     #export PATH=$INSTALLDIR/casacore/bin:$PATH
@@ -160,10 +161,6 @@ From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5.sif
     echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
     echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
-    echo export OMP_NUM_THREADS=1 >> $INSTALLDIR/init.sh
-    echo export OMP_MAX_THREADS=1 >> $INSTALLDIR/init.sh
-    echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
-    echo export OPENBLAS_MAX_THREADS=1 >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DDFacet/src/SkyModel:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
