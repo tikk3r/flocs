@@ -656,10 +656,11 @@ From: fedora:31
     echo export NOAVX512=$NOAVX512 >> $INSTALLDIR/init.sh
 
     echo export NCPU=\$\(nproc --all\) >> $INSTALLDIR/init.sh
-	echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
-	echo export OPENBLAS_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
-	echo export OMP_NUM_THREADS=\$NCPU >> $INSTALLDIR/init.sh
-	echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
+    echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
+    echo export OPENBLAS_MAX_THREADS=\$\{SLURM_CPUS_PER_TASK:-\$\(nproc --all\)\} >> $INSTALLDIR/init.sh
+    echo export OMP_NUM_THREADS=\$\{SLURM_CPUS_PER_TASK:-\$\(nproc --all\)\} >> $INSTALLDIR/init.sh
+    echo export OMP_MAX_THREADS=\$\{SLURM_CPUS_PER_TASK:-\$\(nproc --all\)\} >> $INSTALLDIR/init.sh
+
 
 	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$PYTHONPATH >> $INSTALLDIR/init_py2.sh
     echo source \$INSTALLDIR/pyenv-py2/bin/activate >> $INSTALLDIR/init_py2.sh
