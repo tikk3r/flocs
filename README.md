@@ -10,16 +10,17 @@ The `master` branch is empty. Currently the images are based on the Fedora 31 Li
 
 To build a full LOFAR Singularity image, do the following:
 
-1) Turn on MKL and/or CUDA in **Singularity.lofar\_sksp\_base**, if desired, by setting `HAS_MKL=true` and/or `HAS_CUDA=true`. Set them to `false` if you do not require those.
+1) Turn on MKL and/or CUDA in **Singularity.lofar\_sksp\_full**, if desired, by setting `HAS_MKL=true` and/or `HAS_CUDA=true`. Set them to `false` if you do not require those.
 
-2) Build **Singularity.lofar_sksp_base** by running
+2) Optimise your container for a desired architecture by updating the `MARCH` and `MTUNE` variables to the appropriate values in **Singularity.lofar\_sksp\_full**. If you want to build for a generic machine, set these to `MARCH='x86-64'` and `MTUNE='generic'`, respectively.
 
-        sudo SINGULARITY_CACHEDIR=$PWD SINGULARITY_TMPDIR=$PWD singularity build lofar_sksp_base.sif Singularity.lofar_sksp_base
+3) Build **Singularity.lofar\_sksp\_full** by running
 
-3) Optimise your container for a desired architecture by updating the `MARCH` and `MTUNE` variables to the appropriate values in **Singularity.lofar_sksp**. If you want to build for a generic machine, set these to `MARCH='x86-64'` and `MTUNE='generic'`, respectively.
+        sudo SINGULARITY_CACHEDIR=$PWD SINGULARITY_TMPDIR=$PWD singularity build lofar_sksp_full.sif Singularity.lofar_sksp_full
 
-4) Use `Bootstrap: localimage` in **Singularity.lofar_sksp** and point it to the base container using `From: /path/to/base.sif`. Then build the main container using
 
-        sudo SINGULARITY_CACHEDIR=$PWD SINGULARITY_TMPDIR=$PWD singularity build lofar_sksp.sif Singularity.lofar_sksp
+4) Use `Bootstrap: localimage` in **Singularity.lofar\_sksp\_ddf\_public** and point it to the previous container using `From: /path/to/base.sif`. Then build the ddf container using
+
+        sudo SINGULARITY_CACHEDIR=$PWD SINGULARITY_TMPDIR=$PWD singularity build lofar_sksp_full_ddf_public.sif Singularity.lofar_sksp_ddf_public
 
 Pre-built containers are public hosted at [SURFSara](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/). Sort by date to find the latest container there.
