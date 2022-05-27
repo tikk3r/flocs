@@ -23,13 +23,13 @@ From: fedora:31
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=e5eff2e
+    export DPPP_VERSION=8e662f6f
 	export DYSCO_VERSION=v1.2
     export EVERYBEAM_VERSION=14f35c85
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.10.5
     #export IDG_VERSION=master
-    export IDG_VERSION=03b30672
+    export IDG_VERSION=f178b254
 	export LAPACK_VERSION=3.8.0
 	export LOFAR_VERSION=3_2_18
     # Don't change LOSOTO2_VERSION. This is the last commit that plays nice with Python 2.
@@ -41,7 +41,7 @@ From: fedora:31
 	export PYTHON_CASACORE_VERSION=v2.2.1
     export RMEXTRACT_VERSION=v0.4.4
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=c0a654ca
+	export WSCLEAN_VERSION=c22ab35
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export DEBIAN_FRONTEND=noninteractive
@@ -564,7 +564,7 @@ From: fedora:31
     export CC=`which mpicc`
     export CXX=`which mpic++`
     # TARGET_CPU is a WSClean 2.10.2 feature. Change to PORTABLE=TRUE if using and older version to avoid -march=native being triggered.
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ..
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DIDGAPI_DIR:PATH=/opt/lofar/idg/share/idgapi/cmake -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ..
     $make -j ${J}
     $make install
     cd $INSTALLDIR
