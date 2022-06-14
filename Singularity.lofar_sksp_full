@@ -398,7 +398,6 @@ From: fedora:31
     make -j$J
     make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/lofarstman
 
     #
     # Install msoverview separately
