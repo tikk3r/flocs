@@ -25,7 +25,7 @@ From: fedora:31
 	export CFITSIO_VERSION=7.3.47
     export DPPP_VERSION=8e662f6f
 	export DYSCO_VERSION=v1.2
-    export EVERYBEAM_VERSION=14f35c85
+    export EVERYBEAM_VERSION=083357c1
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.10.5
     #export IDG_VERSION=master
