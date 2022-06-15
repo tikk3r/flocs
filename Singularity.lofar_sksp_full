@@ -12,7 +12,7 @@ From: fedora:31
     export HAS_MKL=false
     export MARCH='x86-64'
     export MTUNE='generic'
-    export NOAVX512=false
+    export NOAVX512=true
 
 	# Settings relevant to the installed software.
 	export AOFLAGGER_VERSION=v3.1.0
