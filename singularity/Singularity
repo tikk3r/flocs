@@ -16,43 +16,39 @@ From: fedora:34
 	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
 	
 	# Settings relevant to the installed software.
-	#export AOFLAGGER_VERSION=v3.1.0
 	export AOFLAGGER_VERSION=master
 	export ARMADILLO_VERSION=9.900.3
 	export BLAS_VERSION=3.8.0
     export BOOST_DOT_VERSION=1.69.0
 	export BOOST_VERSION=1.69.0
-	export CASACORE_VERSION=v3.4.0
+	export CASACORE_VERSION=v3.5.0
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=e5eff2e
+    export DPPP_VERSION=master
 	export DYSCO_VERSION=v1.2
-    export EVERYBEAM_VERSION=14f35c85
+    export EVERYBEAM_VERSION=master
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.10.5
-    #export IDG_VERSION=master
-    export IDG_VERSION=03b30672
+    export IDG_VERSION=master
 	export LAPACK_VERSION=3.8.0
 	export LOSOTO3_VERSION=latest
     export LSMTOOL_VERSION=v1.4.2
 	export OPENBLAS_VERSION=3.8.0
 	export PYBDSF_VERSION=master
-	export PYTHON_CASACORE_VERSION=v3.4.0
+	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=4c61232
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=c0a654ca
+	export WSCLEAN_VERSION=master
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
-    export MARCH='x86-64'
-    export MTUNE='generic'
-    export HAS_CUDA=false
-    export HAS_MKL=false
-    #export MARCH='cascadelake'
-    #export MTUNE='cascadelake'
+    export HAS_CUDA=true
+    export HAS_MKL=true
+    export MARCH='cascadelake'
+    export MTUNE='cascadelake'
     export NOAVX512=false
     export CPPSTD=c++17
 
@@ -63,9 +59,9 @@ From: fedora:34
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
         export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
     fi
-    export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPLUS_INCLUDE_PATH"
+    export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPLUS_INCLUDE_PATH"
     export CPATH="/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPATH"
-    export CMAKE_PREFIX_PATH="$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:/opt/hdf5:$INSTALLDIR/lofar:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
+    export CMAKE_PREFIX_PATH="$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:/opt/hdf5:$INSTALLDIR/lofar:$INSTALLDIR/idg:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
     export LD_LIBRARY_PATH="$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:/opt/hdf5/lib:$INSTALLDIR/idg/lib:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
     export make=`which make`
@@ -163,7 +159,7 @@ From: fedora:34
 	export CXX=`which g++`
 
 
-    if [ $HAS_MKL = true]; then
+    if [ $HAS_MKL = true ]; then
         #
         # Install Intel MKL
         #
@@ -351,7 +347,7 @@ From: fedora:34
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
     elif [ $HAS_CUDA = false ] && [ $HAS_MKL = true ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DCMAKE_BUILD_TYPE=Debug ..
-    elif [ $HAS_CUDA = false] && [ ! $HAS_MKL = false ]; then
+    elif [ $HAS_CUDA = false ] && [ ! $HAS_MKL = false ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
     else
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg ..
@@ -439,7 +435,7 @@ From: fedora:34
     export CC=`which mpicc`
     export CXX=`which mpic++`
     # TARGET_CPU is a WSClean 2.10.2 feature. Change to PORTABLE=TRUE if using and older version to avoid -march=native being triggered.
-    cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ..
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} ..
     make -j ${J}
     make install
     cd $INSTALLDIR
@@ -459,6 +455,90 @@ From: fedora:34
 
 	echo "Installation directory contents:"
 	ls ${INSTALLDIR}
+	
+	# Setup DDF
+    export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
+    export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
+    export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
+    export PATCH_DDFACET_CPUS=$INSTALLDIR/patches/DDFacet_cpus.patch
+
+
+    dnf -y install dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
+    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel
+
+    mkdir -p $INSTALLDIR/patches
+    cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/lofar-grid-hpccloud.git
+    mv $INSTALLDIR/lofar-grid-hpccloud/patches/* $INSTALLDIR/patches
+
+    pip --no-cache-dir install --upgrade wheel
+    pip --no-cache-dir install future
+    #pip --no-cache-dir install --upgrade setuptools
+    pip --no-cache-dir install --prefer-binary SharedArray
+    # Python 2 packages
+    #pip --no-cache-dir install aplpy astropy astroquery cython deap emcee lxml nose mysqlclient numpy ipdb Polygon2 pyFFTW SharedArray pyephem numexpr astro-kittens astLib psutil py-cpuinfo "tables<3.6" prettytable pybind11 pyregion sshtunnel PyMySQL
+    # Python 3 packages
+    #pip --no-cache-dir install aplpy astropy astroquery cython deap emcee lxml nose mysqlclient numpy ipdb Polygon3 pyFFTW SharedArray pyephem numexpr astro-kittens astLib psutil py-cpuinfo "tables<3.6" prettytable pybind11 pyregion sshtunnel PyMySQL posixpath
+    #pip --no-cache-dir install "astropy-healpix==0.2"
+    pip --no-cache-dir install astropy-healpix
+    #pip --no-cache-dir install --no-deps "reproject==0.5.1"
+    pip --no-cache-dir install reproject
+    pip --no-cache-dir install matplotlib
+    pip --no-cache-dir install meqtrees-cattery
+    pip --no-cache-dir install owlcat --no-deps
+    pip install pybind11
+
+    #
+    # Install killMS
+    #
+    mkdir -p $INSTALLDIR
+    cd $INSTALLDIR && git clone --single-branch -b v2.6 https://github.com/saopicc/killMS.git
+    cd killMS
+    patch $INSTALLDIR/killMS/Predict/Makefile $PATCH_KILLMS_MAKEFILE_PREDICT
+    patch $INSTALLDIR/killMS/Array/Dot/Makefile $PATCH_KILLMS_MAKEFILE_ARRAY
+    patch $INSTALLDIR/killMS/Gridder/Makefile $PATCH_KILLMS_MAKEFILE_GRIDDER
+    cd $INSTALLDIR/killMS/Predict && $make
+    cd $INSTALLDIR/killMS/Array/Dot && $make
+    cd $INSTALLDIR/killMS/Gridder && $make
+
+    #
+    # Install DDFacet
+    #
+    export PATH=$INSTALLDIR/casacore/bin:$PATH
+    export PYTHONPATH=$INSTALLDIR/python-casacore2/lib/python2.7/site-packages:$INSTALLDIR/python-casacore2/lib64/python2.7/site-packages:$PYTHONPATH
+    export LD_LIBRARY_PATH=$INSTALLDIR/casacore/lib:$LD_LIBRARY_PATH
+    mkdir -p $INSTALLDIR/DDFacet
+    cd $INSTALLDIR/DDFacet
+    git clone --single-branch -b v0.5.3.1 https://github.com/saopicc/DDFacet.git src
+    #find . -type f -exec sed -i 's/c++14/c++11/g' {} \;
+    # Figure out how to adapt this patch
+    #patch $INSTALLDIR/DDFacet/src/DDFacet/Other/AsyncProcessPool.py $PATCH_DDFACET_CPUS
+    wget https://raw.githubusercontent.com/saopicc/DDFacet/729e52675cf0dc4684881bef0c9e60e0a0b3677e/setup.py -O $INSTALLDIR/DDFacet/src/setup.py
+    cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
+    
+    #   
+    # Install DynSpecMS
+    #   
+    cd $INSTALLDIR && git clone https://github.com/cyriltasse/DynSpecMS.git
+    cd $INSTALLDIR/DynSpecMS && git checkout ApplyBeam
+
+    #
+    # Install ddf-pipeline
+    #
+    cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
+    # Commits after this break the pipeline, because they contain Python 3 preparations that NumPy 1.16.0 (required for MeqTrees) does not like.
+    cd ddf-pipeline && git checkout fe5393d && cd ..
+    # Download DDF catalogues.
+    mkdir -p $INSTALLDIR/DDFCatalogues
+    cd $INSTALLDIR/DDFCatalogues
+    #wget ftp://ftp.strw.leidenuniv.nl/pub/shimwell/bootstrap-cats.tar
+    #wget https://surfdrive.surf.nl/files/index.php/s/u7liDZH3SlWalwy/download -O bootstrap-cats.tar
+    #tar xf bootstrap-cats.tar -C $INSTALLDIR/DDFCatalogues --strip-components=1
+    wget https://www.extragalactic.info/bootstrap/VLSS.fits
+    wget https://www.extragalactic.info/bootstrap/wenss.fits
+    wget https://www.extragalactic.info/bootstrap/B2.fits
+    wget https://www.extragalactic.info/bootstrap/NVSS.fits
+    wget https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
+    cd $INSTALLDIR
 
     #
     # Finaly cleanup of unnecessary stuff
@@ -529,6 +609,14 @@ From: fedora:34
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
+
+echo "# DDF environment settings" >> $INSTALLDIR/init.sh
+    echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
+    echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DDFacet/src/SkyModel:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
+    echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
     
     #
     # entrypoint
