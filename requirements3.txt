@@ -13,6 +13,8 @@ cachetools
 certifi
 chardet
 configparser
+cwlref-runner
+cwltool
 cycler
 Cython
 decorator
@@ -64,6 +66,7 @@ six
 SQLAlchemy
 subprocess32
 tables
+toil
 traceback2
 tqdm
 unittest2
