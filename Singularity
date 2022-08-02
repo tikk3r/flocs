@@ -65,7 +65,7 @@ From: fedora:31
     export make=`which make`
 
     # Set up compiler-related variables.
-    if [ $NOAVX512 = true ]; then
+    if [ $NOAVX512 = true]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
         export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
@@ -179,7 +179,7 @@ From: fedora:31
 	export CXX=`which g++`
 
 
-    if [ $HAS_MKL = true ]; then
+    if [ $HAS_MKL = true]; then
         #
         # Install Intel MKL
         #
@@ -188,7 +188,7 @@ From: fedora:31
         dnf -y install intel-mkl-2020.0-088 intel-mkl-64bit-2020.0-088
     fi
 
-    if [ $HAS_CUDA = true ]; then
+    if [ $HAS_CUDA = true]; then
         #
         # Install CUDA 11.3
         #
@@ -441,7 +441,7 @@ From: fedora:31
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
     elif [ $HAS_CUDA = false ] && [ $HAS_MKL = true ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DCMAKE_BUILD_TYPE=Debug ..
-    elif [ $HAS_CUDA = false ] && [ ! $HAS_MKL = false ]; then
+    elif [ $HAS_CUDA = false] && [ ! $HAS_MKL = false ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
     else
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
@@ -571,6 +571,71 @@ From: fedora:31
 
 	echo "Installation directory contents:"
 	ls $INSTALLDIR
+    
+    #
+    # Install ddf related stuff
+    #
+    export DDFACET_VERSION=v0.5.3.1
+    export KILLMS_VERSION=v3.0.1
+
+    # Path to where the patch for python-casacore's setup is stored.
+    export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
+    export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
+    export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
+    export PATCH_DDFACET_CPUS=$INSTALLDIR/patches/DDFacet_cpus.patch
+
+    mkdir -p $INSTALLDIR/patches
+    cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/lofar-grid-hpccloud.git
+    mv $INSTALLDIR/lofar-grid-hpccloud/patches/* $INSTALLDIR/patches
+
+    #
+    # Install killMS
+    #
+    mkdir -p $INSTALLDIR
+    cd $INSTALLDIR && git clone --single-branch -b v2.6 https://github.com/saopicc/killMS.git
+    cd killMS
+    patch $INSTALLDIR/killMS/Predict/Makefile $PATCH_KILLMS_MAKEFILE_PREDICT
+    patch $INSTALLDIR/killMS/Array/Dot/Makefile $PATCH_KILLMS_MAKEFILE_ARRAY
+    patch $INSTALLDIR/killMS/Gridder/Makefile $PATCH_KILLMS_MAKEFILE_GRIDDER
+    cd $INSTALLDIR/killMS/Predict && make
+    cd $INSTALLDIR/killMS/Array/Dot && make
+    cd $INSTALLDIR/killMS/Gridder && make
+
+    #
+    # Install DDFacet
+    #
+    mkdir -p $INSTALLDIR/DDFacet
+    cd $INSTALLDIR/DDFacet
+    git clone --single-branch -b $DDFACET_VERSION https://github.com/saopicc/DDFacet.git src
+    cd src
+    patch DDFacet/Imager/ClassDeconvMachine.py < $INSTALLDIR/patches/ClassDeconvMachine.patch
+    sed -i '/bdsf/d' setup.py
+    python setup.py install --prefix=$INSTALLDIR/DDFacet
+
+    #   
+    # Install DynSpecMS
+    #   
+    cd $INSTALLDIR && git clone https://github.com/cyriltasse/DynSpecMS.git
+
+    #
+    # Install ddf-pipeline
+    #
+    cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
+    # Commits after this break the pipeline, because they contain Python 3 preparations that NumPy 1.16.0 (required for MeqTrees) does not like.
+    cd ddf-pipeline && git checkout fe5393d && cd ..
+    # Download DDF catalogues.
+    mkdir -p $INSTALLDIR/DDFCatalogues
+    cd $INSTALLDIR/DDFCatalogues
+    #wget ftp://ftp.strw.leidenuniv.nl/pub/shimwell/bootstrap-cats.tar
+    #wget https://surfdrive.surf.nl/files/index.php/s/u7liDZH3SlWalwy/download -O bootstrap-cats.tar
+    #tar xf bootstrap-cats.tar -C $INSTALLDIR/DDFCatalogues --strip-components=1
+    wget https://www.extragalactic.info/bootstrap/VLSS.fits
+    wget https://www.extragalactic.info/bootstrap/wenss.fits
+    wget https://www.extragalactic.info/bootstrap/B2.fits
+    wget https://www.extragalactic.info/bootstrap/NVSS.fits
+    wget https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
+    cd $INSTALLDIR
+
 
     #
     # Wrap up installation, remove unnecessary stuff.
@@ -655,8 +720,17 @@ From: fedora:31
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
 
+    echo "# DDF environment settings" >> $INSTALLDIR/init.sh
+    echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
+    echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DDFacet/src/SkyModel:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
+    echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
+
+
 %runscript
-    echo LOFAR-SKSP Singularity Container v3.3.1
+    echo LOFAR-SKSP Singularity Container v3.3.6
 
 %help
     This Singularity image contains an install of LOFAR 3.2.18. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
