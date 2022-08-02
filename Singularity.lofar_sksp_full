@@ -65,7 +65,7 @@ From: fedora:31
     export make=`which make`
 
     # Set up compiler-related variables.
-    if [ $NOAVX512 = true]; then
+    if [ $NOAVX512 = true ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
         export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
@@ -179,7 +179,7 @@ From: fedora:31
 	export CXX=`which g++`
 
 
-    if [ $HAS_MKL = true]; then
+    if [ $HAS_MKL = true ]; then
         #
         # Install Intel MKL
         #
@@ -188,7 +188,7 @@ From: fedora:31
         dnf -y install intel-mkl-2020.0-088 intel-mkl-64bit-2020.0-088
     fi
 
-    if [ $HAS_CUDA = true]; then
+    if [ $HAS_CUDA = true ]; then
         #
         # Install CUDA 11.3
         #
@@ -441,7 +441,7 @@ From: fedora:31
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
     elif [ $HAS_CUDA = false ] && [ $HAS_MKL = true ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DCMAKE_BUILD_TYPE=Debug ..
-    elif [ $HAS_CUDA = false] && [ ! $HAS_MKL = false ]; then
+    elif [ $HAS_CUDA = false ] && [ ! $HAS_MKL = false ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
     else
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
