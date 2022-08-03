@@ -65,7 +65,7 @@ From: fedora:31
     export make=`which make`
 
     # Set up compiler-related variables.
-    if [ $NOAVX512 = true]; then
+    if [ $NOAVX512 = true ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
         export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
@@ -608,7 +608,6 @@ From: fedora:31
     cd $INSTALLDIR/DDFacet
     git clone --single-branch -b $DDFACET_VERSION https://github.com/saopicc/DDFacet.git src
     cd src
-    patch DDFacet/Imager/ClassDeconvMachine.py < $INSTALLDIR/patches/ClassDeconvMachine.patch
     sed -i '/bdsf/d' setup.py
     python setup.py install --prefix=$INSTALLDIR/DDFacet
 
