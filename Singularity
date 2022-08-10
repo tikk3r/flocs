@@ -98,7 +98,9 @@ From: fedora:31
     dnf -y install libsigc++20-devel gtkmm30-devel
     dnf -y install python3-devel
     dnf -y install lua lua-devel
-    dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    #dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    # Specifically for Fedora 31 as links are dead atm.
+    dnf -y install https://web.archive.org/web/20210814010216/https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-31.noarch.rpm https://web.archive.org/web/20220627141928/https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-31.noarch.rpm
     dnf -y install pgplot
     dnf -y install python3-numpy-f2py
     dnf -y install qt5
