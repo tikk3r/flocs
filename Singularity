@@ -8,10 +8,10 @@ From: fedora:31
 
 %post
     # Most likely to change user settings
-    export HAS_CUDA=false
-    export HAS_MKL=false
-    export MARCH='x86-64'
-    export MTUNE='generic'
+    export HAS_CUDA=true
+    export HAS_MKL=true
+    export MARCH=cascadelake
+    export MTUNE=cascadelake
     export NOAVX512=true
 
 	# Settings relevant to the installed software.
@@ -72,7 +72,7 @@ From: fedora:31
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
         export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11"
     fi
-    export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include":$INSTALLDIR/idg/include
+    export CPLUS_INCLUDE_PATH="/usr/local/cuda/include:/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include":$INSTALLDIR/idg/include
     export CPATH="/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:$CPATH"
     export CMAKE_PREFIX_PATH="$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALDIR/idg:/opt/hdf5:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
     export LD_LIBRARY_PATH="$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:/opt/hdf5/lib:$INSTALLDIR/idg/lib:$INSTALLDIR/LOFARBeam/lib:$INSTALLDIR/lofarstman/lib64:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$LD_LIBRARY_PATH"
@@ -181,7 +181,7 @@ From: fedora:31
 	export CXX=`which g++`
 
 
-    if [ $HAS_MKL = true]; then
+    if [ $HAS_MKL = true ]; then
         #
         # Install Intel MKL
         #
@@ -190,7 +190,7 @@ From: fedora:31
         dnf -y install intel-mkl-2020.0-088 intel-mkl-64bit-2020.0-088
     fi
 
-    if [ $HAS_CUDA = true]; then
+    if [ $HAS_CUDA = true ]; then
         #
         # Install CUDA 11.3
         #
@@ -440,11 +440,11 @@ From: fedora:31
     git clone https://git.astron.nl/RD/idg.git src
         cd src && git checkout $IDG_VERSION && echo export IDG_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh && mkdir build && cd build
     if [ $HAS_CUDA = true ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_LIBRARIES=/opt/intel/mkl/lib/intel64/ -DMKL_INCLUDE_DIRS=/opt/intel/mkl/include -DBUILD_LIB_CUDA=ON -DCUDAToolkit_ROOT=/usr/local/cuda/bin -DCMAKE_BUILD_TYPE=Debug ..
     elif [ $HAS_CUDA = false ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DCMAKE_BUILD_TYPE=Debug ..
-    elif [ $HAS_CUDA = false] && [ ! $HAS_MKL = false ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_LIBRARIES=/opt/intel/mkl/lib/intel64/ -DMKL_INCLUDE_DIRS=/opt/intel/mkl/include  -DCMAKE_BUILD_TYPE=Debug ..
+    elif [ $HAS_CUDA = true] && [ ! $HAS_MKL = false ]; then
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDAToolkit_ROOT=/usr/local/cuda/bin -DCMAKE_BUILD_TYPE=Debug -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
     else
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
     fi
