@@ -117,6 +117,7 @@ From: lofar_sksp_v3.3.3_beta_x86-64_generic_avx512_cuda_11_5.sif
     cd src
     patch DDFacet/Imager/ClassDeconvMachine.py < $INSTALLDIR/patches/ClassDeconvMachine.patch
     sed -i '/bdsf/d' setup.py
+    patch $INSTALLDIR/DDFacet/src/DDFacet/Other/AsyncProcessPool.py $PATCH_DDFACET_CPUS
     python setup.py install --prefix=$INSTALLDIR/DDFacet
     #export PATH=$INSTALLDIR/casacore/bin:$PATH
     #export PYTHONPATH=$INSTALLDIR/python-casacore2/lib/python2.7/site-packages:$INSTALLDIR/python-casacore2/lib64/python2.7/site-packages:$PYTHONPATH
