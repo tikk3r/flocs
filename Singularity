@@ -617,6 +617,7 @@ From: fedora:31
     mkdir -p $INSTALLDIR/DDFacet
     cd $INSTALLDIR/DDFacet
     git clone --single-branch -b $DDFACET_VERSION https://github.com/saopicc/DDFacet.git src
+    patch $INSTALLDIR/DDFacet/src/DDFacet/Other/AsyncProcessPool.py $PATCH_DDFACET_CPUS
     cd src
     sed -i '/bdsf/d' setup.py
     python setup.py install --prefix=$INSTALLDIR/DDFacet
