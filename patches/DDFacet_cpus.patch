@@ -1,0 +1,31 @@
+--- AsyncProcessPool.py.backup	2022-09-07 14:17:05.503127834 +0200
++++ AsyncProcessPool.py.modified	2022-09-07 14:25:18.165778459 +0200
+@@ -273,7 +273,9 @@
+             print("Parent and I/O affinities not specified, leaving unset", file=log)
+         else:
+             print(ModColor.Str("Fixing parent process to vthread %d" % self.parent_affinity, col="green"), file=log)
+-        psutil.Process().cpu_affinity(range(self.ncpu) if not self.parent_affinity else [self.parent_affinity])
++
++        avail_cores = psutil.Process().cpu_affinity()
++        psutil.Process().cpu_affinity(avail_cores[:self.ncpu] if not self.parent_affinity else [self.parent_affinity])
+ 
+         # if NCPU is 0, set to number of CPUs on system
+         if not self.ncpu:
+@@ -291,7 +293,7 @@
+         # create a queue for compute-bound tasks
+         # generate list of CPU cores for workers to run on
+         if isinstance(self.affinity, int) and (not self.affinity or self.affinity == 1):
+-            cores = range(self.ncpu)
++            cores = avail_cores[:self.ncpu]
+         elif isinstance(self.affinity, int) and self.affinity == 2:
+             cores = range(0, self.ncpu * 2, 2)
+         elif isinstance(self.affinity, int) and self.affinity == -2:
+@@ -299,7 +301,7 @@
+         elif isinstance(self.affinity, list):
+             cores = self.affinity[:self.ncpu]
+         elif not self.affinity:
+-            cores = range(self.ncpu)
++            cores = avail_cores[:self.ncpu]
+         else:
+             raise ValueError("unknown affinity setting")
+         if not self.affinity:
