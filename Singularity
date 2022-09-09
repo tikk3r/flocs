@@ -23,7 +23,7 @@ From: fedora:31
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=8e662f6f
+    export DPPP_VERSION=v5.2
 	export DYSCO_VERSION=v1.2
     export EVERYBEAM_VERSION=083357c1
     export FFTW_VERSION=3.5.8
