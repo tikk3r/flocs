@@ -440,9 +440,9 @@ From: fedora:31
     git clone https://git.astron.nl/RD/idg.git src
         cd src && git checkout $IDG_VERSION && echo export IDG_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh && mkdir build && cd build
     if [ $HAS_CUDA = true ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_LIBRARIES=/opt/intel/mkl/lib/intel64/ -DMKL_INCLUDE_DIRS=/opt/intel/mkl/include -DBUILD_LIB_CUDA=ON -DCUDAToolkit_BIN_DIR=/usr/local/cuda/bin -DCMAKE_BUILD_TYPE=Debug ..
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_LIBRARIES=/opt/intel/mkl/lib/intel64/libmkl_rt.so -DMKL_INCLUDE_DIRS=/opt/intel/mkl/include -DBUILD_LIB_CUDA=ON -DCUDAToolkit_BIN_DIR=/usr/local/cuda/bin -DCMAKE_BUILD_TYPE=Debug ..
     elif [ $HAS_CUDA = false ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_LIBRARIES=/opt/intel/mkl/lib/intel64/ -DMKL_INCLUDE_DIRS=/opt/intel/mkl/include  -DCMAKE_BUILD_TYPE=Debug ..
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_LIBRARIES=/opt/intel/mkl/lib/intel64/libmkl_rt.so -DMKL_INCLUDE_DIRS=/opt/intel/mkl/include  -DCMAKE_BUILD_TYPE=Debug ..
     elif [ $HAS_CUDA = true ] && [ $HAS_MKL = false ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDAToolkit_BIN_DIR=/usr/local/cuda/bin -DCMAKE_BUILD_TYPE=Debug -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
     else
