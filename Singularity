@@ -8,10 +8,10 @@ From: fedora:31
 
 %post
     # Most likely to change user settings
-    export HAS_CUDA=false
-    export HAS_MKL=false
-    export MARCH='x86-64'
-    export MTUNE='generic'
+    export HAS_CUDA=true
+    export HAS_MKL=true
+    export MARCH=cascadelake
+    export MTUNE=cascadelake
     export NOAVX512=true
 
 	# Settings relevant to the installed software.
@@ -23,7 +23,7 @@ From: fedora:31
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=8e662f6f
+    export DPPP_VERSION=v5.2
 	export DYSCO_VERSION=v1.2
     export EVERYBEAM_VERSION=083357c1
     export FFTW_VERSION=3.5.8
@@ -41,7 +41,7 @@ From: fedora:31
 	export PYTHON_CASACORE_VERSION=v2.2.1
     export RMEXTRACT_VERSION=v0.4.4
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=c22ab35
+	export WSCLEAN_VERSION=42c8201e
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export DEBIAN_FRONTEND=noninteractive
@@ -56,49 +56,52 @@ From: fedora:31
     export OLD_PYTHONPATH=$PYTHONPATH
 	
 	# Path to where the patch for python-casacore's setup is stored.
-	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
-	export PATCH_LOFAR=$INSTALLDIR/lofar/lofar.patch
+    export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
+    export PATCH_LOFAR=$INSTALLDIR/lofar/lofar.patch
     export PATCH_LOFAR_JOBSERVER=$INSTALLDIR/lofar/patch_lofar_jobserver.patch
 
     export CC=`which gcc`
-	export CXX=`which g++`
+    export CXX=`which g++`
     export make=`which make`
 
-    # Set up compiler-related variables.
+# Set up compiler-related variables.
     if [ $NOAVX512 = true ]; then
-        export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+    export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+    export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11 -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
-        export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11"
+    export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
+    export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=c++11"
     fi
-    export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include":$INSTALLDIR/idg/include
+    export CPLUS_INCLUDE_PATH="/usr/local/cuda/include:/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include":$INSTALLDIR/idg/include
+    export CMAKE_INCLUDE_PATH="/usr/local/cuda/include:/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python2.7:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/EveryBeam/include":$INSTALLDIR/idg/include
     export CPATH="/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/LOFARBeam/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:$CPATH"
     export CMAKE_PREFIX_PATH="$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALDIR/idg:/opt/hdf5:$INSTALLDIR/lofar:$INSTALLDIR/LOFARBeam:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
     export LD_LIBRARY_PATH="$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:/opt/hdf5/lib:$INSTALLDIR/idg/lib:$INSTALLDIR/LOFARBeam/lib:$INSTALLDIR/lofarstman/lib64:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
 
-    #
-    # System installs
-	#
-	dnf -y update
+#
+# System installs
+#
+    dnf -y update
     dnf -y install dnf-plugins-core
-	dnf -y install patch sudo yum-utils hostname
-	dnf -y install git svn wget vim nano
-	dnf -y install automake autoconf cmake make
-	dnf -y install gcc gcc-c++ gcc-gfortran
-	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
-	dnf -y install bison flex ncurses tar bzip2 which gettext
-	dnf -y install cmake3
-    
-    #dnf -y install hdf5
-	#dnf -y install hdf5-devel
+    dnf -y install patch sudo yum-utils hostname
+    dnf -y install git svn wget vim nano
+    dnf -y install automake autoconf cmake make
+    dnf -y install gcc gcc-c++ gcc-gfortran
+    dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
+    dnf -y install bison flex ncurses tar bzip2 which gettext
+    dnf -y install cmake3
+
+#dnf -y install hdf5
+#dnf -y install hdf5-devel
     dnf -y install python
-	dnf -y install python-pip python2-tkinter python3-tkinter
+    dnf -y install python-pip python2-tkinter python3-tkinter
     dnf -y install libsigc++20-devel gtkmm30-devel
     dnf -y install python3-devel
     dnf -y install lua lua-devel
-    dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+#dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+# Specifically for Fedora 31 as links are dead atm.
+    dnf -y install https://web.archive.org/web/20210814010216/https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-31.noarch.rpm https://web.archive.org/web/20220627141928/https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-31.noarch.rpm
     dnf -y install pgplot
     dnf -y install python3-numpy-f2py
     dnf -y install qt5
@@ -110,67 +113,67 @@ From: fedora:31
     dnf -y install gdb
 
 
-    #
-    # Install Boost
-    #
+#
+# Install Boost
+#
     dnf -y install boost boost-devel boost-python2 boost-python2-devel boost-python3 boost-python3-devel
 
-    #
-    # Install FFTW
-    #
+#
+# Install FFTW
+#
     dnf -y install fftw-devel fftw-libs
 
-	#
-	# Install OpenBLAS
-	#
-	dnf -y install blas-devel
+#
+# Install OpenBLAS
+#
+    dnf -y install blas-devel
 
-	#
-	# Install SuperLU
-	#
-	dnf -y install SuperLU SuperLU-devel
+#
+# Install SuperLU
+#
+    dnf -y install SuperLU SuperLU-devel
 
-	#
-	# Install Armadillo
-	#
-	dnf -y install armadillo armadillo-devel
+#
+# Install Armadillo
+#
+    dnf -y install armadillo armadillo-devel
 
-    # 
-    # Setup environment variables used during build
-    #
+# 
+# Setup environment variables used during build
+#
     export CC=`which gcc`
-	export CXX=`which g++`
+    export CXX=`which g++`
     export make=`which make`
 
-	mkdir -p $INSTALLDIR
+    mkdir -p $INSTALLDIR
     export PATH="/usr/lib64/openmpi/bin:$PATH"
 
-    ###################
-    # Source installs #
-    ###################
-	#
-	# Install cfitsio
-	#
+###################
+# Source installs #
+###################
+#
+# Install cfitsio
+#
     dnf -y install cfitsio cfitsio-devel
 
-	#
-	# Install wcslib
-	#
+#
+# Install wcslib
+#
     dnf -y install wcslib wcslib-devel 
 
-    #
-    # Install HDF5 with parallel support
-    #
+#
+# Install HDF5 with parallel support
+#
     export CC=`which mpicc`
-	export CXX=`which mpic++`
+    export CXX=`which mpic++`
     mkdir /opt/hdf5
     cd /opt/hdf5
     wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
-    # For reference. Only needed if building with CMake.
-    #wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${HDF5_VERSION}/src/CMake-hdf5-${HDF5_VERSION}.tar.gz
+# For reference. Only needed if building with CMake.
+#wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${HDF5_VERSION}/src/CMake-hdf5-${HDF5_VERSION}.tar.gz
     tar xf hdf5-${HDF5_VERSION}.tar.gz
     cd hdf5-${HDF5_VERSION}
-    # Thread safety required for WSClean's parallel gridding with facets.
+# Thread safety required for WSClean's parallel gridding with facets.
     ./configure -prefix=/opt/hdf5 --enable-build-mode=production --enable-threadsafe --enable-shared --disable-sharedlib-rpath --disable-hl
     make -j $J
     #make check
@@ -438,11 +441,11 @@ From: fedora:31
     git clone https://git.astron.nl/RD/idg.git src
         cd src && git checkout $IDG_VERSION && echo export IDG_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh && mkdir build && cd build
     if [ $HAS_CUDA = true ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug ..
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_LIBRARIES=/opt/intel/mkl/lib/intel64/libmkl_rt.so -DMKL_INCLUDE_DIRS=/opt/intel/mkl/include -DBUILD_LIB_CUDA=ON -DCUDAToolkit_BIN_DIR=/usr/local/cuda/bin -DCMAKE_BUILD_TYPE=Debug ..
     elif [ $HAS_CUDA = false ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DCMAKE_BUILD_TYPE=Debug ..
-    elif [ $HAS_CUDA = false ] && [ ! $HAS_MKL = false ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_LIBRARIES=/opt/intel/mkl/lib/intel64/libmkl_rt.so -DMKL_INCLUDE_DIRS=/opt/intel/mkl/include  -DCMAKE_BUILD_TYPE=Debug ..
+    elif [ $HAS_CUDA = true ] && [ $HAS_MKL = false ]; then
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDAToolkit_BIN_DIR=/usr/local/cuda/bin -DCMAKE_BUILD_TYPE=Debug -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
     else
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DBLAS_blas_LIBRARY=/usr/lib64/libopenblasp.so ..
     fi
@@ -467,7 +470,11 @@ From: fedora:31
         export CMAKE_PREFIX_PATH=$(echo $CMAKE_PREFIX_PATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
     fi
     # Link to libopenblasp.so (note the p) and not libopenblas.so so we get the multi-threaded version.
-    cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/lofar/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/lofar/lib/libstationresponse.so -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY:FILEPATH=/usr/lib64/libopenblasp.so -DTARGET_CPU=${MARCH} ../src
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+        cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/lofar/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/lofar/lib/libstationresponse.so -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY:FILEPATH=/usr/lib64/libopenblasp.so -DPORTABLE=True ../src
+    else
+        cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DLOFAR_STATION_RESPONSE_DIR:PATH=$INSTALLDIR/lofar/include -DLOFAR_STATION_RESPONSE_LIB:FILEPATH=$INSTALLDIR/lofar/lib/libstationresponse.so -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY:FILEPATH=/usr/lib64/libopenblasp.so -DTARGET_CPU=${MARCH} ../src
+    fi
     $make -s -j $J && $make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/DPPP/build
@@ -535,11 +542,8 @@ From: fedora:31
     python setup.py build
     python setup.py install
     cd $INSTALLDIR
-	rm -rf $INSTALLDIR/losoto
-
-    # Switch back to py2 to wrap up installation
+    rm -rf $INSTALLDIR/losoto
     deactivate
-    source $INSTALLDIR/pyenv-py2/bin/activate
 
     #
     # Install-WSClean
@@ -551,14 +555,19 @@ From: fedora:31
     export CC=`which mpicc`
     export CXX=`which mpic++`
     # TARGET_CPU is a WSClean 2.10.2 feature. Change to PORTABLE=TRUE if using and older version to avoid -march=native being triggered.
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ..
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DPYTHON_LIBRARIES=/usr/lib64/libpython3.so -DPYTHON_INCLUDE_DIRS=/usr/include/python3.7m/ -DIDGAPI_DIR:PATH=/opt/lofar/idg/share/idgapi/cmake/ ..
+    else
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DPYTHON_LIBRARIES=/usr/lib64/libpython3.so -DPYTHON_INCLUDE_DIRS=/usr/include/python3.7m/ -DIDGAPI_DIR:PATH=/opt/lofar/idg/share/idgapi/cmake/ ..
+    fi
     $make -j ${J}
     $make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/wsclean/wsclean
     # Switch back to normal compilers
     export CC=`which gcc`
-	export CXX=`which g++`
+    export CXX=`which g++`
+    source $INSTALLDIR/pyenv-py2/bin/activate
 
     #
     # Install DS9
@@ -571,6 +580,71 @@ From: fedora:31
 
 	echo "Installation directory contents:"
 	ls $INSTALLDIR
+    
+    #
+    # Install ddf related stuff
+    #
+    export DDFACET_VERSION=v0.5.3.1
+    export KILLMS_VERSION=v3.0.1
+
+    # Path to where the patch for python-casacore's setup is stored.
+    export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
+    export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
+    export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
+    export PATCH_DDFACET_CPUS=$INSTALLDIR/patches/DDFacet_cpus.patch
+
+    mkdir -p $INSTALLDIR/patches
+    cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/lofar-grid-hpccloud.git
+    mv $INSTALLDIR/lofar-grid-hpccloud/patches/* $INSTALLDIR/patches
+
+    #
+    # Install killMS
+    #
+    mkdir -p $INSTALLDIR
+    cd $INSTALLDIR && git clone --single-branch -b v2.6 https://github.com/saopicc/killMS.git
+    cd killMS
+    patch $INSTALLDIR/killMS/Predict/Makefile $PATCH_KILLMS_MAKEFILE_PREDICT
+    patch $INSTALLDIR/killMS/Array/Dot/Makefile $PATCH_KILLMS_MAKEFILE_ARRAY
+    patch $INSTALLDIR/killMS/Gridder/Makefile $PATCH_KILLMS_MAKEFILE_GRIDDER
+    cd $INSTALLDIR/killMS/Predict && make
+    cd $INSTALLDIR/killMS/Array/Dot && make
+    cd $INSTALLDIR/killMS/Gridder && make
+
+    #
+    # Install DDFacet
+    #
+    mkdir -p $INSTALLDIR/DDFacet
+    cd $INSTALLDIR/DDFacet
+    git clone --single-branch -b $DDFACET_VERSION https://github.com/saopicc/DDFacet.git src
+    patch $INSTALLDIR/DDFacet/src/DDFacet/Other/AsyncProcessPool.py $PATCH_DDFACET_CPUS
+    cd src
+    sed -i '/bdsf/d' setup.py
+    python setup.py install --prefix=$INSTALLDIR/DDFacet
+
+    #   
+    # Install DynSpecMS
+    #   
+    cd $INSTALLDIR && git clone https://github.com/cyriltasse/DynSpecMS.git
+
+    #
+    # Install ddf-pipeline
+    #
+    cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
+    # Commits after this break the pipeline, because they contain Python 3 preparations that NumPy 1.16.0 (required for MeqTrees) does not like.
+    cd ddf-pipeline && git checkout fe5393d && cd ..
+    # Download DDF catalogues.
+    mkdir -p $INSTALLDIR/DDFCatalogues
+    cd $INSTALLDIR/DDFCatalogues
+    #wget ftp://ftp.strw.leidenuniv.nl/pub/shimwell/bootstrap-cats.tar
+    #wget https://surfdrive.surf.nl/files/index.php/s/u7liDZH3SlWalwy/download -O bootstrap-cats.tar
+    #tar xf bootstrap-cats.tar -C $INSTALLDIR/DDFCatalogues --strip-components=1
+    wget https://www.extragalactic.info/bootstrap/VLSS.fits
+    wget https://www.extragalactic.info/bootstrap/wenss.fits
+    wget https://www.extragalactic.info/bootstrap/B2.fits
+    wget https://www.extragalactic.info/bootstrap/NVSS.fits
+    wget https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
+    cd $INSTALLDIR
+
 
     #
     # Wrap up installation, remove unnecessary stuff.
@@ -655,8 +729,17 @@ From: fedora:31
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
 
+    echo "# DDF environment settings" >> $INSTALLDIR/init.sh
+    echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
+    echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DDFacet/src/SkyModel:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
+    echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
+
+
 %runscript
-    echo LOFAR-SKSP Singularity Container v3.3.1
+    echo LOFAR-SKSP Singularity Container v3.3.6
 
 %help
     This Singularity image contains an install of LOFAR 3.2.18. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
