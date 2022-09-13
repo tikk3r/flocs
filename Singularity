@@ -541,11 +541,8 @@ From: fedora:31
     python setup.py build
     python setup.py install
     cd $INSTALLDIR
-	rm -rf $INSTALLDIR/losoto
-
-    # Switch back to py2 to wrap up installation
+    rm -rf $INSTALLDIR/losoto
     deactivate
-    source $INSTALLDIR/pyenv-py2/bin/activate
 
     #
     # Install-WSClean
@@ -558,9 +555,9 @@ From: fedora:31
     export CXX=`which mpic++`
     # TARGET_CPU is a WSClean 2.10.2 feature. Change to PORTABLE=TRUE if using and older version to avoid -march=native being triggered.
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DPYTHON_LIBRARIES=/usr/lib64/libpython3.so -DPYTHON_INCLUDE_DIRS=/usr/include/python3.7m/ ..
     else
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DPYTHON_LIBRARIES=/usr/lib64/libpython3.so -DPYTHON_INCLUDE_DIRS=/usr/include/python3.7m/ ..
     fi
     $make -j ${J}
     $make install
@@ -568,7 +565,8 @@ From: fedora:31
     rm -rf $INSTALLDIR/wsclean/wsclean
     # Switch back to normal compilers
     export CC=`which gcc`
-	export CXX=`which g++`
+    export CXX=`which g++`
+    source $INSTALLDIR/pyenv-py2/bin/activate
 
     #
     # Install DS9
