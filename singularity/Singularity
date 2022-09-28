@@ -39,7 +39,8 @@ From: fedora:34
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=4c61232
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=master
+	#export WSCLEAN_VERSION=master
+	export WSCLEAN_VERSION=decrease-everybeam-memory
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
@@ -47,9 +48,9 @@ From: fedora:34
 
     export HAS_CUDA=true
     export HAS_MKL=true
-    export MARCH='cascadelake'
-    export MTUNE='cascadelake'
-    export NOAVX512=false
+    export MARCH='x86-64'
+    export MTUNE='generic'
+    export NOAVX512=true
     export CPPSTD=c++17
 
     if [ $NOAVX512 = true ]; then
@@ -375,7 +376,11 @@ From: fedora:34
     cd $INSTALLDIR/DPPP/build
     # Link to libopenblasp.so (note the p) and not libopenblas.so so we get the multi-threaded version.
     #cmake3 -DCMAKE_CXX_FLAGS="-D_GLIB_USE_CXX_ABI=1 -DBOOST_NO_CXX11_SCOPED_ENUMS" -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ../src
-    cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so ../src
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+	cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DPORTABLE=True ../src
+    else
+	cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblasp.so -DTARGET_CPU=${MARCH} ../src
+    fi
     # Boost 1.75 requires c++14, so override this during make
     #make CFLAGS="-fPIC -std=${CPPSTD}" CXX_FLAGS="-fPIC -std=${CPPSTD}" -s -j $J && make install
     make -s -j $J && make install
@@ -435,7 +440,11 @@ From: fedora:34
     export CC=`which mpicc`
     export CXX=`which mpic++`
     # TARGET_CPU is a WSClean 2.10.2 feature. Change to PORTABLE=TRUE if using and older version to avoid -march=native being triggered.
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} ..
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True ..
+    else
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} ..
+    fi
     make -j ${J}
     make install
     cd $INSTALLDIR
