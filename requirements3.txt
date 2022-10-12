@@ -42,12 +42,13 @@ numpy
 oauthlib
 pandas
 pluggy<0.7
+Polygon
 progressbar
 psycopg2
 py
 pyasn1
 pyasn1-modules
-pyfftw
+pyFFTW
 pylru==1.2.0
 pyparsing
 pyregion
