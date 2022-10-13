@@ -38,7 +38,7 @@ mock
 more-itertools
 nose
 numexpr
-numpy
+numpy==1.20.1
 oauthlib
 pandas
 pluggy<0.7
