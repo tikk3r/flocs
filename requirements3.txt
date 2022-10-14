@@ -1,7 +1,7 @@
 APLpy
 asn1crypto
 astLib>=0.8.0,<=0.11.7
-astropy>=3.0,<=4.1
+astropy>=3.0
 astropy-helpers
 atomicwrites
 attrs
