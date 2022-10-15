@@ -32,12 +32,14 @@ idna
 iniparse
 ipaddress
 ipdb>=0.10.3,<=0.13.9
+jinja2
 IPy
 kitchen
 kiwisolver
 linecache2
 Mastodon.py
 matplotlib>=2.0.0,<=3.3.4
+markupsafe<2.1.0
 mimeparse
 mock
 more-itertools
