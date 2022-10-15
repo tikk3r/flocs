@@ -9,7 +9,7 @@ From: fedora:34
 	# General environment settings.
 	export J=6
 	export INSTALLDIR=/opt/lofar
-	export PYTHON_VERSION=3.10.1
+	export PYTHON_VERSION=3.9
     export OPENBLAS_NUM_THREADS=1
 
 	# Path to where the patch for python-casacore's setup is stored.
@@ -27,20 +27,20 @@ From: fedora:34
 	export CFITSIO_VERSION=7.3.47
     export DPPP_VERSION=master
 	export DYSCO_VERSION=v1.2
-    export EVERYBEAM_VERSION=master
+    export EVERYBEAM_VERSION=78e4dc4b
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.10.5
     export IDG_VERSION=master
 	export LAPACK_VERSION=3.8.0
 	export LOSOTO3_VERSION=latest
-    export LSMTOOL_VERSION=v1.4.2
+    export LSMTOOL_VERSION=v1.4.7
 	export OPENBLAS_VERSION=3.8.0
 	export PYBDSF_VERSION=master
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=4c61232
 	export SUPERLU_VERSION=5.2.1
 	#export WSCLEAN_VERSION=master
-	export WSCLEAN_VERSION=decrease-everybeam-memory
+	export WSCLEAN_VERSION=77e65019
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
@@ -48,9 +48,9 @@ From: fedora:34
 
     export HAS_CUDA=true
     export HAS_MKL=true
-    export MARCH='x86-64'
-    export MTUNE='generic'
-    export NOAVX512=true
+    export MARCH='cascadelake'
+    export MTUNE='cascadelake'
+    export NOAVX512=false
     export CPPSTD=c++17
 
     if [ $NOAVX512 = true ]; then
@@ -81,7 +81,7 @@ From: fedora:34
 	dnf -y install gcc gcc-c++ gcc-gfortran
 	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
 	dnf -y install bison flex ncurses tar bzip2 which gettext
-	dnf -y install cmake3
+	dnf -y install cmake3 nodejs
 
     export CC=`which gcc`
 	export CXX=`which g++`
@@ -96,7 +96,7 @@ From: fedora:34
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install pgplot
     dnf -y install python3-numpy-f2py
-    dnf -y install qt5-qtbase
+    dnf -y install qt5-qtbase qt5-qtx11extras
     dnf -y install perf
     dnf -y install rsync
     dnf -y install openmpi openmpi-devel
@@ -190,21 +190,22 @@ From: fedora:34
     #
     # Setup the Python environment.
     #
-    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora-py3/requirements3.txt -O $INSTALLDIR/requirements3.txt
     pip --version
     #pip install --upgrade setuptools
     pip install xmlrunner
     pip --no-cache-dir install virtualenv
 
+    /usr/bin/python -m pip uninstall -y numpy
     virtualenv $INSTALLDIR/pyenv-py3 --python=python3
     source $INSTALLDIR/pyenv-py3/bin/activate
     pip install --upgrade pip
-    pip install numpy
     export HDF5_VERSION=1.10.5
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
     pip install legacystamps
+    pip install git+https://git.astron.nl/RD/LINC.git
 
     #
     # Install Montage
@@ -278,7 +279,7 @@ From: fedora:34
     cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore
 	cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout tags/${PYTHON_CASACORE_VERSION} && echo export PYTHON_CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
 	cd ${INSTALLDIR}/python-casacore/python-casacore
-    python setup.py build_ext -I${INSTALLDIR}/casacore/include/:/usr/include/python2.7 -L${INSTALLDIR}/casacore/lib/:/usr/lib64/
+    python setup.py build_ext -I${INSTALLDIR}/casacore/include/:/usr/include/python${PYTHON_VERSION} -L${INSTALLDIR}/casacore/lib/:/usr/lib64/
     cd $INSTALLDIR/python-casacore/python-casacore
     python setup.py install #--prefix=${INSTALLDIR}/python-casacore/
     cd $INSTALLDIR
@@ -333,7 +334,7 @@ From: fedora:34
     cd src && git checkout $EVERYBEAM_VERSION
     echo export EVERYBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/EveryBeam/build
-    cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam ../src
+    cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam -DBUILD_WITH_PYTHON=ON ../src
     make -j $J
     make install
 
@@ -473,7 +474,7 @@ From: fedora:34
 
 
     dnf -y install dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
-    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel
+    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel nodejs
 
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/lofar-grid-hpccloud.git
@@ -481,20 +482,33 @@ From: fedora:34
 
     pip --no-cache-dir install --upgrade wheel
     pip --no-cache-dir install future
-    #pip --no-cache-dir install --upgrade setuptools
     pip --no-cache-dir install --prefer-binary SharedArray
-    # Python 2 packages
-    #pip --no-cache-dir install aplpy astropy astroquery cython deap emcee lxml nose mysqlclient numpy ipdb Polygon2 pyFFTW SharedArray pyephem numexpr astro-kittens astLib psutil py-cpuinfo "tables<3.6" prettytable pybind11 pyregion sshtunnel PyMySQL
-    # Python 3 packages
-    #pip --no-cache-dir install aplpy astropy astroquery cython deap emcee lxml nose mysqlclient numpy ipdb Polygon3 pyFFTW SharedArray pyephem numexpr astro-kittens astLib psutil py-cpuinfo "tables<3.6" prettytable pybind11 pyregion sshtunnel PyMySQL posixpath
-    #pip --no-cache-dir install "astropy-healpix==0.2"
     pip --no-cache-dir install astropy-healpix
-    #pip --no-cache-dir install --no-deps "reproject==0.5.1"
     pip --no-cache-dir install reproject
     pip --no-cache-dir install matplotlib
     pip --no-cache-dir install meqtrees-cattery
     pip --no-cache-dir install owlcat --no-deps
-    pip install pybind11
+    pip --no-cache-dir install pybind11
+
+    #
+    # Install the standalone StationResponse libraries. DDFacet still uses these.
+    #   
+    echo Installing LOFARBeam...
+    mkdir -p $INSTALLDIR/LOFARBeam/build
+    cd $INSTALLDIR/LOFARBeam
+    git clone https://github.com/lofar-astron/LOFARBeam.git src
+    cd src
+    echo export LOFARBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd ../build
+    # Install in the existing lofar python folder
+    mkdir -p /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/
+    touch /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/__init__.py
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
+    make -j $J
+    make install
+    cd $INSTALLDIR
+    rm -rf $INSTALLDIR/LOFARBeam/build
+    rm -rf $INSTALLDIR/LOFARBeam/src
 
     #
     # Install killMS
@@ -512,16 +526,16 @@ From: fedora:34
     #
     # Install DDFacet
     #
-    export PATH=$INSTALLDIR/casacore/bin:$PATH
-    export PYTHONPATH=$INSTALLDIR/python-casacore2/lib/python2.7/site-packages:$INSTALLDIR/python-casacore2/lib64/python2.7/site-packages:$PYTHONPATH
-    export LD_LIBRARY_PATH=$INSTALLDIR/casacore/lib:$LD_LIBRARY_PATH
-    mkdir -p $INSTALLDIR/DDFacet
-    cd $INSTALLDIR/DDFacet
-    git clone --single-branch -b v0.5.3.1 https://github.com/saopicc/DDFacet.git src
-    #find . -type f -exec sed -i 's/c++14/c++11/g' {} \;
+    # Python-casacore overrides numpy, fix it back.
+    pip install "numpy==1.23.4"
+    git clone --single-branch -b v0.7.1 https://github.com/saopicc/DDFacet.git src
     # Figure out how to adapt this patch
     #patch $INSTALLDIR/DDFacet/src/DDFacet/Other/AsyncProcessPool.py $PATCH_DDFACET_CPUS
-    wget https://raw.githubusercontent.com/saopicc/DDFacet/729e52675cf0dc4684881bef0c9e60e0a0b3677e/setup.py -O $INSTALLDIR/DDFacet/src/setup.py
+    rm src/setup.py
+    wget https://raw.githubusercontent.com/saopicc/DDFacet/v0.6.0/setup.py -O src/setup.py
+    #sed -i "s/MIN_REQ = 8/MIN_REQ = 9/" src/setup.py
+    #sed -i "s/python-casacore >= 3.0.0, <=3.4.0/python-casacore >= 3.0.0/" src/setup.py
+    #sed -i "s/3\.7/3\.10/" src/setup.py
     cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
     
     #   
@@ -546,7 +560,8 @@ From: fedora:34
     wget https://www.extragalactic.info/bootstrap/wenss.fits
     wget https://www.extragalactic.info/bootstrap/B2.fits
     wget https://www.extragalactic.info/bootstrap/NVSS.fits
-    wget https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
+    #wget https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
+    wget http://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
     cd $INSTALLDIR
 
     #
@@ -589,7 +604,7 @@ From: fedora:34
     echo $'if [ "$MTUNE_MACHINE" != "$MTUNE" ]; then echo "WARNING - software has been build with -mtune=$MTUNE but current machine -mtune=$MTUNE_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
 	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/dppp >> $INSTALLDIR/init.sh
+	echo export PYTHONPATH=\$INSTALLDIR/lofar/lib64/python3.9/site-packages:\$INSTALLDIR/dppp:\$INSTALLDIR/EveryBeam/lib64/python3.9/site-packages >> $INSTALLDIR/init.sh
     echo export PATH=/usr/local/cuda/bin:/opt/hdf5/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
@@ -623,7 +638,7 @@ echo "# DDF environment settings" >> $INSTALLDIR/init.sh
     echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
     echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
-    echo export PYTHONPATH=$INSTALLDIR:$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python2.7/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export PYTHONPATH=$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python${PYTHON_VERSION}/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DDFacet/src/SkyModel:$INSTALLDIR/DynSpecMS/:$INSTALLDIR/killMS:$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
     
