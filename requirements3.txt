@@ -3,6 +3,7 @@ asn1crypto
 astLib>=0.8.0,<=0.11.7
 astropy>=3.0
 astropy-helpers
+astroquery
 atomicwrites
 attrs
 backports.functools-lru-cache
