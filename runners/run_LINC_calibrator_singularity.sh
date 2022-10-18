@@ -1,9 +1,9 @@
 # Update these variables to reflect your environment.
 ## Location of LINC. This must be a user-writable location for this wrapper script.
 ## If it does not exist, this script will attempt to clone the LINC repository to the given path.
-LINC_DATA_ROOT=/data2/sweijen/Quasar_Anniek/LINC_calibrator/LINC
+LINC_DATA_ROOT=/path/to/LINC
 
-DATADIR=/data2/sweijen/Quasar_Anniek/3C295_pre/
+DATADIR=/path/to/data/
 TMPDIR=$PWD
 
 ## WORKDIR is where all the other directories will be stored.
@@ -17,7 +17,7 @@ LOGSDIR=$WORKDIR/logs_LINC_calibrator/
 ## The trailing slash is important here.
 TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
 
-SIMG=/net/lofar1/data1/sweijen/software/LOFAR/singularity/lofar_sksp_v4.0.0_cascadelake_cascadelake_avx512_mkl_cuda_ddf.sif
+SIMG=/path/to/container.sif
 
 # Update these variables to tune performance.
 ## Limit the number of DP3 processes running simultaneously to this amount.
