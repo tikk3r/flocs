@@ -65,9 +65,9 @@ mkdir -p $LOGSDIR
 mkdir -p $TMPDIR
 cd $WORKDIR
 
-singularity exec -B $PWD,/data1,/data2 $SIMG python /data2/sweijen/Quasar_Anniek/create_ms_list.py $DATADIR
+https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora-py3/runners/create_ms_list.py
+singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR
 
 echo LINC starting
-#time singularity exec -B $PWD,/data1,/data2 $SIMG cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json
-time singularity exec -B $PWD,/data1,/data2 $SIMG toil-cwl-runner --batchSystem='single_machine' --bypass-file-store --maxCores=12 --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json
+time singularity exec -B $PWD,$BINDPATHS $SIMG cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json
 echo LINC ended
