@@ -6,6 +6,9 @@ LINC_DATA_ROOT=/path/to/LINC
 DATADIR=/path/to/data/
 TMPDIR=$PWD
 
+# Add any directory that should be accessible during the run here as a comma-separated list.
+BINDPATHS=/data1,/data2
+
 ## WORKDIR is where all the other directories will be stored.
 WORKDIR=$(mktemp -d -p "$TMPDIR")
 echo $WORKDIR
