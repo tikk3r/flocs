@@ -8,7 +8,7 @@ echo $WORKDIR
 LINC_DATA_ROOT=$WORKDIR/LINC
 #LINC_DATA_ROOT=/data2/sweijen/Quasar_Anniek/LINC_calibrator/LINC
 
-DATADIR=/path/to/data
+DATADIR=/data2/sweijen/Quasar_Anniek/3C295_pre/
 
 # Add any directory that should be accessible during the run here as a comma-separated list.
 BINDPATHS=/data1,/data2,$PWD
@@ -22,7 +22,7 @@ LOGSDIR=$WORKDIR/logs_LINC_calibrator/
 TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
 
 #SIMG=/net/lofar1/data1/sweijen/software/LOFAR/singularity/lofar_sksp_v4.0.0_cascadelake_cascadelake_avx512_mkl_cuda_ddf.sif
-SIMG=/path/to/singularity/container.sif
+SIMG=/data1/sweijen/test_container/lofar_sksp_v4.0.0_x86-64_generic_ddf.sif
 
 # Update these variables to tune performance.
 ## Limit the number of DP3 processes running simultaneously to this amount.
@@ -61,10 +61,15 @@ fi
 
 # Prepare workflow files.
 echo Overriding workflow core requirements with user settings.
-#sed -i "s/coresMin: [0-9]*/coresMin: $CORES_CALIBCAL/" $LINC_DATA_ROOT/steps/ddecal.cwl
-#sed -i "s/coresMin: [0-9]*/coresMin: $CORES_PREDICT/" $LINC_DATA_ROOT/steps/predict.cwl
+sed -i "s/coresMin: [0-9]*/coresMin: $CORES_CALIBCAL/" $LINC_DATA_ROOT/steps/ddecal.cwl
+sed -i "s/coresMin: [0-9]*/coresMin: $CORES_PREDICT/" $LINC_DATA_ROOT/steps/predict.cwl
+
+echo "Overriding rfistrategies with Lua >5.3 compatible ones from AOFlagger repository"
+wget https://gitlab.com/aroffringa/aoflagger/-/raw/master/data/strategies/lofar-default.lua -O $LINC_DATA_ROOT/rfistrategies/lofar-default.lua
+
 echo Making sure all scripts are executable
 chmod 755 $LINC_DATA_ROOT/scripts/*.py
+
 echo Making sure all shebang lines use /usr/bin/env python instead of /usr/bin/env
 for f in $LINC_DATA_ROOT/scripts/*.py; do
     sed -i "s?\#\!/usr/bin/python?\#\!/usr/bin/env python?" $f
@@ -86,8 +91,9 @@ wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora-py3/run
 singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR
 
 echo LINC starting
-# Singularity doesn't seem to pass this along through APPTAINERENV_PREPEND, so create another little wrapper here to ensure it gets added.
 echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > tmprunner.sh
+#echo singularity shell -B $PWD,$BINDPATHS $SIMG >> tmprunner.sh
 echo cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json >> tmprunner.sh
+#echo cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json >> tmprunner.sh
 time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh
 echo LINC ended
