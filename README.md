@@ -22,11 +22,3 @@ To build a full LOFAR Singularity image, do the following:
 
 Pre-built containers are public hosted at [SURFSara](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/). Sort by date to find the latest container there.
 
-## Docker
-To build a full LOFAR Docker, do the following:
-
-    sudo docker build -t lofar_sksp -f docker/Docker
-
-Intel MKL and Nvida's CUDA libraries can be added by specifying `WITH_MKL` and/or `WITH_CUDA` as build arguments, with values ON or OFF (default):
-
-    sudo docker build -t lofar_sksp -f docker/Docker --build-arg WITH_MKL=ON --build-arg WITH_CUDA=ON
