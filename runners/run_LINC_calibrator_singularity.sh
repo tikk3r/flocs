@@ -1,4 +1,5 @@
 # Update these variables to reflect your environment.
+# Once everything is set, launch the pipeline with `bash run_LINC_calibrator_singularity.sh`
 TMPDIR=$PWD
 ## WORKDIR is where all the other directories will be stored.
 WORKDIR=$(mktemp -d -p "$TMPDIR")
