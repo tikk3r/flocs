@@ -10,6 +10,8 @@ LINC_DATA_ROOT=$WORKDIR/LINC
 
 DATADIR=/data2/sweijen/Quasar_Anniek/3C295_pre/
 
+# Container settings
+SIMG=/data1/sweijen/losototest/lofar_sksp_v4.0.0_x86-64_generic_ddf_losoto.sif
 # Add any directory that should be accessible during the run here as a comma-separated list.
 BINDPATHS=/data1,/data2,$PWD
 
@@ -20,9 +22,6 @@ LOGSDIR=$WORKDIR/logs_LINC_calibrator/
 ## Temporary files are stored here.
 ## The trailing slash is important here.
 TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
-
-#SIMG=/net/lofar1/data1/sweijen/software/LOFAR/singularity/lofar_sksp_v4.0.0_cascadelake_cascadelake_avx512_mkl_cuda_ddf.sif
-SIMG=/data1/sweijen/test_container/lofar_sksp_v4.0.0_x86-64_generic_ddf.sif
 
 # Update these variables to tune performance.
 ## Limit the number of DP3 processes running simultaneously to this amount.
@@ -41,15 +40,11 @@ if [ ! -d $LINC_DATA_ROOT ]; then
     echo $LINC_DATA_ROOT does not exist and will be created. Cloning LINC...
     mkdir -p $LINC_DATA_ROOT
     git clone https://git.astron.nl/RD/LINC.git $LINC_DATA_ROOT
-    cd $LINC_DATA_ROOT && git checkout d4741f0
-    cd $WORKDIR
 fi
 # If the directory exists, check if it is empty.
 if [ -d $LINC_DATA_ROOT ] && [ ! -d $LINC_DATA_ROOT/steps ]; then
     echo $LINC_DATA_ROOT exists, but is empty. Cloning LINC...
     git clone https://git.astron.nl/RD/LINC.git $LINC_DATA_ROOT
-    cd $LINC_DATA_ROOT && git checkout d4741f0
-    cd $WORKDIR
 fi
 # If the directory is not empty, check if it contains LINC
 if [ -d $LINC_DATA_ROOT ] && [ ! -d $LINC_DATA_ROOT/steps ]; then
@@ -92,8 +87,6 @@ singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR
 
 echo LINC starting
 echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > tmprunner.sh
-#echo singularity shell -B $PWD,$BINDPATHS $SIMG >> tmprunner.sh
-echo cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json >> tmprunner.sh
-#echo cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json >> tmprunner.sh
-time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh
+echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json 2>&1' >> tmprunner.sh
+time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh 2>&1
 echo LINC ended
