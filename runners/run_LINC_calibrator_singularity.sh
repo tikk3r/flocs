@@ -4,10 +4,10 @@ TMPDIR=$PWD
 WORKDIR=$(mktemp -d -p "$TMPDIR")
 echo $WORKDIR
 ## Location of LINC. This must be a user-writable location for this wrapper script.
-## If it does not exist, this script will attempt to clone the LINC repository to the given path.
+## If it does not exist, this script will attempt to clone the LINC repository _to_ (not in) the given path.
 LINC_DATA_ROOT=$WORKDIR/LINC
-#LINC_DATA_ROOT=/data2/sweijen/Quasar_Anniek/LINC_calibrator/LINC
 
+# Path to the folder where the .MS files are stored.
 DATADIR=/data2/sweijen/Quasar_Anniek/3C295_pre/
 
 # Container settings
