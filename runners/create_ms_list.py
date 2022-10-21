@@ -25,10 +25,10 @@ def make_input_json(mspath, calsols=''):
             ms = files[-1]
             out.write(f'   {{"class": "Directory", "path":"{ms}"}}\n')
         out.write('  ],\n')
-    if calsols:
-            calsolpath = os.path.abspath(calsols)
-            out.write(f' "cal_solutions": {{"class": "File", "path":"{calsolpath}"}}\n')
-    out.write('}\n')
+        if calsols:
+                calsolpath = os.path.abspath(calsols)
+                out.write(f' "cal_solutions": {{"class": "File", "path":"{calsolpath}"}}\n')
+        out.write('}\n')
     print('Input JSON written to mslist.json')
 
 if __name__ == '__main__':
