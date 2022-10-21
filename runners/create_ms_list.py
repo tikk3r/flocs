@@ -36,6 +36,6 @@ if __name__ == '__main__':
     parser.add_argument('mspath', type=str, help='Path where input measurement sets are located.')
     parser.add_argument('--calsols', type=str, default='', help='Path to the final LINC calibrator solution file (usually cal_solutions.h5).')
 
-    args = parser.parse_args()
+    args = vars(parser.parse_args())
 
     make_input_json(args['mspath'], args['calsols'])
