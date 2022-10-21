@@ -413,17 +413,14 @@ From: fedora:34
 	#
 	# Install LoSoTo Py 3
 	#
-	# Until NumPy slicing is fixed in LoSoTo, use this version
-	pip install --no-deps git+https://github.com/tikk3r/losoto.git@fix-issue-135
-	#mkdir -p $INSTALLDIR/losoto/build
-	#cd $INSTALLDIR/losoto/build
-    #git clone https://github.com/revoltek/losoto.git src
-    #cd src
-    #python setup.py build
-    #python setup.py install
-	#pip install --no-deps .
-    #cd $INSTALLDIR
-	#rm -rf $INSTALLDIR/losoto
+	mkdir -p $INSTALLDIR/losoto/build
+	cd $INSTALLDIR/losoto/build
+    git clone https://github.com/revoltek/losoto.git src
+    cd src
+    # No deps is important here to avoid sneaky python-casacore updates.
+	pip install --no-deps .
+    cd $INSTALLDIR
+	rm -rf $INSTALLDIR/losoto
 
 	#
 	# Install LSMTool.
