@@ -723,7 +723,7 @@ From: fedora:31
     echo export OMP_MAX_THREADS=\$\{SLURM_CPUS_PER_TASK:-\$\(nproc --all\)\} >> $INSTALLDIR/init.sh
 
 
-	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$PYTHONPATH >> $INSTALLDIR/init_py2.sh
+	echo export PYTHONPATH=\$INSTALLDIR/DPPP/lib/python3.7/site-packages:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$PYTHONPATH >> $INSTALLDIR/init_py2.sh
     echo source \$INSTALLDIR/pyenv-py2/bin/activate >> $INSTALLDIR/init_py2.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
