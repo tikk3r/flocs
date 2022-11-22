@@ -632,6 +632,7 @@ From: fedora:31
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
     # Commits after this break the pipeline, because they contain Python 3 preparations that NumPy 1.16.0 (required for MeqTrees) does not like.
     cd ddf-pipeline && git checkout fe5393d && cd ..
+    sed -i 's?DDF\.py?DDF\.py --Misc-IgnoreDeprecationMarking=True?' /opt/lofar/ddf-pipeline/scripts/pipeline.py
     # Download DDF catalogues.
     mkdir -p $INSTALLDIR/DDFCatalogues
     cd $INSTALLDIR/DDFCatalogues
