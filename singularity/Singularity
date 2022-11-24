@@ -269,7 +269,7 @@ From: fedora:34
     #cd $INSTALLDIR/casacore/src && patch --fuzz 3 -p1 < $INSTALLDIR/casacore/1033.patch
 	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
 	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
-	cd ${INSTALLDIR}/casacore/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=False -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=True ../src/ 
+	cd ${INSTALLDIR}/casacore/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=False -DUSE_OPENMP=True -DUSE_FFTW3=TRUE -DUSE_HDF5=True -DBUILD_PYTHON3=True -DBUILD_DYSCO=OFF ../src/ 
 	cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
 	cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
