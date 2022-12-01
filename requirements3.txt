@@ -41,6 +41,7 @@ kitchen
 git+https://github.com/ratt-ru/kittens.git
 kiwisolver
 linecache2
+loess
 Mastodon.py
 matplotlib>=2.0.0
 markupsafe<2.1.0
