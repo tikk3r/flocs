@@ -77,17 +77,20 @@ for f in $LINC_DATA_ROOT/scripts/*.py; do
 done
 
 # Pass along necessary variables to the container.
-X=$(singularity --version)
-if [[ "$X" == *"apptainer"* ]]; then
-    CONTAINERSTR=APPTAINER
+CONTAINERSTR=$(singularity --version)
+if [[ "$CONTAINERSTR" == *"apptainer"* ]]; then
+    export APPTAINERENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
+    export APPTAINERENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
+    export APPTAINERENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
+    export APPTAINERENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
+    export APPTAINERENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
 else
-    CONTAINERSTR=SINGULARITY
+    export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
+    export SINGULARITYENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
+    export SINGULARITYENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
+    export SINGULARITYENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
+    export SINGULARITYENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
 fi
-export ${CONTAINERSTR}ENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
-export ${CONTAINERSTR}ENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
-export ${CONTAINERSTR}ENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
-export ${CONTAINERSTR}ENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
-export ${CONTAINERSTR}ENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
 
 mkdir -p $RESULTSDIR
 mkdir -p $LOGSDIR
