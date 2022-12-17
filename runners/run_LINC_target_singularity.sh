@@ -78,7 +78,7 @@ done
 
 # Pass along necessary variables to the container.
 X=$(singularity --version)
-if [[ "$X" == *"apptainer"* ]] then
+if [[ "$X" == *"apptainer"* ]]; then
     CONTAINERSTR=APPTAINER
 else
     CONTAINERSTR=SINGULARITY
