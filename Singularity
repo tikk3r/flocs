@@ -692,7 +692,7 @@ From: fedora:31
 	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/dppp:\$INSTALLDIR/lofar/lib64/python2.7/site-packages >> $INSTALLDIR/init.sh
+	echo export PYTHONPATH=\$INSTALLDIR/dppp/lib/python2.7:\$INSTALLDIR/lofar/lib64/python2.7/site-packages >> $INSTALLDIR/init.sh
 
 	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
 
