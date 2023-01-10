@@ -479,6 +479,8 @@ From: fedora:31
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/DPPP/build
     rm -rf $INSTALLDIR/DPPP/src
+    mkdir $INSTALLDIR/DPPP/usermodules
+    wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DPPP/usermodules/polconv.py
     if [ $HAS_MKL = true ]; then
         export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
         export CPATH=/opt/intel/mkl/include:$CPATH
@@ -692,7 +694,7 @@ From: fedora:31
 	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo source \$INSTALLDIR/lofar/lofarinit.sh  >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/dppp/lib/python2.7:\$INSTALLDIR/lofar/lib64/python2.7/site-packages >> $INSTALLDIR/init.sh
+	echo export PYTHONPATH=\$INSTALLDIR/DPPP/lib/python3.7/site-packages:$INSTALLDIR/DPPP/usermodules:\$INSTALLDIR/dppp/lib/python2.7:\$INSTALLDIR/lofar/lib64/python2.7/site-packages >> $INSTALLDIR/init.sh
 
 	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
 
@@ -724,7 +726,7 @@ From: fedora:31
     echo export OMP_MAX_THREADS=\$\{SLURM_CPUS_PER_TASK:-\$\(nproc --all\)\} >> $INSTALLDIR/init.sh
 
 
-	echo export PYTHONPATH=\$INSTALLDIR/DPPP/lib/python3.7/site-packages:\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$PYTHONPATH >> $INSTALLDIR/init_py2.sh
+	echo export PYTHONPATH=\$INSTALLDIR/lofar/lib64/python2.7/site-packages:\$PYTHONPATH >> $INSTALLDIR/init_py2.sh
     echo source \$INSTALLDIR/pyenv-py2/bin/activate >> $INSTALLDIR/init_py2.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
