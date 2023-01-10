@@ -78,7 +78,7 @@ python-magic
 python-monetdb
 pytz
 pyvo
-pywavelets<=1.1.1
+pywavelets
 regions<=0.5
 reproject
 requests
