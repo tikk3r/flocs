@@ -659,6 +659,8 @@ From: fedora:34
     echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
     echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
 
+    echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
+
     echo source \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
