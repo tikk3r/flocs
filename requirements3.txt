@@ -94,7 +94,7 @@ SQLAlchemy
 sshtunnel
 subprocess32
 tables>=3.6.0,<=3.7.0
-toil>=5.7.1
+toil==5.7.1
 traceback2
 tqdm<=4.64.0
 unittest2
