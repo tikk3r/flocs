@@ -28,41 +28,34 @@ From: fedora:34
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    #export DPPP_VERSION=c719014a
-    export DPPP_VERSION=v5.3
+    export DPPP_VERSION=5dab4c43
 	export DYSCO_VERSION=2e7f331
-    #export EVERYBEAM_VERSION=78e4dc4b
-    export EVERYBEAM_VERSION=2d15b2a
+    export EVERYBEAM_VERSION=e1c96866
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.10.5
     export IDG_VERSION=master
 	export LAPACK_VERSION=3.8.0
 	export LOSOTO3_VERSION=latest
-    #export LSMTOOL_VERSION=v1.4.9
     export LSMTOOL_VERSION=master
 	export OPENBLAS_VERSION=3.8.0
 	export PYBDSF_VERSION=master
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=f161b0a
 	export SUPERLU_VERSION=5.2.1
-	#export WSCLEAN_VERSION=master
+	export WSCLEAN_VERSION=master
 	#export WSCLEAN_VERSION=77e65019
-	export WSCLEAN_VERSION=42c8201e
+	#export WSCLEAN_VERSION=42c8201e
+	#export WSCLEAN_VERSION=v3.2
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
-    #export HAS_CUDA=true
-    #export HAS_MKL=true
-    #export MARCH='cascadelake'
-    #export MTUNE='cascadelake'
-    #export NOAVX512=false
-    export HAS_CUDA=false
-    export HAS_MKL=false
-    export MARCH='x86-64'
-    export MTUNE='generic'
-    export NOAVX512=true
+    export HAS_CUDA=true
+    export HAS_MKL=true
+    export MARCH='cascadelake'
+    export MTUNE='cascadelake'
+    export NOAVX512=false
     export CPPSTD=c++17
 
     if [ $NOAVX512 = true ]; then
@@ -98,8 +91,6 @@ From: fedora:34
     export CC=`which gcc`
 	export CXX=`which g++`
     
-    #dnf -y install hdf5
-	#dnf -y install hdf5-devel
     dnf -y install python
 	dnf -y install python-pip python3-tkinter
     dnf -y install libsigc++20-devel gtkmm30-devel
@@ -374,7 +365,7 @@ From: fedora:34
     #
     # Install DPPP
     #
-    # Temporarily get rid of MKL. Throws an error about needing a not-OpenMP version of OpenBLAS and MKL's multithreaded stuff uses OpenMP from what I can tell.
+    # Temporarily get rid of MKL. Throws an error about needing a not-OpenMP version of OpenBLAS and MKL multithreaded stuff uses OpenMP from what I can tell.
     if [ $HAS_MKL = true ]; then
         export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
         export CPATH=$(echo $CPATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
@@ -402,6 +393,9 @@ From: fedora:34
     rm -rf $INSTALLDIR/DPPP/src
     mkdir $INSTALLDIR/DPPP/usermodules
     wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DPPP/usermodules/polconv.py
+    wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.patch -O $INSTALLDIR/polconv.patch
+    patch $INSTALLDIR/DPPP/usermodules/polconv.py < $INSTALLDIR/polconv.patch
+    rm $INSTALLDIR/polconv.patch
 
     if [ $HAS_MKL = true ]; then
         export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
@@ -475,7 +469,7 @@ From: fedora:34
     #
     mkdir -p $INSTALLDIR/ds9/bin
     cd $INSTALLDIR/ds9
-    wget https://ds9.si.edu/download/fedora33/ds9.fedora33.8.3.tar.gz 
+    wget http://ds9.si.edu/download/fedora33/ds9.fedora33.8.4.1.tar.gz
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
