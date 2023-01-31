@@ -85,6 +85,7 @@ reproject
 requests
 requests-oauthlib
 rsa
+rtree
 ruamel.yaml>=0.15.92,<=0.17.21
 scikit-learn>=0.24
 scipy
