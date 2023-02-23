@@ -26,6 +26,7 @@ dask[array]>=1.1.0,<=2021.3.0
 deap>=1.0.1
 decorator
 emcee
+EveryStamp
 funcsigs
 future
 google-api-python-client

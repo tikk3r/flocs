@@ -107,6 +107,8 @@ From: fedora:34
     dnf -y install python3-pybind11 pybind11-devel mysql mysql-devel python-devel python3-devel
     dnf -y install gdb
 
+    dnf -y install luminance-hdr
+
     #
     # Install Boost
     #
