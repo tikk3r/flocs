@@ -96,7 +96,7 @@ llvmlite==0.39.1
 lockfile==0.12.2
 loess==2.1.2
 lofar-h5plot==2.6.0
-losoto @ file:///opt/lofar/losoto/build/src
+losoto
 lsmtool==1.4.11
 lxml==4.9.2
 MarkupSafe==2.0.1
