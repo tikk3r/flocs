@@ -97,7 +97,7 @@ mkdir -p $LOGSDIR
 mkdir -p $TMPDIR
 cd $WORKDIR
 
-wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora-py3/runners/create_ms_list.py
+wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
 singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR --calsols $CALSOLS
 
 echo LINC starting
