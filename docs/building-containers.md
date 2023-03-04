@@ -1,19 +1,20 @@
 ---
-title: Building
+title: Building containers
 layout: default
 nav_order: 2
 ---
 
 # Building containers
-Rebuilding containers is necessary if you want to change or add software, or optimise for a specific machine.
-
-{: .fs-6 .fw-300 }
-
+{: .no_toc}
 ## Table of contents
 {: .no_toc .text-delta }
 
 1. TOC
 {:toc}
+
+Rebuilding containers is necessary if you want to change or add software, or optimise for a specific machine.
+
+{: .fs-6 .fw-300 }
 ---
 
 The recipes offer customisation options through environment variables near the top. Environment variables that a user may want to modify are summarised in the table below. Other variables should not requrie modification unless there are specific reasons for doing so.
