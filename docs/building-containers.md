@@ -28,7 +28,7 @@ The recipes offer customisation options through environment variables near the t
 |`CPPSTD`|[C++ standard](https://gcc.gnu.org/projects/cxx-status.html)| Passed to GCC's `-std` option when building C++ code, specifying which C++ standard to use.|
 
 {: .warning}
-In 2021 Singularity was renamed to Apptainer. There is little if any change in functionality, but if apptainer-related commands or environment variables mentioned below do not work for you, replace instances of `apptainer` with `singularity` and instances of `APPTAINER_` with `SINGULARITY_`. See [the official announcement](https://apptainer.org/news/community-announcement-20211130/) for more information.
+> In 2021 Singularity was renamed to Apptainer. There is little if any change in functionality, but if apptainer-related commands or environment variables mentioned below do not work for you, replace instances of `apptainer` with `singularity` and instances of `APPTAINER_` with `SINGULARITY_`. See [the official announcement](https://apptainer.org/news/community-announcement-20211130/) for more information.
 
 ### Building with sudo rights
 If have root permissions on the machine you are building on, a container can be built with
