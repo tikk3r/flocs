@@ -2,7 +2,7 @@ title: FLoCs
 description: Containers for LOFAR data reduction with a focus on imaging science.
 remote_theme: just-the-docs/just-the-docs
 
-url: https://tikk3r.github.io/lofar-grid-hpccloud/
+url: https://tikk3r.github.io/flocs/
 
 
 callouts:
@@ -14,4 +14,4 @@ callouts:
     color: blue
 
 aux_links:
-  Recipes on GitHub: https://github.com/tikk3r/lofar-grid-hpccloud
+  Recipes on GitHub: https://github.com/tikk3r/flocs/
