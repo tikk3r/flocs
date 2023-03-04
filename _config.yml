@@ -4,5 +4,15 @@ remote_theme: just-the-docs/just-the-docs
 
 url: https://tikk3r.github.io/lofar-grid-hpccloud/
 
+
+callouts:
+  warning:
+    title: Warning
+    color: red
+
+  important:
+    title: Important
+    color: blue
+
 aux_links:
-  Recipes on GitHub: https://github.com/tik3kr/lofar-grid-hpccloud
+  Recipes on GitHub: https://github.com/tikk3r/lofar-grid-hpccloud
