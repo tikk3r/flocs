@@ -1,8 +1,8 @@
-title: LOFAR software containers
+title: FLoCs
 description: Containers for LOFAR data reduction with a focus on imaging science.
 remote_theme: just-the-docs/just-the-docs
 
 url: https://tikk3r.github.io/lofar-grid-hpccloud/
 
 aux_links:
-  Template Repository: https://github.com/tik3kr/lofar-grid-hpccloud
+  Recipes on GitHub: https://github.com/tik3kr/lofar-grid-hpccloud
