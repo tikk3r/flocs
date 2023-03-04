@@ -18,12 +18,12 @@ This page describes basic usage of the LOFAR containers. For more detailed infor
 > Directories that need to be accessible should be bound to the container by passing `--bind <dir1>,<dir2>,<dir3>` or `-B <dir1>,<dir2>,<dir3>` to either `apptainer shell` or `apptainer exec`. This directory binding is recursive.
 
 {: .important}
-> Environment variables that need to be accessible inside the container should either be set _after_ entering the container or using the `APPTAINERENV_` prefix _before_ entering the container. For example, defining `APPTAINERENV_MYVAR` will define `MYVAR` inside the container.
+> Environment variables that need to be accessible inside the container should either be set _after_ entering the container or set by using the `APPTAINERENV_` prefix _before_ entering the container. For example, defining `APPTAINERENV_MYVAR` will define `MYVAR` inside the container.
 >
 > If you need to add entries to PATH, this can be done by defining `APPTAINERENV_PREPEND_PATH` or `APPTAINERENV_APPEND_PATH` to, respecitvely, prepend or append values to `PATH`.
 
 {: .warning}
-> Pay attention to environmental settings that get passed to the container. Mixing (too much of) the host environment witht he container environment can result in unexpected behaviour. Especially `PYTHONPATH` can wreak havoc if inherited from the host system. In a worst case scenario `--cleanenv` or `-c` can be used to clean the host environment before entering the container.
+> Pay attention to environmental settings that get passed to the container. Mixing (too much of) the host environment with the container environment can result in unexpected behaviour. Especially `PYTHONPATH` can wreak havoc if inherited from the host system. In a worst case scenario `--cleanenv` or `-c` can be used to clean the host environment before entering the container.
 
 ## Interactive use
 The containers can act as your normal shell for interactive data reduction. To do so, use
