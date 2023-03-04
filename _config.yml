@@ -1,6 +1,6 @@
 title: LOFAR software containers
 description: Containers for LOFAR data reduction with a focus on imaging science.
-theme: just-the-docs
+remote+theme: just-the-docs/just-the-docs-template
 
 url: https://tikk3r.github.io/lofar-grid-hpccloud/
 
