@@ -216,7 +216,7 @@ From: fedora:34
     #
     # Setup the Python environment.
     #
-    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora-py3/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/requirements3.txt -O $INSTALLDIR/requirements3.txt
     pip --version
     #pip install --upgrade setuptools
     pip install xmlrunner
@@ -253,7 +253,7 @@ From: fedora:34
     mkdir -p $INSTALLDIR/difmap
     cd $INSTALLDIR/difmap
     #wget ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
-    wget https://github.com/tikk3r/lofar-grid-hpccloud/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
+    wget https://github.com/tikk3r/flocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
     tar xf difmap2.5e.tar.gz
     cd uvf_difmap
     wget https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
@@ -528,8 +528,8 @@ From: fedora:34
     dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel nodejs
 
     mkdir -p $INSTALLDIR/patches
-    cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/lofar-grid-hpccloud.git
-    mv $INSTALLDIR/lofar-grid-hpccloud/patches/* $INSTALLDIR/patches
+    cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/flocs.git
+    mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patches
 
     #pip --no-cache-dir install --upgrade wheel
     #pip --no-cache-dir install future
