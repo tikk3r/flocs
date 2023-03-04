@@ -33,7 +33,7 @@ In 2021 Singularity was renamed to Apptainer. There is little if any change in f
 ### Building with sudo rights
 If have root permissions on the machine you are building on, a container can be built with
 ```bash
-sudo apptainer   build <container name> <recipe file>
+sudo apptainer build <container name> <recipe file>
 ```
 
 ### Building without sudo rights
@@ -45,7 +45,7 @@ apptainer build --fakeroot <container name> <recipe file>
 ### Building with small temporary directories
 If the machine you are running at has little space available on e.g. `/var` or `/tmp` you may run into trouble during the build. To avoid this, the build's temporary and cache directories can be set as follows:
 ```bash
-sudo APPTAINER_TMPDIR=<custom tempdir> apptainer build <container name> <recipe file>
+sudo APPTAINER_TMPDIR=<custom tempdir> APPTAINER_CACHEDIR=<custom cachedir> apptainer build <container name> <recipe file>
 ```
 
 ## Building a generic container
