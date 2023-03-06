@@ -15,4 +15,4 @@ parent: Benchmarking
 {:toc}
 
 ## Rapthor solve
-![Single time chunk rapthor solve](/docs/assets/images/plot_numthreads_comparison_splitout_ssd_maxiter150.png)
+![Single time chunk rapthor solve]({{ site.baseurl }}/docs/assets/images/plot_numthreads_comparison_splitout_ssd_maxiter150.png)
