@@ -202,6 +202,7 @@ From: fedora:34
 
     /usr/bin/python -m pip uninstall -y numpy
     virtualenv $INSTALLDIR/pyenv-py3 --python=python3
+    printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
     pip install --upgrade pip
     export HDF5_VERSION=1.10.5
