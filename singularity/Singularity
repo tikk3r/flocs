@@ -227,11 +227,11 @@ From: fedora:34
     sed -i.bak -e '97 i PGPLOT_LIB=/usr/lib64/libpgplot.so.5' configure
     ./configure linux-i486-gcc
     export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
+    export OLD_CFLAGS=$CFLAGS
     export CFLAGS="-L/usr/lib64/libpgplot.so.5"
     CC=`which gcc` ./makeall
     rm -rf $INSTALLDIR/difmap/*.tar.gz
-
-    export CFLAGS="-mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+    export CFLAGS=$OLD_CFLAGS
 
 	#
 	# Install PyBDSF
@@ -342,13 +342,6 @@ From: fedora:34
     #
     # Install DPPP
     #
-    # Temporarily get rid of MKL. Throws an error about needing a not-OpenMP version of OpenBLAS and MKL multithreaded stuff uses OpenMP from what I can tell.
-    if [ $HAS_MKL = true ]; then
-        export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
-        export CPATH=$(echo $CPATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
-        export CMAKE_PREFIX_PATH=$(echo $CMAKE_PREFIX_PATH | tr ":" "\n" | grep -v "/opt/intel" | tr "\n" ":")
-    fi
-
     mkdir -p $INSTALLDIR/DPPP/build
     git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/src
@@ -370,12 +363,6 @@ From: fedora:34
     wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.patch -O $INSTALLDIR/polconv.patch
     patch $INSTALLDIR/DPPP/usermodules/polconv.py < $INSTALLDIR/polconv.patch
     rm $INSTALLDIR/polconv.patch
-
-    if [ $HAS_MKL = true ]; then
-        export LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
-        export CPATH=/opt/intel/mkl/include:$CPATH
-        export CMAKE_PREFIX_PATH=/opt/intel/mkl/lib/intel64:$CMAKE_PREFIX_PATH
-    fi
 
 	#
 	# Install RMextract
