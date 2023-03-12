@@ -1,9 +1,6 @@
 Bootstrap: docker
 From: fedora:34
 
-%files
-    /home/lofarvwf-fsweijen/DDF_Gridder_CMake.patch /opt/lofar/patches/DDF_Gridder_CMake.patch
-
 %environment
     export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
@@ -43,9 +40,6 @@ From: fedora:34
     export RMEXTRACT_VERSION=f161b0a
 	export SUPERLU_VERSION=5.2.1
 	export WSCLEAN_VERSION=master
-	#export WSCLEAN_VERSION=77e65019
-	#export WSCLEAN_VERSION=42c8201e
-	#export WSCLEAN_VERSION=v3.2
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
@@ -70,7 +64,6 @@ From: fedora:34
     export CMAKE_PREFIX_PATH="$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:/opt/hdf5:$INSTALLDIR/lofar:$INSTALLDIR/idg:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
     export LD_LIBRARY_PATH="$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:/opt/hdf5/lib:$INSTALLDIR/idg/lib:/usr/local/cuda/lib64:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
-    export make=`which make`
     export OLD_PYTHONPATH=$PYTHONPATH
 
 	mkdir -p $INSTALLDIR
@@ -90,6 +83,7 @@ From: fedora:34
 
     export CC=`which gcc`
 	export CXX=`which g++`
+    export make=`which make`
     
     dnf -y install python
 	dnf -y install python-pip python3-tkinter
@@ -239,7 +233,6 @@ From: fedora:34
 	mkdir -p ${INSTALLDIR}/pybdsf
 	cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION} && echo export PYBDSF_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/pybdsf/pybdsf
-    #python setup.py install
     pip install bdsf
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/pybdsf/pybdsf
@@ -317,6 +310,8 @@ From: fedora:34
     cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam -DBUILD_WITH_PYTHON=ON ../src
     make -j $J
     make install
+    rm -rf $INSTALLDIR/EveryBeam/build
+    rm -rf $INSTALLDIR/EveryBeam/src
 
     #   
     # Install Image Domain Gridder (IDG)
@@ -360,9 +355,6 @@ From: fedora:34
     rm -rf $INSTALLDIR/DPPP/src
     mkdir $INSTALLDIR/DPPP/usermodules
     wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DPPP/usermodules/polconv.py
-    wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.patch -O $INSTALLDIR/polconv.patch
-    patch $INSTALLDIR/DPPP/usermodules/polconv.py < $INSTALLDIR/polconv.patch
-    rm $INSTALLDIR/polconv.patch
 
 	#
 	# Install RMextract
@@ -449,13 +441,6 @@ From: fedora:34
     cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/flocs.git
     mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patches
 
-    #pip --no-cache-dir install --upgrade wheel
-    #pip --no-cache-dir install future
-    #pip --no-cache-dir install --prefer-binary SharedArray
-    #pip --no-cache-dir install astropy-healpix
-    #pip --no-cache-dir install reproject
-    #pip --no-cache-dir install matplotlib
-    #pip --no-cache-dir install pybind11
     pip --no-cache-dir install meqtrees-cattery --no-deps
     pip --no-cache-dir install owlcat --no-deps
 
@@ -497,7 +482,9 @@ From: fedora:34
     #sed -i "s/python-casacore >= 3.0.0, <=3.4.0/python-casacore >= 3.0.0/" src/setup.py
     #sed -i "s/3\.7/3\.10/" src/setup.py
     sed -i "s/__version__ = "0.6.0.0"/__version__ = "0.7.1.0"/" src/setup.py
+    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/patches/DDF_Gridder_CMake.patch -O /opt/lofar/patches/DDF_Gridder_CMake.patch
     patch src/DDFacet/Gridder/CMakeLists.txt /opt/lofar/patches/DDF_Gridder_CMake.patch
+    rm /opt/lofar/patches/DDF_Gridder_CMake.patch
     cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
     #cp -r SkyModel/Mask /opt/lofar/DDFacet/lib/python3.9/site-packages/SkyModel/
     cp -r SkyModel/Sky /opt/lofar/DDFacet/lib/python3.9/site-packages/SkyModel/
@@ -544,8 +531,6 @@ From: fedora:34
    #
    cd $INSTALLDIR
    git clone https://github.com/mhardcastle/lotss-query.git
-
-    #pip install --no-deps --no-binary python-casacore "python-casacore==3.5.0"
 
     #
     # Finaly cleanup of unnecessary stuff
@@ -619,7 +604,7 @@ From: fedora:34
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
 
-echo "# DDF environment settings" >> $INSTALLDIR/init.sh
+    echo "# DDF environment settings" >> $INSTALLDIR/init.sh
     echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
     echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
@@ -633,7 +618,7 @@ echo "# DDF environment settings" >> $INSTALLDIR/init.sh
     # entrypoint
     #
 %runscript
-    echo LOFAR-SKSP Singularity Container v4.0.1
+    echo LOFAR-SKSP Singularity Container v4.1.0
 
 %help
     This Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
@@ -658,14 +643,4 @@ echo "# DDF environment settings" >> $INSTALLDIR/init.sh
     To enter a shell within the image, use
         singularity shell -B <paths,that,need,to,be,accessible> <path to image>
 
-    The container base is Fedora 31 and relevant key dependencies have the following versions:
-
-    * Armadillo 9.900.3
-    * Boost 1.69.0
-    * CFITSIO 7.3.47
-    * FFTW 3.5.8
-    * HDF5 1.10.5
-    * LAPACK 3.8.0
-    * OpenBLAS 3.8.0
-    * SuperLU 5.2.1
-    * WCSLIB 6.4
+    The container base is Fedora 34.
