@@ -28,7 +28,7 @@ def make_input_json(mspath, calsols='', targetsols='', path_facetselfcal_config=
         if calsols and targetsols:
             calsolpath = os.path.abspath(calsols)
             out.write(f' "cal_solutions": {{"class": "File", "path":"{calsolpath}"}},\n')
-        else:
+        elif calsols and not targetsols:
             calsolpath = os.path.abspath(calsols)
             out.write(f' "cal_solutions": {{"class": "File", "path":"{calsolpath}"}}\n')
         if targetsols and not calsols:
