@@ -34,9 +34,9 @@ def make_input_json(mspath, calsols='', targetsols='', path_facetselfcal_config=
         if targetsols and not calsols:
             print('Only target solutions given, preparing JSON file for lofar-vlbi pipeline.')
             calsolpath = os.path.abspath(targetsols)
-            out.write(f' "solset": {{"class": "File", "path":"{calsolpath}"}}\n')
-            out.write(f' "configfile": {{"class": "File", "path":"{path_facetselfcal_config}"}}\n')
-            out.write(f' "h5merger": {{"class": "Directory", "path":"{path_lofar_helpers}"}}\n')
+            out.write(f' "solset": {{"class": "File", "path":"{calsolpath}"}},\n')
+            out.write(f' "configfile": {{"class": "File", "path":"{path_facetselfcal_config}"}},\n')
+            out.write(f' "h5merger": {{"class": "Directory", "path":"{path_lofar_helpers}"}},\n')
             out.write(f' "selfcal": {{"class": "DIrectory", "path":"{path_selfcal}"}}\n')
 
             
