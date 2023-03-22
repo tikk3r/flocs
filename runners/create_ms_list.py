@@ -37,7 +37,7 @@ def make_input_json(mspath, calsols='', targetsols='', path_facetselfcal_config=
             out.write(f' "solset": {{"class": "File", "path":"{calsolpath}"}},\n')
             out.write(f' "configfile": {{"class": "File", "path":"{path_facetselfcal_config}"}},\n')
             out.write(f' "h5merger": {{"class": "Directory", "path":"{path_lofar_helpers}"}},\n')
-            out.write(f' "selfcal": {{"class": "DIrectory", "path":"{path_selfcal}"}}\n')
+            out.write(f' "selfcal": {{"class": "Directory", "path":"{path_selfcal}"}}\n')
 
             
         out.write('}\n')
