@@ -55,6 +55,7 @@ From: fedora:36
     export OMP_MAX_THREADS=1
     export OPENBLAS_NUM_THREADS=1
     export NUM_THREADS=128
+    export OPENBLAS_TARGET=ZEN
 
     if [ $NOAVX512 = true ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
@@ -96,7 +97,7 @@ From: fedora:36
 	git clone https://github.com/xianyi/OpenBLAS.git src
 	cd src && git checkout $OPENBLAS_VERSION
 	mkdir build && cd build
-	cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=SKYLAKEX -DNUM_THREADS=128 -DBUILD_SHARED_LIBS=ON ..
+	cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DNUM_THREADS=128 -DBUILD_SHARED_LIBS=ON ..
 	make -j$J
 	make install
 	rm -rf /opt/OpenBLAS/src
