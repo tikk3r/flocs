@@ -60,14 +60,18 @@ From: fedora:36
     export NUM_THREADS=128
 
     if [ $NOAVX512 = true ]; then
-        export CFLAGS="-g -march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-g -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
-        export CFLAGS="-g -march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-g -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
+        export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
+        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
+    fi
+    if [ $DEBUG = true ]; then
+        export CFLAGS="-g $CFLAGS"
+        export CXXFLAGS="-g $CXXFLAGS"
     fi
     export CPLUS_INCLUDE_PATH="/opt/OpenBLAS/include:/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPLUS_INCLUDE_PATH"
-    export CPATH="/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPATH"
+    export CPATH="/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPATH"
     export CMAKE_PREFIX_PATH="/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:/opt/hdf5:$INSTALLDIR/lofar:$INSTALLDIR/idg:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
     export LD_LIBRARY_PATH="/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:/opt/hdf5/lib:$INSTALLDIR/idg/lib:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
@@ -88,7 +92,6 @@ From: fedora:36
 	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
 	dnf -y install bison flex ncurses tar bzip2 which gettext
 	dnf -y install cmake3 nodejs
-	#dnf -y install openblas openblas-devel openblas-threads64
 	dnf -y remove openblas*
 
 	# Install OpenBLAS
@@ -105,8 +108,6 @@ From: fedora:36
     export CC=`which gcc`
 	export CXX=`which g++`
     
-    #dnf -y install hdf5
-	#dnf -y install hdf5-devel
     dnf -y install python
 	dnf -y install python-pip python3-tkinter
     dnf -y install libsigc++20-devel gtkmm30-devel
@@ -137,11 +138,6 @@ From: fedora:36
     dnf -y install fftw-devel fftw-libs
 
 	#
-	# Install OpenBLAS
-	#
-	#dnf -y install blas-devel
-
-	#
 	# Install SuperLU
 	#
 	dnf -y install SuperLU SuperLU-devel
@@ -169,7 +165,6 @@ From: fedora:36
     mkdir /opt/hdf5
     cd /opt/hdf5
     wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
-    # For reference. Only needed if building with CMake.
     tar xf hdf5-${HDF5_VERSION}.tar.gz
     cd hdf5-${HDF5_VERSION}
     # Thread safety required for WSClean's parallel gridding with facets.
@@ -210,14 +205,15 @@ From: fedora:36
     #
     # Setup the Python environment.
     #
-    wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora-py3/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/requirements3.txt -O $INSTALLDIR/requirements3.txt
     pip --version
     #pip install --upgrade setuptools
     pip install xmlrunner
-    pip --no-cache-dir install --upgrade virtualenv
+    pip --no-cache-dir install virtualenv
 
     /usr/bin/python -m pip uninstall -y numpy
     virtualenv $INSTALLDIR/pyenv-py3 --python=python3
+    # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
     printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
     pip install --upgrade pip
@@ -255,7 +251,7 @@ From: fedora:36
     mkdir -p $INSTALLDIR/difmap
     cd $INSTALLDIR/difmap
     #wget ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
-    wget https://github.com/tikk3r/lofar-grid-hpccloud/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
+    wget https://github.com/tikk3r/flocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
     tar xf difmap2.5e.tar.gz
     cd uvf_difmap
     wget https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
@@ -283,7 +279,6 @@ From: fedora:36
 	#
 	# Install CASAcore
 	#
-	# Casacore 2.4.1 did not seem to deal well with AVX512 instructions, so disable them if they are available
 	mkdir -p ${INSTALLDIR}/casacore/build
 	mkdir -p ${INSTALLDIR}/casacore/data
 	cd $INSTALLDIR/casacore
@@ -616,6 +611,7 @@ From: fedora:36
 	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
 	echo export PYTHONPATH=\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DPPP/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DPPP/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export PATH=/usr/local/cuda/bin:/opt/hdf5/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
@@ -660,7 +656,7 @@ From: fedora:36
     # entrypoint
     #
 %runscript
-    echo LOFAR-SKSP Singularity Container v4.0.1
+    echo LOFAR-SKSP Singularity Container v4.1.0
 
 %help
     This Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
@@ -685,7 +681,7 @@ From: fedora:36
     To enter a shell within the image, use
         singularity shell -B <paths,that,need,to,be,accessible> <path to image>
 
-    The container base is Fedora 31 and relevant key dependencies have the following versions:
+    The container base is Fedora 36 and relevant key dependencies have the following versions:
 
     * Armadillo 9.900.3
     * Boost 1.69.0
