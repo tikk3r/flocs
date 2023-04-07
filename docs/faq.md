@@ -29,3 +29,6 @@ The software you are trying to use was built for a different architecture than y
 
 ## Directories have disappeared or software can't find files that exist.
 If directories or files that exist on the host system cannot be found inside the container, double check if all the required directories have been passed along to `--bind/-B` before entering the container.
+
+## Pipelines crash with "Too many open files".
+Raise the open file limit. Certain steps like wide-band flagging with AOFlagger may need many files open simultaneously, which can lead to this error. In a Bash shell this limit can be checked by running `ulimit -n`. If this is set to a low value such as 1024, it is recommended to increase this. Usually `ulimit -n 4096` can be set without requiring special privileges. On CSH shells use `limit` to see current limits and `limit descriptors 4096` or `limit openfiles 4096` to increase it.
