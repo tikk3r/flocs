@@ -25,9 +25,10 @@ From: fedora:36
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=c9e39aae
+    export DPPP_VERSION=5dab4c43
 	export DYSCO_VERSION=2e7f331
-    export EVERYBEAM_VERSION=e1c96866
+    #export EVERYBEAM_VERSION=e1c96866
+    export EVERYBEAM_VERSION=6c7c1fed
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.12.1
     export IDG_VERSION=master
@@ -39,14 +40,14 @@ From: fedora:36
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=f161b0a
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=0cf67d00
+	export WSCLEAN_VERSION=65172baf
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
     export HAS_CUDA=true
-    export HAS_MKL=false
+    export HAS_MKL=true
     export MARCH='x86-64'
     export MTUNE='generic'
     export NOAVX512=true
@@ -58,7 +59,7 @@ From: fedora:36
     export OPENBLAS_NUM_THREADS=1
     export MKL_NUM_THREADS=1
     export NUM_THREADS=128
-    export OPENBLAS_TARGET=X86_64
+    export OPENBLAS_TARGET=SANDYBRIDGE
 
     if [ $NOAVX512 = true ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
@@ -74,7 +75,7 @@ From: fedora:36
     export CPLUS_INCLUDE_PATH="/opt/OpenBLAS/include:/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPLUS_INCLUDE_PATH"
     export CPATH="/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPATH"
     export CMAKE_PREFIX_PATH="/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:/opt/hdf5:$INSTALLDIR/lofar:$INSTALLDIR/idg:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
-    export LD_LIBRARY_PATH="/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:/opt/hdf5/lib:$INSTALLDIR/idg/lib:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:/opt/hdf5/lib:$INSTALLDIR/idg/lib:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
     export make=`which make`
     export OLD_PYTHONPATH=$PYTHONPATH
@@ -93,6 +94,7 @@ From: fedora:36
 	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
 	dnf -y install bison flex ncurses tar bzip2 which gettext
 	dnf -y install cmake3 nodejs
+    dnf -y install swarp
 	dnf -y remove openblas*
 
 	# Install OpenBLAS
@@ -101,7 +103,7 @@ From: fedora:36
 	git clone https://github.com/xianyi/OpenBLAS.git src
 	cd src && git checkout $OPENBLAS_VERSION
 	mkdir build && cd build
-	cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DNUM_THREADS=128 -DBUILD_SHARED_LIBS=ON ..
+	cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DBUILD_SHARED_LIBS=ON ..
 	make -j$J
 	make install
 	rm -rf /opt/OpenBLAS/src
@@ -196,12 +198,13 @@ From: fedora:36
         sudo dnf -y install cuda-11-5
     fi
 
-	# Symlinks required for Fedora 31
-	ln -s /usr/lib64/libboost_python37.so /usr/lib64/libboost_python3.so
-	ln -s /usr/lib64/libboost_numpy37.so /usr/lib64/libboost_numpy3.so
     ln -s /usr/lib64/libnsl.so.2.0.0 /usr/lib64/libnsl.so
 
     dnf -y install postgresql-devel libnsl libnsl2-devel
+    flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
+    flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
+    export FLEXIBLAS=OPENBLAS
+    export FLEXIBLAS64=OPENBLAS
 
     #
     # Setup the Python environment.
@@ -311,6 +314,19 @@ From: fedora:36
     rm -rf $INSTALLDIR/dysco/src
 
 	#
+	# Install SAGEcal
+	#
+	mkdir -p $INSTALLDIR/sagecal/build
+	cd $INSTALLDIR/sagecal
+	git clone https://github.com/nlesc-dirac/sagecal.git src
+	cd build
+	cmake -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal -DLIB_ONLY=True ../src
+	make -j $j
+	make install
+	rm -rf $INSTALLDIR/sagecal/build
+	rm -rf $INSTALLDIR/sagecal/src
+
+	#
 	# Install AOFlagger
 	#
 	mkdir -p ${INSTALLDIR}/aoflagger/build
@@ -384,9 +400,9 @@ From: fedora:36
     echo export DPPP_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/DPPP/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DBLAS_flexiblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ../src
+        cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
     else
-        cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DBLAS_flexiblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so -DTARGET_CPU=${MARCH} ../src
+        cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
     fi
     # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install
@@ -524,6 +540,9 @@ From: fedora:36
     sed -i "s/__version__ = "0.6.0.0"/__version__ = "0.7.1.0"/" src/setup.py
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/patches/DDF_Gridder_CMake.patch -O /opt/lofar/patches/DDF_Gridder_CMake.patch
     patch src/DDFacet/Gridder/CMakeLists.txt /opt/lofar/patches/DDF_Gridder_CMake.patch
+    # NumPy deprecations
+    #find . -type f -name '*.py' -exec sed -i 's/np\.bool[^0-9]/bool/' {} \;
+    #find . -type f -name '*.py' -exec sed -i 's/dtype=np\.complex/dtype=complex/' {} \;
     cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
     #cp -r SkyModel/Mask /opt/lofar/DDFacet/lib/python3.9/site-packages/SkyModel/
     cp -r SkyModel/Sky /opt/lofar/DDFacet/lib/python$PYTHON_VERSION/site-packages/SkyModel/
@@ -552,9 +571,14 @@ From: fedora:36
     #
     rm -rf $INSTALLDIR/ddf-pipeline
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
-    cd ddf-pipeline && git checkout 37070a9 && cd ..
+    cd ddf-pipeline && git checkout 68afe56 && cd ..
+    #cd ddf-pipeline && git checkout 37070a9 && cd ..
     cd $INSTALLDIR
     sed -i "s/DDF.py/DDF.py --Misc-IgnoreDeprecationMarking=1/" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
+    sed -i "s/--Beam-PhasedArrayMode/--Beam-LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
+    sed -i "s/--PhasedArrayMode/--LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
+    sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
+    sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/bootstrap.py
     mkdir $INSTALLDIR/DDFCatalogues
     cd $INSTALLDIR/DDFCatalogues
     wget https://www.extragalactic.info/bootstrap/VLSS.fits
@@ -621,12 +645,14 @@ From: fedora:36
     echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=/opt/hdf5/bin:\$PATH  >> $INSTALLDIR/init.sh
+	echo export PATH=\$INSTALLDIR/sagecal/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/opt/hdf5/lib:/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/EveryBeam/lib:/opt/hdf5/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/opt/OpenBLAS/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=\$INSTALLDIR/sagecal/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     # OPENBLAS_NUM_THREADS=1 is required for WSClean
     echo export NCPU=\$\(nproc\) >> $INSTALLDIR/init.sh
 	echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
@@ -635,6 +661,10 @@ From: fedora:36
 	echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
     echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
     echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
+    echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
+    echo flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
+    echo export FLEXIBLAS=OPENBLAS >> $INSTALLDIR/init.sh
+    echo export FLEXIBLAS64=OPENBLAS >> $INSTALLDIR/init.sh
 
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
 
