@@ -24,14 +24,6 @@ LOGSDIR=$WORKDIR/logs_LINC_calibrator/
 ## The trailing slash is important here.
 TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
 
-# Update these variables to tune performance.
-## Limit the number of DP3 processes running simultaneously to this amount.
-MAX_DP3_PROCS=8
-
-CORES_MACHINE=`nproc`
-CORES_CALIBCAL=$(($CORES_MACHINE/$MAX_DP3_PROCS))
-CORES_PREDICT=$(($CORES_MACHINE/$MAX_DP3_PROCS))
-
 #
 # Do not update below this line
 #
@@ -56,10 +48,6 @@ elif [ -d $LINC_DATA_ROOT ] && [ -d $LINC_DATA_ROOT/steps ]; then
 fi
 
 # Prepare workflow files.
-echo Overriding workflow core requirements with user settings.
-sed -i "s/coresMin: [0-9]*/coresMin: $CORES_CALIBCAL/" $LINC_DATA_ROOT/steps/ddecal.cwl
-sed -i "s/coresMin: [0-9]*/coresMin: $CORES_PREDICT/" $LINC_DATA_ROOT/steps/predict.cwl
-
 echo "Overriding rfistrategies with Lua >5.3 compatible ones from AOFlagger repository"
 wget https://gitlab.com/aroffringa/aoflagger/-/raw/master/data/strategies/lofar-default.lua -O $LINC_DATA_ROOT/rfistrategies/lofar-default.lua
 
