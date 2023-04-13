@@ -25,6 +25,7 @@ def make_input_json(mspath, calsols='', targetsols='', path_facetselfcal_config=
             ms = files[-1]
             out.write(f'   {{"class": "Directory", "path":"{ms}"}}\n')
         out.write('  ],\n')
+        out.write('"wsclean_tmpdir": "$TMPDIR",\n')
         if calsols and targetsols:
             calsolpath = os.path.abspath(calsols)
             out.write(f' "cal_solutions": {{"class": "File", "path":"{calsolpath}"}},\n')
