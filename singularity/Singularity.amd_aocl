@@ -236,9 +236,7 @@ From: fedora:36
     # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
     printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
-    pip install --upgrade pip
-    pip install -r $INSTALLDIR/requirements3.txt
-    pip uninstall -y numpy pandas
+    pip install --upgrade pip wheel cython
     # Link NumPy to our own OpenBLAS installation.
     mkdir -p /opt/numpy && cd /opt/numpy
     git clone https://github.com/numpy/numpy.git
@@ -247,8 +245,9 @@ From: fedora:36
     git submodule update --init
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/site.cfg
     python setup.py build -j 64 install
-    pip install --no-binary pandas pandas
+    pip install --no-binary pandas 'pandas>=0.23.3,<=1.1.5'
     pip install --no-binary h5py h5py
+    pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
     pip install legacystamps
     pip install Kittens
