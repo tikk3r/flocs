@@ -14,10 +14,15 @@ This page documents my [LOFAR containers], very creatively named "Frits' LoFAR C
 > Pipelines using the genericpipeline framework can _only_ be run with the 3.X container versions that still ship with Python 2. Container versions 4.X and up no longer support this.
 
 [Download v3.5 (Py2, x86-64_generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/lofar_sksp_v3.5_x86-64_generic_noavx512_ddf.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[Download v4.0.2 (Py3, x86-64_generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/lofar_sksp_v4.0.2_x86-64_generic_noavx512_ddf.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v4.1.0 (Py3, x86-64_generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/lofar_sksp_v4.1.0_x86-64_generic_ddf_cuda.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v4.1.0 (Py3, AMD Zen 2)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/amd/lofar_sksp_v4.1.0_znver2_znver2_aocl3.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+
 [View recipes on GitHub][LOFAR containers]{: .btn .fs-5 .mb-4 .mb-md-0 }
 
 # Previous containers
+[Download v3.5 (Py2, x86-64_generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/lofar_sksp_v3.5_x86-64_generic_noavx512_ddf.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v4.0.2 (Py3, x86-64_generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/lofar_sksp_v4.0.2_x86-64_generic_noavx512_ddf.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+
 [Download v3.4 (Py2, x86-64_generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/lofar_sksp_v3.4_x86-64_generic_noavx512_ddf.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Download v4.0.1 (Py3, x86-64_generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/lofar_sksp_v4.0.1_x86-64_generic_noavx512_ddf.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
