@@ -30,7 +30,7 @@ From: fedora:36
     export EVERYBEAM_VERSION=6c7c1fed
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.12.1
-    export IDG_VERSION=master
+    export IDG_VERSION=f4a3a96c
 	export LAPACK_VERSION=3.8.0
 	export LOSOTO3_VERSION=latest
     export LSMTOOL_VERSION=master
@@ -437,6 +437,7 @@ From: fedora:36
     cd $INSTALLDIR/DPPP/src
     git checkout ${DPPP_VERSION}
     echo export DPPP_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    sed -i '106s/min/max/' ddecal/constraints/Constraint.h
     cd $INSTALLDIR/DPPP/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF \
