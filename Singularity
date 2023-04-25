@@ -648,6 +648,11 @@ From: fedora:31
     wget https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
     cd $INSTALLDIR
 
+    #
+    # Install prefactor
+    #
+    git clone https://github.com/lofar-astron/prefactor /opt/lofar/prefactor
+
 
     #
     # Wrap up installation, remove unnecessary stuff.
