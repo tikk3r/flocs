@@ -40,7 +40,7 @@ From: fedora:36
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=f161b0a
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=65172baf
+	export WSCLEAN_VERSION=test-dd-psf-with-faceting
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
@@ -695,7 +695,7 @@ EOF
     # entrypoint
     #
 %runscript
-    echo LOFAR-SKSP Singularity Container v4.1.0
+    echo LOFAR-SKSP Singularity Container v4.2.0
 
 %help
     This Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
@@ -720,14 +720,4 @@ EOF
     To enter a shell within the image, use
         singularity shell -B <paths,that,need,to,be,accessible> <path to image>
 
-    The container base is Fedora 36 and relevant key dependencies have the following versions:
-
-    * Armadillo 9.900.3
-    * Boost 1.69.0
-    * CFITSIO 7.3.47
-    * FFTW 3.5.8
-    * HDF5 1.10.5
-    * LAPACK 3.8.0
-    * OpenBLAS 3.8.0
-    * SuperLU 5.2.1
-    * WCSLIB 6.4
+    The container base is Fedora 36.
