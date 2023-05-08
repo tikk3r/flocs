@@ -245,7 +245,7 @@ From: fedora:36
     git submodule update --init
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/site.cfg
     python setup.py build -j 64 install
-    pip install --no-binary pandas 'pandas>=0.23.3,<=1.1.5'
+    pip install --no-binary pandas 'pandas==2.0.0'
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
