@@ -13,6 +13,28 @@ nav_order: 4
 1. TOC
 {:toc}
 
+## v4.2.1
+**Updates**
+* Deprecate `generic` container in favour of `sandybridge` container since AMD now has a specific container and 12 year old hardware seems a reasonable bottom line.
+
+**Fixes**
+* Fix LD_LIBRARY_PATH for Intel oneAPI MKL.
+
+
+## v4.2.0
+**Updates**
+* Actually update Intel MKL 2020 to Intel oneAPI MKL 2023.
+* Add `rclone`.
+* Add `swarp`.
+* Freeze IDG to `f4a3a96c`.
+* Update WSClean to `test-dd-psf-with-faceting` to support feathering and direction-dependent psfs.
+
+**Fixes**
+* Fix for threading in DP3's constrained solves.
+* Closes #57 
+* Closes #58 
+
+
 ## v4.1.0
 **Major changes**
 - Container base updated to Fedora 36
