@@ -678,6 +678,8 @@ EOF
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
 
     echo source \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
+    # MKL's source script doesn't work inside a Singularity container, so set paths manually.
+    echo export LD_LIBRARY_PATH=/opt/intel/oneapi/tbb/2021.9.0/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mkl/2023.1.0/lib/intel64:/opt/intel/oneapi/compiler/2023.1.0/linux/lib:/opt/intel/oneapi/compiler/2023.1.0/linux/lib/x64:/opt/intel/oneapi/compiler/2023.1.0/linux/compiler/lib/intel64_lin:/opt/intel/oneapi/mkl/latest/lib/intel64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
