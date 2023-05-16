@@ -48,8 +48,8 @@ From: fedora:36
 
     export HAS_CUDA=true
     export HAS_MKL=true
-    export MARCH='x86-64'
-    export MTUNE='generic'
+    export MARCH='sandybridge'
+    export MTUNE='sandybridge'
     export NOAVX512=true
     export DEBUG=false
 
