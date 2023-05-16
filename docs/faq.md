@@ -13,6 +13,9 @@ nav_order: 99
 1. TOC
 {:toc}
 
+## I have found a problem or have a suggestion
+First, read through the sections below in case it might be covered there. If it is not covered then open an issue on GitHub or contact me through email, Slack etc.
+
 ## I see warnings about a build mismatch when starting a container.
 If you see the following message when entering a container (bar specific values)
 
