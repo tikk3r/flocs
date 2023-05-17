@@ -39,6 +39,7 @@ idna
 iniparse
 ipaddress
 ipdb>=0.10.3,<=0.13.9
+ipython<=8.10
 jinja2
 IPy
 kitchen
