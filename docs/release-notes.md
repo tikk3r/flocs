@@ -13,6 +13,10 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v4.2.2
+**Fixes**
+* Downgrade IPython to 8.10.
+
 ## v4.2.1
 **Updates**
 * Deprecate `generic` container in favour of `sandybridge` container since AMD now has a specific container and 12 year old hardware seems a reasonable bottom line.
