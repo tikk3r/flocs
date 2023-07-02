@@ -9,7 +9,7 @@ parent: Benchmarking
 {: .important}
 > For these benchmarks, LINC was run using the runner scripts found [here](https://github.com/tikk3r/flocs/tree/fedora-py3/runners).
 
-This page aims to collect some basic statistics about LINC runtimes on various systems, to provide users a rough idea of how long a run will take. Reported have been obtained from the `real` entry of Linux's `time` command.
+This page aims to collect some basic statistics about LINC runtimes on various systems, to provide users a rough idea of how long a run will take. Reported have been obtained from the `real` entry of Linux's `time` command. If nothing is specified, a container built for the target architecture was used.
 
 ## LINC Calibrator
 
