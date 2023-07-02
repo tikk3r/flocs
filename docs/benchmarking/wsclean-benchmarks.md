@@ -10,7 +10,7 @@ parent: Benchmarking
 Here we compare the performance of gridders available in WSClean. The currently benchmarked gridders are IDG and w-gridder.
 
 ### Intermediate resolution imaging
-For intermediate resolution imaging a dataset at 4 ch/SB and 4 s time averaging was used. A Gaussian taper to 1.2'' was applied. The following WSClean commands were run:
+For intermediate resolution imaging a dataset at 4 ch/SB and 4 s time averaging was used. A Gaussian taper to 1.2'' was applied and the job was limited to 30 cores through Slurm. The following WSClean commands were run:
 
 ```
 wsclean \
