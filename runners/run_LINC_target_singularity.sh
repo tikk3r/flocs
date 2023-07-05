@@ -90,6 +90,6 @@ singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR --ca
 echo LINC starting
 echo export MPLBACKEND='Agg' > tmprunner.sh
 echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> tmprunner.sh
-echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json 2>&1' >> tmprunner.sh
-(time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh 2>&1) | tee $WORKDIR/job_output.txt
+echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> tmprunner.sh
+(time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh 2>&1) |& tee $WORKDIR/job_output.txt
 echo LINC ended
