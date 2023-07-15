@@ -85,6 +85,7 @@ regions<=0.5
 reproject
 requests
 requests-oauthlib
+RM-Tools
 rsa
 rtree
 ruamel.yaml>=0.15.92,<=0.17.21
