@@ -25,10 +25,9 @@ From: fedora:36
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=5dab4c43
+    export DPPP_VERSION=161559ff
 	export DYSCO_VERSION=2e7f331
-    #export EVERYBEAM_VERSION=e1c96866
-    export EVERYBEAM_VERSION=6c7c1fed
+    export EVERYBEAM_VERSION=91b9872
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.12.1
     export IDG_VERSION=f4a3a96c
@@ -40,7 +39,7 @@ From: fedora:36
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=f161b0a
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=test-dd-psf-with-faceting
+	export WSCLEAN_VERSION=7bdcc104
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
@@ -48,8 +47,8 @@ From: fedora:36
 
     export HAS_CUDA=true
     export HAS_MKL=true
-    export MARCH='sandybridge'
-    export MTUNE='sandybridge'
+    export MARCH='x86-64'
+    export MTUNE='generic'
     export NOAVX512=true
     export DEBUG=false
 
@@ -59,14 +58,14 @@ From: fedora:36
     export OPENBLAS_NUM_THREADS=1
     export MKL_NUM_THREADS=1
     export NUM_THREADS=128
-    export OPENBLAS_TARGET=SANDYBRIDGE
+    export OPENBLAS_TARGET=NEHALEM
 
     if [ $NOAVX512 = true ]; then
-        export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
-        export CFLAGS="-march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
+        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE}"
+        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
     fi
     if [ $DEBUG = true ]; then
         export CFLAGS="-g $CFLAGS"
@@ -79,6 +78,7 @@ From: fedora:36
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
     export make=`which make`
     export OLD_PYTHONPATH=$PYTHONPATH
+
 
 	mkdir -p $INSTALLDIR
 
@@ -97,19 +97,20 @@ From: fedora:36
     dnf -y install swarp rclone
 	dnf -y remove openblas*
 
+    export CC=`which gcc`
+    export CXX=`which g++`
+
 	# Install OpenBLAS
 	mkdir -p /opt/OpenBLAS
 	cd /opt/OpenBLAS
 	git clone https://github.com/xianyi/OpenBLAS.git src
 	cd src && git checkout $OPENBLAS_VERSION
 	mkdir build && cd build
-	cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DBUILD_SHARED_LIBS=ON ..
+	cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DNUM_CORES=256 -DBUILD_SHARED_LIBS=ON ..
 	make -j$J
 	make install
 	rm -rf /opt/OpenBLAS/src
 
-    export CC=`which gcc`
-	export CXX=`which g++`
     
     dnf -y install python
 	dnf -y install python-pip python3-tkinter
@@ -167,9 +168,12 @@ From: fedora:36
 	export CXX=`which mpic++`
     mkdir /opt/hdf5
     cd /opt/hdf5
-    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
-    tar xf hdf5-${HDF5_VERSION}.tar.gz
-    cd hdf5-${HDF5_VERSION}
+    #wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+    #tar xf hdf5-${HDF5_VERSION}.tar.gz
+    #cd hdf5-${HDF5_VERSION}
+    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.1/src/hdf5-1.14.1-2.tar.gz
+    tar xf hdf5-1.14.1-2.tar.gz
+    cd hdf5-1.14.1-2/
     # Thread safety required for WSClean's parallel gridding with facets.
     ./configure -prefix=/opt/hdf5 --enable-build-mode=production --enable-threadsafe --enable-shared --disable-sharedlib-rpath --disable-hl
     make -j $J
@@ -228,7 +232,9 @@ EOF
     # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
     printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
-    source /opt/intel/oneapi/mkl/latest/env/vars.sh
+    if [ $HAS_MKL = true ]; then
+	    source /opt/intel/oneapi/mkl/latest/env/vars.sh
+    fi
     pip install --upgrade pip wheel cython
     # Link NumPy to our own OpenBLAS installation.
     mkdir -p /opt/numpy && cd /opt/numpy
@@ -549,9 +555,6 @@ EOF
     sed -i "s/__version__ = "0.6.0.0"/__version__ = "0.7.1.0"/" src/setup.py
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/patches/DDF_Gridder_CMake.patch -O /opt/lofar/patches/DDF_Gridder_CMake.patch
     patch src/DDFacet/Gridder/CMakeLists.txt /opt/lofar/patches/DDF_Gridder_CMake.patch
-    # NumPy deprecations
-    #find . -type f -name '*.py' -exec sed -i 's/np\.bool[^0-9]/bool/' {} \;
-    #find . -type f -name '*.py' -exec sed -i 's/dtype=np\.complex/dtype=complex/' {} \;
     cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
     #cp -r SkyModel/Mask /opt/lofar/DDFacet/lib/python3.9/site-packages/SkyModel/
     cp -r SkyModel/Sky /opt/lofar/DDFacet/lib/python$PYTHON_VERSION/site-packages/SkyModel/
@@ -581,13 +584,13 @@ EOF
     rm -rf $INSTALLDIR/ddf-pipeline
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
     cd ddf-pipeline && git checkout 68afe56 && cd ..
-    #cd ddf-pipeline && git checkout 37070a9 && cd ..
     cd $INSTALLDIR
     sed -i "s/DDF.py/DDF.py --Misc-IgnoreDeprecationMarking=1/" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
     sed -i "s/--Beam-PhasedArrayMode/--Beam-LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
     sed -i "s/--PhasedArrayMode/--LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
     sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
     sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/bootstrap.py
+    sed -i '353s/readonly=True/readonly=False/' $INSTALLDIR/ddf-pipeline/utils/auxcodes.py
     mkdir $INSTALLDIR/DDFCatalogues
     cd $INSTALLDIR/DDFCatalogues
     wget https://www.extragalactic.info/bootstrap/VLSS.fits
@@ -657,7 +660,7 @@ EOF
 	echo export PATH=\$INSTALLDIR/sagecal/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=/opt/hdf5/lib:/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/hdf5/lib:/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/EveryBeam/lib:/opt/hdf5/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/opt/OpenBLAS/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
@@ -677,12 +680,13 @@ EOF
 
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
 
-    echo source \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
-    # MKL's source script doesn't work inside a Singularity container, so set paths manually.
-    echo export LD_LIBRARY_PATH=/opt/intel/oneapi/tbb/2021.9.0/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mkl/2023.1.0/lib/intel64:/opt/intel/oneapi/compiler/2023.1.0/linux/lib:/opt/intel/oneapi/compiler/2023.1.0/linux/lib/x64:/opt/intel/oneapi/compiler/2023.1.0/linux/compiler/lib/intel64_lin:/opt/intel/oneapi/mkl/latest/lib/intel64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    echo . \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
+    # For some reason this doesn't work.
+    # echo . /opt/intel/oneapi/mkl/latest/env/vars.sh >> $INSTALLDIR/init.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=/opt/intel/oneapi/tbb/2021.9.0/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mkl/2023.1.0/lib/intel64:/opt/intel/oneapi/compiler/2023.1.0/linux/lib:/opt/intel/oneapi/compiler/2023.1.0/linux/lib/x64:/opt/intel/oneapi/compiler/2023.1.0/linux/compiler/lib/intel64_lin:/opt/intel/oneapi/mkl/latest/lib/intel64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 
     echo "# DDF environment settings" >> $INSTALLDIR/init.sh
     echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
@@ -698,7 +702,7 @@ EOF
     # entrypoint
     #
 %runscript
-    echo LOFAR-SKSP Singularity Container v4.2.0
+    echo LOFAR-SKSP Singularity Container v4.1.0
 
 %help
     This Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
@@ -723,4 +727,14 @@ EOF
     To enter a shell within the image, use
         singularity shell -B <paths,that,need,to,be,accessible> <path to image>
 
-    The container base is Fedora 36.
+    The container base is Fedora 36 and relevant key dependencies have the following versions:
+
+    * Armadillo 9.900.3
+    * Boost 1.69.0
+    * CFITSIO 7.3.47
+    * FFTW 3.5.8
+    * HDF5 1.10.5
+    * LAPACK 3.8.0
+    * OpenBLAS 3.8.0
+    * SuperLU 5.2.1
+    * WCSLIB 6.4
