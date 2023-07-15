@@ -85,7 +85,7 @@ mkdir -p $TMPDIR
 cd $WORKDIR
 
 wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
-singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR --calsols $CALSOLS
+singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR --cal_solutions $CALSOLS
 
 echo LINC starting
 echo export MPLBACKEND='Agg' > tmprunner.sh
