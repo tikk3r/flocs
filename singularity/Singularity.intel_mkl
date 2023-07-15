@@ -35,7 +35,7 @@ From: fedora:36
 	export LOSOTO3_VERSION=latest
     export LSMTOOL_VERSION=master
 	export OPENBLAS_VERSION=v0.3.22
-	export PYBDSF_VERSION=master
+	export PYBDSF_VERSION=720f5c3
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=f161b0a
 	export SUPERLU_VERSION=5.2.1
