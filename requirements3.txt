@@ -22,7 +22,6 @@ cwlref-runner
 cwl_utils
 cycler
 Cython>=0.25.2,<=0.29.30
-dask[array]>=1.1.0,<=2021.3.0
 deap>=1.0.1
 decorator
 emcee
