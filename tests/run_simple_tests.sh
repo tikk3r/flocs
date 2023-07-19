@@ -101,6 +101,9 @@ singularity exec $SIMG /opt/lofar/pyenv-py3/bin/lsmtool -h > /dev/null 2>&1 && p
 printf ${Cyan}"MakeMask: "${Color_Off}
 singularity exec $SIMG MakeMask.py -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
+printf ${Cyan}"shadeMS: "${Color_Off}
+singularity exec $SIMG shadems -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+
 printf ${Cyan}"WSClean: "${Color_Off}
 singularity exec $SIMG wsclean --version 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
