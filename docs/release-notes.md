@@ -13,6 +13,17 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v4.3.0
+**Updates**
+* Add [RM-Tools](https://github.com/CIRADA-Tools/RM-Tools)
+* Add [shadeMS](https://github.com/ratt-ru/shadeMS)
+* Update AOCL to version 4
+* Update `create_mslist.py` to include all LINC settings.
+* Update DP3 to 161559ff
+* Update EveryBeam to 22cd113b
+* Update OpenBLAS to v0.3.22
+* Update WSClean to 1c1c1d73
+
 ## v4.2.2
 **Fixes**
 * Downgrade IPython to 8.10.
