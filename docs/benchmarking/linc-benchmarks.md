@@ -13,12 +13,19 @@ This page aims to collect some basic statistics about LINC runtimes on various s
 
 ## LINC Calibrator
 
-|Vendor|CPU|Cores|Threads|Dual CPU?|RAM [GB]|Source|Observation length [min]|Run time|
+|Vendor|CPU|Cores|Threads|Dual CPU?|RAM [GB]|Source|Observation length [min]| Bandwidth [MHz]|Run time|
 |---|---|---|---|---|---|---|---|---|
-|Intel|Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz|48|96|Yes|512|3C 295|480|2086m26.453s
+|Intel|Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz|48|96|Yes|512|3C 295|480|48|2086m26.453s
+|Intel|Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz|48|96|Yes|512|3C 295|10|48|257m3.044s
+
+
+real    257m3.044s
+user    3222m7.802s
+sys 4020m37.236s
+
 
 ## LINC Target
 
-|Vendor|CPU|Cores|Threads|Dual CPU?|RAM [GB]|Source|Observation length [min]|Run time|
+|Vendor|CPU|Cores|Threads|Dual CPU?|RAM [GB]|Source|Observation length [min]|Bandwidth [MHz]|Run time|
 |---|---|---|---|---|---|---|---|---|
-|Intel|Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz|48|96|Yes|512|3C 295|480|1251m45.521s
+|Intel|Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz|48|96|Yes|512|3C 295|480|48|1251m45.521s
