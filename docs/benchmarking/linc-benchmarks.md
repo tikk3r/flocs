@@ -28,4 +28,4 @@ sys 4020m37.236s
 
 |Vendor|CPU|Cores|Threads|Dual CPU?|RAM [GB]|Source|Observation length [min]|Bandwidth [MHz]|Run time|
 |---|---|---|---|---|---|---|---|---|
-|Intel|Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz|48|96|Yes|512|3C 295|480|48|1251m45.521s
+|Intel|Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz|48|96|Yes|512|3C 295|480|48|1901m22.024s
