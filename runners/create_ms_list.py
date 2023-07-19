@@ -2,6 +2,7 @@ import argparse
 import glob
 import json
 import os
+import sys
 
 def cwl_file(entry):
     return json.loads(f'{{"class": "File", "path":"{entry}"}}')
@@ -42,6 +43,10 @@ class LINCJSONConfig:
             # outfile.write(jsondata)
 
 if __name__ == '__main__':
+    if 'LINC_DATA_ROOT' not in os.environ:
+        print('WARNING: LINC_DATA_ROOT environment variable has not been set! Please set this variable and rerun the script.')
+        sys.exit(1)
+
     parser = argparse.ArgumentParser(description='Generate an input file for LINC containing measurement sets and, optionally, the calibrator solutions.')
     parser.add_argument('mspath', type=str, help='Path where input measurement sets are located.')
     parser.add_argument('--targetsols', type=str, default='', help='Path to the final LINC target solution file (usually cal_solutions.h5).')
@@ -60,7 +65,7 @@ if __name__ == '__main__':
     dparser.add_argument('--process_baselines_target', type=str, default='*&', help='Performs A-Team-clipping/demixing and direction-independent phase-only self-calibration only on these baselines. Choose [CR]S*& if you want to process only cross-correlations and remove international stations.')
     dparser.add_argument('--filter_baselines', type=str, default='*&', help='Selects only this set of baselines to be processed. Choose [CR]S*& if you want to process only cross-correlations and remove international stations.')
     dparser.add_argument('--do_smooth', type=bool, default=False, help='Enable or disable baseline-based smoothing.')
-    dparser.add_argument('--rfi_strategy', type=str, default='$LINC_DATA_ROOT/rfistrategies/lofar-default.lua', help='Path to the RFI flagging strategy to use with AOFlagger.')
+    dparser.add_argument('--rfi_strategy', type=str, default=os.path.join(os.environ['LINC_DATA_ROOT'], 'rfistrategies', 'lofar-default.lua'), help='Path to the RFI flagging strategy to use with AOFlagger.')
     dparser.add_argument('--max2interpolate', type=int, default=30, help='Amount of channels in which interpolation should be performed for deriving the bandpass.')
     dparser.add_argument('--fit_offset_PA', type=bool, default=False, help='Assume that together with a delay each station has also a differential phase offset (important for old LBA observations).')
     dparser.add_argument('--interp_windowsize', type=int, default=15, help='Size of the window over which a value is interpolated. Should be odd.')
@@ -92,10 +97,10 @@ if __name__ == '__main__':
     perfparser.add_argument('--aoflag_reorder', type=bool, default=False, help='Make aoflagger reorder the measurement set before running the detection. This prevents that aoflagger will use its memory reading mode, which is faster but uses more memory.')
     perfparser.add_argument('--aoflag_chunksize', type=int, default=2000, help='Split the set into intervals with the given maximum size, and flag each interval independently. This lowers the amount of memory required.')
     perfparser.add_argument('--aoflag_freqconcat', type=bool, default=True, help='Concatenate all subbands on-the-fly before performing flagging. Disable if you use time-chunked input data.')
-    perfparser.add_argument('--wsclean_tmpdir', type=cwl_dir, default='$TMPDIR', help='Set the temporary directory of wsclean used when reordering files. CAUTION: This directory needs to be visible for LINC, in particular if you use Docker or Singularity.')
+    perfparser.add_argument('--wsclean_tmpdir', type=cwl_dir, default=os.environ['TMPDIR'] if 'TMPDIR' in os.environ else '/tmp', help='Set the temporary directory of wsclean used when reordering files. CAUTION: This directory needs to be visible for LINC, in particular if you use Docker or Singularity.')
 
     skyparser = parser.add_argument_group('== Skymodel ==')
-    skyparser.add_argument('--calibrator_path_skymodel', type=cwl_dir, default='$LINC_DATA_ROOT/skymodels', help='Directory where calibrator skymodels are located.')
+    skyparser.add_argument('--calibrator_path_skymodel', type=cwl_dir, default=os.path.join(os.environ['LINC_DATA_ROOT'], 'skymodels'), help='Directory where calibrator skymodels are located.')
     skyparser.add_argument('--max_separation_arcmin', type=float, default=1.0, help='Maximum separation between phase center of the observation and the patch of a calibrator skymodel which is accepted to be chosen as a skymodel.')
     skyparser.add_argument('--ATeam_skymodel', type=cwl_file, default=None, help='File path to the A-Team skymodel.')
 
