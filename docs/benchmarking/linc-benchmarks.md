@@ -19,11 +19,6 @@ This page aims to collect some basic statistics about LINC runtimes on various s
 |Intel|Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz|48|96|Yes|512|3C 295|10|48|257m3.044s
 
 
-real    257m3.044s
-user    3222m7.802s
-sys 4020m37.236s
-
-
 ## LINC Target
 
 |Vendor|CPU|Cores|Threads|Dual CPU?|RAM [GB]|Source|Observation length [min]|Bandwidth [MHz]|Run time|
