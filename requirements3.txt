@@ -10,6 +10,7 @@ attrs
 backports.functools-lru-cache
 backports.shutil-get-terminal-size
 backports.ssl-match-hostname
+bces
 blurhash
 boost
 cachetools
@@ -51,6 +52,7 @@ markupsafe<2.1.0
 mimeparse
 mock
 more-itertools
+nmmn
 nose>=1.3.7
 numexpr
 oauthlib
