@@ -28,6 +28,7 @@ nav_order: 5
 **Fixes**
 * Added missing MKL library path.
 * Clean up LINC runners.
+* Fix ddf-pipeline boostrap crash.
 
 ## v4.2.2
 **Fixes**
