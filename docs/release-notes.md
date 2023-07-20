@@ -20,9 +20,14 @@ nav_order: 5
 * Update AOCL to version 4
 * Update `create_mslist.py` to include all LINC settings.
 * Update DP3 to 161559ff
-* Update EveryBeam to 22cd113b
+* Update EveryBeam to 22cd113b (support for MeerKAT beam)
 * Update OpenBLAS to v0.3.22
-* Update WSClean to 1c1c1d73
+* Update Toil to 5.10
+* Update WSClean to 1c1c1d73 (support for MeerKAT beam)
+
+**Fixes**
+* Added missing MKL library path.
+* Clean up LINC runners.
 
 ## v4.2.2
 **Fixes**
