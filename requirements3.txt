@@ -54,6 +54,7 @@ mock
 more-itertools
 nmmn
 nose>=1.3.7
+numdifftools
 numexpr
 oauthlib
 pluggy<0.7
