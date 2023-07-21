@@ -11,6 +11,7 @@ backports.functools-lru-cache
 backports.shutil-get-terminal-size
 backports.ssl-match-hostname
 bces
+bilby
 blurhash
 boost
 cachetools
@@ -72,6 +73,7 @@ py-cpuinfo>=3.2.0,<=8.0.0
 pyephem>=3.7.6.0,<=9.99
 pyFFTW>=0.10.4
 pylru>=1.1.0,<=1.2.1
+pymultinest
 pymysql
 pyparsing
 pyregion
