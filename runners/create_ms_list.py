@@ -49,10 +49,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Generate an input file for LINC containing measurement sets and, optionally, the calibrator solutions.')
     parser.add_argument('mspath', type=str, help='Path where input measurement sets are located.')
-    parser.add_argument('--targetsols', type=str, default='', help='Path to the final LINC target solution file (usually cal_solutions.h5).')
-    parser.add_argument('--path_facetselfcal_config', type=str, default='', help='Path to the config file for facetselfcal.py.')
-    parser.add_argument('--path_lofar_helpers', type=str, default='', help='Path to the lofar_helpers repository.')
-    parser.add_argument('--path_selfcal', type=str, default='', help='Path to facetselfcal?')
+
+    vlbiparser = parser.add_argument_group('== lofar-vlbi specific settings ==')
+    vlbiparser.add_argument('--solset', type=cwl_file, default='', help='Path to the final LINC target solution file (usually cal_solutions.h5).')
+    vlbiparser.add_argument('--configfile', type=cwl_file, default='', help='Path to the config file for facetselfcal.py.')
+    vlbiparser.add_argument('--h5merger', type=cwl_dir, default='', help='Path to the lofar_helpers repository.')
+    vlbiparser.add_argument('--selfcal', type=cwl_dir, default='', help='Path to facetselfcal repository.')
 
     dparser = parser.add_argument_group('== Data and calibration ==')
     dparser.add_argument('--cal_solutions', type=cwl_file, default='', help='Path to the final LINC calibrator solution file.')
