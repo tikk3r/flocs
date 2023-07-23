@@ -60,7 +60,6 @@ if __name__ == '__main__':
     vlbiparser.add_argument('--phasesol', type=str, default='TGSSphase', help='Name of the soltab with LINC target phase solutions.')
     vlbiparser.add_argument('--reference_stationSB', type=int, default=104, help='Name of the soltab with LINC target phase solutions.')
     vlbiparser.add_argument('--number_cores', type=int, default=12, help='Number of cores to use per job for tasks with high I/O or memory.')
-    vlbiparser.add_argument('--max_dp3_threads', type=int, default=5, help='The number of threads per DP3 process.')
 
     dparser = parser.add_argument_group('== Data and calibration ==')
     dparser.add_argument('--cal_solutions', type=cwl_file, default='', help='Path to the final LINC calibrator solution file.')
