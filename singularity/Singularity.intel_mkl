@@ -47,8 +47,8 @@ From: fedora:36
 
     export HAS_CUDA=true
     export HAS_MKL=true
-    export MARCH='x86-64'
-    export MTUNE='generic'
+    export MARCH='sandybridge'
+    export MTUNE='sandybridge'
     export NOAVX512=true
     export DEBUG=false
 
@@ -58,14 +58,14 @@ From: fedora:36
     export OPENBLAS_NUM_THREADS=1
     export MKL_NUM_THREADS=1
     export NUM_THREADS=128
-    export OPENBLAS_TARGET=NEHALEM
+    export OPENBLAS_TARGET=SANDYBRIDGE
 
     if [ $NOAVX512 = true ]; then
-        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -mno-aes -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-aes -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
-        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
+        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -mno-aes"
+        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-aes"
     fi
     if [ $DEBUG = true ]; then
         export CFLAGS="-g $CFLAGS"
