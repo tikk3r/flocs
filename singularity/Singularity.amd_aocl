@@ -89,10 +89,11 @@ From: fedora:36
 	dnf -y install automake autoconf cmake make
 	dnf -y install gcc gcc-c++ gcc-gfortran
 	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel
-	dnf -y install bison flex ncurses tar bzip2 which gettext
+	dnf -y install bison flex ncurses tar bzip2 which gettext nomacs
 	dnf -y install cmake3 nodejs
     dnf -y install swarp rclone
-	dnf -y remove openblas*
+    # Necessary for nomacs
+    sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 
 	# Install OpenBLAS
 	mkdir -p /opt/OpenBLAS
