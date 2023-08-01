@@ -63,8 +63,10 @@ if __name__ == '__main__':
 
     dparser = parser.add_argument_group('== Data and calibration ==')
     dparser.add_argument('--cal_solutions', type=cwl_file, default='', help='Path to the final LINC calibrator solution file.')
-    dparser.add_argument('--avg_timeresolution', type=float, default=4, help='Final time resolution of the data in seconds after averaging.')
-    dparser.add_argument('--avg_freqresolution', type=str, default='48.82kHz', help='Final frequency resolution of the data after averaging.')
+    dparser.add_argument('--avg_timeresolution', type=float, default=4, help='Intermediate time resolution of the data in seconds after averaging.')
+    dparser.add_argument('--avg_timeresolution_concat', type=float, default=8, help='Final time resolution of the data in seconds after averaging and concatenation.')
+    dparser.add_argument('--avg_freqresolution', type=str, default='48.82kHz', help='Intermediate frequency resolution of the data after averaging.')
+    dparser.add_argument('--avg_freqresolution_concat', type=str, default='97.64kHz', help='Final frequency resolution of the data after averaging and concatenation.')
     dparser.add_argument('--bandpass_freqresolution', type=str, default='195.3125kHz', help='Frequency resolution of the bandpass solution table.')
     dparser.add_argument('--refant', type=str, default='CS00.*', help='Regular expression of the stations that are allowed to be selected as a reference antenna by the pipeline.')
     dparser.add_argument('--flag_baselines', type=str, nargs='*', default=[], help='DP3-compatible pattern for baselines or stations to be flagged (may be an empty list.')
