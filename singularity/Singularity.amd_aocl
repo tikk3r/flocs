@@ -752,7 +752,9 @@ From: fedora:36
     echo flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
     echo export FLEXIBLAS=OPENBLAS >> $INSTALLDIR/init.sh
     echo export FLEXIBLAS64=OPENBLAS >> $INSTALLDIR/init.sh
-
+    # Needed for shadems
+    echo export NUMBA_CACHE_DIR=/tmp >> $INSTALLDIR/init.sh
+    
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
 
 
