@@ -355,7 +355,7 @@ From: fedora:36
 	#
 	# Install Python-CASAcore
 	#
-	pip install --no-deps --no-binary python-casacore "python-casacore==3.5.0"
+	pip install --no-deps --no-binary python-casacore "python-casacore==3.5.2"
     
 	#
 	# Install Dysco
@@ -754,7 +754,7 @@ From: fedora:36
     echo export FLEXIBLAS64=OPENBLAS >> $INSTALLDIR/init.sh
     # Needed for shadems
     echo export NUMBA_CACHE_DIR=/tmp >> $INSTALLDIR/init.sh
-    
+
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
 
 
