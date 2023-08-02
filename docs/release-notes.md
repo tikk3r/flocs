@@ -13,6 +13,14 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## V4.3.1
+**Updates**
+* Add bces, bilby, nmmn, numdifftools and pymultinest
+* Add nomacs image viewer
+* Add LINC concatenation averageing options to create_mslist.py
+* Clean up lofar-vlbi runner
+* Update python-casacore to 3.5.2
+
 ## v4.3.0
 **Updates**
 * Add [RM-Tools](https://github.com/CIRADA-Tools/RM-Tools)
