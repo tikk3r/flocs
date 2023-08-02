@@ -4,7 +4,7 @@ layout: default
 nav_order: 3
 ---
 
-# Frequently asked questions
+# Potentially useful software packages
 {: .no_toc}
 
 ## Table of contents
