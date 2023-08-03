@@ -244,6 +244,7 @@ if __name__ == '__main__':
         config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir=args['ddf_solsdir'])
         # Input MS are a special case and no longer needed after this.
         args.pop('mspath')
+        args.pop('vlbi')
         for key, val in args.items():
             config.add_entry(key, val)
         config.save('mslist.json')
@@ -252,6 +253,7 @@ if __name__ == '__main__':
         config = LINCJSONConfig(args['mspath'])
         # Input MS are a special case and no longer needed after this.
         args.pop('mspath')
+        args.pop('vlbi')
         for key, val in args.items():
             config.add_entry(key, val)
         config.save('mslist.json')
