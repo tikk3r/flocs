@@ -4,11 +4,103 @@ import json
 import os
 import sys
 
+from losoto.h5parm import h5parm
+
+import casacore.tables as ct
+import numpy as np
+
 def cwl_file(entry: str) -> str:
+    """ Create a CWL-friendly file entry."""
     return json.loads(f'{{"class": "File", "path":"{entry}"}}')
 
 def cwl_dir(entry: str) -> str:
+    """ Create a CWL-friendly directory entry."""
     return json.loads(f'{{"class": "Directory", "path":"{entry}"}}')
+
+def check_dd_freq(infile: str, freq_array: np.ndarray) -> bool:
+    """ Check frequency coverage overlap between a Measurment Set and a given array of frequencies.
+    
+    Args:
+        infile: input Measurement Set to check
+        freq_array: array of frequencies to check against
+    Returns:
+        True if input frequencies are covered, False if input has frequencies that fall outside freq_array.
+    """
+    msfreqs = ct.table(('{:s}::SPECTRAL_WINDOW').format(infile))
+    ref_freq = msfreqs.getcol('REF_FREQUENCY')[0]
+    msfreqs.close()
+    c = 0
+    for f_arr in freq_array:
+        if ref_freq > f_arr[0] and ref_freq < f_arr[1]:
+            c = c + 1
+        else:
+            c = c + 0
+
+    if c > 0:
+        valid = True
+    else:
+        valid = False
+    return valid
+
+def get_dico_freqs(input_dir: str, solnames: str = 'killMS.DIS2_full.sols.npz') -> list:
+    """ Extract frequencies from killMS format solutions.
+    
+    Args:
+        input_dir: directory where the solutions are stored, usually called SOLSDIR.
+        solnames: name of the solution files.
+    Returns:
+        freqs: array of frequencies covered by the solutions.
+    """
+    sol_dirs = glob.glob(os.path.join(input_dir, 'L*pre-cal.ms'))
+    freqs = []
+    for sol_dir in sol_dirs:
+        npz_file = os.path.join(sol_dir, solnames)
+        SolDico = np.load(npz_file)
+        fmin = np.min(SolDico['FreqDomains'])
+        fmax = np.max(SolDico['FreqDomains'])
+        tmp_freqs = np.array([fmin, fmax])
+        freqs.append(tmp_freqs)
+        SolDico.close()
+
+    return freqs
+
+def get_prefactor_freqs(solname: str = 'solutions.h5', solset: str = 'target') -> list:
+    """ Extract frequency coverage from LINC solutions.
+    
+    Args:
+        solname: name of the LINC solution file.
+        solset: name of the solset to use.
+    Returns:
+        f_arr: array of frequencies covered by the solutions.
+    """
+    sols = h5parm(solname)
+    ss = sols.getSolset(solset)
+    st_names = ss.getSoltabNames()
+    ph_sol_name = [xx for xx in st_names if 'extract' not in xx][0]
+    st = ss.getSoltab(ph_sol_name)
+    freqs = st.getAxisValues('freq')
+    freqstep = 1953125.0  ## the value for 10 subbands
+    f_arr = []
+    for xx in range(len(freqs)):
+        fmin = freqs[xx] - freqstep/2.
+        fmax = freqs[xx] + freqstep/2.
+        f_arr.append(np.array([fmin,fmax]))
+    return f_arr
+
+def get_reffreq(msfile: str) -> float:
+    """ Get the reference frequency of a Measurement Set.
+    
+    Args:
+        msfile: input Measurement Set.
+    """
+    ss = ("taql 'select REF_FREQUENCY from {:s}::SPECTRAL_WINDOW' > tmp.txt").format(msfile)
+    os.system(ss)
+    with open('tmp.txt', 'r') as (f):
+        lines = f.readlines()
+    f.close()
+    os.system('rm tmp.txt')
+    freq = np.float64(lines[(-1)])
+    return freq
 
 class LINCJSONConfig:
 
@@ -42,6 +134,36 @@ class LINCJSONConfig:
             json.dump(self.configdict, outfile, indent=4)
             # outfile.write(jsondata)
 
+class VLBIJSONConfig(LINCJSONConfig):
+
+    def __init__(self, mspath: str, prefac_h5parm: str, ddf_solsdir: str):
+        self.configdict = {}
+        
+        print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/*.MS')
+        files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/*.MS'))
+        print(f'Found {len(files)} files')
+
+        # datalist = glob.glob(os.path.join(input_dir,'L*MS'))
+        prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm, solset = 'target')
+
+        mslist = []
+        for dd in files:
+            if check_dd_freq( dd, prefac_freqs ):
+                mslist.append(dd)
+        if os.path.exists(ddf_solsdir):
+            ddf_freqs = get_dico_freqs(ddf_solsdir, solnames='killMS.DIS2_full.sols.npz' )
+            tmplist = []
+            for dd in mslist:
+                if check_dd_freq( dd, ddf_freqs ):
+                    tmplist.append(dd)
+            mslist = tmplist
+        
+        final_mslist = []
+        for ms in files:
+            x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
+            final_mslist.append(x)
+        self.configdict['msin'] = final_mslist
+        
 if __name__ == '__main__':
     if 'LINC_DATA_ROOT' not in os.environ:
         print('WARNING: LINC_DATA_ROOT environment variable has not been set! Please set this variable and rerun the script.')
@@ -51,7 +173,9 @@ if __name__ == '__main__':
     parser.add_argument('mspath', type=str, help='Path where input measurement sets are located.')
 
     vlbiparser = parser.add_argument_group('== lofar-vlbi specific settings ==')
+    vlbiparser.add_argument('--vlbi', action='store_true', default=False, help='Triggers alternate mode to generate a config file for the lofar-vlbi pipeline.')
     vlbiparser.add_argument('--solset', type=cwl_file, default='', help='Path to the final LINC target solution file (usually cal_solutions.h5).')
+    vlbiparser.add_argument('--ddf-solsdir', type=cwl_file, default='', help='Path to where ddf-pipeline solutions can be found (usually SOLSDIR).')
     vlbiparser.add_argument('--delay_calibrator', type=cwl_file, default='', help='A delay calibrator catalogue in CSV format.')
     vlbiparser.add_argument('--ddf_solset', type=cwl_file, default='', help='The solution tables generated by the DDF pipeline in an HDF5 format.')
     vlbiparser.add_argument('--configfile', type=cwl_file, default='', help='Settings for the delay calibration in delay_solve.')
@@ -115,9 +239,19 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    config = LINCJSONConfig(args['mspath'])
-    # Input MS are a special case and no longer needed after this.
-    args.pop('mspath')
-    for key, val in args.items():
-        config.add_entry(key, val)
-    config.save('mslist.json')
+    if args['vlbi']:
+        print('Generating LOFAR-VLBI config')
+        config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir='SOLSDIR')
+        # Input MS are a special case and no longer needed after this.
+        args.pop('mspath')
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save('mslist.json')
+    else:
+        print('Generating LINC config')
+        config = LINCJSONConfig(args['mspath'])
+        # Input MS are a special case and no longer needed after this.
+        args.pop('mspath')
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save('mslist.json')
