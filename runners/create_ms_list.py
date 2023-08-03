@@ -4,15 +4,15 @@ import json
 import os
 import sys
 
-def cwl_file(entry):
+def cwl_file(entry: str) -> str:
     return json.loads(f'{{"class": "File", "path":"{entry}"}}')
 
-def cwl_dir(entry):
+def cwl_dir(entry: str) -> str:
     return json.loads(f'{{"class": "Directory", "path":"{entry}"}}')
 
 class LINCJSONConfig:
 
-    def __init__(self, mspath):
+    def __init__(self, mspath: str):
         self.configdict = {}
         
         print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/*.MS')
@@ -28,13 +28,13 @@ class LINCJSONConfig:
         self.configdict['msin'] = mslist
 
     #TODO: special cases of CWL File entries
-    def add_entry(self, key, value):
+    def add_entry(self, key: str, value: object):
         if 'ATeam' in key:
             self.configdict['A-Team_skymodel'] = value
         else:
             self.configdict[key] = value
 
-    def save(self, fname):
+    def save(self, fname: str):
         if not fname.endswith('.json'):
             fname += '.json'
         # jsondata = json.dumps(self.configdict)
