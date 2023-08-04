@@ -103,7 +103,7 @@ def get_reffreq(msfile: str) -> float:
     return freq
 
 class LINCJSONConfig:
-
+    """ Class for generating JSON configuration files to be passed to the LINC pipeline."""
     def __init__(self, mspath: str):
         self.configdict = {}
         
@@ -115,11 +115,9 @@ class LINCJSONConfig:
         for ms in files:
             x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
             mslist.append(x)
-            # mslist.append(f'{{"class": "Directory", "path":"{ms}"}}')
 
         self.configdict['msin'] = mslist
 
-    #TODO: special cases of CWL File entries
     def add_entry(self, key: str, value: object):
         if 'ATeam' in key:
             self.configdict['A-Team_skymodel'] = value
@@ -129,13 +127,11 @@ class LINCJSONConfig:
     def save(self, fname: str):
         if not fname.endswith('.json'):
             fname += '.json'
-        # jsondata = json.dumps(self.configdict)
         with open(fname, 'w') as outfile:
             json.dump(self.configdict, outfile, indent=4)
-            # outfile.write(jsondata)
 
 class VLBIJSONConfig(LINCJSONConfig):
-
+    """ Class for generating JSON configuration files to be passed to the lofar-vlbi pipeline."""
     def __init__(self, mspath: str, prefac_h5parm: str, ddf_solsdir: str):
         self.configdict = {}
         
@@ -143,23 +139,22 @@ class VLBIJSONConfig(LINCJSONConfig):
         files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/*.MS'))
         print(f'Found {len(files)} files')
 
-        # datalist = glob.glob(os.path.join(input_dir,'L*MS'))
-        prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm, solset = 'target')
+        prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'target')
 
         mslist = []
         for dd in files:
-            if check_dd_freq( dd, prefac_freqs ):
+            if check_dd_freq(dd, prefac_freqs ):
                 mslist.append(dd)
-        if os.path.exists(ddf_solsdir):
-            ddf_freqs = get_dico_freqs(ddf_solsdir, solnames='killMS.DIS2_full.sols.npz' )
+        if os.path.exists(ddf_solsdir['path']):
+            ddf_freqs = get_dico_freqs(ddf_solsdir['path'], solnames='killMS.DIS2_full.sols.npz' )
             tmplist = []
             for dd in mslist:
-                if check_dd_freq( dd, ddf_freqs ):
+                if check_dd_freq(dd, ddf_freqs ):
                     tmplist.append(dd)
             mslist = tmplist
         
         final_mslist = []
-        for ms in files:
+        for ms in mslist:
             x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
             final_mslist.append(x)
         self.configdict['msin'] = final_mslist
