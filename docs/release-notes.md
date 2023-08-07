@@ -13,7 +13,7 @@ nav_order: 5
 1. TOC
 {:toc}
 
-## V4.3.1
+## v4.3.1
 **Updates**
 * Add bces, bilby, nmmn, numdifftools and pymultinest
 * Add nomacs image viewer
