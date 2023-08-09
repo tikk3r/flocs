@@ -11,11 +11,17 @@ import numpy as np
 
 def cwl_file(entry: str) -> str:
     """ Create a CWL-friendly file entry."""
-    return json.loads(f'{{"class": "File", "path":"{entry}"}}')
+    if entry.lower() == 'null':
+        return None
+    else:
+        return json.loads(f'{{"class": "File", "path":"{entry}"}}')
 
 def cwl_dir(entry: str) -> str:
     """ Create a CWL-friendly directory entry."""
-    return json.loads(f'{{"class": "Directory", "path":"{entry}"}}')
+    if entry.lower() == 'null':
+        return None
+    else:
+        return json.loads(f'{{"class": "Directory", "path":"{entry}"}}')
 
 def check_dd_freq(infile: str, freq_array: np.ndarray) -> bool:
     """ Check frequency coverage overlap between a Measurment Set and a given array of frequencies.
