@@ -71,12 +71,14 @@ if [[ "$CONTAINERSTR" == *"apptainer"* ]]; then
     export APPTAINERENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
     export APPTAINERENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
     export APPTAINERENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
+    export APPTAINERENV_EVERYBEAM_DATADIR=/opt/lofar/EveryBeam/share/everybeam/
 else
     export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
     export SINGULARITYENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
     export SINGULARITYENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
     export SINGULARITYENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
     export SINGULARITYENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
+    export SINGULARITYENV_EVERYBEAM_DATADIR=/opt/lofar/EveryBeam/share/everybeam/
 fi
 
 mkdir -p $RESULTSDIR
