@@ -257,7 +257,7 @@ From: fedora:36
     # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
     printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
-    pip install --upgrade pip wheel cython
+    pip install --upgrade pip wheel "Cython==0.29.30"
     # Link NumPy to our own OpenBLAS installation.
     mkdir -p /opt/numpy && cd /opt/numpy
     git clone https://github.com/numpy/numpy.git
