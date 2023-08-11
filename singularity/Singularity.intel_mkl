@@ -7,7 +7,7 @@ From: fedora:36
 
 %post
 	# General environment settings.
-	export J=6
+	export J=`nproc`
 	export INSTALLDIR=/opt/lofar
 	export PYTHON_VERSION=3.10
     export OPENBLAS_NUM_THREADS=1
@@ -236,7 +236,7 @@ EOF
     if [ $HAS_MKL = true ]; then
 	    source /opt/intel/oneapi/mkl/latest/env/vars.sh
     fi
-    pip install --upgrade pip wheel cython
+    pip install --upgrade pip wheel "Cython==0.29.30"
     # Link NumPy to our own OpenBLAS installation.
     mkdir -p /opt/numpy && cd /opt/numpy
     git clone https://github.com/numpy/numpy.git
@@ -700,12 +700,6 @@ EOF
     echo export PYTHONPATH=\$INSTALLDIR/lotss-query:\$INSTALLDIR/killMS/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python${PYTHON_VERSION}/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/killMS/bin:\$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DDFacet/src/SkyModel:\$INSTALLDIR/DynSpecMS/:\$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
-    
-    #
-    # entrypoint
-    #
-%runscript
-    echo LOFAR-SKSP Singularity Container v4.1.0
 
 %help
     This Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
