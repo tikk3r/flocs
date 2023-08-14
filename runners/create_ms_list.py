@@ -246,6 +246,8 @@ if __name__ == '__main__':
         # Input MS are a special case and no longer needed after this.
         args.pop('mspath')
         args.pop('vlbi')
+        # Temporary workaround until CWL workflows align.
+        args['flag_baselines'] = str(args['flag_baselines'])
         for key, val in args.items():
             config.add_entry(key, val)
         config.save('mslist.json')
