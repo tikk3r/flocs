@@ -92,6 +92,7 @@ RM-Tools
 rsa
 rtree
 ruamel.yaml>=0.15.92,<=0.17.21
+SciencePlots
 scikit-learn>=0.24
 scipy
 seaborn
