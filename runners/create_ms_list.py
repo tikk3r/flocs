@@ -196,8 +196,8 @@ if __name__ == '__main__':
     dparser.add_argument('--refant', type=str, default='CS00.*', help='Regular expression of the stations that are allowed to be selected as a reference antenna by the pipeline.')
     dparser.add_argument('--flag_baselines', type=str, nargs='*', default=[], help='DP3-compatible pattern for baselines or stations to be flagged (may be an empty list.')
     dparser.add_argument('--process_baselines_cal', type=str, default='*&', help='Performs A-Team-clipping/demixing and direction-independent phase-only self-calibration only on these baselines. Choose [CR]S*& if you want to process only cross-correlations and remove international stations.')
-    dparser.add_argument('--process_baselines_target', type=str, default='*&', help='Performs A-Team-clipping/demixing and direction-independent phase-only self-calibration only on these baselines. Choose [CR]S*& if you want to process only cross-correlations and remove international stations.')
-    dparser.add_argument('--filter_baselines', type=str, default='*&', help='Selects only this set of baselines to be processed. Choose [CR]S*& if you want to process only cross-correlations and remove international stations.')
+    dparser.add_argument('--process_baselines_target', type=str, default='[CR]S*&', help='Performs A-Team-clipping/demixing and direction-independent phase-only self-calibration only on these baselines. Choose [CR]S*& if you want to process only cross-correlations and remove international stations.')
+    dparser.add_argument('--filter_baselines', type=str, default=None, help='Selects only this set of baselines to be processed. Choose [CR]S*& if you want to process only cross-correlations and remove international stations.')
     dparser.add_argument('--do_smooth', type=bool, default=False, help='Enable or disable baseline-based smoothing.')
     dparser.add_argument('--rfi_strategy', type=str, default=os.path.join(os.environ['LINC_DATA_ROOT'], 'rfistrategies', 'lofar-default.lua'), help='Path to the RFI flagging strategy to use with AOFlagger.')
     dparser.add_argument('--max2interpolate', type=int, default=30, help='Amount of channels in which interpolation should be performed for deriving the bandpass.')
@@ -258,6 +258,8 @@ if __name__ == '__main__':
         # Input MS are a special case and no longer needed after this.
         args.pop('mspath')
         args.pop('vlbi')
+        if args['filter_baselines'] is None:
+            args['filter_baselines'] = '*&'
         # Temporary workaround until CWL workflows align.
         args['flag_baselines'] = str(args['flag_baselines'])
         # For LINC selfcal is a boolean, so until this clash is resolved overwrite it on the fly.
@@ -271,6 +273,8 @@ if __name__ == '__main__':
         # Input MS are a special case and no longer needed after this.
         args.pop('mspath')
         args.pop('vlbi')
+        if args['filter_baselines'] is None:
+            args['filter_baselines'] = '[CR]S*&'
         for key, val in args.items():
             config.add_entry(key, val)
         config.save('mslist.json')
