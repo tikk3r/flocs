@@ -216,14 +216,16 @@ if __name__ == '__main__':
     dparser.add_argument('--ion_3rd', type=bool, default=False, help='Take into account also 3rd-order effects for the clock-TEC separation.')
     dparser.add_argument('--clock_smooth', type=bool, default=True, help='Only take the median of the derived clock solutions (enable this in case of non-joint observations).')
     dparser.add_argument('--compression_bitrate', type=int, default=0, help='Minimal fraction of unflagged data to be accepted for further processing of the data chunk.')
-
+    dparser.add_argument('--updateweights', type=bool, default=True, help='Update WEIGHT_SPECTRUM column in a way consistent with the weights being inverse proportional to the autocorrelations (default: True).')
     dparser.add_argument('--apply_tec', type=bool, default=False, help='Apply TEC solutions from the calibrator (default: False).')
     dparser.add_argument('--apply_clock', type=bool, default=True, help='Apply clock solutions from the calibrator (default: True).')
     dparser.add_argument('--apply_phase', type=bool, default=False, help='Apply full phase solutions from the calibrator (default: False).')
     dparser.add_argument('--apply_RM', type=bool, default=True, help='Apply ionospheric Rotation Measure from RMextract (default: True).')
     dparser.add_argument('--apply_beam', type=bool, default=True, help='Apply element beam corrections (default: True).')
     dparser.add_argument('--gsmcal_step', type=str, default='phase', help='Type of calibration to be performed in the self-calibration step (default: phase)')
+    dparser.add_argument('--use_target', type=bool, default=True, help='Enable downloading of a target skymodel (default: True).')
     dparser.add_argument('--selfcal', type=bool, default=False, help='Perform extensive self-calibration according to the LiLF scheme (recommended for LBA observations) (default: false)')
+    dparser.add_argument('--selfcal_region', type=cwl_file, default=None, help='DS9-compatible region file to select the image regions used for the self-calibration.')
 
     demixparser = parser.add_argument_group('== Demixing ==')
     demixparser.add_argument('--demix_sources', type=str, nargs='*', default=['CasA', 'CygA'], help='Sources to demix.')
@@ -245,6 +247,8 @@ if __name__ == '__main__':
     skyparser.add_argument('--calibrator_path_skymodel', type=cwl_dir, default=os.path.join(os.environ['LINC_DATA_ROOT'], 'skymodels'), help='Directory where calibrator skymodels are located.')
     skyparser.add_argument('--max_separation_arcmin', type=float, default=1.0, help='Maximum separation between phase center of the observation and the patch of a calibrator skymodel which is accepted to be chosen as a skymodel.')
     skyparser.add_argument('--ATeam_skymodel', type=cwl_file, default=None, help='File path to the A-Team skymodel.')
+    skyparser.add_argument('--skymodel_source', type=str, default='TGSS', help='Choose the target skymodel from TGSS ADR (TGSS) or the new Global Sky Model (GSM) (default: TGSS).')
+    skyparser.add_argument('--skymodel_fluxlimit', type=float, default=None, help='Limits the input skymodel to sources that exceed the given flux density limit in Jy (default: None for HBA, i.e. all sources of the catalogue will be kept, and 1.0 for LBA).')
 
     args = vars(parser.parse_args())
 
