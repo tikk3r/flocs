@@ -217,6 +217,12 @@ if __name__ == '__main__':
     dparser.add_argument('--clock_smooth', type=bool, default=True, help='Only take the median of the derived clock solutions (enable this in case of non-joint observations).')
     dparser.add_argument('--compression_bitrate', type=int, default=0, help='Minimal fraction of unflagged data to be accepted for further processing of the data chunk.')
 
+    dparser.add_argument('--apply_tec', type=bool, default=False, help='Apply TEC solutions from the calibrator (default: False).')
+    dparser.add_argument('--apply_clock', type=bool, default=True, help='Apply clock solutions from the calibrator (default: True).')
+    dparser.add_argument('--apply_phase', type=bool, default=False, help='Apply full phase solutions from the calibrator (default: False).')
+    dparser.add_argument('--apply_RM', type=bool, default=True, help='Apply ionospheric Rotation Measure from RMextract (default: True).')
+    dparser.add_argument('--apply_beam', type=bool, default=True, help='Apply element beam corrections (default: True).')
+    dparser.add_argument('--gsmcal_step', type=str, default='phase', help='Type of calibration to be performed in the self-calibration step (default: phase)')
     dparser.add_argument('--selfcal', type=bool, default=False, help='Perform extensive self-calibration according to the LiLF scheme (recommended for LBA observations) (default: false)')
 
     demixparser = parser.add_argument_group('== Demixing ==')
