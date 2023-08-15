@@ -45,3 +45,12 @@ For example, compressing a Measurement Set with dysco using DP3 would be done as
 apptainer exec <container> DP3 msin=input.ms msout=output.ms msout.storagemanager=dysco steps=[]
 ```
 It is not restricted to individual commands. Pipelines or bash scripts that execute multiple commands can also be run this way.
+
+## Pipeline use
+Since FLoCs is geared towards running pipelines, runner scripts are available for [LINC](https://git.astron.nl/RD/LINC) and [VLBI-cwl](https://git.astron.nl/RD/VLBI-cwl). These CWL pipelines take a JSON configuration file as their input. This is generated via [`runners/create_ms_list.py`](https://github.com/tikk3r/flocs/blob/fedora-py3/runners/create_ms_list.py), which the runners will call automatically. This script generates the JSON configuration file with all the pipeline related settings initialised to their respective default settings. See the respecitve pipelines or `python create_ms_list.py -h` for available options. Running LINC or VLBI-cwl is then covered by calling the runner with `bash` _outside_ any container environment.
+
+### LINC
+The LINC pipeline consists of two parts: LINC calibrator and LINC target. The calibrator pipeline processes the flux density calibrator scans while target processes the target field. These respective pipelines can be run with `run_LINC_calibrator_singularity.sh` and `run_LINC_target_singularity.sh`. A user sets the container to use, where the data to process resides and for LINC target where the calibrator solutions can be found.
+
+### VLBI-cwl
+The VLBI-cwl pipeline consists of two parts: Delay-Calibration and Split-Directions. The former finds a suitable in-beam calibrator sources and performs direction independent calibration for the ILT's international stations. The latter, using the solutions from delay calibration, allows users to split out a number of directions of interest. Currently only Delay-Calibration has a runner available under `run_lofar-vlbi_singularity.sh`. A user sets the container to use, where the data to process resides and where the h5parm output by LINC *target* can be found.

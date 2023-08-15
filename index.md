@@ -3,7 +3,7 @@ title: Home
 layout: home
 nav_order: 1
 ---
-This page documents my [LOFAR containers], very creatively named "Frits' LoFAR Containers" or FLoCs. These containers package a collection of common LOFAR software that is used for imaging science with both Dutch and international array. Pre built containers are publicly available through a webdav hosted on [SURF].
+This page documents my [LOFAR containers], very creatively named "Frits' LoFAR Containers" or FLoCs. These containers package a collection of common LOFAR software that is used for imaging science with both Dutch and international array. Pre-built containers are publicly available through a webdav hosted on [SURF]. For instructions on running a pipeline, for example, see [Using the containers](https://tikk3r.github.io/flocs/docs/using-containers.html#pipeline-use)
 
 # Latest containers
 
