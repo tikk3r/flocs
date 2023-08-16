@@ -366,7 +366,7 @@ EOF
     make -j$J
     make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/lofarstman
+    rm -rf $INSTALLDIR/lofarstman/LofarStMan
 
     #
     # Install EveryBeam library

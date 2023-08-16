@@ -3,3 +3,5 @@
 *.sif
 test
 *.swp
+*.MS
+mslist.json
