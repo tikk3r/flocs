@@ -678,6 +678,16 @@ From: fedora:36
     git clone https://github.com/mhardcastle/lotss-query.git
 
     #
+    # Install custom runners
+    #
+    mkdir -p /opt/lofar/runners
+    cd /opt/lofar/runners
+    wget 'https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_calibrator.sh'
+    wget 'https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_target.sh'
+    chmod 755 /opt/lofar/runners/*.sh
+    cd $INSTALLDIR
+
+    #
     # Finaly cleanup of unnecessary stuff
     # 
     export PYTHONPATH=$OLD_PYTHONPATH
@@ -731,6 +741,7 @@ From: fedora:36
 	echo export PATH=/opt/hdf5/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/sagecal/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
 
 	echo export LD_LIBRARY_PATH=/opt/flang/lib:$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 	echo export PATH=/opt/flang/bin:\$PATH >> $INSTALLDIR/init.sh
