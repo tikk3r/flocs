@@ -61,11 +61,11 @@ From: fedora:36
     export OPENBLAS_TARGET=SANDYBRIDGE
 
     if [ $NOAVX512 = true ]; then
-        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -mno-aes -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-aes -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
-        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -mno-aes"
-        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-aes"
+        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE}"
+        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
     fi
     if [ $DEBUG = true ]; then
         export CFLAGS="-g $CFLAGS"
@@ -608,6 +608,17 @@ EOF
     cd $INSTALLDIR
     git clone https://github.com/mhardcastle/lotss-query.git
 
+
+    #
+    # Install custom runners
+    #
+    mkdir -p /opt/lofar/runners
+    cd /opt/lofar/runners
+    wget 'https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_calibrator.sh'
+    wget 'https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_target.sh'
+    chmod 755 /opt/lofar/runners/*.sh
+    cd $INSTALLDIR
+
     #
     # Finaly cleanup of unnecessary stuff
     # 
@@ -661,6 +672,7 @@ EOF
 	echo export PATH=\$INSTALLDIR/sagecal/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/hdf5/lib:/opt/intel/mkl/lib/intel64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/EveryBeam/lib:/opt/hdf5/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/opt/OpenBLAS/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
