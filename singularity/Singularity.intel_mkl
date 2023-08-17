@@ -616,6 +616,7 @@ EOF
     cd /opt/lofar/runners
     wget 'https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_calibrator.sh'
     wget 'https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_target.sh'
+    chmod 755 /opt/lofar/runners/*.sh
     cd $INSTALLDIR
 
     #
