@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "=============================="
-echo "=== LINC Target Runner ==="
+echo "===   LINC Target Runner   ==="
 echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
