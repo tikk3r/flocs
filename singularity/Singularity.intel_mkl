@@ -27,7 +27,7 @@ From: fedora:36
 	export CFITSIO_VERSION=7.3.47
     export DPPP_VERSION=161559ff
 	export DYSCO_VERSION=2e7f331
-    export EVERYBEAM_VERSION=91b9872
+    export EVERYBEAM_VERSION=22cd113b
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.12.1
     export IDG_VERSION=f4a3a96c
@@ -39,7 +39,7 @@ From: fedora:36
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=f161b0a
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=7bdcc104
+	export WSCLEAN_VERSION=a5b4e037
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
@@ -614,8 +614,8 @@ EOF
     #
     mkdir -p /opt/lofar/runners
     cd /opt/lofar/runners
-    wget 'https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_calibrator.sh
-    wget 'https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_target.sh'
+    wget 'https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/run_LINC_calibrator.sh'
+    wget 'https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/run_LINC_target.sh'
     chmod 755 /opt/lofar/runners/*.sh
     cd $INSTALLDIR
 
