@@ -11,6 +11,8 @@ import numpy as np
 
 def cwl_file(entry: str) -> str:
     """ Create a CWL-friendly file entry."""
+    if entry is None:
+        return None
     if entry.lower() == 'null':
         return None
     else:
@@ -18,6 +20,8 @@ def cwl_file(entry: str) -> str:
 
 def cwl_dir(entry: str) -> str:
     """ Create a CWL-friendly directory entry."""
+    if entry is None:
+        return None
     if entry.lower() == 'null':
         return None
     else:
