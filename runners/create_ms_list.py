@@ -155,13 +155,14 @@ class VLBIJSONConfig(LINCJSONConfig):
         for dd in files:
             if check_dd_freq(dd, prefac_freqs ):
                 mslist.append(dd)
-        if os.path.exists(ddf_solsdir['path']):
-            ddf_freqs = get_dico_freqs(ddf_solsdir['path'], solnames='killMS.DIS2_full.sols.npz' )
-            tmplist = []
-            for dd in mslist:
-                if check_dd_freq(dd, ddf_freqs ):
-                    tmplist.append(dd)
-            mslist = tmplist
+        if ddf_solsdir is not None:
+            if os.path.exists(ddf_solsdir['path']):
+                ddf_freqs = get_dico_freqs(ddf_solsdir['path'], solnames='killMS.DIS2_full.sols.npz' )
+                tmplist = []
+                for dd in mslist:
+                    if check_dd_freq(dd, ddf_freqs ):
+                        tmplist.append(dd)
+                mslist = tmplist
         
         final_mslist = []
         for ms in mslist:
