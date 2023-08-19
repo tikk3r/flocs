@@ -5,9 +5,10 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] -d <data path>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
-    echo "$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] -d <data path>"
+    echo $HELP
     exit 0
 fi
 
@@ -26,7 +27,7 @@ while getopts ":d:s:r:l:b:" opt; do
         \?) echo "Invalid option -$OPTARG" >&2
             echo
             echo "Usage:"
-            echo "$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] -d <data path>"
+            echo $HELP
         exit 1
         ;;
     esac
@@ -35,7 +36,7 @@ while getopts ":d:s:r:l:b:" opt; do
         -*) echo "$opt needs a valid argument"
             echo
             echo "Usage:"
-            echo "$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] -d <data path>"
+            echo $HELP
         exit 1
         ;;
     esac
