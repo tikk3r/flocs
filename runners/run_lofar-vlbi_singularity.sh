@@ -97,8 +97,10 @@ mkdir -p $LOGSDIR
 mkdir -p $TMPDIR
 cd $WORKDIR
 
-wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora-py3/runners/create_ms_list.py
-singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT
+git clone https://github.com/tikk3r/flocs.git
+
+# wget https://raw.githubusercontent.com/tikk3r/lofar-grid-hpccloud/fedora-py3/runners/create_ms_list.py
+singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT
 
 echo VLBI-cwl starting
 # Switch to a non-GUI backend to avoid plotting issues.
