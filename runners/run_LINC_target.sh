@@ -109,6 +109,11 @@ wget https://gitlab.com/aroffringa/aoflagger/-/raw/master/data/strategies/lofar-
 echo Making sure all scripts are executable
 chmod 755 $LINC_DATA_ROOT/scripts/*.py
 
+mkdir -p $RESULTSDIR
+mkdir -p $LOGSDIR
+mkdir -p $TMPDIR
+cd $WORKDIR
+
 if [[ -z "$SIMG" ]]; then
     echo "No container specified."
     echo "Generating default pipeline configuration"
@@ -136,11 +141,6 @@ else
         export SINGULARITYENV_TMPDIR=$WORKDIR/tmpdir_LINC_target/
         export SINGULARITYENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
     fi
-
-    mkdir -p $RESULTSDIR
-    mkdir -p $LOGSDIR
-    mkdir -p $TMPDIR
-    cd $WORKDIR
 
     echo "Generating default pipeline configuration"
     wget --no-http-keep-alive https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
