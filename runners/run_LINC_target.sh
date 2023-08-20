@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+{
 echo "=============================="
 echo "===   LINC Target Runner   ==="
 echo "=== Author: Frits Sweijen  ==="
@@ -149,6 +150,7 @@ else
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > tmprunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> tmprunner.sh
-    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh 2>&1) |& tee $WORKDIR/job_output.txt
+    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh 2>&1) |& tee $WORKDIR/job_output_LINC_target.txt
     echo LINC ended
 fi
+} |& tee job_output_full.txt
