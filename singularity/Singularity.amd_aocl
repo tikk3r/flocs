@@ -101,7 +101,7 @@ From: fedora:36
 	git clone https://github.com/xianyi/OpenBLAS.git src
 	cd src && git checkout $OPENBLAS_VERSION
 	mkdir build && cd build
-	cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DBUILD_SHARED_LIBS=ON ..
+	cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
 	make -j$J
 	make install
 	rm -rf /opt/OpenBLAS/src
