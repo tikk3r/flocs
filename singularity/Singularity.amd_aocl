@@ -218,7 +218,7 @@ From: fedora:36
     #tar xf hdf5-1.14.1-2.tar.gz
     #cd hdf5-1.14.1-2/
     # Thread safety required for WSClean's parallel gridding with facets.
-    ./configure -prefix=/opt/hdf5 --enable-build-mode=production --enable-threadsafe --enable-shared --disable-sharedlib-rpath --disable-hl
+    ./configure -prefix=/opt/hdf5 --enable-build-mode=production --enable-threadsafe --enable-shared --disable-sharedlib-rpath --disable-hl --enable-cxx -enable-unsupported
     make -j $J
     #make check
     make install
