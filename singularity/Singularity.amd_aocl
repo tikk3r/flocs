@@ -483,7 +483,8 @@ From: fedora:36
     rm -rf $INSTALLDIR/DPPP/build
     rm -rf $INSTALLDIR/DPPP/src
     mkdir $INSTALLDIR/DPPP/usermodules
-    wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DPPP/usermodules/polconv.py
+    wget https://raw.githubusercontent.com/tikk3r/lofar_helpers/dp3-v6-update/dp3_helpers/polconv.py -O $INSTALLDIR/DPPP/usermodules/polconv.py
+    #wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DPPP/usermodules/polconv.py
 
 	#
 	# Install RMextract
