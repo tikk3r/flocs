@@ -683,9 +683,10 @@ From: fedora:36
     #
     mkdir -p /opt/lofar/runners
     cd /opt/lofar/runners
-    wget 'https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/run_LINC_calibrator.sh' -O run_LINC_calibrator
-    wget 'https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/run_LINC_target.sh' -O run_LINC_target
-    chmod 755 /opt/lofar/runners/run_LINC*
+    git clone https://github.com/tikk3r/flocs.git
+    cp flocs/runners/run* .
+    rm -rf flocs
+    chmod 755 /opt/lofar/runners/*.sh
     cd $INSTALLDIR
 
     #

@@ -215,7 +215,7 @@ else
     # Switch to a non-GUI backend to avoid plotting issues.
     echo export MPLBACKEND='Agg' > tmprunner.sh
     echo export PYTHONPATH=\$VLBI_DATA_ROOT/scripts:\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> tmprunner.sh
-    echo 'cwltool --leave-tmpdir --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist.json 2>&1' >> tmprunner.sh
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist.json 2>&1' >> tmprunner.sh
     (time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl.txt
     echo VLBI-cwl ended
 fi
