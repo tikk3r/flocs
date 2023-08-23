@@ -79,15 +79,15 @@ WORKDIR=$(mktemp -d -p "$RUNDIR")
 echo "Working directory is $WORKDIR"
 
 ## Final results will be copied here.
-RESULTSDIR=$WORKDIR/results_LINC_target/
+export RESULTSDIR=$WORKDIR/results_LINC_target/
 ## Logs of the various steps will be put here.
-LOGSDIR=$WORKDIR/logs_LINC_target/
+export LOGSDIR=$WORKDIR/logs_LINC_target/
 ## Temporary files are stored here.
 ## The trailing slash is important here.
-TMPDIR=$WORKDIR/tmpdir_LINC_target/
+export TMPDIR=$WORKDIR/tmpdir_LINC_target/
 
 if [[ -z "$LINC_DATA_ROOT" ]]; then
-    LINC_DATA_ROOT=$WORKDIR/LINC
+    export LINC_DATA_ROOT=$WORKDIR/LINC
 fi
 # Check if LINC directory exists or is valid.
 if [ ! -d $LINC_DATA_ROOT ]; then
@@ -122,7 +122,8 @@ if [[ -z "$SIMG" ]]; then
     wget --no-http-keep-alive https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
     python create_ms_list.py $DATADIR --cal_solutions $CALSOLS
     echo LINC starting
-    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > tmprunner.sh
+    echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > tmprunner.sh
+    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> tmprunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_targetcwl mslist.json' >> tmprunner.sh
     (time bash tmprunner.sh 2>&1) | tee $WORKDIR/job_output.txt
     echo LINC ended

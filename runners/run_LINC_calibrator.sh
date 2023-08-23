@@ -66,19 +66,19 @@ else
 fi
 
 ## WORKDIR is where all the other directories will be stored.
-WORKDIR=$(mktemp -d -p "$RUNDIR")
+export WORKDIR=$(mktemp -d -p "$RUNDIR")
 echo "Working directory is $WORKDIR"
 
 ## Final results will be copied here.
-RESULTSDIR=$WORKDIR/results_LINC_calibrator/
+export RESULTSDIR=$WORKDIR/results_LINC_calibrator/
 ## Logs of the various steps will be put here.
-LOGSDIR=$WORKDIR/logs_LINC_calibrator/
+export LOGSDIR=$WORKDIR/logs_LINC_calibrator/
 ## Temporary files are stored here.
 ## The trailing slash is important here.
-TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
+export TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
 
 if [[ -z "$LINC_DATA_ROOT" ]]; then
-    LINC_DATA_ROOT=$WORKDIR/LINC
+    export LINC_DATA_ROOT=$WORKDIR/LINC
 fi
 # Check if LINC directory exists or is valid.
 if [ ! -d $LINC_DATA_ROOT ]; then
@@ -113,7 +113,8 @@ if [[ -z "$SIMG" ]]; then
     wget --no-http-keep-alive https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
     python create_ms_list.py $DATADIR
     echo LINC starting
-    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > tmprunner.sh
+    echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > tmprunner.sh
+    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> tmprunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json' >> tmprunner.sh
     (time bash tmprunner.sh 2>&1) | tee $WORKDIR/job_output.txt
     echo LINC ended
@@ -127,14 +128,12 @@ else
         export APPTAINERENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
         export APPTAINERENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
         export APPTAINERENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
-        export APPTAINERENV_EVERYBEAM_DATADIR=/opt/lofar/EveryBeam/share/everybeam/
     else
         export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
         export SINGULARITYENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
         export SINGULARITYENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
         export SINGULARITYENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
         export SINGULARITYENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
-        export SINGULARITYENV_EVERYBEAM_DATADIR=/opt/lofar/EveryBeam/share/everybeam/
     fi
 
     echo "Generating default pipeline configuration"
