@@ -176,6 +176,7 @@ if [[ -z "$SIMG" ]]; then
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
     echo export MPLBACKEND='Agg' > tmprunner.sh
+    echo export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH >> tmprunner.sh
     echo export PYTHONPATH=\$VLBI_DATA_ROOT/scripts:\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> tmprunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist.json 2>&1' >> tmprunner.sh
     (time bash tmprunner.sh) |& tee $WORKDIR/job_output_test.txt
