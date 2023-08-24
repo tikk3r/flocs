@@ -22,10 +22,6 @@ configparser>=3.7.1,<=5.2.0
 corner
 cwlref-runner
 cwl_utils
-<<<<<<< HEAD
-=======
-cwltool=3.1.20230719185429
->>>>>>> parent of 865ad99 (Revert cwltool back to last known working version)
 cycler
 Cython>=0.25.2,<=0.29.30
 deap>=1.0.1
