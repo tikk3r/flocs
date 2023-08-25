@@ -119,8 +119,9 @@ cd $WORKDIR
 if [[ -z "$SIMG" ]]; then
     echo "No container specified."
     echo "Generating default pipeline configuration"
-    wget --no-http-keep-alive https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
-    python create_ms_list.py $DATADIR --cal_solutions $CALSOLS
+    git clone https://github.com/tikk3r/flocs.git
+
+    python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > tmprunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> tmprunner.sh
