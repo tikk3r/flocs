@@ -127,9 +127,7 @@ if [ ! -d $VLBI_DATA_ROOT ]; then
     echo $VLBI_DATA_ROOT does not exist and will be created. Cloning VLBI-cwl...
     mkdir -p $VLBI_DATA_ROOT
     git clone https://git.astron.nl/RD/VLBI-cwl.git $VLBI_DATA_ROOT
-fi
-# If the directory exists, check if it is empty.
-if [ -d $VLBI_DATA_ROOT ] && [ ! -d $VLBI_DATA_ROOT/steps ]; then
+elif [ -d $VLBI_DATA_ROOT ] && [ ! -d $VLBI_DATA_ROOT/steps ]; then
     echo $VLBI_DATA_ROOT exists, but is empty. Cloning VLBI-cwl...
     git clone https://git.astron.nl/RD/VLBI-cwl.git $VLBI_DATA_ROOT
 fi
