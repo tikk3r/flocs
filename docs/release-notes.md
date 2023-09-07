@@ -19,9 +19,9 @@ nav_order: 5
 * Fix default baseline selection for LINC target.
 * Custom LINC runners are now included, intended to be mildly user friendly and require no editing of scripts for default runs. See `run_LINC_calibrator.sh -h` and `run_LINC_target.sh -h`.
 * Experimental VLBI-cwl runner included. See `run_lofar-vlbi.sh -h`.
-* Update DP3 to `6484bab9`.
+* Update DP3 to `161559ff`.
 * Update EveryBeam to `22cd113b`.
-* Update WSClean to `5bd73863`.
+* Update WSClean to `a5b4e037`.
 
 **Fixes**
 * Do not remove lofarstman after installation.
