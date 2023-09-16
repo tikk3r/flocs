@@ -139,7 +139,7 @@ else
 
     echo "Generating default pipeline configuration"
     wget --no-http-keep-alive https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
-    singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR
+    singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py --filter_baselines '*&' $DATADIR
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > tmprunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json' >> tmprunner.sh
