@@ -65,6 +65,7 @@ if [[ ! -f $CALSOLS ]]; then
     exit 4
 else
     export DATADIR=$(readlink -f $DATADIR)
+    export CALSOLS=$(readlink -f $CALSOLS)
 fi
 
 if [[ -z $RUNDIR ]]; then
