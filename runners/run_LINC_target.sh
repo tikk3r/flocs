@@ -125,7 +125,7 @@ if [[ -z "$SIMG" ]]; then
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > tmprunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> tmprunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_targetcwl mslist.json' >> tmprunner.sh
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> tmprunner.sh
     (time bash tmprunner.sh 2>&1) | tee $WORKDIR/job_output.txt
     echo LINC ended
 else
