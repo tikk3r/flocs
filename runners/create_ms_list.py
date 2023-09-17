@@ -16,7 +16,7 @@ def cwl_file(entry: str) -> str:
     if entry.lower() == 'null':
         return None
     else:
-        return json.loads(f'{{"class": "File", "path":"{entry}"}}')
+        return json.loads(f'{{"class": "File", "path":"{os.path.abspath(entry)}"}}')
 
 def cwl_dir(entry: str) -> str:
     """ Create a CWL-friendly directory entry."""
@@ -25,7 +25,7 @@ def cwl_dir(entry: str) -> str:
     if entry.lower() == 'null':
         return None
     else:
-        return json.loads(f'{{"class": "Directory", "path":"{entry}"}}')
+        return json.loads(f'{{"class": "Directory", "path":"{os.path.abspath(entry)}"}}')
 
 def check_dd_freq(infile: str, freq_array: np.ndarray) -> bool:
     """ Check frequency coverage overlap between a Measurment Set and a given array of frequencies.
