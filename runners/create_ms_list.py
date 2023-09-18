@@ -231,6 +231,7 @@ if __name__ == '__main__':
     dparser.add_argument('--use_target', type=bool, default=True, help='Enable downloading of a target skymodel (default: True).')
     dparser.add_argument('--selfcal', type=bool, default=False, help='Perform extensive self-calibration according to the LiLF scheme (recommended for LBA observations) (default: false)')
     dparser.add_argument('--selfcal_region', type=cwl_file, default=None, help='DS9-compatible region file to select the image regions used for the self-calibration.')
+    dparser.add_argument('--min_unflagged_fraction', type=float, default=0.5, help='Minimal fraction of unflagged data to be accepted for further processing of the data chunk (default: 0.5)')
 
     demixparser = parser.add_argument_group('== Demixing ==')
     demixparser.add_argument('--demix_sources', type=str, nargs='*', default=['CasA', 'CygA'], help='Sources to demix.')
