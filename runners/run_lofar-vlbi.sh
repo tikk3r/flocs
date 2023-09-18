@@ -67,6 +67,7 @@ if [[ ! -f $TARGETSOLS ]]; then
     exit 4
 else
     export DATADIR=$(readlink -f $DATADIR)
+    export TARGETSOLS=$(readlink -f $TARGETSOLS)
 fi
 
 if [[ -z $RUNDIR ]]; then
