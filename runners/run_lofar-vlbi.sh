@@ -168,6 +168,7 @@ if [[ -z "$SIMG" ]]; then
     wget https://raw.githubusercontent.com/lmorabit/lofar-vlbi/master/plot_field.py
     python plot_field.py --MS $ms
 
+    export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
     git clone https://github.com/tikk3r/flocs.git
 
     python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT
