@@ -103,6 +103,7 @@ if [ -d $LINC_DATA_ROOT ] && [ ! -d $LINC_DATA_ROOT/steps ]; then
     exit 1
 elif [ -d $LINC_DATA_ROOT ] && [ -d $LINC_DATA_ROOT/steps ]; then
     echo $LINC_DATA_ROOT exists and seems to contain LINC. Continuing...
+    export LINC_DATA_ROOT
 fi
 
 # Prepare workflow files.
