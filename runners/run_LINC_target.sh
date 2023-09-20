@@ -123,7 +123,7 @@ if [[ -z "$SIMG" ]]; then
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS
+    python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS --unflagged_fraction 0.05
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > tmprunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> tmprunner.sh
@@ -150,7 +150,7 @@ else
 
     echo "Generating default pipeline configuration"
     wget --no-http-keep-alive https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
-    singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR --cal_solutions $CALSOLS
+    singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR --cal_solutions $CALSOLS --unflagged_fraction 0.05
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > tmprunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> tmprunner.sh
