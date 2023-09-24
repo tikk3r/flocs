@@ -627,6 +627,7 @@ From: fedora:36
     cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
     #cp -r SkyModel/Mask /opt/lofar/DDFacet/lib/python3.9/site-packages/SkyModel/
     cp -r SkyModel/Sky /opt/lofar/DDFacet/lib/python$PYTHON_VERSION/site-packages/SkyModel/
+    wget https://raw.githubusercontent.com/rvweeren/lofar_facet_selfcal/main/sub-sources-outside-region.py -O /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
 
     #
     # Install killMS
