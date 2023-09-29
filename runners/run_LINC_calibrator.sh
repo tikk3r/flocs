@@ -96,6 +96,11 @@ elif [ -d $LINC_DATA_ROOT ] && [ -d $LINC_DATA_ROOT/steps ]; then
     export LINC_DATA_ROOT
 fi
 
+# Obtain LINC commit used
+cd $LINC_DATA_ROOT
+export LINC_COMMIT=$(git rev-parse --short HEAD)
+cd -
+
 # Prepare workflow files.
 echo "Overriding rfistrategies with Lua >5.3 compatible ones from AOFlagger repository"
 wget https://gitlab.com/aroffringa/aoflagger/-/raw/master/data/strategies/lofar-default.lua -O $LINC_DATA_ROOT/rfistrategies/lofar-default.lua
@@ -142,9 +147,29 @@ else
     wget --no-http-keep-alive https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
     singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py --filter_baselines '*&' $DATADIR
     echo LINC starting
-    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > tmprunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json' >> tmprunner.sh
+    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json' >> jobrunner.sh
     (time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh 2>&1) |& tee $WORKDIR/job_output_LINC_calibrator.txt
     echo LINC ended
 fi
+echo Cleaning up...
+echo == Deleting LINC tmpdir..
+rm -rf $WORKDIR/tmpdir_LINC_calibrator
+
+echo == Moving results...
+FINALDIR=$(dirname $WORKDIR)
+pattern="${DATADIR}/*.MS"
+files=( $pattern )
+ms="${files[0]}"  # printf is safer!
+obsid=$(echo $f | awk -F'_' '{print $1}')
+mv "$WORKDIR" "$FINALDIR/LINC_calibrator_$obsid"
+
+echo "==============================="
+echo "=== LINC Calibrator Summary ==="
+echo "==============================="
+echo Output:            "$FINALDIR/LINC_calibrator_$obsid"
+echo Solutions:         "$FINALDIR/LINC_calibrator_$obsid/results_LINC_calibrator/*h5"
+echo Inspection plots:  "$FINALDIR/LINC_calibrator_$obsid/results_LINC_calibrator/inspection"
+echo Pipeline logs:     "$FINALDIR/LINC_calibrator_$obsid/logs"
+echo Pipeline summary:  "$FINALDIR/LINC_calibrator_$obsid/logs/*summary.log"
 } |& tee job_output_full.txt
