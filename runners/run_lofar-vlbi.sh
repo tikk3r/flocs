@@ -91,12 +91,12 @@ LOFAR_HELPERS_ROOT=$WORKDIR/lofar_helpers
 FACETSELFCAL_ROOT=$WORKDIR/lofar_facet_selfcal
 
 ## Final results will be copied here.
-RESULTSDIR=$WORKDIR/results_VLBI_CWL
+export RESULTSDIR=$WORKDIR/results_VLBI_CWL
 ## Logs of the various steps will be put here.
-LOGSDIR=$WORKDIR/logs_VLBI_CWL
+export LOGSDIR=$WORKDIR/logs_VLBI_CWL
 ## Temporary files are stored here.
 ## The trailing slash is important here.
-TMPDIR=$WORKDIR/tmpdir_VLBI_CWL/
+export TMPDIR=$WORKDIR/tmpdir_VLBI_CWL/
 
 export LINC_DATA_ROOT
 export VLBI_DATA_ROOT
@@ -139,6 +139,16 @@ if [ -d $VLBI_DATA_ROOT ] && [ ! -d $VLBI_DATA_ROOT/steps ]; then
 elif [ -d $VLBI_DATA_ROOT ] && [ -d $VLBI_DATA_ROOT/steps ]; then
     echo $VLBI_DATA_ROOT exists and seems to contain VLBI-cwl. Continueing...
 fi
+
+# Obtain LINC commit used
+cd $LINC_DATA_ROOT
+export LINC_COMMIT=$(git rev-parse --short HEAD)
+cd -
+
+# Obtain LOFAR-VLBI commit used
+cd $VLBI_DATA_ROOT
+export VLBI_COMMIT=$(git rev-parse --short HEAD)
+cd -
 
 # Prepare workflow files.
 sed -i "s/PREFACTOR_DATA_ROOT/LINC_DATA_ROOT/" $VLBI_DATA_ROOT/steps/*.cwl
@@ -220,4 +230,26 @@ else
     (time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl.txt
     echo VLBI-cwl ended
 fi
+echo Cleaning up...
+echo == Deleting LOFAR-VLBI tmpdir..
+rm -rf $WORKDIR/tmpdir_VLBI_CWL/
+
+echo == Moving results...
+FINALDIR=$(dirname $WORKDIR)
+pattern="${DATADIR}/*.MS"
+files=( $pattern )
+ms="${files[0]}"  # printf is safer!
+obsid=$(echo $f | awk -F'_' '{print $1}')
+mv "$WORKDIR" "$FINALDIR/${obsid}_LOFAR-VLBI"
+
+echo "==========================="
+echo "=== LOFAR-VLBI  Summary ==="
+echo "==========================="
+echo LINC version:       $LINC_COMMIT
+echo LOFAR-VLBI version: $VLBI_COMMIT
+echo Output:             "$FINALDIR/${obsid}_LOFAR-VLBI"
+echo Solutions:          "$FINALDIR/${obsid}_LOFAR-VLBI/results_VLBI_CWL/*h5"
+echo Inspection plots:   "$FINALDIR/${obsid}_LOFAR-VLBI/results_VLBI_CWL/inspection"
+echo Pipeline logs:      "$FINALDIR/${obsid}_LOFAR-VLBI/logs_VLBI_CWL"
+echo Pipeline summary:   "$FINALDIR/${obsid}_LOFAR-VLBI/logs_VLBI_CWL/*summary.log"
 } |& tee job_output_full.txt
