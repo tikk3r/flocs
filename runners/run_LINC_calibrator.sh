@@ -171,6 +171,6 @@ echo LINC version:      $LINC_COMMIT
 echo Output:            "$FINALDIR/${obsid}_LINC_calibrator"
 echo Solutions:         "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/*h5"
 echo Inspection plots:  "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/inspection"
-echo Pipeline logs:     "$FINALDIR/${obsid}_LINC_calibrator/logs"
-echo Pipeline summary:  "$FINALDIR/${obsid}_LINC_calibrator/logs/*summary.log"
+echo Pipeline logs:     "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/logs"
+echo Pipeline summary:  "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/logs/*summary.log"
 } |& tee job_output_full.txt
