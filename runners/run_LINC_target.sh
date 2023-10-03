@@ -181,6 +181,6 @@ echo LINC version:      $LINC_COMMIT
 echo Output:            "$FINALDIR/${obsid}_LINC_target"
 echo Solutions:         "$FINALDIR/${obsid}_LINC_target/results_LINC_target/*h5"
 echo Inspection plots:  "$FINALDIR/${obsid}_LINC_target/results_LINC_target/inspection"
-echo Pipeline logs:     "$FINALDIR/${obsid}_LINC_target/logs"
-echo Pipeline summary:  "$FINALDIR/${obsid}_LINC_target/logs/*summary.log"
+echo Pipeline logs:     "$FINALDIR/${obsid}_LINC_target/results_LINC_target/logs"
+echo Pipeline summary:  "$FINALDIR/${obsid}_LINC_target/results_LINC_target/logs/*summary.log"
 } |& tee job_output_full.txt
