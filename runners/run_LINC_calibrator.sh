@@ -162,14 +162,15 @@ pattern="${DATADIR}/*.MS"
 files=( $pattern )
 ms="${files[0]}"  # printf is safer!
 obsid=$(echo $f | awk -F'_' '{print $1}')
-mv "$WORKDIR" "$FINALDIR/LINC_calibrator_$obsid"
+mv "$WORKDIR" "$FINALDIR/${obsid}_LINC_calibrator"
 
 echo "==============================="
 echo "=== LINC Calibrator Summary ==="
 echo "==============================="
-echo Output:            "$FINALDIR/LINC_calibrator_$obsid"
-echo Solutions:         "$FINALDIR/LINC_calibrator_$obsid/results_LINC_calibrator/*h5"
-echo Inspection plots:  "$FINALDIR/LINC_calibrator_$obsid/results_LINC_calibrator/inspection"
-echo Pipeline logs:     "$FINALDIR/LINC_calibrator_$obsid/logs"
-echo Pipeline summary:  "$FINALDIR/LINC_calibrator_$obsid/logs/*summary.log"
+echo LINC version:      $LINC_COMMIT
+echo Output:            "$FINALDIR/${obsid}_LINC_calibrator"
+echo Solutions:         "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/*h5"
+echo Inspection plots:  "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/inspection"
+echo Pipeline logs:     "$FINALDIR/${obsid}_LINC_calibrator/logs"
+echo Pipeline summary:  "$FINALDIR/${obsid}_LINC_calibrator/logs/*summary.log"
 } |& tee job_output_full.txt

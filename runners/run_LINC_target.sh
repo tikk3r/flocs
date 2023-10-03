@@ -106,6 +106,11 @@ elif [ -d $LINC_DATA_ROOT ] && [ -d $LINC_DATA_ROOT/steps ]; then
     export LINC_DATA_ROOT
 fi
 
+# Obtain LINC commit used
+cd $LINC_DATA_ROOT
+export LINC_COMMIT=$(git rev-parse --short HEAD)
+cd -
+
 # Prepare workflow files.
 echo "Overriding rfistrategies with Lua >5.3 compatible ones from AOFlagger repository"
 wget https://gitlab.com/aroffringa/aoflagger/-/raw/master/data/strategies/lofar-default.lua -O $LINC_DATA_ROOT/rfistrategies/lofar-default.lua
@@ -157,4 +162,25 @@ else
     (time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh 2>&1) |& tee $WORKDIR/job_output_LINC_target.txt
     echo LINC ended
 fi
+echo Cleaning up...
+echo == Deleting LINC tmpdir..
+rm -rf $WORKDIR/tmpdir_LINC_target
+
+echo == Moving results...
+FINALDIR=$(dirname $WORKDIR)
+pattern="${DATADIR}/*.MS"
+files=( $pattern )
+ms="${files[0]}"  # printf is safer!
+obsid=$(echo $f | awk -F'_' '{print $1}')
+mv "$WORKDIR" "$FINALDIR/${obsid}_LINC_target"
+
+echo "==========================="
+echo "=== LINC Target Summary ==="
+echo "==========================="
+echo LINC version:      $LINC_COMMIT
+echo Output:            "$FINALDIR/${obsid}_LINC_target"
+echo Solutions:         "$FINALDIR/${obsid}_LINC_target/results_LINC_target/*h5"
+echo Inspection plots:  "$FINALDIR/${obsid}_LINC_target/results_LINC_target/inspection"
+echo Pipeline logs:     "$FINALDIR/${obsid}_LINC_target/logs"
+echo Pipeline summary:  "$FINALDIR/${obsid}_LINC_target/logs/*summary.log"
 } |& tee job_output_full.txt
