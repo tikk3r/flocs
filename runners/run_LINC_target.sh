@@ -74,9 +74,10 @@ if [[ -z $RUNDIR ]]; then
 else
     echo "Using user-specified running directory $RUNDIR"
 fi
+export RUNDIR
 
 ## WORKDIR is where all the other directories will be stored.
-WORKDIR=$(mktemp -d -p "$RUNDIR")
+export WORKDIR=$(mktemp -d -p "$RUNDIR")
 echo "Working directory is $WORKDIR"
 
 ## Final results will be copied here.
