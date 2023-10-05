@@ -64,6 +64,7 @@ if [[ -z $RUNDIR ]]; then
 else
     echo "Using user-specified running directory $RUNDIR"
 fi
+export RUNDIR
 
 ## WORKDIR is where all the other directories will be stored.
 export WORKDIR=$(mktemp -d -p "$RUNDIR")

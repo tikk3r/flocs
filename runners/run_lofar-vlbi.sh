@@ -76,9 +76,10 @@ if [[ -z $RUNDIR ]]; then
 else
     echo "Using user-specified running directory $RUNDIR"
 fi
+export RUNDIR
 
 ## WORKDIR is where all the other directories will be stored.
-WORKDIR=$(mktemp -d -p "$RUNDIR")
+export WORKDIR=$(mktemp -d -p "$RUNDIR")
 ## Location of LINC. This must be a user-writable location for this wrapper script.
 ## If it does not exist, this script will attempt to clone the LINC repository to the given path.
 if [[ -z "$LINC_DATA_ROOT" ]]; then
