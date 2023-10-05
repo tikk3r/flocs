@@ -686,8 +686,10 @@ From: fedora:36
     cd /opt/lofar/runners
     git clone https://github.com/tikk3r/flocs.git
     cp flocs/runners/run* .
+    cp flocs/utility /opt/lofar/
     rm -rf flocs
     chmod 755 /opt/lofar/runners/*.sh
+    chmod 755 /opt/lofar/utility/*.sh
     cd $INSTALLDIR
 
     #
@@ -745,6 +747,7 @@ From: fedora:36
 	echo export PATH=\$INSTALLDIR/sagecal/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
 
 	echo export LD_LIBRARY_PATH=/opt/flang/lib:$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 	echo export PATH=/opt/flang/bin:\$PATH >> $INSTALLDIR/init.sh
