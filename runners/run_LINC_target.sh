@@ -172,7 +172,7 @@ FINALDIR=$(dirname $WORKDIR)
 pattern="${DATADIR}/*.MS"
 files=( $pattern )
 ms="${files[0]}"  # printf is safer!
-obsid=$(echo $f | awk -F'_' '{print $1}')
+obsid=$(echo $ms | awk -F'_' '{print $1}')
 mv "$WORKDIR" "$FINALDIR/${obsid}_LINC_target"
 
 echo "==========================="
