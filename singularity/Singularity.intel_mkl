@@ -515,7 +515,7 @@ EOF
     dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel nodejs
 
     mkdir -p $INSTALLDIR/patches
-    cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/flocs.git
+    cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
     mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patches/
 
     pip --no-cache-dir install meqtrees-cattery --no-deps
