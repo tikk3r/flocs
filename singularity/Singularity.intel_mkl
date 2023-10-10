@@ -412,8 +412,8 @@ EOF
     git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/src
     git checkout ${DPPP_VERSION}
+    patch steps/AOFlaggerStep.cc $INSTALLDIR/patches/AOFlaggerStep.patch
     echo export DPPP_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    sed -i '106s/min/max/' ddecal/constraints/Constraint.h
     cd $INSTALLDIR/DPPP/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
@@ -516,7 +516,7 @@ EOF
 
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone --single-branch -b fedora https://github.com/tikk3r/flocs.git
-    mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patchesgcc
+    mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patches/
 
     pip --no-cache-dir install meqtrees-cattery --no-deps
     pip --no-cache-dir install owlcat --no-deps
