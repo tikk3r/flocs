@@ -131,10 +131,10 @@ if [[ -z "$SIMG" ]]; then
 
     python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS --min_unflagged_fraction 0.05
     echo LINC starting
-    echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > tmprunner.sh
-    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> tmprunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> tmprunner.sh
-    (time bash tmprunner.sh 2>&1) | tee $WORKDIR/job_output.txt
+    echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
+    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> jobrunner.sh
+    (time bash jobrunner.sh 2>&1) | tee $WORKDIR/job_output.txt
     echo LINC ended
 else
     echo "Using container $SIMG"
@@ -158,9 +158,9 @@ else
     wget --no-http-keep-alive https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/runners/create_ms_list.py
     singularity exec -B $PWD,$BINDPATHS $SIMG python create_ms_list.py $DATADIR --cal_solutions $CALSOLS --min_unflagged_fraction 0.05
     echo LINC starting
-    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > tmprunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> tmprunner.sh
-    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash tmprunner.sh 2>&1) |& tee $WORKDIR/job_output_LINC_target.txt
+    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> jobrunner.sh
+    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh 2>&1) |& tee $WORKDIR/job_output_LINC_target.txt
     echo LINC ended
 fi
 echo Cleaning up...
