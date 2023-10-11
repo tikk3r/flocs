@@ -114,19 +114,33 @@ def get_reffreq(msfile: str) -> float:
 
 class LINCJSONConfig:
     """ Class for generating JSON configuration files to be passed to the LINC pipeline."""
-    def __init__(self, mspath: str):
+    def __init__(self, mspath: str, prefac_h5parm=None):
         self.configdict = {}
         
         print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/*.MS')
         files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/*.MS'))
         print(f'Found {len(files)} files')
 
-        mslist = []
-        for ms in files:
-            x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
-            mslist.append(x)
+        if prefac_h5parm is None:
+            mslist = []
+            for ms in files:
+                x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
+                mslist.append(x)
+            self.configdict['msin'] = mslist
+        else:
+            prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'target')
 
-        self.configdict['msin'] = mslist
+            mslist = []
+            for dd in files:
+                if check_dd_freq(dd, prefac_freqs ):
+                    mslist.append(dd)
+            
+            final_mslist = []
+            for ms in mslist:
+                x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
+                final_mslist.append(x)
+            self.configdict['msin'] = final_mslist
+
 
     def add_entry(self, key: str, value: object):
         if 'ATeam' in key:
@@ -275,7 +289,7 @@ if __name__ == '__main__':
         config.save('mslist.json')
     else:
         print('Generating LINC config')
-        config = LINCJSONConfig(args['mspath'])
+        config = LINCJSONConfig(args['mspath'], prefac_h5parm=args['cal_solutions'])
         # Input MS are a special case and no longer needed after this.
         args.pop('mspath')
         args.pop('vlbi')
