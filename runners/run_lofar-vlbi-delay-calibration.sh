@@ -2,11 +2,12 @@
 {
 echo "=============================="
 echo "===    VLBI-cwl Runner     ==="
+echo "===   Delay-Calibration    ==="
 echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] -d <data path> -c <calibrator solutions>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] -d <data path> -c <LINC solutions>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
@@ -241,16 +242,16 @@ pattern="${DATADIR}/*.MS"
 files=( $pattern )
 ms="${files[0]}"  # printf is safer!
 obsid=$(echo $(basename $ms) | awk -F'_' '{print $1}')
-mv "$WORKDIR" "$FINALDIR/${obsid}_LOFAR-VLBI"
+mv "$WORKDIR" "$FINALDIR/${obsid}_LOFAR-VLBI_Delay-Calibration"
 
 echo "==========================="
 echo "=== LOFAR-VLBI  Summary ==="
 echo "==========================="
 echo LINC version:       $LINC_COMMIT
 echo LOFAR-VLBI version: $VLBI_COMMIT
-echo Output:             "$FINALDIR/${obsid}_LOFAR-VLBI"
-echo Solutions:          "$FINALDIR/${obsid}_LOFAR-VLBI/results_VLBI_CWL/*h5"
-echo Inspection plots:   "$FINALDIR/${obsid}_LOFAR-VLBI/results_VLBI_CWL/inspection"
-echo Pipeline logs:      "$FINALDIR/${obsid}_LOFAR-VLBI/logs_VLBI_CWL"
-echo Pipeline summary:   "$FINALDIR/${obsid}_LOFAR-VLBI/logs_VLBI_CWL/*summary.log"
+echo Output:             "$FINALDIR/${obsid}_LOFAR-VLBI_Delay-Calibration"
+echo Solutions:          "$FINALDIR/${obsid}_LOFAR-VLBI_Delay-Calibration/results_VLBI_CWL/*h5"
+echo Inspection plots:   "$FINALDIR/${obsid}_LOFAR-VLBI_Delay-Calibration/results_VLBI_CWL/inspection"
+echo Pipeline logs:      "$FINALDIR/${obsid}_LOFAR-VLBI_Delay-Calibration/logs_VLBI_CWL"
+echo Pipeline summary:   "$FINALDIR/${obsid}_LOFAR-VLBI_Delay-Calibration/logs_VLBI_CWL/*summary.log"
 } |& tee job_output_full.txt
