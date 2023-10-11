@@ -1,25 +1,6 @@
---- AOFlaggerStep.cc	2023-10-10 11:34:40.153724228 +0200
-+++ AOFlaggerStep_fix.cc	2023-10-10 11:35:36.880290197 +0200
-@@ -48,8 +48,8 @@
-         aoflagger_.FindStrategyFile(aoflagger::TelescopeId::LOFAR_TELESCOPE);
- 
-   window_size_ = parset.getUint(prefix + "timewindow", 0);
--  memory_ = parset.getUint(prefix + "memorymax", 0);
--  memory_percentage_ = parset.getUint(prefix + "memoryperc", 0);
-+  memory_ = parset.getDouble(prefix + "memorymax", 0);
-+  memory_percentage_ = parset.getDouble(prefix + "memoryperc", 0.0);
-   overlap_ = parset.getUint(prefix + "overlapmax", 0);
-   // Also look for keyword overlap for backward compatibility.
-   if (overlap_ == 0) {
-@@ -224,7 +224,6 @@
-   n_times_++;
-   // AOFlagger reads the data and updates the flags, make these fields
-   // independent.
--  buffer->MakeIndependent(kDataField | kFlagsField);
-   buffer_[buffer_index_] = std::move(buffer);
-   ++buffer_index_;
-   if (buffer_index_ == window_size_ + 2 * overlap_) {
-@@ -278,7 +277,7 @@
+--- AOFlaggerStep.cc    2023-10-11 15:36:36.676630745 +0200
++++ AOFlaggerStep_fix.cc        2023-10-10 11:35:36.880290197 +0200
+@@ -277,7 +277,7 @@
    interval.id = 0;
    interval.times.resize(n_times);
    for (size_t i = 0; i != n_times; ++i) {
@@ -27,4 +8,3 @@
 +    interval.times[i] = buffer_[i]->GetTime();
    }
    aoflagger_.SetIntervalList({interval});
- 
