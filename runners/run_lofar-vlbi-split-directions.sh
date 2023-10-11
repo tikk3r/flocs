@@ -7,7 +7,7 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] -d <data path> -c <LINC solutions> -d <delay calibrator solutions>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] -d <data path> -c <LINC solutions> -d <delay calibrator solutions> -i <target catalogue>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
@@ -31,6 +31,8 @@ while getopts ":d:s:r:l:b:v:c:d:" opt; do
         c) TARGETSOLS="$OPTARG"
         ;;
         d) DELAYSOLS="$OPTARG"
+        ;;
+        i) IMGCAT="$OPTARG"
         ;;
         \?) echo "Invalid option -$OPTARG" >&2
             echo
@@ -78,6 +80,13 @@ if [[ ! -f $DELAYSOLS ]]; then
     exit 5
 else
     export DELAYSOLS=$(readlink -f $DELAYSOLS)
+fi
+
+if [[ ! -f $IMGCAT ]]; then
+    echo "Target imaging catalogue $IMGCAT does not exist or is not accessible!"
+    exit 6
+else
+    export IMGCAT=$(readlink -f $IMGCAT)
 fi
 
 if [[ -z $RUNDIR ]]; then
