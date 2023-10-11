@@ -95,6 +95,10 @@ From: fedora:36
     # Necessary for nomacs
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 
+    mkdir -p $INSTALLDIR/patches
+    cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
+    mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patches/
+    
 	# Install OpenBLAS
 	mkdir -p /opt/OpenBLAS
 	cd /opt/OpenBLAS
@@ -581,10 +585,6 @@ From: fedora:36
 
     dnf -y install dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
     dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel nodejs
-
-    mkdir -p $INSTALLDIR/patches
-    cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
-    mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patches/
 
     pip --no-cache-dir install meqtrees-cattery --no-deps
     pip --no-cache-dir install owlcat --no-deps
