@@ -142,14 +142,17 @@ class LINCJSONConfig:
 
 class VLBIJSONConfig(LINCJSONConfig):
     """ Class for generating JSON configuration files to be passed to the lofar-vlbi pipeline."""
-    def __init__(self, mspath: str, prefac_h5parm: str, ddf_solsdir: str):
+    def __init__(self, mspath: str, prefac_h5parm: str, ddf_solsdir: str, workflow: str = 'delay-calibration'):
         self.configdict = {}
         
         print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/*.MS')
         files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/*.MS'))
         print(f'Found {len(files)} files')
 
-        prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'target')
+        if workflow == 'delay-calibration':
+            prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'target')
+        elif workflow == 'split-directions':
+            prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'sol000')
 
         mslist = []
         for dd in files:
@@ -190,6 +193,8 @@ if __name__ == '__main__':
     vlbiparser.add_argument('--phasesol', type=str, default='TGSSphase', help='Name of the soltab with LINC target phase solutions.')
     vlbiparser.add_argument('--reference_stationSB', type=int, default=104, help='Name of the soltab with LINC target phase solutions.')
     vlbiparser.add_argument('--number_cores', type=int, default=12, help='Number of cores to use per job for tasks with high I/O or memory.')
+    vlbiparser.add_argument('--image_cat', type=cwl_file, default=cwl_file('lotss_catalogue.csv'), help='Catalogue containing target sources for imaging after delay calibration.')
+    vlbiparser.add_argument('--delay_solset', type=cwl_file, default='' , help='Delay calibration solutions.')
 
     dparser = parser.add_argument_group('== Data and calibration ==')
     dparser.add_argument('--cal_solutions', type=cwl_file, default='', help='Path to the final LINC calibrator solution file.')
@@ -260,7 +265,10 @@ if __name__ == '__main__':
 
     if args['vlbi']:
         print('Generating LOFAR-VLBI config')
-        config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir=args['ddf_solsdir'])
+        if args['delay_solset']['path']:
+            config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['delay_solset'], ddf_solsdir=args['ddf_solsdir'], workflow='split-directions')
+        else:
+            config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir=args['ddf_solsdir'], workflow='delay-calibration')
         # Input MS are a special case and no longer needed after this.
         args.pop('mspath')
         args.pop('vlbi')
