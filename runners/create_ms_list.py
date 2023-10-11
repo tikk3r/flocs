@@ -121,7 +121,7 @@ class LINCJSONConfig:
         files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/*.MS'))
         print(f'Found {len(files)} files')
 
-        if not prefac_h5parm['path']:
+        if (not prefac_h5parm['path'].endswith('h5') and not prefac_h5parm['path'].endswith('h5parm')):
             mslist = []
             for ms in files:
                 x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
