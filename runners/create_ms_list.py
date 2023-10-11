@@ -114,7 +114,7 @@ def get_reffreq(msfile: str) -> float:
 
 class LINCJSONConfig:
     """ Class for generating JSON configuration files to be passed to the LINC pipeline."""
-    def __init__(self, mspath: str, prefac_h5parm=None):
+    def __init__(self, mspath: str, prefac_h5parm={'path':''}):
         self.configdict = {}
         
         print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/*.MS')
