@@ -1,10 +1,13 @@
---- AOFlaggerStep.cc    2023-10-11 15:36:36.676630745 +0200
-+++ AOFlaggerStep_fix.cc        2023-10-10 11:35:36.880290197 +0200
-@@ -277,7 +277,7 @@
-   interval.id = 0;
-   interval.times.resize(n_times);
-   for (size_t i = 0; i != n_times; ++i) {
--    interval.times[i] = buffer_[i]->getTime();
-+    interval.times[i] = buffer_[i]->GetTime();
-   }
-   aoflagger_.SetIntervalList({interval});
+--- AOFlaggerStep.cc    2023-10-11 19:59:31.611562281 +0200
++++ AOFlaggerStep_fix.cc        2023-10-11 20:00:25.814211355 +0200
+@@ -48,8 +48,8 @@
+         aoflagger_.FindStrategyFile(aoflagger::TelescopeId::LOFAR_TELESCOPE);
+
+   window_size_ = parset.getUint(prefix + "timewindow", 0);
+-  memory_ = parset.getUint(prefix + "memorymax", 0);
+-  memory_percentage_ = parset.getUint(prefix + "memoryperc", 0);
++  memory_ = parset.getDouble(prefix + "memorymax", 0);
++  memory_percentage_ = parset.getDouble(prefix + "memoryperc", 0.0);
+   overlap_ = parset.getUint(prefix + "overlapmax", 0);
+   // Also look for keyword overlap for backward compatibility.
+   if (overlap_ == 0) {
