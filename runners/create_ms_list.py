@@ -191,6 +191,7 @@ if __name__ == '__main__':
     vlbiparser.add_argument('--reference_stationSB', type=int, default=104, help='Name of the soltab with LINC target phase solutions.')
     vlbiparser.add_argument('--number_cores', type=int, default=12, help='Number of cores to use per job for tasks with high I/O or memory.')
     vlbiparser.add_argument('--image_catalogue', type=cwl_file, default='lotss_catalogue.csv', help='Catalogue containing target sources for imaging after delay calibration.')
+    vlbiparser.add_argument('--delay_solset', type=cwl_file, default='' , help='Delay calibration solutions.')
 
     dparser = parser.add_argument_group('== Data and calibration ==')
     dparser.add_argument('--cal_solutions', type=cwl_file, default='', help='Path to the final LINC calibrator solution file.')
