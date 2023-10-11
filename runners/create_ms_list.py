@@ -142,15 +142,18 @@ class LINCJSONConfig:
 
 class VLBIJSONConfig(LINCJSONConfig):
     """ Class for generating JSON configuration files to be passed to the lofar-vlbi pipeline."""
-    def __init__(self, mspath: str, prefac_h5parm: str, ddf_solsdir: str):
+    def __init__(self, mspath: str, prefac_h5parm: str, ddf_solsdir: str, workflow: str = 'delay-calibration'):
         self.configdict = {}
         
         print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/*.MS')
         files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/*.MS'))
         print(f'Found {len(files)} files')
 
-        prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'target')
-
+        if workflow == 'delay-calibration':
+            prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'target')
+        elif workflow == 'split-directions':
+            prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'sol000')
+            
         mslist = []
         for dd in files:
             if check_dd_freq(dd, prefac_freqs ):
@@ -263,7 +266,7 @@ if __name__ == '__main__':
     if args['vlbi']:
         print('Generating LOFAR-VLBI config')
         if args['delay_solset']['path']:
-            config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['delay_solset'], ddf_solsdir=args['ddf_solsdir'])
+            config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['delay_solset'], ddf_solsdir=args['ddf_solsdir'], workflow='split-directions')
         else:
             config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir=args['ddf_solsdir'])
         # Input MS are a special case and no longer needed after this.
