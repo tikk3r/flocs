@@ -153,7 +153,7 @@ class VLBIJSONConfig(LINCJSONConfig):
             prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'target')
         elif workflow == 'split-directions':
             prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'sol000')
-            
+
         mslist = []
         for dd in files:
             if check_dd_freq(dd, prefac_freqs ):
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     vlbiparser.add_argument('--phasesol', type=str, default='TGSSphase', help='Name of the soltab with LINC target phase solutions.')
     vlbiparser.add_argument('--reference_stationSB', type=int, default=104, help='Name of the soltab with LINC target phase solutions.')
     vlbiparser.add_argument('--number_cores', type=int, default=12, help='Number of cores to use per job for tasks with high I/O or memory.')
-    vlbiparser.add_argument('--image_catalogue', type=cwl_file, default='lotss_catalogue.csv', help='Catalogue containing target sources for imaging after delay calibration.')
+    vlbiparser.add_argument('--image_cat', type=cwl_file, default='lotss_catalogue.csv', help='Catalogue containing target sources for imaging after delay calibration.')
     vlbiparser.add_argument('--delay_solset', type=cwl_file, default='' , help='Delay calibration solutions.')
 
     dparser = parser.add_argument_group('== Data and calibration ==')
@@ -268,7 +268,7 @@ if __name__ == '__main__':
         if args['delay_solset']['path']:
             config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['delay_solset'], ddf_solsdir=args['ddf_solsdir'], workflow='split-directions')
         else:
-            config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir=args['ddf_solsdir'])
+            config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir=args['ddf_solsdir'], workflow='delay-calibration')
         # Input MS are a special case and no longer needed after this.
         args.pop('mspath')
         args.pop('vlbi')
