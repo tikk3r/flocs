@@ -124,7 +124,7 @@ if [[ -z "$SIMG" ]]; then
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json' >> jobrunner.sh
-    (time bash jobrunner.sh 2>&1) | tee $WORKDIR/job_output.txt
+    (time bash jobrunner.sh 2>&1) | tee $WORKDIR/job_output_linc-calibrator.txt
     echo LINC ended
 else
     echo "Using container $SIMG"
@@ -150,7 +150,7 @@ else
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json' >> jobrunner.sh
-    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh 2>&1) |& tee $WORKDIR/job_output_LINC_calibrator.txt
+    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh 2>&1) |& tee $WORKDIR/job_output_linc-calibrator.txt
     echo LINC ended
 fi
 echo Cleaning up...
