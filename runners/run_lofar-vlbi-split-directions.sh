@@ -7,14 +7,14 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] -d <data path> -c <LINC solutions> -d <delay calibrator solutions> -i <target catalogue>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] -d <data path> -c <delay calibrator solutions> -i <target catalogue>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
     exit 0
 fi
 
-while getopts ":d:s:r:l:b:v:c:d:" opt; do
+while getopts ":d:s:r:l:b:v:c:i:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
@@ -28,9 +28,7 @@ while getopts ":d:s:r:l:b:v:c:d:" opt; do
         ;;
         v) VLBI_DATA_ROOT="$OPTARG"
         ;;
-        c) TARGETSOLS="$OPTARG"
-        ;;
-        d) DELAYSOLS="$OPTARG"
+        c) DELAYSOLS="$OPTARG"
         ;;
         i) IMGCAT="$OPTARG"
         ;;
@@ -67,24 +65,17 @@ if [[ ! -z "$SIMG" ]]; then
     fi
 fi
 
-if [[ ! -f $TARGETSOLS ]]; then
-    echo "Calibrator solutions $TARGETSOLS do not exist or are not accessible!"
+if [[ ! -f $DELAYSOLS ]]; then
+    echo "Calibrator solutions $DELAYSOLS do not exist or are not accessible!"
     exit 4
 else
     export DATADIR=$(readlink -f $DATADIR)
-    export TARGETSOLS=$(readlink -f $TARGETSOLS)
-fi
-
-if [[ ! -f $DELAYSOLS ]]; then
-    echo "Delay calibrator solutions $DELAYSOLS do not exist or are not accessible!"
-    exit 5
-else
     export DELAYSOLS=$(readlink -f $DELAYSOLS)
 fi
 
 if [[ ! -f $IMGCAT ]]; then
     echo "Target imaging catalogue $IMGCAT does not exist or is not accessible!"
-    exit 6
+    exit 5
 else
     export IMGCAT=$(readlink -f $IMGCAT)
 fi
@@ -118,8 +109,6 @@ export LOGSDIR=$WORKDIR/logs_VLBI_CWL
 ## The trailing slash is important here.
 export TMPDIR=$WORKDIR/tmpdir_VLBI_CWL/
 
-export LINC_DATA_ROOT
-export VLBI_DATA_ROOT
 git clone https://github.com/jurjen93/lofar_helpers.git $LOFAR_HELPERS_ROOT
 git clone https://github.com/rvweeren/lofar_facet_selfcal.git $FACETSELFCAL_ROOT
 sed -i '7704d' $FACETSELFCAL_ROOT/facetselfcal.py
@@ -160,6 +149,9 @@ elif [ -d $VLBI_DATA_ROOT ] && [ -d $VLBI_DATA_ROOT/steps ]; then
     echo $VLBI_DATA_ROOT exists and seems to contain VLBI-cwl. Continueing...
 fi
 
+export LINC_DATA_ROOT
+export VLBI_DATA_ROOT
+
 # Obtain LINC commit used
 cd $LINC_DATA_ROOT
 export LINC_COMMIT=$(git rev-parse --short HEAD)
@@ -199,17 +191,17 @@ if [[ -z "$SIMG" ]]; then
     python plot_field.py --MS $ms
 
     export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
-    git clone https://github.com/tikk3r/flocs.git
+    git clone --single-branch -b add-split-directions https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv
+    python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
     echo export MPLBACKEND='Agg' > jobrunner.sh
     echo export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH >> jobrunner.sh
     echo export PYTHONPATH=\$VLBI_DATA_ROOT/scripts:\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist.json 2>&1' >> jobrunner.sh
-    (time bash jobrunner.sh) |& tee $WORKDIR/job_output_test.txt
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/split-directions.cwl mslist.json 2>&1' >> jobrunner.sh
+    (time bash jobrunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl_split-directions.txt
     echo VLBI-cwl ended
 else
     echo "Using container $SIMG"
@@ -238,16 +230,16 @@ else
     wget https://raw.githubusercontent.com/lmorabit/lofar-vlbi/master/plot_field.py
     singularity exec -B $PWD,$BINDPATHS $SIMG python plot_field.py --MS $ms
 
-    git clone https://github.com/tikk3r/flocs.git
+    git clone --single-branch -b add-split-directions https://github.com/tikk3r/flocs.git
 
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
     echo export MPLBACKEND='Agg' > jobrunner.sh
     echo export PYTHONPATH=\$VLBI_DATA_ROOT/scripts:\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/split-directions.cwl mslist.json 2>&1' >> jobrunner.sh
-    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl.txt
+    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl_split-directions.txt
     echo VLBI-cwl ended
 fi
 echo Cleaning up...
