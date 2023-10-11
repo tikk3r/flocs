@@ -262,7 +262,10 @@ if __name__ == '__main__':
 
     if args['vlbi']:
         print('Generating LOFAR-VLBI config')
-        config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir=args['ddf_solsdir'])
+        if args['delay_solset']['path']:
+            config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['delay_solset'], ddf_solsdir=args['ddf_solsdir'])
+        else:
+            config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir=args['ddf_solsdir'])
         # Input MS are a special case and no longer needed after this.
         args.pop('mspath')
         args.pop('vlbi')
