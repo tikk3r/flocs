@@ -156,7 +156,7 @@ else
 
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py create_ms_list.py $DATADIR --cal_solutions $CALSOLS --min_unflagged_fraction 0.05
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS --min_unflagged_fraction 0.05
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> jobrunner.sh
