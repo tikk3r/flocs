@@ -128,7 +128,7 @@ class LINCJSONConfig:
                 mslist.append(x)
             self.configdict['msin'] = mslist
         else:
-            prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'target')
+            prefac_freqs = get_prefactor_freqs(solname = prefac_h5parm['path'], solset = 'calibrator')
 
             mslist = []
             for dd in files:
