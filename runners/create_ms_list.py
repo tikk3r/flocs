@@ -279,7 +279,7 @@ if __name__ == '__main__':
 
     if args['vlbi']:
         print('Generating LOFAR-VLBI config')
-        if (args['delay_solset']['path'].endswith('h5')) or (not args['delay_solset']['path'].endswith('h5parm')):
+        if (args['delay_solset']['path'].endswith('h5')) or (args['delay_solset']['path'].endswith('h5parm')):
             config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['delay_solset'], ddf_solsdir=args['ddf_solsdir'], workflow='split-directions')
         else:
             config = VLBIJSONConfig(args['mspath'], prefac_h5parm=args['solset'], ddf_solsdir=args['ddf_solsdir'], workflow='delay-calibration')
