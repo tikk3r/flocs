@@ -6,14 +6,14 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] -d <data path> -c <calibrator solutions>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-e <options for create_ms_list.py>] -d <data path> -c <calibrator solutions>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
     exit 0
 fi
 
-while getopts ":d:s:r:l:b:c:" opt; do
+while getopts ":d:s:r:l:b:c:e:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
@@ -26,6 +26,8 @@ while getopts ":d:s:r:l:b:c:" opt; do
         l) LINC_DATA_ROOT="$OPTARG"
         ;;
         c) CALSOLS="$OPTARG"
+        ;;
+        e) EXTRAOPTS="$OPTARG"
         ;;
         \?) echo "Invalid option -$OPTARG" >&2
             echo
@@ -129,7 +131,7 @@ if [[ -z "$SIMG" ]]; then
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS --min_unflagged_fraction 0.05
+    python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS $EXTRAOPTS
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
@@ -156,7 +158,7 @@ else
 
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS --min_unflagged_fraction 0.05
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS $EXTRAOPTS
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> jobrunner.sh
