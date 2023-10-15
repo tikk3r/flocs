@@ -7,7 +7,7 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] -d <data path> -c <delay calibrator solutions> -i <target catalogue>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] [-e <options for create_ms_list.py>] -d <data path> -c <delay calibrator solutions> -i <target catalogue>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
@@ -29,6 +29,8 @@ while getopts ":d:s:r:l:b:v:c:i:" opt; do
         v) VLBI_DATA_ROOT="$OPTARG"
         ;;
         c) DELAYSOLS="$OPTARG"
+        ;;
+        e) EXTRAOPTS="$OPTARG"
         ;;
         i) IMGCAT="$OPTARG"
         ;;
@@ -165,17 +167,6 @@ cd -
 # Prepare workflow files.
 sed -i "s/PREFACTOR_DATA_ROOT/LINC_DATA_ROOT/" $VLBI_DATA_ROOT/steps/*.cwl
 
-echo "Overriding rfistrategies with Lua >5.3 compatible ones from AOFlagger repository"
-wget https://gitlab.com/aroffringa/aoflagger/-/raw/master/data/strategies/lofar-default.lua -O $LINC_DATA_ROOT/rfistrategies/lofar-default.lua
-
-echo Making sure all scripts are executable
-chmod 755 $LINC_DATA_ROOT/scripts/*.py
-
-echo Making sure all shebang lines use /usr/bin/env python instead of /usr/bin/env
-for f in $LINC_DATA_ROOT/scripts/*.py; do
-    sed -i "s?\#\!/usr/bin/python?\#\!/usr/bin/env python?" $f
-done
-
 mkdir -p $RESULTSDIR
 mkdir -p $LOGSDIR
 mkdir -p $TMPDIR
@@ -193,7 +184,7 @@ if [[ -z "$SIMG" ]]; then
     export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
     git clone --single-branch -b add-split-directions https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT
+    python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT $EXTRAOPTS
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
@@ -232,7 +223,7 @@ else
 
     git clone --single-branch -b add-split-directions https://github.com/tikk3r/flocs.git
 
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT $EXTRAOPTS
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
