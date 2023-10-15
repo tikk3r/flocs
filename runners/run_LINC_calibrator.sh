@@ -6,14 +6,14 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] -d <data path>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-e <options for create_ms_list.py>] -d <data path>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
     exit 0
 fi
 
-while getopts ":d:s:r:l:b:" opt; do
+while getopts ":d:s:r:l:b:e:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
@@ -24,6 +24,8 @@ while getopts ":d:s:r:l:b:" opt; do
         r) RUNDIR="$OPTARG"
         ;;
         l) LINC_DATA_ROOT="$OPTARG"
+        ;;
+        e) EXTRAOPTS="$OPTARG'"
         ;;
         \?) echo "Invalid option -$OPTARG" >&2
             echo
@@ -102,13 +104,6 @@ cd $LINC_DATA_ROOT
 export LINC_COMMIT=$(git rev-parse --short HEAD)
 cd -
 
-# Prepare workflow files.
-echo "Overriding rfistrategies with Lua >5.3 compatible ones from AOFlagger repository"
-wget https://gitlab.com/aroffringa/aoflagger/-/raw/master/data/strategies/lofar-default.lua -O $LINC_DATA_ROOT/rfistrategies/lofar-default.lua
-
-echo Making sure all scripts are executable
-chmod 755 $LINC_DATA_ROOT/scripts/*.py
-
 mkdir -p $RESULTSDIR
 mkdir -p $LOGSDIR
 mkdir -p $TMPDIR
@@ -119,7 +114,7 @@ if [[ -z "$SIMG" ]]; then
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py  --filter_baselines '*&' $DATADIR
+    python flocs/runners/create_ms_list.py  --filter_baselines '*&' $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
@@ -147,7 +142,7 @@ else
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
 
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py --filter_baselines '*&' $DATADIR
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py --filter_baselines '*&' $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json' >> jobrunner.sh
