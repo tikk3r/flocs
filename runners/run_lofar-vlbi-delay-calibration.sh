@@ -80,14 +80,14 @@ fi
 export RUNDIR
 
 # Warn on low disk space (< 25 TB).
-reqSpace=25000000000000
+reqSpace=15000000000000
 reqSpaceHum=$(echo "scale=1;$reqSpace/1000000000000" | bc -l)T
 availSpace=$(df $RUNDIR | awk 'NR==2 { print $4 }')
 availSpaceHum=$(df -H $RUNDIR | awk 'NR==2 { print $4 }')
 if (( availSpace < reqSpace )); then
     echo "!! WARNING !!"
     echo "!! WARNING !! only $availSpaceHum of available disk space detected!"
-    echo "!! WARNING !! at least $reqSpaceHum is recommended for an 8 hour dataset."
+    echo "!! WARNING !! at least $reqSpaceHum is recommended for a dysco-compressed 8 hour dataset."
     echo "!! WARNING !!"
 fi
 
