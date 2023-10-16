@@ -117,8 +117,8 @@ class LINCJSONConfig:
     def __init__(self, mspath: str, prefac_h5parm={'path':''}):
         self.configdict = {}
         
-        print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/*.MS')
-        files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/*.MS'))
+        print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/L*.MS')
+        files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/L*.MS'))
         print(f'Found {len(files)} files')
 
         if (not prefac_h5parm['path'].endswith('h5') and not prefac_h5parm['path'].endswith('h5parm')):
@@ -159,8 +159,8 @@ class VLBIJSONConfig(LINCJSONConfig):
     def __init__(self, mspath: str, prefac_h5parm: str, ddf_solsdir: str, workflow: str = 'delay-calibration'):
         self.configdict = {}
         
-        print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/*.MS')
-        files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/*.MS'))
+        print('Searching ' + os.path.abspath(mspath).rstrip('/') + '/L*.MS')
+        files = sorted(glob.glob(os.path.abspath(mspath).rstrip('/') + '/L*.MS'))
         print(f'Found {len(files)} files')
 
         if workflow == 'delay-calibration':
