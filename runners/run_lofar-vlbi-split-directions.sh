@@ -151,8 +151,8 @@ elif [ -d $VLBI_DATA_ROOT ] && [ -d $VLBI_DATA_ROOT/steps ]; then
     echo $VLBI_DATA_ROOT exists and seems to contain VLBI-cwl. Continueing...
 fi
 
-export LINC_DATA_ROOT
-export VLBI_DATA_ROOT
+export LINC_DATA_ROOT=$(readlink -f $LINC_DATA_ROOT)
+export VLBI_DATA_ROOT=$(readlink -f $VLBI_DATA_ROOT)
 
 # Obtain LINC commit used
 cd $LINC_DATA_ROOT
