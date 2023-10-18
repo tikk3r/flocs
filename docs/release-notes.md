@@ -13,6 +13,32 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v4.5.0
+Container will now follow flocs naming scheme: `flocs_vx.Y.Z_<march>_<mtune>_{mkl/aocl}[_cuda].sif`
+
+**Updates**
+* Add `bc`
+* Add missing `--min_unflagged_fraction` option to  `create_ms_list.py`.
+* Add [lotss-hba-survey](https://github.com/mhardcastle/lotss-hba-survey) scripts.
+* Add `rename_MS_from_LTA.sh` for renaming files downloaded from the LTA through wget.
+* Add `extract_MS_and_compress.sh` to extract MS tarballs, dysco compress them and remove the full resolution flags.
+* Add example for the Split-Directions workflow as `run_lofar-vlbi-split-directions.sh`.
+* `create_ms_list.py` will now check frequency coverage between LINC calibrator and target.
+* Downgrade DP3 back to 161559ff to make DD solints work with model columns.
+* Renamed `run_lofar-vlbi.sh` example to `run_lofar-vlbi-delay-calibration.sh`.
+* Replace sub-sources-outside-region.py with facetselfcal version.
+* Set the unflagged fraction limit for LINC to 5% in the example runner, because 50% is annoying.
+* Update example runners to produce cleaner output. Temporary directory will now be renamed to `L<obsid>_<pipeline>` after a run, e.g. `L123456_LINC_calibrator`.
+* Update ddf-pipeline to 712618b.
+* Update LOFAR H5plot to 2.8.0.
+
+**Fixes**
+* Fix `filter_baselines` argument in LINC calibrator runner.
+* Fix missing calibrator solutions argument in LINC target runner.
+* Fix running LINC target without container.
+* Fix some issues when using the runners without container argument.
+* Include DP3 aoflagger update required to run delay calibration.
+
 ## v4.4.0
 **Updates**
 * Add `SciencePlots` Python package.
