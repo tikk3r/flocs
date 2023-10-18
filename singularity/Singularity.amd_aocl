@@ -792,8 +792,6 @@ From: fedora:36
     #
     # entrypoint
     #
-%runscript
-    echo LOFAR-SKSP Singularity Container v4.1.0
 
 %help
     This Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
