@@ -615,6 +615,12 @@ EOF
     cd $INSTALLDIR
     git clone https://github.com/mhardcastle/lotss-query.git
 
+    #
+    # Install lotss-hba-survey
+    #
+    cd $INSTALLDIR
+    git clone https://github.com/mhardcastle/lotss-hba-survey.git
+
 
     #
     # Install custom runners
