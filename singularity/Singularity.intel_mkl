@@ -396,9 +396,9 @@ EOF
     sed -i '1i #include <array>' $INSTALLDIR/idg/src/idg-lib/src/CUDA/common/routines/Beam.cpp
     sed -i '1i #include <array>' $INSTALLDIR/idg/src/idg-lib/src/CUDA/Generic/routines/Imaging.cpp
     if [ $HAS_CUDA = true ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DBUILD_LIB_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_INCLUDE_DIRS=/opt/intel/oneapi/mkl/latest/include/ -DBUILD_LIB_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
     elif [ $HAS_CUDA = false ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
+        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_INCLUDE_DIRS=/opt/intel/oneapi/mkl/latest/include/ -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
     elif [ $HAS_CUDA = true ] && [ $HAS_MKL = false ]; then
         cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
     else
