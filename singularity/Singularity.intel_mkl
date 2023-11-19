@@ -25,7 +25,7 @@ From: fedora:36
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=161559ff
+    export DPPP_VERSION=13d310c6
 	export DYSCO_VERSION=2e7f331
     export EVERYBEAM_VERSION=22cd113b
     export FFTW_VERSION=3.5.8
@@ -416,7 +416,6 @@ EOF
     git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DPPP/src
     cd $INSTALLDIR/DPPP/src
     git checkout ${DPPP_VERSION}
-    patch steps/AOFlaggerStep.cc $INSTALLDIR/patches/AOFlaggerStep.patch
     echo export DPPP_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/DPPP/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
