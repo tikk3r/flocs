@@ -184,7 +184,7 @@ if [[ -z "$SIMG" ]]; then
     export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
     git clone --single-branch -b add-split-directions https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT $EXTRAOPTS
+    python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT $EXTRAOPTS --linc=$LINC_DATA_ROOT
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
@@ -223,7 +223,7 @@ else
 
     git clone --single-branch -b add-split-directions https://github.com/tikk3r/flocs.git
 
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT $EXTRAOPTS
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --delay_solset=$DELAYSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --image_cat=$IMGCAT $EXTRAOPTS --linc=$LINC_DATA_ROOT
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
