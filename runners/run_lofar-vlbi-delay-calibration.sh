@@ -186,7 +186,7 @@ if [[ -z "$SIMG" ]]; then
     export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
     git clone https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv $EXTRAOPTS
+    python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
@@ -225,7 +225,7 @@ else
 
     git clone https://github.com/tikk3r/flocs.git
 
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv $EXTRAOPTS
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv  --linc=$LINC_DATA_ROOT $EXTRAOPTS
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
