@@ -210,7 +210,7 @@ if __name__ == '__main__':
     vlbiparser.add_argument('--image_cat', type=cwl_file, default=cwl_file('lotss_catalogue.csv'), help='Catalogue containing target sources for imaging after delay calibration.')
     vlbiparser.add_argument('--delay_solset', type=cwl_file, default='' , help='Delay calibration solutions.')
     vlbiparser.add_argument('--do_selfcal', type=bool, default=False, help='[Split-Directions] self calibrate the split out targets.')
-    vlbiparser.add_argument('--linc', type=str, default='', help='Path to LINC installation directory.')
+    vlbiparser.add_argument('--linc', type=cwl_dir, default='', help='Path to LINC installation directory.')
 
     dparser = parser.add_argument_group('== Data and calibration ==')
     dparser.add_argument('--cal_solutions', type=cwl_file, default='', help='Path to the final LINC calibrator solution file.')
