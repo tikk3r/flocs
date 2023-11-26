@@ -103,7 +103,7 @@ sharedarray>=3.2.0,<=3.2.1
 SQLAlchemy
 sshtunnel
 subprocess32
-tables>=3.6.0,<=3.7.0
+tables
 toil[cwl]==5.10
 traceback2
 tqdm<=4.64.0
