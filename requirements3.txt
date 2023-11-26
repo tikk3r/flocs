@@ -52,7 +52,7 @@ matplotlib>=2.0.0
 markupsafe<2.1.0
 mimeparse
 mock
-mocpy<0.12
+mocpy
 more-itertools
 nmmn
 nose>=1.3.7
