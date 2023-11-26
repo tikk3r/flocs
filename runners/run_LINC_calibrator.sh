@@ -34,15 +34,6 @@ while getopts ":d:s:r:l:b:e:" opt; do
         exit 1
         ;;
     esac
-
-    case $OPTARG in
-        -*) echo "$opt needs a valid argument"
-            echo
-            echo "Usage:"
-            echo $HELP
-        exit 1
-        ;;
-    esac
 done
 
 # Check if user gave sensible paths.
