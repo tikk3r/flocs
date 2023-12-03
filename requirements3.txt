@@ -57,6 +57,7 @@ nmmn
 nose
 numdifftools
 numexpr
+numpy==1.26.2
 oauthlib
 pluggy
 Polygon3
