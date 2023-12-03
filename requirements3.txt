@@ -1,4 +1,3 @@
-APLpy
 asn1crypto
 astLib
 astropy
