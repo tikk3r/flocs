@@ -1,3 +1,4 @@
+altair
 asn1crypto
 astLib
 astropy
@@ -60,6 +61,7 @@ numexpr
 numpy==1.26.2
 oauthlib
 pluggy
+polars
 Polygon3
 prettytable
 progressbar
@@ -85,6 +87,7 @@ python-monetdb
 pytz
 pyvo
 pywavelets
+regions
 reproject
 requests
 requests-oauthlib
