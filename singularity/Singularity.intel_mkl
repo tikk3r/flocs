@@ -561,9 +561,6 @@ EOF
     patch src/DDFacet/Gridder/CMakeLists.txt /opt/lofar/patches/DDF_Gridder_CMake.patch
     cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
     cp -r SkyModel/Sky /opt/lofar/DDFacet/lib/python${PYTHON_VERSION}/site-packages/SkyModel/
-    # Overwrite with the facetselfcal version.
-    wget https://raw.githubusercontent.com/rvweeren/lofar_facet_selfcal/main/sub-sources-outside-region.py -O /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
-    chmod 755 /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
 
     #
     # Install killMS
@@ -606,6 +603,8 @@ EOF
     #wget https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
     wget http://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
     cd $INSTALLDIR
+    wget https://raw.githubusercontent.com/rvweeren/lofar_facet_selfcal/main/sub-sources-outside-region.py -O /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
+    chmod 755 /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
 
     #
     # Install lotss-query
@@ -627,7 +626,7 @@ EOF
     cd /opt/lofar/runners
     git clone https://github.com/tikk3r/flocs.git
     cp flocs/runners/run* .
-    cp flocs/utility /opt/lofar/
+    cp -r flocs/utility /opt/lofar/
     rm -rf flocs
     chmod 755 /opt/lofar/runners/*.sh
     chmod 755 /opt/lofar/utility/*.sh
