@@ -25,12 +25,12 @@ From: fedora:38
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
-    export DPPP_VERSION=13d310c6
+    export DPPP_VERSION=4df56d1f
 	export DYSCO_VERSION=2e7f331
     export EVERYBEAM_VERSION=22cd113b
     export FFTW_VERSION=3.5.8
 	export HDF5_VERSION=1.12.1
-    export IDG_VERSION=f4a3a96c
+    export IDG_VERSION=011687ed
 	export LAPACK_VERSION=3.8.0
 	export LOSOTO3_VERSION=latest
     export LSMTOOL_VERSION=master
@@ -39,7 +39,7 @@ From: fedora:38
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=f161b0a
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=a5b4e037
+	export WSCLEAN_VERSION=d6221538
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
@@ -71,10 +71,11 @@ From: fedora:38
         export CFLAGS="-g $CFLAGS"
         export CXXFLAGS="-g $CXXFLAGS"
     fi
-    export CPLUS_INCLUDE_PATH="/opt/OpenBLAS/include:/opt/hdf5/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPLUS_INCLUDE_PATH"
-    export CPATH="/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/hdf5/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPATH"
-    export CMAKE_PREFIX_PATH="/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:/opt/hdf5:$INSTALLDIR/lofar:$INSTALLDIR/idg:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
-    export LD_LIBRARY_PATH="$INSTALLDIR/lofarstman/lib64/:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:/opt/hdf5/lib:$INSTALLDIR/idg/lib:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
+    export CPLUS_INCLUDE_PATH="/usr/include/python${PYTHON_VERSION}/:/opt/intel/oneapi/mkl/latest/include:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/9:$CPLUS_INCLUDE_PATH:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPLUS_INCLUDE_PATH"
+    export CPATH="/usr/include/python{$PYTHON_VERSION}:/opt/intel/oneapi/mkl/latest/include:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config:$CPATH"
+    export CMAKE_PREFIX_PATH="/opt/hdf5:/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/idg:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
+    export LD_LIBRARY_PATH="/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
+    echo export LD_LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib/intel64/:/opt/intel/oneapi/compiler/latest/linux/compiler/lib/intel64_lin/:/opt/intel/oneapi/tbb/latest/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mkl/latest/lib/intel64:/opt/intel/oneapi/compiler/latest/linux/lib:/opt/intel/oneapi/compiler/latest/linux/lib/x64:/opt/intel/oneapi/compiler/latest/linux/compiler/lib/intel64_lin:/opt/intel/oneapi/mkl/latest/lib/intel64:$LD_LIBRARY_PATH
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
     export make=`which make`
     export OLD_PYTHONPATH=$PYTHONPATH
@@ -120,7 +121,6 @@ From: fedora:38
     dnf -y install python
 	dnf -y install python-pip python3-tkinter
     dnf -y install libsigc++20-devel gtkmm30-devel
-    dnf -y install python3-devel
     dnf -y install lua lua-devel
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install pgplot
@@ -130,7 +130,7 @@ From: fedora:38
     dnf -y install rsync
     dnf -y install openmpi openmpi-devel
     dnf -y install htop
-    dnf -y install python3-pybind11 pybind11-devel mysql mysql-devel python-devel python3-devel
+    dnf -y install python3-pybind11 pybind11-devel mysql mysql-devel python-devel python3-devel python3.11-devel
     if [ $DEBUG = true ]; then
 	    dnf -y install gdb valgrind
 	    debuginfo-install -y libstdc++
@@ -184,6 +184,7 @@ From: fedora:38
     make -j $J
     #make check
     make install
+    rm -r hdf5-1.*
     export CC=`which gcc`
 	export CXX=`which g++`
 
@@ -241,20 +242,15 @@ EOF
 	    source /opt/intel/oneapi/mkl/latest/env/vars.sh
     fi
     pip install --upgrade pip wheel "Cython==0.29.30"
-    # Link NumPy to our own OpenBLAS installation.
-    mkdir -p /opt/numpy && cd /opt/numpy
-    git clone https://github.com/numpy/numpy.git
-    cd numpy
-    git checkout v1.22.4
-    git submodule update --init
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/site.cfg
-    python setup.py build -j 64 install
+    pip install "numpy==1.26.2"
     pip install --no-binary pandas 'pandas==2.0.0'
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
     pip install legacystamps
     pip install Kittens
+    # Install this separately since it keeps forcefully downgrading numpy.
+    pip install --no-deps aplpy
 
     #
     # Install Montage
@@ -319,6 +315,8 @@ EOF
 	#
 	# Install Python-CASAcore
 	#
+	# In case anything was installed previously
+	pip uninstall -y python-casacore
 	pip install --no-deps --no-binary python-casacore "python-casacore==3.5.2"
     
 	#
@@ -515,11 +513,7 @@ EOF
 
 
     dnf -y install dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
-    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config python-devel python3-devel wget postgresql-devel nodejs
-
-    mkdir -p $INSTALLDIR/patches
-    cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
-    mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patches/
+    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config wget postgresql-devel nodejs
 
     pip --no-cache-dir install meqtrees-cattery --no-deps
     pip --no-cache-dir install owlcat --no-deps
@@ -560,7 +554,7 @@ EOF
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/patches/DDF_Gridder_CMake.patch -O /opt/lofar/patches/DDF_Gridder_CMake.patch
     patch src/DDFacet/Gridder/CMakeLists.txt /opt/lofar/patches/DDF_Gridder_CMake.patch
     cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
-    cp -r SkyModel/Sky /opt/lofar/DDFacet/lib/python${PYTHON_VERSION}/site-packages/SkyModel/
+    cp -r SkyModel/Sky /opt/lofar/DDFacet/lib/python$PYTHON_VERSION/site-packages/SkyModel/
 
     #
     # Install killMS
@@ -586,7 +580,8 @@ EOF
     #
     rm -rf $INSTALLDIR/ddf-pipeline
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
-    cd ddf-pipeline && git checkout 68afe56 && cd ..
+    cd ddf-pipeline && git checkout 712618b && cd ..
+
     cd $INSTALLDIR
     sed -i "s/DDF.py/DDF.py --Misc-IgnoreDeprecationMarking=1/" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
     sed -i "s/--Beam-PhasedArrayMode/--Beam-LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
@@ -751,14 +746,4 @@ EOF
     To enter a shell within the image, use
         singularity shell -B <paths,that,need,to,be,accessible> <path to image>
 
-    The container base is Fedora 36 and relevant key dependencies have the following versions:
-
-    * Armadillo 9.900.3
-    * Boost 1.69.0
-    * CFITSIO 7.3.47
-    * FFTW 3.5.8
-    * HDF5 1.10.5
-    * LAPACK 3.8.0
-    * OpenBLAS 3.8.0
-    * SuperLU 5.2.1
-    * WCSLIB 6.4
+    The container base is Fedora 38.
