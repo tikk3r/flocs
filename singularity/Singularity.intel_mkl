@@ -80,7 +80,6 @@ From: fedora:38
     export make=`which make`
     export OLD_PYTHONPATH=$PYTHONPATH
 
-
 	mkdir -p $INSTALLDIR
 
     #
@@ -581,7 +580,6 @@ EOF
     rm -rf $INSTALLDIR/ddf-pipeline
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
     cd ddf-pipeline && git checkout 712618b && cd ..
-
     cd $INSTALLDIR
     sed -i "s/DDF.py/DDF.py --Misc-IgnoreDeprecationMarking=1/" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
     sed -i "s/--Beam-PhasedArrayMode/--Beam-LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
