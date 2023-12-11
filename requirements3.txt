@@ -87,6 +87,7 @@ python-monetdb
 pytz
 pyvo
 pywavelets
+regions
 reproject
 requests
 requests-oauthlib
