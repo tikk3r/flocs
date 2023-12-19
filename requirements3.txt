@@ -102,6 +102,7 @@ seaborn
 git+https://github.com/ratt-ru/shadeMS.git
 six
 sharedarray
+shapely
 SQLAlchemy
 sshtunnel
 subprocess32
