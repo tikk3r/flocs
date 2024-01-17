@@ -209,10 +209,10 @@ EOF
         #
         # Install CUDA 11.5
         #
-        sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora34/x86_64/cuda-fedora34.repo
+        sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora37/x86_64/cuda-fedora37.repo
         sudo dnf -y clean all
         sudo dnf -y upgrade
-        sudo dnf -y install cuda-11-5
+        sudo dnf -y install cuda-12-3
     fi
 
     ln -s /usr/lib64/libnsl.so.2.0.0 /usr/lib64/libnsl.so
