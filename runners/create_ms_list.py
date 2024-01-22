@@ -567,6 +567,12 @@ if __name__ == "__main__":
         default=10,
         help="Make concatenated MeasurementSets of the specified number of subbands. Choose -1 to concatenate all (default: 10).",
     )
+    dparser.add_argument(
+        "--make_structure_plot",
+        type=bool,
+        default=True,
+        help="Plot the structure function (default: True).",
+    )
 
     demixparser = parser.add_argument_group("== Demixing ==")
     demixparser.add_argument(
