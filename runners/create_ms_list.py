@@ -567,12 +567,6 @@ if __name__ == "__main__":
         default=10,
         help="Make concatenated MeasurementSets of the specified number of subbands. Choose -1 to concatenate all (default: 10).",
     )
-    dparser.add_argument(
-        "--make_structure_plot",
-        type=bool,
-        default=True,
-        help="Plot the structure function (default: True).",
-    )
 
     demixparser = parser.add_argument_group("== Demixing ==")
     demixparser.add_argument(
@@ -649,6 +643,12 @@ if __name__ == "__main__":
         type=str,
         default=os.environ["TMPDIR"] if "TMPDIR" in os.environ else "/tmp",
         help="Set the temporary directory of wsclean used when reordering files. CAUTION: This directory needs to be visible for LINC, in particular if you use Docker or Singularity.",
+    )
+    dparser.add_argument(
+        "--make_structure_plot",
+        type=bool,
+        default=True,
+        help="Plot the structure function (default: True).",
     )
 
     skyparser = parser.add_argument_group("== Skymodel ==")
