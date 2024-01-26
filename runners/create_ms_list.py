@@ -8,8 +8,10 @@ import casacore.tables as ct
 import numpy as np
 from losoto.h5parm import h5parm
 
+from typing import Union
 
-def cwl_file(entry: str) -> str:
+
+def cwl_file(entry: str) -> Union[str, None]:
     """Create a CWL-friendly file entry."""
     if entry is None:
         return None
@@ -19,7 +21,7 @@ def cwl_file(entry: str) -> str:
         return json.loads(f'{{"class": "File", "path":"{os.path.abspath(entry)}"}}')
 
 
-def cwl_dir(entry: str) -> str:
+def cwl_dir(entry: str) -> Union[str, None]:
     """Create a CWL-friendly directory entry."""
     if entry is None:
         return None
@@ -31,7 +33,7 @@ def cwl_dir(entry: str) -> str:
         )
 
 
-def check_dd_freq(infile: str, freq_array: np.ndarray) -> bool:
+def check_dd_freq(infile: str, freq_array: Union[list, np.ndarray]) -> bool:
     """Check frequency coverage overlap between a Measurment Set and a given array of frequencies.
 
     Args:
@@ -118,7 +120,7 @@ def get_reffreq(msfile: str) -> float:
         lines = f.readlines()
     f.close()
     os.system("rm tmp.txt")
-    freq = np.float64(lines[(-1)])
+    freq = float(lines[(-1)])
     return freq
 
 
