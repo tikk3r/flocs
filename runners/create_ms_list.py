@@ -11,14 +11,105 @@ from losoto.h5parm import h5parm
 from typing import Union
 
 
+class LINCJSONConfig:
+    """Class for generating JSON configuration files to be passed to the LINC pipeline."""
+
+    def __init__(self, mspath: str, prefac_h5parm={"path": ""}):
+        self.configdict = {}
+
+        print("Searching " + os.path.abspath(mspath).rstrip("/") + "/*.MS")
+        files = sorted(glob.glob(os.path.abspath(mspath).rstrip("/") + "/*.MS"))
+        print(f"Found {len(files)} files")
+
+        if not prefac_h5parm["path"].endswith("h5") and not prefac_h5parm[
+            "path"
+        ].endswith("h5parm"):
+            mslist = []
+            for ms in files:
+                x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
+                mslist.append(x)
+            self.configdict["msin"] = mslist
+        else:
+            prefac_freqs = get_prefactor_freqs(
+                solname=prefac_h5parm["path"], solset="calibrator"
+            )
+
+            mslist = []
+            for dd in files:
+                if check_dd_freq(dd, prefac_freqs):
+                    mslist.append(dd)
+
+            final_mslist = []
+            for ms in mslist:
+                x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
+                final_mslist.append(x)
+            self.configdict["msin"] = final_mslist
+
+    def add_entry(self, key: str, value: object):
+        if "ATeam" in key:
+            self.configdict["A-Team_skymodel"] = value
+        else:
+            self.configdict[key] = value
+
+    def save(self, fname: str):
+        if not fname.endswith(".json"):
+            fname += ".json"
+        with open(fname, "w") as outfile:
+            json.dump(self.configdict, outfile, indent=4)
+
+
+class VLBIJSONConfig(LINCJSONConfig):
+    """Class for generating JSON configuration files to be passed to the lofar-vlbi pipeline."""
+
+    def __init__(
+        self,
+        mspath: str,
+        prefac_h5parm: str,
+        ddf_solsdir: str,
+        workflow: str = "delay-calibration",
+    ):
+        self.configdict = {}
+
+        print("Searching " + os.path.abspath(mspath).rstrip("/") + "/*.MS")
+        files = sorted(glob.glob(os.path.abspath(mspath).rstrip("/") + "/*.MS"))
+        print(f"Found {len(files)} files")
+
+        if workflow == "delay-calibration":
+            if not prefac_h5parm:
+                raise ValueError("Invalid path to LINC solutions specified.")
+            prefac_freqs = get_prefactor_freqs(
+                solname=prefac_h5parm["path"], solset="target"
+            )
+        elif workflow == "split-directions":
+            prefac_freqs = get_prefactor_freqs(
+                solname=prefac_h5parm["path"], solset="sol000"
+            )
+        else:
+            raise ValueError("Invalid workflow specified")
+
+        mslist = []
+        for dd in files:
+            if check_dd_freq(dd, prefac_freqs):
+                mslist.append(dd)
+        if ddf_solsdir is not None:
+            if os.path.exists(ddf_solsdir["path"]):
+                ddf_freqs = get_dico_freqs(
+                    ddf_solsdir["path"], solnames="killMS.DIS2_full.sols.npz"
+                )
+                tmplist = []
+                for dd in mslist:
+                    if check_dd_freq(dd, ddf_freqs):
+                        tmplist.append(dd)
+                mslist = tmplist
+
+        final_mslist = []
+        for ms in mslist:
+            x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
+            final_mslist.append(x)
+        self.configdict["msin"] = final_mslist
+
+
 def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
-    parser.add_argument(
-        "--msin",
-        type=cwl_dir,
-        nargs="*",
-        default=[],
-        help="Raw input data in MeasurementSet format.",
-    )
     parser.add_argument(
         "--refant",
         type=str,
@@ -157,7 +248,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         help="If true force demixing using all sources of demix_sources, if false do not demix (if null, automatically determines sources to be demixed according to min_separation).",
     )
     parser.add_argument(
-        "--ion_3rd",
+       "--ion_3rd",
         type=bool,
         default=False,
         help="Take into account also 3rd-order effects for the clock-TEC separation.",
@@ -247,16 +338,15 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         default=2000,
         help="Split the set into intervals with the given maximum size, and flag each interval independently. This lowers the amount of memory required.",
     )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
 
 
 def add_arguments_linc_target(parser):
-    parser.add_argument(
-        "--msin",
-        type=cwl_dir,
-        nargs="*",
-        default=[],
-        help="Raw input data in MeasurementSet format.",
-    )
     parser.add_argument(
         "--cal_solutions",
         type=cwl_file,
@@ -531,16 +621,15 @@ def add_arguments_linc_target(parser):
         default=None,
         help="Limits the input skymodel to sources that exceed the given flux density limit in Jy (default: None for HBA, i.e. all sources of the catalogue will be kept, and 1.0 for LBA).",
     )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
 
 
 def add_arguments_vlbi_delay_calibrator(parser):
-    parser.add_argument(
-        "--msin",
-        type=cwl_dir,
-        nargs="*",
-        default=[],
-        help="Raw input data in MeasurementSet format.",
-    )
     parser.add_argument(
         "--solset",
         type=cwl_file,
@@ -610,16 +699,21 @@ def add_arguments_vlbi_delay_calibrator(parser):
         default=5,
         help="Number of threads per process for DP3.",
     )
+    parser.add_argument(
+        "--ddf_solsdir",
+        type=cwl_dir,
+        default="null",
+        help="Path to where ddf-pipeline solutions can be found (usually SOLSDIR).",
+    )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
 
 
 def add_arguments_vlbi_split_directions(parser):
-    parser.add_argument(
-        "--msin",
-        type=cwl_dir,
-        nargs="*",
-        default=[],
-        help="Input data in MeasurementSet format.",
-    )
     parser.add_argument(
         "--delay_solset", type=cwl_file, default="", help="Delay calibration solutions."
     )
@@ -674,16 +768,15 @@ def add_arguments_vlbi_split_directions(parser):
     parser.add_argument(
         "--linc", type=cwl_dir, help="The installation directory of LINC"
     )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
 
 
 def add_arguments_vlbi_setup(parser):
-    parser.add_argument(
-        "--msin",
-        type=cwl_dir,
-        nargs="*",
-        default=[],
-        help="Raw input data in MeasurementSet format.",
-    )
     parser.add_argument(
         "--solset",
         type=cwl_file,
@@ -729,16 +822,15 @@ def add_arguments_vlbi_setup(parser):
     parser.add_argument(
         "--linc", type=cwl_dir, help="The installation directory of LINC"
     )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
 
 
 def add_arguments_vlbi_concatenate_flag(parser):
-    parser.add_argument(
-        "--msin",
-        type=cwl_dir,
-        nargs="*",
-        default=[],
-        help="Raw input data in MeasurementSet format.",
-    )
     parser.add_argument(
         "--ddf_solset",
         type=cwl_file,
@@ -772,16 +864,15 @@ def add_arguments_vlbi_concatenate_flag(parser):
         default=15,
         help="The fraction of the node's memory that will be used by AOFlagger (and should be available before an AOFlagger job can start).",
     )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
 
 
 def add_arguments_vlbi_phaseup_concat(parser):
-    parser.add_argument(
-        "--msin",
-        type=cwl_dir,
-        nargs="*",
-        default=[],
-        help="Raw input data in MeasurementSet format.",
-    )
     parser.add_argument(
         "--delay_calibrator",
         type=cwl_file,
@@ -887,6 +978,12 @@ def add_arguments_vlbi_phaseup_concat(parser):
     parser.add_argument(
         "--linc", type=cwl_dir, help="The installation directory of LINC"
     )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
 
 
 def cwl_file(entry: str) -> Union[str, None]:
@@ -909,6 +1006,97 @@ def cwl_dir(entry: str) -> Union[str, None]:
         return json.loads(
             f'{{"class": "Directory", "path":"{os.path.abspath(entry)}"}}'
         )
+
+
+def check_dd_freq(infile: str, freq_array: Union[list, np.ndarray]) -> bool:
+    """Check frequency coverage overlap between a Measurment Set and a given array of frequencies.
+
+    Args:
+        infile: input Measurement Set to check
+        freq_array: array of frequencies to check against
+    Returns:
+        True if input frequencies are covered, False if input has frequencies that fall outside freq_array.
+    """
+    msfreqs = ct.table(("{:s}::SPECTRAL_WINDOW").format(infile))
+    ref_freq = msfreqs.getcol("REF_FREQUENCY")[0]
+    msfreqs.close()
+    c = 0
+    for f_arr in freq_array:
+        if ref_freq > f_arr[0] and ref_freq < f_arr[1]:
+            c = c + 1
+        else:
+            c = c + 0
+
+    if c > 0:
+        valid = True
+    else:
+        valid = False
+    return valid
+
+
+def get_dico_freqs(input_dir: str, solnames: str = "killMS.DIS2_full.sols.npz") -> list:
+    """Extract frequencies from killMS format solutions.
+
+    Args:
+        input_dir: directory where the solutions are stored, usually called SOLSDIR.
+        solnames: name of the solution files.
+    Returns:
+        freqs: array of frequencies covered by the solutions.
+    """
+    sol_dirs = glob.glob(os.path.join(input_dir, "L*pre-cal.ms"))
+    freqs = []
+    for sol_dir in sol_dirs:
+        npz_file = os.path.join(sol_dir, solnames)
+        SolDico = np.load(npz_file)
+        fmin = np.min(SolDico["FreqDomains"])
+        fmax = np.max(SolDico["FreqDomains"])
+        tmp_freqs = np.array([fmin, fmax])
+        freqs.append(tmp_freqs)
+        SolDico.close()
+
+    return freqs
+
+
+def get_prefactor_freqs(solname: str = "solutions.h5", solset: str = "target") -> list:
+    """Extract frequency coverage from LINC solutions.
+
+    Args:
+        solname: name of the LINC solution file.
+        solset: name of the solset to use.
+    Returns:
+        f_arr: array of frequencies covered by the solutions.
+    """
+    sols = h5parm(solname)
+    ss = sols.getSolset(solset)
+    st_names = ss.getSoltabNames()
+    ph_sol_name = [xx for xx in st_names if "extract" not in xx][0]
+    st = ss.getSoltab(ph_sol_name)
+    freqs = st.getAxisValues("freq")
+    freqstep = 1953125.0  ## the value for 10 subbands
+    f_arr = []
+    for xx in range(len(freqs)):
+        fmin = freqs[xx] - freqstep / 2.0
+        fmax = freqs[xx] + freqstep / 2.0
+        f_arr.append(np.array([fmin, fmax]))
+    return f_arr
+
+
+def get_reffreq(msfile: str) -> float:
+    """Get the reference frequency of a Measurement Set.
+
+    Args:
+        msfile: input Measurement Set.
+    """
+    ss = ("taql 'select REF_FREQUENCY from {:s}::SPECTRAL_WINDOW' > tmp.txt").format(
+        msfile
+    )
+    os.system(ss)
+    with open("tmp.txt", "r") as (f):
+        lines = f.readlines()
+    f.close()
+    os.system("rm tmp.txt")
+    freq = float(lines[(-1)])
+    return freq
 
 
 if __name__ == "__main__":
@@ -991,3 +1179,16 @@ if __name__ == "__main__":
     add_arguments_vlbi_phaseup_concat(modeparser_vlbi_phaseup_concat)
 
     args = vars(parser.parse_args())
+    if args['parser'] == 'LINC':
+        if args['parser_LINC'] == 'calibrator':
+            print("Generating LINC Calibrator config")
+            config = LINCJSONConfig(args["mspath"])
+            for key, val in args.items():
+                config.add_entry(key, val)
+            config.save("mslist_LINC_calibrator.json")
+        elif args['parser_LINC'] == 'target':
+            print("Generating LINC Target config")
+            config = LINCJSONConfig(args["mspath"], prefac_h5parm=args["cal_solutions"])
+            for key, val in args.items():
+                config.add_entry(key, val)
+            config.save("mslist_LINC_target.json")
