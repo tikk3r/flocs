@@ -61,7 +61,7 @@ class LINCJSONConfig:
 class VLBIJSONConfig(LINCJSONConfig):
     """Class for generating JSON configuration files to be passed to the lofar-vlbi pipeline."""
 
-    VALID_WORKFLOWS = ['delay_calibration', 'split_directions', 'setup', 'concatenate_flag', 'phaseup_concat']
+    VALID_WORKFLOWS = ['delay-calibration', 'split-directions', 'setup', 'concatenate-flag', 'phaseup-concat']
 
     def __init__(
         self,
@@ -87,6 +87,8 @@ class VLBIJSONConfig(LINCJSONConfig):
                 if check_dd_freq(dd, prefac_freqs):
                     mslist.append(dd)
         elif workflow == "split-directions":
+            if (prefac_h5parm is None) or (not prefac_h5parm['path']):
+                raise ValueError("No delay calibrator solutions specified!")
             prefac_freqs = get_prefactor_freqs(
                 solname=prefac_h5parm["path"], solset="sol000"
             )
@@ -96,6 +98,9 @@ class VLBIJSONConfig(LINCJSONConfig):
         elif workflow == 'setup':
             if (prefac_h5parm is None) or (not prefac_h5parm['path']):
                 raise ValueError("No LINC solutions specified!")
+            for dd in files:
+                mslist.append(dd)
+        elif workflow == 'concatenate-flag':
             for dd in files:
                 mslist.append(dd)
         elif workflow not in self.VALID_WORKFLOWS:
@@ -1154,12 +1159,12 @@ if __name__ == "__main__":
         help="Workflow or sub-workflow to generate a configuration file for.",
     )
     modeparser_vlbi_delay_calibration = modeparser_vlbi.add_parser(
-        "delay_calibration",
+        "delay-calibration",
         help="Generate a configuration file for the delay-calibration.cwl workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     modeparser_vlbi_split_directions = modeparser_vlbi.add_parser(
-        "split_directions",
+        "split-directions",
         help="Generate a configuration file for the split-directions.cwl workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -1169,12 +1174,12 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     modeparser_vlbi_concatenate_flag = modeparser_vlbi.add_parser(
-        "concatenate_flag",
+        "concatenate-flag",
         help="Generate a configuration file for the concatenate-flag.cwl sub-workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     modeparser_vlbi_phaseup_concat = modeparser_vlbi.add_parser(
-        "phaseup_concat",
+        "phaseup-concat",
         help="Generate a configuration file for the phaseup-concat.cwl sub-workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -1208,7 +1213,7 @@ if __name__ == "__main__":
             config.save("mslist_LINC_target.json")
     elif args['parser'] == 'VLBI':
         args.pop('parser')
-        if args['parser_VLBI'] == 'delay_calibration':
+        if args['parser_VLBI'] == 'delay-calibration':
             args.pop('parser_VLBI')
             print("Generating VLBI Delay Calibration config")
             try:
@@ -1225,7 +1230,7 @@ if __name__ == "__main__":
             for key, val in args.items():
                 config.add_entry(key, val)
             config.save("mslist_VLBI_delay_calibration.json")
-        elif args['parser_VLBI'] == 'split_directions':
+        elif args['parser_VLBI'] == 'split-directions':
             args.pop('parser_VLBI')
             print("Generating VLBI Split Directions config")
             try:
@@ -1259,3 +1264,20 @@ if __name__ == "__main__":
             for key, val in args.items():
                 config.add_entry(key, val)
             config.save("mslist_VLBI_setup.json")
+        elif args['parser_VLBI'] == 'concatenate-flag':
+            args.pop('parser_VLBI')
+            print("Generating VLBI setup config")
+            try:
+                config = VLBIJSONConfig(
+                    args["mspath"],
+                    prefac_h5parm=None,
+                    ddf_solsdir=None,
+                    workflow="concatenate-flag",
+                )
+                args.pop("mspath")
+            except ValueError as e:
+                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+                sys.exit(-1)
+            for key, val in args.items():
+                config.add_entry(key, val)
+            config.save("mslist_VLBI_concatenate-flag.json")
