@@ -65,7 +65,7 @@ class VLBIJSONConfig(LINCJSONConfig):
         self,
         mspath: str,
         prefac_h5parm: str,
-        ddf_solsdir: str,
+        ddf_solsdir: Union[None, str],
         workflow: str = "delay-calibration",
     ):
         self.configdict = {}
@@ -702,7 +702,7 @@ def add_arguments_vlbi_delay_calibrator(parser):
     parser.add_argument(
         "--ddf_solsdir",
         type=cwl_dir,
-        default="null",
+        default=None,
         help="Path to where ddf-pipeline solutions can be found (usually SOLSDIR).",
     )
     parser.add_argument(
@@ -1215,3 +1215,20 @@ if __name__ == "__main__":
             for key, val in args.items():
                 config.add_entry(key, val)
             config.save("mslist_VLBI_delay_calibration.json")
+        elif args['parser_VLBI'] == 'split_directions':
+            args.pop('parser_VLBI')
+            print("Generating VLBI Split Directions config")
+            try:
+                config = VLBIJSONConfig(
+                    args["mspath"],
+                    prefac_h5parm=args["delay_solset"],
+                    ddf_solsdir=None,
+                    workflow="split-directions",
+                )
+                args.pop("mspath")
+            except ValueError as e:
+                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+                sys.exit(-1)
+            for key, val in args.items():
+                config.add_entry(key, val)
+            config.save("mslist_VLBI_split_directios.json")
