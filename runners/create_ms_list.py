@@ -103,6 +103,9 @@ class VLBIJSONConfig(LINCJSONConfig):
         elif workflow == 'concatenate-flag':
             for dd in files:
                 mslist.append(dd)
+        elif workflow == 'phaseup-concat':
+            for dd in files:
+                mslist.append(dd)
         elif workflow not in self.VALID_WORKFLOWS:
             raise ValueError("Invalid workflow specified")
 
@@ -1281,3 +1284,20 @@ if __name__ == "__main__":
             for key, val in args.items():
                 config.add_entry(key, val)
             config.save("mslist_VLBI_concatenate-flag.json")
+        elif args['parser_VLBI'] == 'phaseup-concat':
+            args.pop('parser_VLBI')
+            print("Generating VLBI setup config")
+            try:
+                config = VLBIJSONConfig(
+                    args["mspath"],
+                    prefac_h5parm=None,
+                    ddf_solsdir=None,
+                    workflow="phaseup-concat",
+                )
+                args.pop("mspath")
+            except ValueError as e:
+                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+                sys.exit(-1)
+            for key, val in args.items():
+                config.add_entry(key, val)
+            config.save("mslist_VLBI_phaseup-concat.json")
