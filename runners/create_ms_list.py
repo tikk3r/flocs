@@ -61,11 +61,13 @@ class LINCJSONConfig:
 class VLBIJSONConfig(LINCJSONConfig):
     """Class for generating JSON configuration files to be passed to the lofar-vlbi pipeline."""
 
+    VALID_WORKFLOWS = ['delay_calibration', 'split_directions', 'setup', 'concatenate_flag', 'phaseup_concat']
+
     def __init__(
         self,
         mspath: str,
-        prefac_h5parm: str,
-        ddf_solsdir: Union[None, str],
+        prefac_h5parm: Union[None, dict],
+        ddf_solsdir: Union[None, dict],
         workflow: str = "delay-calibration",
     ):
         self.configdict = {}
@@ -74,23 +76,31 @@ class VLBIJSONConfig(LINCJSONConfig):
         files = sorted(glob.glob(os.path.abspath(mspath).rstrip("/") + "/*.MS"))
         print(f"Found {len(files)} files")
 
+        mslist = []
         if workflow == "delay-calibration":
             if not prefac_h5parm:
                 raise ValueError("Invalid path to LINC solutions specified.")
             prefac_freqs = get_prefactor_freqs(
                 solname=prefac_h5parm["path"], solset="target"
             )
+            for dd in files:
+                if check_dd_freq(dd, prefac_freqs):
+                    mslist.append(dd)
         elif workflow == "split-directions":
             prefac_freqs = get_prefactor_freqs(
                 solname=prefac_h5parm["path"], solset="sol000"
             )
-        else:
+            for dd in files:
+                if check_dd_freq(dd, prefac_freqs):
+                    mslist.append(dd)
+        elif workflow == 'setup':
+            if (prefac_h5parm is None) or (not prefac_h5parm['path']):
+                raise ValueError("No LINC solutions specified!")
+            for dd in files:
+                mslist.append(dd)
+        elif workflow not in self.VALID_WORKFLOWS:
             raise ValueError("Invalid workflow specified")
 
-        mslist = []
-        for dd in files:
-            if check_dd_freq(dd, prefac_freqs):
-                mslist.append(dd)
         if ddf_solsdir is not None:
             if os.path.exists(ddf_solsdir["path"]):
                 ddf_freqs = get_dico_freqs(
@@ -1231,4 +1241,21 @@ if __name__ == "__main__":
                 sys.exit(-1)
             for key, val in args.items():
                 config.add_entry(key, val)
-            config.save("mslist_VLBI_split_directios.json")
+            config.save("mslist_VLBI_split_directions.json")
+        elif args['parser_VLBI'] == 'setup':
+            args.pop('parser_VLBI')
+            print("Generating VLBI setup config")
+            try:
+                config = VLBIJSONConfig(
+                    args["mspath"],
+                    prefac_h5parm=args['solset'],
+                    ddf_solsdir=None,
+                    workflow="setup",
+                )
+                args.pop("mspath")
+            except ValueError as e:
+                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+                sys.exit(-1)
+            for key, val in args.items():
+                config.add_entry(key, val)
+            config.save("mslist_VLBI_setup.json")
