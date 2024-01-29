@@ -1180,15 +1180,38 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
     if args['parser'] == 'LINC':
+        args.pop('parser')
         if args['parser_LINC'] == 'calibrator':
+            args.pop('parser_LINC')
             print("Generating LINC Calibrator config")
             config = LINCJSONConfig(args["mspath"])
+            args.pop("mspath")
             for key, val in args.items():
                 config.add_entry(key, val)
             config.save("mslist_LINC_calibrator.json")
         elif args['parser_LINC'] == 'target':
+            args.pop('parser_LINC')
             print("Generating LINC Target config")
             config = LINCJSONConfig(args["mspath"], prefac_h5parm=args["cal_solutions"])
             for key, val in args.items():
                 config.add_entry(key, val)
             config.save("mslist_LINC_target.json")
+    elif args['parser'] == 'VLBI':
+        args.pop('parser')
+        if args['parser_VLBI'] == 'delay_calibration':
+            args.pop('parser_VLBI')
+            print("Generating VLBI Delay Calibration config")
+            try:
+                config = VLBIJSONConfig(
+                    args["mspath"],
+                    prefac_h5parm=args["solset"],
+                    ddf_solsdir=args["ddf_solsdir"],
+                    workflow="delay-calibration",
+                )
+                args.pop("mspath")
+            except ValueError as e:
+                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+                sys.exit(-1)
+            for key, val in args.items():
+                config.add_entry(key, val)
+            config.save("mslist_VLBI_delay_calibration.json")
