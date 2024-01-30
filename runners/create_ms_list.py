@@ -150,7 +150,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     parser.add_argument(
         "--filter_baselines",
         type=str,
-        default=None,
+        default='*&',
         help="Selects only this set of baselines to be processed. Choose [CR]S*& if you want to process only cross-correlations and remove international stations.",
     )
     parser.add_argument(
