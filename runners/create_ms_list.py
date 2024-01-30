@@ -1161,6 +1161,116 @@ def get_reffreq(msfile: str) -> float:
     freq = float(lines[(-1)])
     return freq
 
+def parse_arguments_linc(args: dict):
+    args.pop('parser')
+    if args['parser_LINC'] == 'calibrator':
+        args.pop('parser_LINC')
+        print("Generating LINC Calibrator config")
+        config = LINCJSONConfig(args["mspath"], ms_suffix=args['ms_suffix'])
+        args.pop("mspath")
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_LINC_calibrator.json")
+    elif args['parser_LINC'] == 'target':
+        args.pop('parser_LINC')
+        print("Generating LINC Target config")
+        config = LINCJSONConfig(args["mspath"], prefac_h5parm=args["cal_solutions"], ms_suffix=args['ms_suffix'])
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_LINC_target.json")
+
+def parse_arguments_vlbi(args):
+    args.pop('parser')
+    if args['parser_VLBI'] == 'delay-calibration':
+        args.pop('parser_VLBI')
+        print("Generating VLBI Delay Calibration config")
+        try:
+            config = VLBIJSONConfig(
+                args["mspath"],
+                prefac_h5parm=args["solset"],
+                ddf_solsdir=args["ddf_solsdir"],
+                workflow="delay-calibration",
+                ms_suffix=args['ms_suffix'],
+            )
+            args.pop("mspath")
+        except ValueError as e:
+            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            sys.exit(-1)
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_VLBI_delay_calibration.json")
+    elif args['parser_VLBI'] == 'split-directions':
+        args.pop('parser_VLBI')
+        print("Generating VLBI Split Directions config")
+        try:
+            config = VLBIJSONConfig(
+                args["mspath"],
+                prefac_h5parm=args["delay_solset"],
+                ddf_solsdir=None,
+                workflow="split-directions",
+                ms_suffix=args['ms_suffix'],
+            )
+            args.pop("mspath")
+        except ValueError as e:
+            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            sys.exit(-1)
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_VLBI_split_directions.json")
+    elif args['parser_VLBI'] == 'setup':
+        args.pop('parser_VLBI')
+        print("Generating VLBI setup config")
+        try:
+            config = VLBIJSONConfig(
+                args["mspath"],
+                prefac_h5parm=args['solset'],
+                ddf_solsdir=None,
+                workflow="setup",
+                ms_suffix=args['ms_suffix'],
+            )
+            args.pop("mspath")
+        except ValueError as e:
+            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            sys.exit(-1)
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_VLBI_setup.json")
+    elif args['parser_VLBI'] == 'concatenate-flag':
+        args.pop('parser_VLBI')
+        print("Generating VLBI setup config")
+        try:
+            config = VLBIJSONConfig(
+                args["mspath"],
+                prefac_h5parm=None,
+                ddf_solsdir=None,
+                workflow="concatenate-flag",
+                ms_suffix=args['ms_suffix'],
+            )
+            args.pop("mspath")
+        except ValueError as e:
+            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            sys.exit(-1)
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_VLBI_concatenate-flag.json")
+    elif args['parser_VLBI'] == 'phaseup-concat':
+        args.pop('parser_VLBI')
+        print("Generating VLBI setup config")
+        try:
+            config = VLBIJSONConfig(
+                args["mspath"],
+                prefac_h5parm=None,
+                ddf_solsdir=None,
+                workflow="phaseup-concat",
+                ms_suffix=args['ms_suffix'],
+            )
+            args.pop("mspath")
+        except ValueError as e:
+            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            sys.exit(-1)
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_VLBI_phaseup-concat.json")
 
 if __name__ == "__main__":
     if "LINC_DATA_ROOT" not in os.environ:
@@ -1243,111 +1353,6 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
     if args['parser'] == 'LINC':
-        args.pop('parser')
-        if args['parser_LINC'] == 'calibrator':
-            args.pop('parser_LINC')
-            print("Generating LINC Calibrator config")
-            config = LINCJSONConfig(args["mspath"], ms_suffix=args['ms_suffix'])
-            args.pop("mspath")
-            for key, val in args.items():
-                config.add_entry(key, val)
-            config.save("mslist_LINC_calibrator.json")
-        elif args['parser_LINC'] == 'target':
-            args.pop('parser_LINC')
-            print("Generating LINC Target config")
-            config = LINCJSONConfig(args["mspath"], prefac_h5parm=args["cal_solutions"], ms_suffix=args['ms_suffi'])
-            for key, val in args.items():
-                config.add_entry(key, val)
-            config.save("mslist_LINC_target.json")
+        parse_arguments_linc(args)
     elif args['parser'] == 'VLBI':
-        args.pop('parser')
-        if args['parser_VLBI'] == 'delay-calibration':
-            args.pop('parser_VLBI')
-            print("Generating VLBI Delay Calibration config")
-            try:
-                config = VLBIJSONConfig(
-                    args["mspath"],
-                    prefac_h5parm=args["solset"],
-                    ddf_solsdir=args["ddf_solsdir"],
-                    workflow="delay-calibration",
-                    ms_suffix=args['ms_suffix'],
-                )
-                args.pop("mspath")
-            except ValueError as e:
-                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
-                sys.exit(-1)
-            for key, val in args.items():
-                config.add_entry(key, val)
-            config.save("mslist_VLBI_delay_calibration.json")
-        elif args['parser_VLBI'] == 'split-directions':
-            args.pop('parser_VLBI')
-            print("Generating VLBI Split Directions config")
-            try:
-                config = VLBIJSONConfig(
-                    args["mspath"],
-                    prefac_h5parm=args["delay_solset"],
-                    ddf_solsdir=None,
-                    workflow="split-directions",
-                    ms_suffix=args['ms_suffix'],
-                )
-                args.pop("mspath")
-            except ValueError as e:
-                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
-                sys.exit(-1)
-            for key, val in args.items():
-                config.add_entry(key, val)
-            config.save("mslist_VLBI_split_directions.json")
-        elif args['parser_VLBI'] == 'setup':
-            args.pop('parser_VLBI')
-            print("Generating VLBI setup config")
-            try:
-                config = VLBIJSONConfig(
-                    args["mspath"],
-                    prefac_h5parm=args['solset'],
-                    ddf_solsdir=None,
-                    workflow="setup",
-                    ms_suffix=args['ms_suffix'],
-                )
-                args.pop("mspath")
-            except ValueError as e:
-                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
-                sys.exit(-1)
-            for key, val in args.items():
-                config.add_entry(key, val)
-            config.save("mslist_VLBI_setup.json")
-        elif args['parser_VLBI'] == 'concatenate-flag':
-            args.pop('parser_VLBI')
-            print("Generating VLBI setup config")
-            try:
-                config = VLBIJSONConfig(
-                    args["mspath"],
-                    prefac_h5parm=None,
-                    ddf_solsdir=None,
-                    workflow="concatenate-flag",
-                    ms_suffix=args['ms_suffix'],
-                )
-                args.pop("mspath")
-            except ValueError as e:
-                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
-                sys.exit(-1)
-            for key, val in args.items():
-                config.add_entry(key, val)
-            config.save("mslist_VLBI_concatenate-flag.json")
-        elif args['parser_VLBI'] == 'phaseup-concat':
-            args.pop('parser_VLBI')
-            print("Generating VLBI setup config")
-            try:
-                config = VLBIJSONConfig(
-                    args["mspath"],
-                    prefac_h5parm=None,
-                    ddf_solsdir=None,
-                    workflow="phaseup-concat",
-                    ms_suffix=args['ms_suffix'],
-                )
-                args.pop("mspath")
-            except ValueError as e:
-                print('\nERROR: Failed to generate config file. Error was: ' + str(e))
-                sys.exit(-1)
-            for key, val in args.items():
-                config.add_entry(key, val)
-            config.save("mslist_VLBI_phaseup-concat.json")
+        parse_arguments_vlbi(args)
