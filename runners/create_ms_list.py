@@ -57,6 +57,7 @@ class LINCJSONConfig:
             fname += ".json"
         with open(fname, "w") as outfile:
             json.dump(self.configdict, outfile, indent=4)
+        print(f"Written configuration to {fname}")
 
 
 class VLBIJSONConfig(LINCJSONConfig):
