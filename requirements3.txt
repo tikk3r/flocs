@@ -107,7 +107,7 @@ SQLAlchemy
 sshtunnel
 subprocess32
 tables
-toil[cwl]==5.10
+toil[cwl]==6.0.0
 traceback2
 tqdm
 unittest2
