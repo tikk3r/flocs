@@ -1290,7 +1290,7 @@ if __name__ == "__main__":
     )
 
     subparser_linc = subparsers.add_parser(
-        "LINC", help="Generate a configuration file for LINC."
+        "LINC", help="Generate a configuration file for LINC. See `create_ms_list.py LINC -h` for options."
     )
     modeparser_linc = subparser_linc.add_subparsers(
         title="LINC",
@@ -1310,7 +1310,7 @@ if __name__ == "__main__":
 
     subparser_vlbi = subparsers.add_parser(
         "VLBI",
-        help="Generate a configuration file for VLBI-cwl.",
+        help="Generate a configuration file for VLBI-cwl. See `create_ms_list.py VLBI -h` for available options.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     modeparser_vlbi = subparser_vlbi.add_subparsers(
