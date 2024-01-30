@@ -14,11 +14,12 @@ from typing import Union
 class LINCJSONConfig:
     """Class for generating JSON configuration files to be passed to the LINC pipeline."""
 
-    def __init__(self, mspath: str, prefac_h5parm={"path": ""}):
+    def __init__(self, mspath: str, ms_suffix: str = ".MS", prefac_h5parm={"path": ""}):
         self.configdict = {}
 
-        print("Searching " + os.path.abspath(mspath).rstrip("/") + "/*.MS")
-        files = sorted(glob.glob(os.path.abspath(mspath).rstrip("/") + "/*.MS"))
+        filedir = os.path.join(mspath, f"*{ms_suffix}")
+        print(f"Searching {filedir}")
+        files = sorted(glob.glob(filedir))
         print(f"Found {len(files)} files")
 
         if not prefac_h5parm["path"].endswith("h5") and not prefac_h5parm[
@@ -68,12 +69,14 @@ class VLBIJSONConfig(LINCJSONConfig):
         mspath: str,
         prefac_h5parm: Union[None, dict],
         ddf_solsdir: Union[None, dict],
+        ms_suffix: str = ".MS",
         workflow: str = "delay-calibration",
     ):
         self.configdict = {}
 
-        print("Searching " + os.path.abspath(mspath).rstrip("/") + "/*.MS")
-        files = sorted(glob.glob(os.path.abspath(mspath).rstrip("/") + "/*.MS"))
+        filedir = os.path.join(mspath, f"*{ms_suffix}")
+        print(f"Searching {filedir}")
+        files = sorted(glob.glob(filedir))
         print(f"Found {len(files)} files")
 
         mslist = []
@@ -362,6 +365,12 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         default="",
         help="Raw input data in MeasurementSet format.",
     )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".MS",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
+    )
 
 
 def add_arguments_linc_target(parser):
@@ -645,6 +654,12 @@ def add_arguments_linc_target(parser):
         default="",
         help="Raw input data in MeasurementSet format.",
     )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".MS",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
+    )
 
 
 def add_arguments_vlbi_delay_calibrator(parser):
@@ -729,6 +744,12 @@ def add_arguments_vlbi_delay_calibrator(parser):
         default="",
         help="Raw input data in MeasurementSet format.",
     )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".MS",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
+    )
 
 
 def add_arguments_vlbi_split_directions(parser):
@@ -792,6 +813,12 @@ def add_arguments_vlbi_split_directions(parser):
         default="",
         help="Raw input data in MeasurementSet format.",
     )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".MS",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
+    )
 
 
 def add_arguments_vlbi_setup(parser):
@@ -846,6 +873,12 @@ def add_arguments_vlbi_setup(parser):
         default="",
         help="Raw input data in MeasurementSet format.",
     )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".MS",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
+    )
 
 
 def add_arguments_vlbi_concatenate_flag(parser):
@@ -887,6 +920,12 @@ def add_arguments_vlbi_concatenate_flag(parser):
         type=str,
         default="",
         help="Raw input data in MeasurementSet format.",
+    )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".MS",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
     )
 
 
@@ -1001,6 +1040,12 @@ def add_arguments_vlbi_phaseup_concat(parser):
         type=str,
         default="",
         help="Raw input data in MeasurementSet format.",
+    )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".MS",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
     )
 
 
@@ -1202,7 +1247,7 @@ if __name__ == "__main__":
         if args['parser_LINC'] == 'calibrator':
             args.pop('parser_LINC')
             print("Generating LINC Calibrator config")
-            config = LINCJSONConfig(args["mspath"])
+            config = LINCJSONConfig(args["mspath"], ms_suffix=args['ms_suffix'])
             args.pop("mspath")
             for key, val in args.items():
                 config.add_entry(key, val)
@@ -1210,7 +1255,7 @@ if __name__ == "__main__":
         elif args['parser_LINC'] == 'target':
             args.pop('parser_LINC')
             print("Generating LINC Target config")
-            config = LINCJSONConfig(args["mspath"], prefac_h5parm=args["cal_solutions"])
+            config = LINCJSONConfig(args["mspath"], prefac_h5parm=args["cal_solutions"], ms_suffix=args['ms_suffi'])
             for key, val in args.items():
                 config.add_entry(key, val)
             config.save("mslist_LINC_target.json")
@@ -1225,6 +1270,7 @@ if __name__ == "__main__":
                     prefac_h5parm=args["solset"],
                     ddf_solsdir=args["ddf_solsdir"],
                     workflow="delay-calibration",
+                    ms_suffix=args['ms_suffix'],
                 )
                 args.pop("mspath")
             except ValueError as e:
@@ -1242,6 +1288,7 @@ if __name__ == "__main__":
                     prefac_h5parm=args["delay_solset"],
                     ddf_solsdir=None,
                     workflow="split-directions",
+                    ms_suffix=args['ms_suffix'],
                 )
                 args.pop("mspath")
             except ValueError as e:
@@ -1259,6 +1306,7 @@ if __name__ == "__main__":
                     prefac_h5parm=args['solset'],
                     ddf_solsdir=None,
                     workflow="setup",
+                    ms_suffix=args['ms_suffix'],
                 )
                 args.pop("mspath")
             except ValueError as e:
@@ -1276,6 +1324,7 @@ if __name__ == "__main__":
                     prefac_h5parm=None,
                     ddf_solsdir=None,
                     workflow="concatenate-flag",
+                    ms_suffix=args['ms_suffix'],
                 )
                 args.pop("mspath")
             except ValueError as e:
@@ -1293,6 +1342,7 @@ if __name__ == "__main__":
                     prefac_h5parm=None,
                     ddf_solsdir=None,
                     workflow="phaseup-concat",
+                    ms_suffix=args['ms_suffix'],
                 )
                 args.pop("mspath")
             except ValueError as e:
