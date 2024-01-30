@@ -1142,6 +1142,7 @@ def get_prefactor_freqs(solname: str = "solutions.h5", solset: str = "target") -
         fmin = freqs[xx] - freqstep / 2.0
         fmax = freqs[xx] + freqstep / 2.0
         f_arr.append(np.array([fmin, fmax]))
+    sols.close()
     return f_arr
 
 
