@@ -63,7 +63,13 @@ class LINCJSONConfig:
 class VLBIJSONConfig(LINCJSONConfig):
     """Class for generating JSON configuration files to be passed to the lofar-vlbi pipeline."""
 
-    VALID_WORKFLOWS = ['delay-calibration', 'split-directions', 'setup', 'concatenate-flag', 'phaseup-concat']
+    VALID_WORKFLOWS = [
+        "delay-calibration",
+        "split-directions",
+        "setup",
+        "concatenate-flag",
+        "phaseup-concat",
+    ]
 
     def __init__(
         self,
@@ -91,7 +97,7 @@ class VLBIJSONConfig(LINCJSONConfig):
                 if check_dd_freq(dd, prefac_freqs):
                     mslist.append(dd)
         elif workflow == "split-directions":
-            if (prefac_h5parm is None) or (not prefac_h5parm['path']):
+            if (prefac_h5parm is None) or (not prefac_h5parm["path"]):
                 raise ValueError("No delay calibrator solutions specified!")
             prefac_freqs = get_prefactor_freqs(
                 solname=prefac_h5parm["path"], solset="sol000"
@@ -99,15 +105,15 @@ class VLBIJSONConfig(LINCJSONConfig):
             for dd in files:
                 if check_dd_freq(dd, prefac_freqs):
                     mslist.append(dd)
-        elif workflow == 'setup':
-            if (prefac_h5parm is None) or (not prefac_h5parm['path']):
+        elif workflow == "setup":
+            if (prefac_h5parm is None) or (not prefac_h5parm["path"]):
                 raise ValueError("No LINC solutions specified!")
             for dd in files:
                 mslist.append(dd)
-        elif workflow == 'concatenate-flag':
+        elif workflow == "concatenate-flag":
             for dd in files:
                 mslist.append(dd)
-        elif workflow == 'phaseup-concat':
+        elif workflow == "phaseup-concat":
             for dd in files:
                 mslist.append(dd)
         elif workflow not in self.VALID_WORKFLOWS:
@@ -154,7 +160,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     parser.add_argument(
         "--filter_baselines",
         type=str,
-        default='*&',
+        default="*&",
         help="Selects only this set of baselines to be processed. Choose [CR]S*& if you want to process only cross-correlations and remove international stations.",
     )
     parser.add_argument(
@@ -270,7 +276,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         help="If true force demixing using all sources of demix_sources, if false do not demix (if null, automatically determines sources to be demixed according to min_separation).",
     )
     parser.add_argument(
-       "--ion_3rd",
+        "--ion_3rd",
         type=bool,
         default=False,
         help="Take into account also 3rd-order effects for the clock-TEC separation.",
@@ -646,7 +652,7 @@ def add_arguments_linc_target(parser):
     parser.add_argument(
         "--selfcal_hba_uvlambdamin",
         type=float,
-        default=200.,
+        default=200.0,
         help="Specifies minimum uv-distance in units of wavelength to be used when performing selfcal with HBA.",
     )
     parser.add_argument(
@@ -1182,28 +1188,34 @@ def get_reffreq(msfile: str) -> float:
     freq = float(lines[(-1)])
     return freq
 
+
 def parse_arguments_linc(args: dict):
-    args.pop('parser')
-    if args['parser_LINC'] == 'calibrator':
-        args.pop('parser_LINC')
+    args.pop("parser")
+    if args["parser_LINC"] == "calibrator":
+        args.pop("parser_LINC")
         print("Generating LINC Calibrator config")
-        config = LINCJSONConfig(args["mspath"], ms_suffix=args['ms_suffix'])
+        config = LINCJSONConfig(args["mspath"], ms_suffix=args["ms_suffix"])
         args.pop("mspath")
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_LINC_calibrator.json")
-    elif args['parser_LINC'] == 'target':
-        args.pop('parser_LINC')
+    elif args["parser_LINC"] == "target":
+        args.pop("parser_LINC")
         print("Generating LINC Target config")
-        config = LINCJSONConfig(args["mspath"], prefac_h5parm=args["cal_solutions"], ms_suffix=args['ms_suffix'])
+        config = LINCJSONConfig(
+            args["mspath"],
+            prefac_h5parm=args["cal_solutions"],
+            ms_suffix=args["ms_suffix"],
+        )
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_LINC_target.json")
 
+
 def parse_arguments_vlbi(args):
-    args.pop('parser')
-    if args['parser_VLBI'] == 'delay-calibration':
-        args.pop('parser_VLBI')
+    args.pop("parser")
+    if args["parser_VLBI"] == "delay-calibration":
+        args.pop("parser_VLBI")
         print("Generating VLBI Delay Calibration config")
         try:
             config = VLBIJSONConfig(
@@ -1211,17 +1223,17 @@ def parse_arguments_vlbi(args):
                 prefac_h5parm=args["solset"],
                 ddf_solsdir=args["ddf_solsdir"],
                 workflow="delay-calibration",
-                ms_suffix=args['ms_suffix'],
+                ms_suffix=args["ms_suffix"],
             )
             args.pop("mspath")
         except ValueError as e:
-            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_delay_calibration.json")
-    elif args['parser_VLBI'] == 'split-directions':
-        args.pop('parser_VLBI')
+    elif args["parser_VLBI"] == "split-directions":
+        args.pop("parser_VLBI")
         print("Generating VLBI Split Directions config")
         try:
             config = VLBIJSONConfig(
@@ -1229,35 +1241,35 @@ def parse_arguments_vlbi(args):
                 prefac_h5parm=args["delay_solset"],
                 ddf_solsdir=None,
                 workflow="split-directions",
-                ms_suffix=args['ms_suffix'],
+                ms_suffix=args["ms_suffix"],
             )
             args.pop("mspath")
         except ValueError as e:
-            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_split_directions.json")
-    elif args['parser_VLBI'] == 'setup':
-        args.pop('parser_VLBI')
+    elif args["parser_VLBI"] == "setup":
+        args.pop("parser_VLBI")
         print("Generating VLBI setup config")
         try:
             config = VLBIJSONConfig(
                 args["mspath"],
-                prefac_h5parm=args['solset'],
+                prefac_h5parm=args["solset"],
                 ddf_solsdir=None,
                 workflow="setup",
-                ms_suffix=args['ms_suffix'],
+                ms_suffix=args["ms_suffix"],
             )
             args.pop("mspath")
         except ValueError as e:
-            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_setup.json")
-    elif args['parser_VLBI'] == 'concatenate-flag':
-        args.pop('parser_VLBI')
+    elif args["parser_VLBI"] == "concatenate-flag":
+        args.pop("parser_VLBI")
         print("Generating VLBI setup config")
         try:
             config = VLBIJSONConfig(
@@ -1265,17 +1277,17 @@ def parse_arguments_vlbi(args):
                 prefac_h5parm=None,
                 ddf_solsdir=None,
                 workflow="concatenate-flag",
-                ms_suffix=args['ms_suffix'],
+                ms_suffix=args["ms_suffix"],
             )
             args.pop("mspath")
         except ValueError as e:
-            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_concatenate-flag.json")
-    elif args['parser_VLBI'] == 'phaseup-concat':
-        args.pop('parser_VLBI')
+    elif args["parser_VLBI"] == "phaseup-concat":
+        args.pop("parser_VLBI")
         print("Generating VLBI setup config")
         try:
             config = VLBIJSONConfig(
@@ -1283,15 +1295,16 @@ def parse_arguments_vlbi(args):
                 prefac_h5parm=None,
                 ddf_solsdir=None,
                 workflow="phaseup-concat",
-                ms_suffix=args['ms_suffix'],
+                ms_suffix=args["ms_suffix"],
             )
             args.pop("mspath")
         except ValueError as e:
-            print('\nERROR: Failed to generate config file. Error was: ' + str(e))
+            print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_phaseup-concat.json")
+
 
 if __name__ == "__main__":
     if "LINC_DATA_ROOT" not in os.environ:
@@ -1309,7 +1322,8 @@ if __name__ == "__main__":
     )
 
     subparser_linc = subparsers.add_parser(
-        "LINC", help="Generate a configuration file for LINC. See `create_ms_list.py LINC -h` for options."
+        "LINC",
+        help="Generate a configuration file for LINC. See `create_ms_list.py LINC -h` for options.",
     )
     modeparser_linc = subparser_linc.add_subparsers(
         title="LINC",
@@ -1373,7 +1387,7 @@ if __name__ == "__main__":
     add_arguments_vlbi_phaseup_concat(modeparser_vlbi_phaseup_concat)
 
     args = vars(parser.parse_args())
-    if args['parser'] == 'LINC':
+    if args["parser"] == "LINC":
         parse_arguments_linc(args)
-    elif args['parser'] == 'VLBI':
+    elif args["parser"] == "VLBI":
         parse_arguments_vlbi(args)
