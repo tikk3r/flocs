@@ -105,7 +105,7 @@ if [[ -z "$SIMG" ]]; then
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py  --filter_baselines '*&' $EXTRAOPTS $DATADIR
+    python flocs/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
@@ -133,7 +133,7 @@ else
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
 
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py --filter_baselines '*&' $EXTRAOPTS $DATADIR
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist.json' >> jobrunner.sh
