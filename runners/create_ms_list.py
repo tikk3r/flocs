@@ -638,10 +638,29 @@ def add_arguments_linc_target(parser):
         help="Plot the structure function.",
     )
     parser.add_argument(
+        "--selfcal",
+        type=bool,
+        default=False,
+        help="Perform self-calibration on the data.",
+    )
+    parser.add_argument(
+        "--selfcal_hba_uvlambdamin",
+        type=float,
+        default=200.,
+        help="Specifies minimum uv-distance in units of wavelength to be used when performing selfcal with HBA.",
+    )
+    parser.add_argument(
+        "--selfcal_hba_imsize",
+        type=int,
+        nargs=2,
+        default=[20000, 20000],
+        help="Specifies the image size in pixels, as a list, to use during HBA self-calibration",
+    )
+    parser.add_argument(
         "--selfcal_region",
         type=cwl_file,
         default=None,
-        help="DS9-compatible region file to select the image regions used for the self-calibration.",
+        help="DS9-compatible region file to select the image regions used for the LBA self-calibration.",
     )
     parser.add_argument(
         "--skymodel_fluxlimit",
