@@ -25,6 +25,7 @@ From: fedora:38
 	# Leave at latest, release versions crash for some reason.
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
+    export DDFPIPELINE_VERSION=72e5285
     export DPPP_VERSION=4df56d1f
 	export DYSCO_VERSION=2e7f331
     export EVERYBEAM_VERSION=22cd113b
@@ -649,7 +650,7 @@ From: fedora:38
     #
     rm -rf $INSTALLDIR/ddf-pipeline
     cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
-    cd ddf-pipeline && git checkout 712618b && cd ..
+    cd ddf-pipeline && git checkout $DDFPIPELINE_VERSION && cd ..
     cd $INSTALLDIR
     sed -i "s/DDF.py/DDF.py --Misc-IgnoreDeprecationMarking=1/" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
     sed -i "s/--Beam-PhasedArrayMode/--Beam-LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
