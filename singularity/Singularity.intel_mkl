@@ -184,6 +184,7 @@ From: fedora:38
     make -j $J
     #make check
     make install
+    cd /opt/hdf5
     rm -r hdf5-1.*
     export CC=`which gcc`
 	export CXX=`which g++`
