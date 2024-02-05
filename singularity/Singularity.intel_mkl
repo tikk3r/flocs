@@ -618,8 +618,8 @@ EOF
     # Install custom runners
     #
     mkdir -p /opt/lofar/runners
-    cd /opt/lofar/runners
-    cp flocs/runners/run* .
+    cd /opt/lofar/
+    cp flocs/runners/run* ./runners/
     cp -r flocs/utility /opt/lofar/
     rm -rf flocs
     chmod 755 /opt/lofar/runners/*.sh
