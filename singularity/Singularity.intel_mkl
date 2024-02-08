@@ -543,32 +543,38 @@ EOF
     # Install DDFacet
     #
     cd $INSTALLDIR
-    mkdir -p $INSTALLDIR/DDFacet && cd $INSTALLDIR/DDFacet
-    git clone --single-branch -b v0.7.1 https://github.com/saopicc/DDFacet.git src
-    # Figure out how to adapt this patch
-    #patch $INSTALLDIR/DDFacet/src/DDFacet/Other/AsyncProcessPool.py $PATCH_DDFACET_CPUS
-    wget https://raw.githubusercontent.com/saopicc/DDFacet/v0.6.0/setup.py -O src/setup.py
-    #sed -i "s/MIN_REQ = 8/MIN_REQ = 9/" src/setup.py
-    #sed -i "s/python-casacore >= 3.0.0, <=3.4.0/python-casacore >= 3.0.0/" src/setup.py
-    #sed -i "s/3\.7/3\.10/" src/setup.py
-    sed -i "s/__version__ = "0.6.0.0"/__version__ = "0.7.1.0"/" src/setup.py
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/patches/DDF_Gridder_CMake.patch -O /opt/lofar/patches/DDF_Gridder_CMake.patch
-    patch src/DDFacet/Gridder/CMakeLists.txt /opt/lofar/patches/DDF_Gridder_CMake.patch
-    cd src && python setup.py install --prefix=$INSTALLDIR/DDFacet
-    cp -r SkyModel/Sky /opt/lofar/DDFacet/lib/python$PYTHON_VERSION/site-packages/SkyModel/
+    git clone --single-branch -b v0.7.2 https://github.com/saopicc/DDFacet.git
+    ## Strip out version requirements.
+    sed -i 's/>=.*;/;/' DDFacet/setup.py
+    sed -i 's/<=.*"/"/' DDFacet/setup.py
+    sed -i "s/MIN_REQ = 8/MIN_REQ = 11/" DDFacet/setup.py
+    grep -rl "np.float32" DDFacet | xargs sed -i "s/np\.float32/float/"
+    grep -rl "np.float" DDFacet | xargs sed -i "s/np\.float/float/"
+    grep -rl "np.int" DDFacet | xargs sed -i "s/(np\.int)[^0-9]/int/g"
+    grep -rl "np.bool" DDFacet | xargs sed -i "s/np\.bool/bool/"
+    sed -i "4d" DDFacet/pyproject.toml
+    sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' DDFacet/setup.cfg
+    sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' DDFacet/setup.cfg
+    pip install --no-deps DDFacet/
+
 
     #
     # Install killMS
     #
-    mkdir -p $INSTALLDIR/killMS
-    cd $INSTALLDIR/killMS && git clone --single-branch -b v3.1.0 https://github.com/saopicc/killMS.git
+    cd $INSTALLDIR
+    git clone --single-branch -b v3.1.0 https://github.com/saopicc/killMS.git
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Predict/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Array/Dot/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Gridder/Makefile
-    cd killMS
-    sed -i "s?DDFacet >= 0.7.0?DDFacet >= 0.6.0?" setup.py
-    python setup.py install --prefix=$INSTALLDIR/killMS
-    chmod u+x /opt/lofar/killMS/lib/python${PYTHON_VERSION}/site-packages/killMS/*.py
+    grep -rl "np.float32" killMS | xargs sed -i "s/np\.float32/float/"
+    grep -rl "np.float" killMS | xargs sed -i "s/np\.float/float/"
+    grep -rl "np.int" killMS | xargs sed -i "s/(np\.int)[^0-9]/int/g"
+    grep -rl "np.bool" killMS | xargs sed -i "s/np\.bool/bool/"
+    sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' killMS/setup.cfg
+    sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' killMS/setup.cfg
+    sed -i "147d" killMS/setup.py
+    pip install --no-deps killMS/
+
 
     #   
     # Install DynSpecMS
