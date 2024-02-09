@@ -618,10 +618,9 @@ From: fedora:38
     sed -i 's/>=.*;/;/' DDFacet/setup.py
     sed -i 's/<=.*"/"/' DDFacet/setup.py
     sed -i "s/MIN_REQ = 8/MIN_REQ = 11/" DDFacet/setup.py
-    grep -rl "np.float32" DDFacet | xargs sed -i "s/np\.float32/float/"
-    grep -rl "np.float" DDFacet | xargs sed -i "s/np\.float/float/"
-    grep -rl "np.int" DDFacet | xargs sed -i "s/(np\.int)[^0-9]/int/g"
-    grep -rl "np.bool" DDFacet | xargs sed -i "s/np\.bool/bool/"
+    grep -rl "np.float" DDFacet | xargs sed -i "s/np\.float[^0-9]/np\.float_/g"
+    grep -rl "np.int" DDFacet | xargs sed -i "s/(np\.int)[^0-9]/np\.int_/g"
+    grep -rl "np.bool" DDFacet | xargs sed -i "s/np\.bool/np\.bool_/g"
     sed -i "4d" DDFacet/pyproject.toml
     sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' DDFacet/setup.cfg
     sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' DDFacet/setup.cfg
@@ -636,10 +635,9 @@ From: fedora:38
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Predict/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Array/Dot/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Gridder/Makefile
-    grep -rl "np.float32" killMS | xargs sed -i "s/np\.float32/float/"
-    grep -rl "np.float" killMS | xargs sed -i "s/np\.float/float/"
-    grep -rl "np.int" killMS | xargs sed -i "s/(np\.int)[^0-9]/int/g"
-    grep -rl "np.bool" killMS | xargs sed -i "s/np\.bool/bool/"
+    grep -rl "np.float" killMS | xargs sed -i "s/np\.float/np\.float_/"
+    grep -rl "np.int" killMS | xargs sed -i "s/(np\.int)[^0-9]/np\.int_/g"
+    grep -rl "np.bool" killMS | xargs sed -i "s/np\.bool/np\.bool_/"
     sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' killMS/setup.cfg
     sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' killMS/setup.cfg
     sed -i "147d" killMS/setup.py
@@ -675,6 +673,11 @@ From: fedora:38
     cd $INSTALLDIR
     wget https://raw.githubusercontent.com/rvweeren/lofar_facet_selfcal/main/sub-sources-outside-region.py -O /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
     chmod 755 /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
+    sed -i "s/np\.float/np\.float_/" /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
+    sed -i "s/(np\.int)[^0-9]/np\.int_/g" /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
+    grep -rl "np.int" /opt/lofar/ddf-pipeline/utils | xargs sed -i "s/(np\.int)[^0-9]/np\.int_/g"
+    grep -rl "np.bool" /opt/lofar/ddf-pipeline/utils | xargs sed -i "s/np\.bool/np\.bool_/g"
+
     
     #
     # Install lotss-query
