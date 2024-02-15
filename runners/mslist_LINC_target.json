@@ -1,0 +1,79 @@
+{
+    "msin": [
+        {
+            "class": "Directory",
+            "path": "../test_input/L656064_SB244_uv.dysco.short.MS"
+        }
+    ],
+    "cal_solutions": {
+        "class": "File",
+        "path": "/home/sweijen/software/flocs/runners/cal_solutions.h5"
+    },
+    "refant": "CS00.*",
+    "flag_baselines": [],
+    "process_baselines_target": "[CR]S*&",
+    "filter_baselines": "[CR]S*&",
+    "do_smooth": false,
+    "rfi_strategy": "/tmp/dev/rfistrategies/lofar-default.lua",
+    "min_unflagged_fraction": 0.5,
+    "compression_bitrate": 16,
+    "raw_data": false,
+    "propagatesolutions": true,
+    "demix_sources": [
+        "CasA",
+        "CygA"
+    ],
+    "demix_freqres": "48.82kHz",
+    "demix_timeres": 10,
+    "demix": null,
+    "apply_tec": false,
+    "apply_clock": true,
+    "apply_phase": false,
+    "apply_RM": true,
+    "apply_beam": true,
+    "gsmcal_step": "phase",
+    "updateweights": true,
+    "max_dp3_threads": 10,
+    "memoryperc": 20,
+    "min_separation": 30,
+    "A-Team_skymodel": null,
+    "target_skymodel": null,
+    "use_target": true,
+    "skymodel_source": "TGSS",
+    "avg_timeresolution": 4,
+    "avg_timeresolution_concat": 8,
+    "avg_freqresolution": "48.82kHz",
+    "avg_freqresolution_concat": "97.64kHz",
+    "num_SBs_per_group": 10,
+    "reference_stationSB": null,
+    "ionex_server": "http://ftp.aiub.unibe.ch/CODE/",
+    "ionex_prefix": "CODG",
+    "proxy_server": null,
+    "proxy_port": null,
+    "proxy_type": null,
+    "proxy_pass": null,
+    "clip_sources": [
+        "VirA_4_patch",
+        "CygAGG",
+        "CasA_4_patch",
+        "TauAGG"
+    ],
+    "clipAteam": true,
+    "lbfgs_historysize": 10,
+    "lbfgs_robustdof": 200,
+    "aoflag_chunksize": 2000,
+    "aoflag_freqconcat": true,
+    "chunkduration": 0.0,
+    "wsclean_tmpdir": "/tmp",
+    "make_structure_plot": true,
+    "selfcal": false,
+    "selfcal_hba_uvlambdamin": 200.0,
+    "selfcal_hba_imsize": [
+        20000,
+        20000
+    ],
+    "selfcal_region": null,
+    "skymodel_fluxlimit": null,
+    "mspath": "../test_input/",
+    "ms_suffix": ".MS"
+}

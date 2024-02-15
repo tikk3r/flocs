@@ -1,0 +1,8 @@
+==============================
+=== LINC Calibrator Runner ===
+=== Author: Frits Sweijen  ===
+==============================
+If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues
+
+Usage:
+run_LINC_calibrator.sh [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-e <options for create_ms_list.py>] -d <data path>
