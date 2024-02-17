@@ -58,7 +58,7 @@ nmmn
 nose
 numdifftools
 numexpr
-numpy<1.26
+numpy
 oauthlib
 pluggy
 polars
@@ -97,7 +97,7 @@ rtree
 ruamel.yaml
 SciencePlots
 scikit-learn
-scipy
+scipy<1.12
 seaborn
 git+https://github.com/ratt-ru/shadeMS.git
 six
