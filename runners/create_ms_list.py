@@ -650,6 +650,12 @@ def add_arguments_linc_target(parser):
         help="Perform self-calibration on the data.",
     )
     parser.add_argument(
+        "--selfcal_strategy",
+        type=str,
+        default='HBA',
+        help="Self calibration strategy to follow.",
+    )
+    parser.add_argument(
         "--selfcal_hba_uvlambdamin",
         type=float,
         default=200.0,
