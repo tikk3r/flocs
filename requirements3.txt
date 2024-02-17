@@ -58,7 +58,7 @@ nmmn
 nose
 numdifftools
 numexpr
-numpy==1.26.2
+numpy<1.26
 oauthlib
 pluggy
 polars
