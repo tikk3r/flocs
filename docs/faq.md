@@ -35,3 +35,6 @@ If directories or files that exist on the host system cannot be found inside the
 
 ## Pipelines crash with "Too many open files".
 Raise the open file limit. Certain steps like wide-band flagging with AOFlagger may need many files open simultaneously, which can lead to this error. In a Bash shell this limit can be checked by running `ulimit -n`. If this is set to a low value such as 1024, it is recommended to increase this. Usually `ulimit -n 4096` can be set without requiring special privileges. On CSH shells use `limit` to see current limits and `limit descriptors 4096` or `limit openfiles 4096` to increase it.
+
+## Python imports fail
+Python packages in your home directory can interfere with the container's Python installation. If Python import fail (especially packages like NumPy or SciPy), pay close attention to the paths in the error messages. If you see paths that point to your home folder or your own Python installation, then that is a likely cause of issues. If you do need packages to be installed in your home directory, try using the container with the `--no-home` option which will not mount your home directory in the container. Note that this means nothing in your home directory will be accessible from inside the container.
