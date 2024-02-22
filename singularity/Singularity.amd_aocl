@@ -619,9 +619,10 @@ From: fedora:38
     sed -i 's/<=.*"/"/' DDFacet/setup.py
     sed -i "s/MIN_REQ = 8/MIN_REQ = 11/" DDFacet/setup.py
     # sed doesn't support negative lookahead, so we use perl here.
-    grep -rl "np.float" DDFacet | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/'
+    grep -rl "np.float" DDFacet | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
     grep -rl "np.int" DDFacet | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
     grep -rl "np.complex" DDFacet | xargs perl -pi -e 's/np\.complex(?![0-9a-zA-Z])/np\.complex128/g'
+    #grep -rl "np.int(" DDFacet | xargs sed -i 's/np\.int(/np\.int_(/g'
     grep -rl "np.bool" DDFacet | xargs perl -pi -e 's/np\.bool(?![0-9a-zA-Z])/np\.bool_/'
     grep -rl "np.bool8" DDFacet | xargs perl -pi -e 's/np\.bool8/np\.bool_/'
 
@@ -640,13 +641,17 @@ From: fedora:38
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Predict/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Array/Dot/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Gridder/Makefile
-    grep -rl "np.float" killMS | xargs sed -i 's/np\.float(?![0-9a-zA-Z])/np\.float/'
-    grep -rl "np.int" killMS | xargs sed -i 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
-    grep -rl "np.bool" killMS | xargs sed -i "s/np\.bool/bool/"
+    grep -rl "np.float" killMS | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
+    grep -rl "np.int" killMS | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
+    grep -rl "np.complex" killMS | xargs perl -pi -e 's/np\.complex(?![0-9a-zA-Z])/np\.complex128/g'
+    #grep -rl "np.int(" killMS | xargs sed -i 's/np\.int(/np\.int_(/g'
+    grep -rl "np.bool" killMS | xargs perl -pi -e 's/np\.bool(?![0-9a-zA-Z])/np\.bool_/'
+    grep -rl "np.bool8" killMS | xargs perl -pi -e 's/np\.bool8/np\.bool_/'
     sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' killMS/setup.cfg
     sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' killMS/setup.cfg
     sed -i "147d" killMS/setup.py
     pip install --no-deps killMS/
+
 
 
     #   
