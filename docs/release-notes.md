@@ -13,6 +13,24 @@ nav_order: 5
 1. TOC
 {:toc}
 
+
+## v5.0.0
+Base container updated to Fedora 38
+
+**Updates**
+* Add altair and polars Python packages.
+* Refactored `create_ms_list.py` to be more flexible (_not_ backwards compatible with older versions).
+* Update ddf-pipeline to 72e5285.
+* Update DDFacet to v0.7.2.
+* Update DP3 to 4df56d1f.
+* Update EveryBeam to d52668ec.
+* Update LOFAR H5plot to 2.8.1.
+* Update IDG to 011687ed.
+* Update WSClean to 843f87c8.
+
+**Fixes**
+* Split-Directions runner now clones the master branch again.
+
 ## v4.5.0
 Container will now follow flocs naming scheme: `flocs_vx.Y.Z_<march>_<mtune>_{mkl/aocl}[_cuda].sif`
 
