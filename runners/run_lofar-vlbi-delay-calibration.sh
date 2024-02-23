@@ -177,14 +177,14 @@ if [[ -z "$SIMG" ]]; then
     export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
     git clone https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS
+    python flocs/runners/create_ms_list.py VLBI delay-caliration --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
     echo export MPLBACKEND='Agg' > jobrunner.sh
     echo export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH >> jobrunner.sh
     echo export PYTHONPATH=\$VLBI_DATA_ROOT/scripts:\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist.json 2>&1' >> jobrunner.sh
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist_VLBI_delay_calibration.json 2>&1' >> jobrunner.sh
     (time bash jobrunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl_delay-calibration.txt
     echo VLBI-cwl ended
 else
@@ -216,13 +216,13 @@ else
 
     git clone https://github.com/tikk3r/flocs.git
 
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --vlbi --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv  --linc=$LINC_DATA_ROOT $EXTRAOPTS
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py VLBI delay-caliration --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --facetselfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
 
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
     echo export MPLBACKEND='Agg' > jobrunner.sh
     echo export PYTHONPATH=\$VLBI_DATA_ROOT/scripts:\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist.json 2>&1' >> jobrunner.sh
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist_VLBI_delay_calibration.json 2>&1' >> jobrunner.sh
     (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl_delay-calibration.txt
     echo VLBI-cwl ended
 fi

@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 {
 echo "=============================="
-echo "===   LINC Target Runner   ==="
+echo "=== LINC Calibrator Runner ==="
 echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-e <options for create_ms_list.py>] -d <data path> -c <calibrator solutions>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-e <options for create_ms_list.py>] -d <data path>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
     exit 0
 fi
 
-while getopts ":d:s:r:l:b:c:e:" opt; do
+while getopts ":d:s:r:l:b:e:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
@@ -25,9 +25,7 @@ while getopts ":d:s:r:l:b:c:e:" opt; do
         ;;
         l) LINC_DATA_ROOT="$OPTARG"
         ;;
-        c) CALSOLS="$OPTARG"
-        ;;
-        e) EXTRAOPTS="$OPTARG"
+        e) EXTRAOPTS="$OPTARG'"
         ;;
         \?) echo "Invalid option -$OPTARG" >&2
             echo
@@ -53,14 +51,6 @@ if [[ ! -z "$SIMG" ]]; then
     fi
 fi
 
-if [[ ! -f $CALSOLS ]]; then
-    echo "Calibrator solutions $CALSOLS do not exist or are not accessible!"
-    exit 4
-else
-    export DATADIR=$(readlink -f $DATADIR)
-    export CALSOLS=$(readlink -f $CALSOLS)
-fi
-
 if [[ -z $RUNDIR ]]; then
     echo "No running directory specified, running in $PWD"
     RUNDIR=$PWD
@@ -74,12 +64,12 @@ export WORKDIR=$(mktemp -d -p "$RUNDIR")
 echo "Working directory is $WORKDIR"
 
 ## Final results will be copied here.
-export RESULTSDIR=$WORKDIR/results_LINC_target/
+export RESULTSDIR=$WORKDIR/results_LINC_calibrator/
 ## Logs of the various steps will be put here.
-export LOGSDIR=$WORKDIR/logs_LINC_target/
+export LOGSDIR=$WORKDIR/logs_LINC_calibrator/
 ## Temporary files are stored here.
 ## The trailing slash is important here.
-export TMPDIR=$WORKDIR/tmpdir_LINC_target/
+export TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
 
 if [[ -z "$LINC_DATA_ROOT" ]]; then
     export LINC_DATA_ROOT=$WORKDIR/LINC
@@ -105,13 +95,6 @@ cd $LINC_DATA_ROOT
 export LINC_COMMIT=$(git rev-parse --short HEAD)
 cd -
 
-# Prepare workflow files.
-echo "Overriding rfistrategies with Lua >5.3 compatible ones from AOFlagger repository"
-wget https://gitlab.com/aroffringa/aoflagger/-/raw/master/data/strategies/lofar-default.lua -O $LINC_DATA_ROOT/rfistrategies/lofar-default.lua
-
-echo Making sure all scripts are executable
-chmod 755 $LINC_DATA_ROOT/scripts/*.py
-
 mkdir -p $RESULTSDIR
 mkdir -p $LOGSDIR
 mkdir -p $TMPDIR
@@ -122,12 +105,12 @@ if [[ -z "$SIMG" ]]; then
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS $EXTRAOPTS
+    python flocs/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> jobrunner.sh
-    (time bash jobrunner.sh 2>&1) | tee $WORKDIR/job_output_linc-target.txt
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist_LINC_calibrator.json' >> jobrunner.sh
+    (time bash jobrunner.sh 2>&1) | tee $WORKDIR/job_output_linc-calibrator.txt
     echo LINC ended
 else
     echo "Using container $SIMG"
@@ -135,30 +118,31 @@ else
     CONTAINERSTR=$(singularity --version)
     if [[ "$CONTAINERSTR" == *"apptainer"* ]]; then
         export APPTAINERENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
-        export APPTAINERENV_RESULTSDIR=$WORKDIR/results_LINC_target/
-        export APPTAINERENV_LOGSDIR=$WORKDIR/logs_LINC_target/
-        export APPTAINERENV_TMPDIR=$WORKDIR/tmpdir_LINC_target/
+        export APPTAINERENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
+        export APPTAINERENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
+        export APPTAINERENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
         export APPTAINERENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
     else
         export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
-        export SINGULARITYENV_RESULTSDIR=$WORKDIR/results_LINC_target/
-        export SINGULARITYENV_LOGSDIR=$WORKDIR/logs_LINC_target/
-        export SINGULARITYENV_TMPDIR=$WORKDIR/tmpdir_LINC_target/
+        export SINGULARITYENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
+        export SINGULARITYENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
+        export SINGULARITYENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
         export SINGULARITYENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
     fi
 
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py $DATADIR --cal_solutions $CALSOLS $EXTRAOPTS
+
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist.json' >> jobrunner.sh
-    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh 2>&1) |& tee $WORKDIR/job_output_linc-target.txt
+    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist_LINC_calibrator.json' >> jobrunner.sh
+    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh 2>&1) |& tee $WORKDIR/job_output_linc-calibrator.txt
     echo LINC ended
 fi
 echo Cleaning up...
 echo == Deleting LINC tmpdir..
-rm -rf $WORKDIR/tmpdir_LINC_target
+rm -rf $WORKDIR/tmpdir_LINC_calibrator
 
 echo == Moving results...
 FINALDIR=$(dirname $WORKDIR)
@@ -166,15 +150,15 @@ pattern="${DATADIR}/*.MS"
 files=( $pattern )
 ms="${files[0]}"  # printf is safer!
 obsid=$(echo $(basename $ms) | awk -F'_' '{print $1}')
-mv "$WORKDIR" "$FINALDIR/${obsid}_LINC_target"
+mv "$WORKDIR" "$FINALDIR/${obsid}_LINC_calibrator"
 
-echo "==========================="
-echo "=== LINC Target Summary ==="
-echo "==========================="
+echo "==============================="
+echo "=== LINC Calibrator Summary ==="
+echo "==============================="
 echo LINC version:      $LINC_COMMIT
-echo Output:            "$FINALDIR/${obsid}_LINC_target"
-echo Solutions:         "$FINALDIR/${obsid}_LINC_target/results_LINC_target/*h5"
-echo Inspection plots:  "$FINALDIR/${obsid}_LINC_target/results_LINC_target/inspection"
-echo Pipeline logs:     "$FINALDIR/${obsid}_LINC_target/results_LINC_target/logs"
-echo Pipeline summary:  "$FINALDIR/${obsid}_LINC_target/results_LINC_target/logs/*summary.log"
+echo Output:            "$FINALDIR/${obsid}_LINC_calibrator"
+echo Solutions:         "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/*h5"
+echo Inspection plots:  "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/inspection"
+echo Pipeline logs:     "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/logs"
+echo Pipeline summary:  "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/logs/*summary.log"
 } |& tee job_output_full.txt
