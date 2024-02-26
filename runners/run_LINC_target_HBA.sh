@@ -106,9 +106,6 @@ export LINC_COMMIT=$(git rev-parse --short HEAD)
 cd -
 
 # Prepare workflow files.
-echo "Overriding rfistrategies with Lua >5.3 compatible ones from AOFlagger repository"
-wget https://gitlab.com/aroffringa/aoflagger/-/raw/master/data/strategies/lofar-default.lua -O $LINC_DATA_ROOT/rfistrategies/lofar-default.lua
-
 echo Making sure all scripts are executable
 chmod 755 $LINC_DATA_ROOT/scripts/*.py
 
