@@ -8,7 +8,8 @@ parent: Benchmarking
 # WSClean benchmarks
 
 ## General container reference
-![wsclean benchmark 1p2 asec]({{ site.baseurl }}/docs/assets/images/wsclean_container_benchmarks_DI_6asec.png)
+![wsclean benchmark 6 asec]({{ site.baseurl }}/docs/assets/images/wsclean_container_benchmarks_DI_6asec.png)
+![wsclean benchmark 1 asec]({{ site.baseurl }}/docs/assets/images/wsclean_container_benchmarks_DI_1asec.png)
 
 ## Gridders
 Here we compare the performance of gridders available in WSClean. The currently benchmarked gridders are IDG and w-gridder.
