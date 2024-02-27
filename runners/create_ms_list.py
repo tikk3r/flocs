@@ -720,7 +720,8 @@ def add_arguments_vlbi_delay_calibrator(parser):
     parser.add_argument(
         "--flag_baselines",
         type=str,
-        default='[]',
+        nargs="*",
+        default=[],
         help="The pattern used by DP3 to flag baselines, e.g. [ CS013HBA*&&* ].",
     )
     parser.add_argument(
@@ -867,7 +868,8 @@ def add_arguments_vlbi_setup(parser):
     parser.add_argument(
         "--flag_baselines",
         type=str,
-        default='[]',
+        nargs="*",
+        default=[],
         help="DP3-compatible pattern for baselines or stations to be flagged (may be an empty list.",
     )
     parser.add_argument(
