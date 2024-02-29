@@ -136,6 +136,13 @@ class VLBIJSONConfig(LINCJSONConfig):
             final_mslist.append(x)
         self.configdict["msin"] = final_mslist
 
+def eval_bool(s: str) -> bool:
+    if s.lower() == 'true':
+        return True
+    elif s.lower() == 'false':
+        return False
+    else:
+        raise ValueError("Invalid boolean string")
 
 def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     parser.add_argument(
@@ -165,13 +172,13 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     )
     parser.add_argument(
         "--fit_offset_PA",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Assume that together with a delay each station has also a differential phase offset (important for old LBA observations).",
     )
     parser.add_argument(
         "--do_smooth",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Enable or disable baseline-based smoothing.",
     )
@@ -198,25 +205,25 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     )
     parser.add_argument(
         "--skip_international",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Skip fitting the bandpass for international stations (this avoids flagging them in many cases).",
     )
     parser.add_argument(
         "--raw_data",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Use autoweight. Set to True in case you are using raw data.",
     )
     parser.add_argument(
         "--propagatesolutions",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Use already derived solutions as initial guess for the upcoming time slot.",
     )
     parser.add_argument(
         "--flagunconverged",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Flag solutions for solves that did not converge (if they were also detected to diverge).",
     )
@@ -240,7 +247,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     )
     parser.add_argument(
         "--do_transfer",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Enable solutions transfer for non-trusted calibrator sources.",
     )
@@ -277,13 +284,13 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     )
     parser.add_argument(
         "--ion_3rd",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Take into account also 3rd-order effects for the clock-TEC separation.",
     )
     parser.add_argument(
         "--clock_smooth",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Only take the median of the derived clock solutions (enable this in case of non-joint observations).",
     )
@@ -356,7 +363,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     )
     parser.add_argument(
         "--aoflag_reorder",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Make aoflagger reorder the measurement set before running the detection. This prevents that aoflagger will use its memory reading mode, which is faster but uses more memory.",
     )
@@ -414,7 +421,7 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--do_smooth",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Enable or disable baseline-based smoothing.",
     )
@@ -440,13 +447,13 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--raw_data",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Use autoweight. Set to True in case you are using raw data.",
     )
     parser.add_argument(
         "--propagatesolutions",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Use already derived solutions as initial guess for the upcoming time slot.",
     )
@@ -477,31 +484,31 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--apply_tec",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Apply TEC solutions from the calibrator.",
     )
     parser.add_argument(
         "--apply_clock",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Apply clock solutions from the calibrator.",
     )
     parser.add_argument(
         "--apply_phase",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Apply full phase solutions from the calibrator.",
     )
     parser.add_argument(
         "--apply_RM",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Apply ionospheric Rotation Measure from RMextract.",
     )
     parser.add_argument(
         "--apply_beam",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Apply element beam corrections.",
     )
@@ -513,7 +520,7 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--updateweights",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Update WEIGHT_SPECTRUM column in a way consistent with the weights being inverse proportional to the autocorrelations.",
     )
@@ -549,7 +556,7 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--use_target",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Enable downloading of a target skymodel.",
     )
@@ -605,7 +612,7 @@ def add_arguments_linc_target(parser):
         default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
         help="",
     )
-    parser.add_argument("--clipAteam", type=bool, default=True, help="")
+    parser.add_argument("--clipAteam", type=eval_bool, default=True, help="")
     parser.add_argument(
         "--lbfgs_historysize",
         type=int,
@@ -626,7 +633,7 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--aoflag_freqconcat",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Concatenate all subbands on-the-fly before performing flagging. Disable if you use time-chunked input data.",
     )
@@ -639,13 +646,13 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--make_structure_plot",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Plot the structure function.",
     )
     parser.add_argument(
         "--selfcal",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Perform self-calibration on the data.",
     )
@@ -808,13 +815,13 @@ def add_arguments_vlbi_split_directions(parser):
     )
     parser.add_argument(
         "--truncateLastSBs",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Whether to truncate the last subbands of the MSs to the same length.",
     )
     parser.add_argument(
         "--do_selfcal",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Self calibrate the split out targets.",
     )
