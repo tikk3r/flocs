@@ -28,11 +28,12 @@ Extremely bright 3C source that is just resolved on the longest Dutch baselines.
 
 **Problems:**
 
-* exremely noisy, descretised solutions on many remote stations, basically wiping out any signal
-* complex structure core station solutions
-* XX-YY polarisation difference extremely noisy
+* extreme phase wrapping-like behaviour on remote stationsnoisy
+* noisy corners on core stations
+* certain bad times (vertical noise stripes)
+* Poldif plot showing XX-YY displays noise
 
-**Causes:** model incompleteness TGSS model does not contain this scale of diffuse emission.
+**Causes:** TGSS model does not have enough resolution to represent structure seen by the furthest remotes.
 
 ![LINC target phases polXX 3C295]({{ site.baseurl }}/docs/assets/images/3C295_ph_polXX.png)
 ![LINC target phases poldif 3C295]({{ site.baseurl }}/docs/assets/images/3C295_ph_poldif.png)
@@ -43,12 +44,11 @@ Galactic plane field with complex, large-scale diffuse emission.
 
 **Problems:**
 
-* extreme phase wrapping-like behaviour on remote stationsnoisy
-* noisy corners on core stations
-* certain bad times (vertical noise stripes)
-* Poldif plot showing XX-YY displays noise
+* exremely noisy, descretised solutions on many remote stations, basically wiping out any signal
+* complex structure core station solutions
+* XX-YY polarisation difference extremely noisy
 
-**Causes:** TGSS model does not have enough resolution to represent structure seen by the furthest remotes.
+**Causes:** model incompleteness TGSS model does not contain this scale of diffuse emission.
 
 ![LINC target phases polXX GalField3]({{ site.baseurl }}/docs/assets/images/GalField3_ph_polXX_before.png)
 ![LINC target phases poldif GalField3]({{ site.baseurl }}/docs/assets/images/GalField3_ph_poldif_before.png)
