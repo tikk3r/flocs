@@ -13,6 +13,7 @@ backports.ssl-match-hostname
 bces
 bilby
 blurhash
+breizorro
 boost
 cachetools
 certifi
