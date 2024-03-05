@@ -34,8 +34,8 @@ Extremely bright 3C source that is just resolved on the longest Dutch baselines.
 
 **Causes:** model incompleteness TGSS model does not contain this scale of diffuse emission.
 
-![LINC target phases polXX GalField3]({{ site.baseurl }}/docs/assets/images/GalField3_ph_polXX_before.png)
-![LINC target phases poldif GalField3]({{ site.baseurl }}/docs/assets/images/GalField3_ph_poldif_before.png)
+![LINC target phases polXX 3C295]({{ site.baseurl }}/docs/assets/images/3C295_ph_polXX.png)
+![LINC target phases poldif 3C295]({{ site.baseurl }}/docs/assets/images/3C295_ph_poldif.png)
 
 ### GalField3
 
@@ -49,6 +49,9 @@ Galactic plane field with complex, large-scale diffuse emission.
 * Poldif plot showing XX-YY displays noise
 
 **Causes:** TGSS model does not have enough resolution to represent structure seen by the furthest remotes.
+
+![LINC target phases polXX GalField3]({{ site.baseurl }}/docs/assets/images/GalField3_ph_polXX_before.png)
+![LINC target phases poldif GalField3]({{ site.baseurl }}/docs/assets/images/GalField3_ph_poldif_before.png)
 
 ### L801462
 
