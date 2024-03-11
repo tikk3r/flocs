@@ -1,6 +1,6 @@
 ---
-name: Issue
-about: Issues or feature requests
+name: Bug report
+about: Issues using the containers or runners
 title: ''
 labels: ''
 assignees: ''
