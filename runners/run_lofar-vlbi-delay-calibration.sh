@@ -72,6 +72,10 @@ else
 fi
 export RUNDIR
 
+# Automatically bind the data and runtime directories.
+APPTAINER_BINDPATH=$RUNDIR:$DATADIR:$APPTAINER_BINDPATH
+export APPTAINER_BINDPATH
+
 # Warn on low disk space (< 25 TB).
 reqSpace=15000000000000
 reqSpaceHum=$(echo "scale=1;$reqSpace/1000000000000" | bc -l)T
