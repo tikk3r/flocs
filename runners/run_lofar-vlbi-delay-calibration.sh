@@ -75,6 +75,8 @@ export RUNDIR
 # Automatically bind the data and runtime directories.
 APPTAINER_BINDPATH=$RUNDIR:$DATADIR:$APPTAINER_BINDPATH
 export APPTAINER_BINDPATH
+echo "Binding the following paths to the container:"
+sed 's/:/\n/g' <<< "$APPTAINER_BINDPATH"
 
 # Warn on low disk space (< 25 TB).
 reqSpace=15000000000000
