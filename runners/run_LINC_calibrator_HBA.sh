@@ -25,7 +25,7 @@ while getopts ":d:s:r:l:b:e:" opt; do
         ;;
         l) LINC_DATA_ROOT="$OPTARG"
         ;;
-        e) EXTRAOPTS="$OPTARG'"
+        e) EXTRAOPTS="$OPTARG"
         ;;
         \?) echo "Invalid option -$OPTARG" >&2
             echo
