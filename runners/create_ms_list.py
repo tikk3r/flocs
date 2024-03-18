@@ -136,7 +136,9 @@ class VLBIJSONConfig(LINCJSONConfig):
             final_mslist.append(x)
         self.configdict["msin"] = final_mslist
 
-def eval_bool(s: str) -> bool:
+def eval_bool(s: str) -> Union[bool, None]:
+    if s is None:
+        return None
     if s.lower() == 'true':
         return True
     elif s.lower() == 'false':
@@ -278,7 +280,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     )
     parser.add_argument(
         "--demix",
-        type=str,
+        type=eval_bool,
         default=None,
         help="If true force demixing using all sources of demix_sources, if false do not demix (if null, automatically determines sources to be demixed according to min_separation).",
     )
@@ -478,8 +480,8 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--demix",
-        type=str,
-        default=None,
+        type=bool,
+        default=eval_bool,
         help="If true force demixing using all sources of demix_sources, if false do not demix (if null, automatically determines sources to be demixed according to min_separation).",
     )
     parser.add_argument(
