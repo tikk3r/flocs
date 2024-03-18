@@ -30,7 +30,7 @@ while getopts ":d:s:r:l:b:v:c:e:" opt; do
         ;;
         c) TARGETSOLS="$OPTARG"
         ;;
-        e) EXTRAOPTS="$OPTARG'"
+        e) EXTRAOPTS="$OPTARG"
         ;;
         \?) echo "Invalid option -$OPTARG" >&2
             echo
