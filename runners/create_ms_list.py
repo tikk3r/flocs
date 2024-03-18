@@ -480,8 +480,8 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--demix",
-        type=bool,
-        default=eval_bool,
+        type=eval_bool,
+        default=None,
         help="If true force demixing using all sources of demix_sources, if false do not demix (if null, automatically determines sources to be demixed according to min_separation).",
     )
     parser.add_argument(
