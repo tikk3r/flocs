@@ -18,6 +18,8 @@ A description of what you expected to happen.
 
 **Logs or error messages**
 If applicable, add logs, error messages or screenshots to help explain your problem.
+If you use one of the runners in `flocs/runners/`, please include the **full** log, usually dumped into
+`job_output_full.txt` by the runner scripts.
 
 **Additional information (if applicable or known):**
  - Container version and architecture: [e.g. v4.5 Zen 2]
