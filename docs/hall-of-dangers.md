@@ -16,6 +16,20 @@ nav_order: 99
 This page summarises examples of calibration solutions etc. gone wrong for various pipelines. In general the key plots to look at are those of the calibration solutions. Noisy solutions are problematic and can be indiciative of a variety of issues, such as model incompleteness, certain baselines being starved of signal or the ionosphere being wild.
 
 # LINC output
+## LINC Calibrator
+
+LINC Calibrator corrects for systematic effects: an offset between the XX and YY correlations, a bandpass correction and an average clock drift.
+
+### Bad polalign
+**Problems:**
+
+* strange wood grain pattern on many core stations
+* large spread in values between core stations
+* horizontal ripples on CS103 and CS302
+* weird banding in CS002
+* DE604 and SE607 show no phase structure
+
+![LINC calibrator phases polXX]({{ site.baseurl }}/docs/assets/images/polalign_ph_polXX_bad.png)
 
 ## LINC Target
 
