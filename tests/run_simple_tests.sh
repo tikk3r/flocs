@@ -77,20 +77,20 @@ printf ${Green}"Running test 1 / 2 - software builds\n"${Color_Off}
 printf ${Cyan}"AOFlagger: "${Color_Off}
 singularity exec $SIMG aoflagger --version 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
-printf ${Cyan}"cwltool: "${Color_Off}
-singularity exec $SIMG cwltool -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
-
 printf ${Cyan}"Difmap: "${Color_Off}
 singularity exec $SIMG which difmap > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
 printf ${Cyan}"DDFacet: "${Color_Off}
 singularity exec $SIMG DDF.py -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
-printf ${Cyan}"DPPP: "${Color_Off}
+printf ${Cyan}"DP3: "${Color_Off}
 singularity exec $SIMG DP3 > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
 printf ${Cyan}"DS9: "${Color_Off}
 singularity exec $SIMG ds9 -help > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
+
+printf ${Cyan}"killMS: "${Color_Off}
+singularity exec $SIMG kMS.py -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
 printf ${Cyan}"LoSoTo: "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py3/bin/losoto -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
@@ -98,19 +98,19 @@ singularity exec $SIMG /opt/lofar/pyenv-py3/bin/losoto -h > /dev/null 2>&1 && pr
 printf ${Cyan}"LSMTool: "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py3/bin/lsmtool -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
-printf ${Cyan}"MakeMask: "${Color_Off}
+printf ${Cyan}"MakeMask.py: "${Color_Off}
 singularity exec $SIMG MakeMask.py -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
-
-printf ${Cyan}"shadeMS: "${Color_Off}
-singularity exec $SIMG shadems -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
 printf ${Cyan}"WSClean: "${Color_Off}
 singularity exec $SIMG wsclean --version 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
 printf "\n"
 printf ${Green}"Running test 2 / 2 - python imports\n"${Color_Off}
-printf ${Cyan}"Python-casacore: "${Color_Off}
+printf ${Cyan}"casacore: "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import casacore" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
+
+printf ${Cyan}"SkyModel: "${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import SkyModel" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
 
 printf ${Cyan}"EveryBeam: "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import everybeam" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
