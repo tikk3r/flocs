@@ -101,6 +101,7 @@ SciencePlots
 scikit-learn
 scipy<1.12
 seaborn
+sunpy
 git+https://github.com/ratt-ru/shadeMS.git
 six
 sharedarray
