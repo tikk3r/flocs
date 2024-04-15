@@ -252,6 +252,7 @@ EOF
     pip install Kittens
     # Install this separately since it keeps forcefully downgrading numpy.
     pip install --no-deps aplpy
+    pip install --no-deps lofarSun
 
     #
     # Install Montage
