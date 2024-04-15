@@ -42,6 +42,7 @@ ipaddress
 ipdb
 ipython
 jinja2
+jupyterlab
 IPy
 kitchen
 git+https://github.com/ratt-ru/kittens.git
