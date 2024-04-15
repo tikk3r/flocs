@@ -444,6 +444,11 @@ EOF
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/RMextract
 
+    #
+    # Install LoSiTo
+    #
+    pip install --no-deps git+https://github.com/darafferty/losito.git
+
 	#
 	# Install LoSoTo Py 3
 	#
