@@ -10,6 +10,7 @@ This page documents my [LOFAR containers], very creatively named "Frits' LoFAR C
 {: .warning}
 > Pipelines using the genericpipeline framework can _only_ be run with the 3.X container versions that still ship with Python 2. Container versions 4.X and up no longer support this.
 
+[Download v5.0.0 (Py3, x86-64 generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/intel/flocs_v5.0.0_generic_x86-64.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Download v5.0.0 (Py3, Intel Sandy Bridge)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/intel/flocs_v5.0.0_sandybridge_sandybridge_mkl_cuda.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Download v5.0.0 (Py3, AMD Zen 2)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/amd/flocs_v5.0.0_znver2_znver2_aocl_cuda.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
