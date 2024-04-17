@@ -115,7 +115,6 @@ export LINC_DATA_ROOT=$(readlink -f $LINC_DATA_ROOT)
 export VLBI_DATA_ROOT=$(readlink -f $VLBI_DATA_ROOT)
 git clone https://github.com/jurjen93/lofar_helpers.git $LOFAR_HELPERS_ROOT
 git clone https://github.com/rvweeren/lofar_facet_selfcal.git $FACETSELFCAL_ROOT
-sed -i '7704d' $FACETSELFCAL_ROOT/facetselfcal.py
 
 # Check if LINC directory exists or is valid.
 if [ ! -d $LINC_DATA_ROOT ]; then
