@@ -263,6 +263,7 @@ EOF
     cd lofar_lta*
     python setup.py install_oracle
     python setup.py install
+    rm lofar_lta*.tar.gz
 
     #
     # Install Montage
