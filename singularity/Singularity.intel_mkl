@@ -255,6 +255,16 @@ EOF
     pip install --no-deps lofarSun
 
     #
+    # Install LTA client
+    #
+    cd $INSTALLDIR
+    wget https://lta.lofar.eu/software/lofar_lta-2.8.0.tar.gz
+    tar xf lofar_lta-*
+    cd lofar_lta*
+    python setup.py install_oracle
+    python setup.py install
+
+    #
     # Install Montage
     #
     #mkdir -p /opt/montage
