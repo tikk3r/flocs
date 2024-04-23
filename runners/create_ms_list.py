@@ -705,6 +705,57 @@ def add_arguments_linc_target(parser):
     )
 
 
+def add_arguments_vlbi_lotss_subtract(parser):
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Input data from which the LoTSS skymodel will be subtracted.",
+    )
+    parser.add_argument(
+        "--solsdir",
+        type=cwl_dir,
+        default="",
+        help="Path to the SOLSDIR directory of the DDF-pipeline run.",
+    )
+    parser.add_argument(
+        "--ddf_rundir",
+        type=cwl_dir,
+        default="",
+        help="Directory containing the output from DDF-pipeline.",
+    )
+    parser.add_argument(
+        "--box_size",
+        type=float,
+        default=2.5,
+        help="Side length of a square box in degrees. The LoTSS skymodel is subtracted outside of this box.",
+    )
+    parser.add_argument(
+        "--freqavg",
+        type=int,
+        default=1,
+        help="Number of frequency channels to average after the subtract has been performed.",
+    )
+    parser.add_argument(
+        "--timeavg",
+        type=int,
+        default=1,
+        help="Number of time slots to average after the subtract has been performed.",
+    )
+    parser.add_argument(
+        "--ncpu",
+        type=int,
+        default=24,
+        help="Number of cores to use during the subtract.",
+    )
+    parser.add_argument(
+        "--chunkhours",
+        type=int,
+        default=0.5,
+        help="The range of time to predict the model for at once. Lowering this value reduces memory footprint, but can increase runtime.",
+    )
+
+
 def add_arguments_vlbi_delay_calibrator(parser):
     parser.add_argument(
         "--ddf_solsdir",
