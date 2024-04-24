@@ -528,12 +528,12 @@ def add_arguments_linc_target(parser):
         default=True,
         help="Update WEIGHT_SPECTRUM column in a way consistent with the weights being inverse proportional to the autocorrelations.",
     )
-    parser.add_argument(
-        "--max_dp3_threads",
-        type=int,
-        default=10,
-        help="Number of threads per process for DP3.",
-    )
+    #parser.add_argument(
+    #    "--max_dp3_threads",
+    #    type=int,
+    #    default=10,
+    #    help="Number of threads per process for DP3.",
+    #)
     parser.add_argument(
         "--memoryperc",
         type=int,
@@ -712,24 +712,24 @@ def add_arguments_vlbi_lotss_subtract(parser):
         default="",
         help="Input data from which the LoTSS skymodel will be subtracted.",
     )
-    parser.add_argument(
-        "--solsdir",
-        type=cwl_dir,
-        default="",
-        help="Path to the SOLSDIR directory of the DDF-pipeline run.",
-    )
-    parser.add_argument(
-        "--ddf_rundir",
-        type=cwl_dir,
-        default="",
-        help="Directory containing the output from DDF-pipeline.",
-    )
-    parser.add_argument(
-        "--box_size",
-        type=float,
-        default=2.5,
-        help="Side length of a square box in degrees. The LoTSS skymodel is subtracted outside of this box.",
-    )
+    #parser.add_argument(
+    #    "--solsdir",
+    #    type=cwl_dir,
+    #    default="",
+    #    help="Path to the SOLSDIR directory of the DDF-pipeline run.",
+    #)
+    #parser.add_argument(
+    #    "--ddf_rundir",
+    #    type=cwl_dir,
+    #    default="",
+    #    help="Directory containing the output from DDF-pipeline.",
+    #)
+    #parser.add_argument(
+    #    "--box_size",
+    #    type=float,
+    #    default=2.5,
+    #    help="Side length of a square box in degrees. The LoTSS skymodel is subtracted outside of this box.",
+    #)
     parser.add_argument(
         "--freqavg",
         type=int,
@@ -762,17 +762,17 @@ def add_arguments_vlbi_delay_calibrator(parser):
         type=cwl_file,
         help="[Required if subtracting LoTSS] Path to the SOLSDIR directory of the DDF-pipeline run, where most of the calibration solutions are stored.",
     )
-    parser.add_argument(
-        "--ddf_rundir",
-        type=cwl_dir,
-        help="[Required if subtracting LoTSS] Path to the directory of the DDF-pipeline run where files required for the subtract can be found.",
-    )
-    parser.add_argument(
-        "--box_size",
-        type=float,
-        default=2.5,
-        help="[Required if subtracting LoTSS] Box size, in degrees, outside of which to subtract the LoTSS model from the data.",
-    )
+    #parser.add_argument(
+    #    "--ddf_rundir",
+    #    type=cwl_dir,
+    #    help="[Required if subtracting LoTSS] Path to the directory of the DDF-pipeline run where files required for the subtract can be found.",
+    #)
+    #parser.add_argument(
+    #    "--box_size",
+    #    type=float,
+    #    default=2.5,
+    #    help="[Required if subtracting LoTSS] Box size, in degrees, outside of which to subtract the LoTSS model from the data.",
+    #)
     parser.add_argument(
         "--subtract_chunk_hours",
         type=float,
@@ -822,9 +822,9 @@ def add_arguments_vlbi_delay_calibrator(parser):
         type=cwl_dir,
         help="External LOFAR helper scripts for merging h5 files.",
     )
-    parser.add_argument(
-        "--linc", type=cwl_dir, help="The installation directory of LINC"
-    )
+    #parser.add_argument(
+    #    "--linc", type=cwl_dir, help="The installation directory of LINC"
+    #)
     parser.add_argument(
         "--reference_stationSB",
         type=int,
@@ -837,24 +837,30 @@ def add_arguments_vlbi_delay_calibrator(parser):
         default=12,
         help="Number of cores to use per job for tasks with high I/O or memory.",
     )
+    #parser.add_argument(
+    #    "--max_dp3_threads",
+    #    type=int,
+    #    default=5,
+    #    help="Number of threads per process for DP3.",
+    #)
     parser.add_argument(
-        "--max_dp3_threads",
-        type=int,
-        default=5,
-        help="Number of threads per process for DP3.",
+        "--ddf_solsdir",
+        type=cwl_dir,
+        default=None,
+        help="Path to where ddf-pipeline solutions can be found (usually SOLSDIR).",
     )
-    parser.add_argument(
-        "mspath",
-        type=str,
-        default="",
-        help="Raw input data in MeasurementSet format.",
-    )
-    parser.add_argument(
-        "--ms_suffix",
-        type=str,
-        default=".MS",
-        help="Extension to look for when searching `mspath` for MeasurementSets",
-    )
+    #parser.add_argument(
+    #    "mspath",
+    #    type=str,
+    #    default="",
+    #    help="Raw input data in MeasurementSet format.",
+    #)
+    #parser.add_argument(
+    #    "--ms_suffix",
+    #    type=str,
+    #    default=".MS",
+    #    help="Extension to look for when searching `mspath` for MeasurementSets",
+    #)
 
 
 def add_arguments_vlbi_split_directions(parser):
@@ -909,21 +915,21 @@ def add_arguments_vlbi_split_directions(parser):
         default="",
         help="Path to facetselfcal repository.",
     )
-    parser.add_argument(
-        "--linc", type=cwl_dir, help="The installation directory of LINC"
-    )
-    parser.add_argument(
-        "mspath",
-        type=str,
-        default="",
-        help="Raw input data in MeasurementSet format.",
-    )
-    parser.add_argument(
-        "--ms_suffix",
-        type=str,
-        default=".MS",
-        help="Extension to look for when searching `mspath` for MeasurementSets",
-    )
+    #parser.add_argument(
+    #    "--linc", type=cwl_dir, help="The installation directory of LINC"
+    #)
+    #parser.add_argument(
+    #    "mspath",
+    #    type=str,
+    #    default="",
+    #    help="Raw input data in MeasurementSet format.",
+    #)
+    #parser.add_argument(
+    #    "--ms_suffix",
+    #    type=str,
+    #    default=".MS",
+    #    help="Extension to look for when searching `mspath` for MeasurementSets",
+    #)
 
 
 def add_arguments_vlbi_setup(parser):
@@ -969,21 +975,21 @@ def add_arguments_vlbi_setup(parser):
         default=5,
         help="Number of threads per process for DP3.",
     )
-    parser.add_argument(
-        "--linc", type=cwl_dir, help="The installation directory of LINC"
-    )
-    parser.add_argument(
-        "mspath",
-        type=str,
-        default="",
-        help="Raw input data in MeasurementSet format.",
-    )
-    parser.add_argument(
-        "--ms_suffix",
-        type=str,
-        default=".MS",
-        help="Extension to look for when searching `mspath` for MeasurementSets",
-    )
+    #parser.add_argument(
+    #    "--linc", type=cwl_dir, help="The installation directory of LINC"
+    #)
+    #parser.add_argument(
+    #    "mspath",
+    #    type=str,
+    #    default="",
+    #    help="Raw input data in MeasurementSet format.",
+    #)
+    #parser.add_argument(
+    #    "--ms_suffix",
+    #    type=str,
+    #    default=".MS",
+    #    help="Extension to look for when searching `mspath` for MeasurementSets",
+    #)
 
 
 def add_arguments_vlbi_concatenate_flag(parser):
@@ -1005,15 +1011,15 @@ def add_arguments_vlbi_concatenate_flag(parser):
         default=None,
         help="If set, reference the grouping of files to this station subband.",
     )
-    parser.add_argument(
-        "--max_dp3_threads",
-        type=int,
-        default=5,
-        help="Number of threads per process for DP3.",
-    )
-    parser.add_argument(
-        "--linc", type=cwl_dir, help="The installation directory of LINC"
-    )
+    #parser.add_argument(
+    #    "--max_dp3_threads",
+    #    type=int,
+    #    default=5,
+    #    help="Number of threads per process for DP3.",
+    #)
+    #parser.add_argument(
+    #    "--linc", type=cwl_dir, help="The installation directory of LINC"
+    #)
     parser.add_argument(
         "--aoflagger_memory_fraction",
         type=int,
@@ -1026,18 +1032,18 @@ def add_arguments_vlbi_concatenate_flag(parser):
         default="",
         help="External LOFAR helper scripts for merging h5 files.",
     )
-    parser.add_argument(
-        "mspath",
-        type=str,
-        default="",
-        help="Raw input data in MeasurementSet format.",
-    )
-    parser.add_argument(
-        "--ms_suffix",
-        type=str,
-        default=".MS",
-        help="Extension to look for when searching `mspath` for MeasurementSets",
-    )
+    #parser.add_argument(
+    #    "mspath",
+    #    type=str,
+    #    default="",
+    #    help="Raw input data in MeasurementSet format.",
+    #)
+    #parser.add_argument(
+    #    "--ms_suffix",
+    #    type=str,
+    #    default=".MS",
+    #    help="Extension to look for when searching `mspath` for MeasurementSets",
+    #)
 
 
 def add_arguments_vlbi_phaseup_concat(parser):
@@ -1143,21 +1149,21 @@ def add_arguments_vlbi_phaseup_concat(parser):
         default=5,
         help="Number of threads per process for DP3.",
     )
-    parser.add_argument(
-        "--linc", type=cwl_dir, help="The installation directory of LINC"
-    )
-    parser.add_argument(
-        "mspath",
-        type=str,
-        default="",
-        help="Raw input data in MeasurementSet format.",
-    )
-    parser.add_argument(
-        "--ms_suffix",
-        type=str,
-        default=".MS",
-        help="Extension to look for when searching `mspath` for MeasurementSets",
-    )
+    #parser.add_argument(
+    #    "--linc", type=cwl_dir, help="The installation directory of LINC"
+    #)
+    #parser.add_argument(
+    #    "mspath",
+    #    type=str,
+    #    default="",
+    #    help="Raw input data in MeasurementSet format.",
+    #)
+    #parser.add_argument(
+    #    "--ms_suffix",
+    #    type=str,
+    #    default=".MS",
+    #    help="Extension to look for when searching `mspath` for MeasurementSets",
+    #)
 
 
 def cwl_file(entry: str) -> Union[str, None]:
@@ -1403,7 +1409,8 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     subparsers = parser.add_subparsers(
-        dest="parser", help="Pipeline to generate a configuration file for."
+        help="Pipeline to generate a configuration file for."
+        #dest="parser", help="Pipeline to generate a configuration file for."
     )
 
     subparser_linc = subparsers.add_parser(
@@ -1420,62 +1427,82 @@ if __name__ == "__main__":
         help="Generate a configuration file for LINC Calibrator.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+    add_arguments_linc_calibrator(modeparser_linc_calibrator)
+
     modeparser_linc_target = modeparser_linc.add_parser(
         "target",
         help="Generate a configuration file for LINC Target.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+    add_arguments_linc_target(modeparser_linc_target)
 
     subparser_vlbi = subparsers.add_parser(
         "VLBI",
         help="Generate a configuration file for VLBI-cwl. See `create_ms_list.py VLBI -h` for available options.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        #add_help=False
     )
+    subparser_vlbi.add_argument(
+        "--max_dp3_threads",
+        type=int,
+        default=5,
+        help="Number of threads per process for DP3.",
+    )
+
     modeparser_vlbi = subparser_vlbi.add_subparsers(
         title="VLBI",
         dest="parser_VLBI",
-        help="Workflow or sub-workflow to generate a configuration file for.",
-    )
-    modeparser_vlbi_delay_calibration = modeparser_vlbi.add_parser(
-        "delay-calibration",
-        help="Generate a configuration file for the delay-calibration.cwl workflow.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    modeparser_vlbi_split_directions = modeparser_vlbi.add_parser(
-        "split-directions",
-        help="Generate a configuration file for the split-directions.cwl workflow.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        #help="Workflow or sub-workflow to generate a configuration file for.",
     )
     modeparser_vlbi_setup = modeparser_vlbi.add_parser(
         "setup",
         help="Generate a configuration file for the setup.cwl sub-workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        #add_help=False,
     )
+    add_arguments_vlbi_setup(modeparser_vlbi_setup)
+
     modeparser_vlbi_concatenate_flag = modeparser_vlbi.add_parser(
         "concatenate-flag",
         help="Generate a configuration file for the concatenate-flag.cwl sub-workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        add_help=False
     )
+    add_arguments_vlbi_concatenate_flag(modeparser_vlbi_concatenate_flag)
+
     modeparser_vlbi_phaseup_concat = modeparser_vlbi.add_parser(
         "phaseup-concat",
         help="Generate a configuration file for the phaseup-concat.cwl sub-workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        add_help=False
     )
+    add_arguments_vlbi_phaseup_concat(modeparser_vlbi_phaseup_concat)
+
     modeparser_vlbi_lotss_subtract = modeparser_vlbi.add_parser(
         "lotss-subtract",
         help="Generate a configuration file for the lotss-subtract.cwl sub-workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        add_help=False
     )
-
-    add_arguments_linc_calibrator(modeparser_linc_calibrator)
-    add_arguments_linc_target(modeparser_linc_target)
-
-    add_arguments_vlbi_delay_calibrator(modeparser_vlbi_delay_calibration)
-    add_arguments_vlbi_split_directions(modeparser_vlbi_split_directions)
-    add_arguments_vlbi_setup(modeparser_vlbi_setup)
-    add_arguments_vlbi_concatenate_flag(modeparser_vlbi_concatenate_flag)
-    add_arguments_vlbi_phaseup_concat(modeparser_vlbi_phaseup_concat)
     add_arguments_vlbi_lotss_subtract(modeparser_vlbi_lotss_subtract)
+
+
+
+    modeparser_vlbi_delay_calibration = modeparser_vlbi.add_parser(
+        "delay-calibration",
+        help="Generate a configuration file for the delay-calibration.cwl workflow.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        #parents = [modeparser_vlbi_setup, modeparser_vlbi_concatenate_flag, modeparser_vlbi_lotss_subtract, modeparser_vlbi_lotss_subtract],
+        #parents = [modeparser_vlbi_setup]
+    )
+    add_arguments_vlbi_delay_calibrator(modeparser_vlbi_delay_calibration)
+    #modeparser_vlbi_split_directions = modeparser_vlbi.add_parser(
+    #    "split-directions",
+    #    help="Generate a configuration file for the split-directions.cwl workflow.",
+    #    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    #)
+
+    #add_arguments_vlbi_split_directions(modeparser_vlbi_split_directions)
 
     args = vars(parser.parse_args())
     if args["parser"] == "LINC":
