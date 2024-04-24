@@ -1016,8 +1016,7 @@ def add_arguments_vlbi_concatenate_flag(parser):
     )
     parser.add_argument(
         "--h5merger",
-        type=str,
-        default="",
+        type=cwl_dir,
         help="External LOFAR helper scripts for merging h5 files.",
     )
     parser.add_argument(
