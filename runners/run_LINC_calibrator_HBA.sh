@@ -161,7 +161,7 @@ mv "$WORKDIR" "$FINALDIR/${obsid}_LINC_calibrator"
 echo "==============================="
 echo "=== LINC Calibrator Summary ==="
 echo "==============================="
-flocs/utility/flocs_verify_logs.sh $WORKDIR/job_output_linc-calibrator.txt
+flocs/utility/flocs_verify_logs.sh "$FINALDIR/${obsid}/job_output_linc-calibrator.txt"
 echo LINC version:      $LINC_COMMIT
 echo Output:            "$FINALDIR/${obsid}_LINC_calibrator"
 echo Solutions:         "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/*h5"
