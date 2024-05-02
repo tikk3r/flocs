@@ -121,12 +121,20 @@ class VLBIJSONConfig(LINCJSONConfig):
 
         if ddf_solsdir is not None:
             if os.path.exists(ddf_solsdir["path"]):
-                ddf_freqs = get_dico_freqs(
-                    ddf_solsdir["path"], solnames="killMS.DIS2_full.sols.npz"
-                )
+                fpattern = os.path.join(ddf_solsdir["path"], 'L*')
+                ddf_sol_freqs = []
+                for subdir in glob.glob(fpattern):
+                    ddf_freqs = get_dico_freqs(
+                        subdir, solnames="killMS.DIS2_full.sols.npz"
+                    )
+                    if not ddf_sol_freqs:
+                        ddf_sol_freqs.append(ddf_freqs)
+                    else:
+                        if ddf_freqs[1] > ddf_sol_freqs[1]:
+                            ddf_sol_freqs[1] = ddf_freqs[1]
                 tmplist = []
                 for dd in mslist:
-                    if check_dd_freq(dd, ddf_freqs):
+                    if check_dd_freq(dd, ddf_sol_freqs):
                         tmplist.append(dd)
                 mslist = tmplist
 
