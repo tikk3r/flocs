@@ -93,8 +93,10 @@ if [ -d $LINC_DATA_ROOT ] && [ ! -d $LINC_DATA_ROOT/steps ]; then
     exit 1
 elif [ -d $LINC_DATA_ROOT ] && [ -d $LINC_DATA_ROOT/steps ]; then
     echo $LINC_DATA_ROOT exists and seems to contain LINC. Continuing...
-    export LINC_DATA_ROOT
 fi
+# Get the full path to avoid pathing issues later on.
+LINC_DATA_ROOT=$(realpath $LINC_DATA_ROOT)
+export LINC_DATA_ROOT
 
 # Obtain LINC commit used
 cd $LINC_DATA_ROOT
