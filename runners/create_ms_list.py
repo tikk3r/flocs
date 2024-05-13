@@ -124,8 +124,10 @@ class VLBIJSONConfig(LINCJSONConfig):
 
         if ddf_solsdir is not None:
             if os.path.exists(ddf_solsdir["path"]):
-                fpattern = os.path.join(ddf_solsdir["path"], 'L*')
-                ddf_sol_freqs = get_dico_freqs( ddf_solsdir["path"], solnames="killMS.DIS2_full.sols.npz" )
+                fpattern = os.path.join(ddf_solsdir["path"], "L*")
+                ddf_sol_freqs = get_dico_freqs(
+                    ddf_solsdir["path"], solnames="killMS.DIS2_full.sols.npz"
+                )
                 tmplist = []
                 for dd in mslist:
                     if check_dd_freq(dd, ddf_sol_freqs):
@@ -1079,6 +1081,7 @@ def add_arguments_vlbi_phaseup_concat(parser):
     )
     parser.add_argument(
         "--flags",
+        nargs="*",
         type=cwl_file,
         help="Flagging information in JSON format.",
     )
@@ -1186,6 +1189,7 @@ def cwl_dir(entry: str) -> Union[str, None]:
         return json.loads(
             f'{{"class": "Directory", "path":"{os.path.abspath(entry)}"}}'
         )
+
 
 def check_dd_freq(infile: str, freq_array: Union[list, np.ndarray]) -> bool:
     """Check frequency coverage overlap between a Measurment Set and a given array of frequencies.
