@@ -712,6 +712,12 @@ def add_arguments_vlbi_lotss_subtract(parser):
         help="Input data from which the LoTSS skymodel will be subtracted.",
     )
     parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".MS",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
+    )
+    parser.add_argument(
         "--solsdir",
         type=cwl_dir,
         default="",
@@ -1369,7 +1375,7 @@ def parse_arguments_vlbi(args):
         config.save("mslist_VLBI_concatenate-flag.json")
     elif args["parser_VLBI"] == "phaseup-concat":
         args.pop("parser_VLBI")
-        print("Generating VLBI setup config")
+        print("Generating VLBI phaseup-concat config")
         try:
             config = VLBIJSONConfig(
                 args["mspath"],
@@ -1385,6 +1391,24 @@ def parse_arguments_vlbi(args):
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_phaseup-concat.json")
+    elif args["parser_VLBI"] == "lotss-subtract":
+        args.pop("parser_VLBI")
+        print("Generating VLBI lotss-subtract config")
+        try:
+            config = VLBIJSONConfig(
+                args["mspath"],
+                prefac_h5parm=None,
+                ddf_solsdir=args["solsdir"],
+                workflow="lotss-subtract",
+                ms_suffix=args["ms_suffix"],
+            )
+            args.pop("mspath")
+        except ValueError as e:
+            print("\nERROR: Failed to generate config file. Error was: " + str(e))
+            sys.exit(-1)
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_VLBI_lotss-subtract.json")
 
 
 if __name__ == "__main__":
