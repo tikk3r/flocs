@@ -116,6 +116,9 @@ class VLBIJSONConfig(LINCJSONConfig):
         elif workflow == "phaseup-concat":
             for dd in files:
                 mslist.append(dd)
+        elif workflow == "lotss-subtract":
+            for dd in files:
+                mslist.append(dd)
         elif workflow not in self.VALID_WORKFLOWS:
             raise ValueError("Invalid workflow specified")
 
