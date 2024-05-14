@@ -1082,7 +1082,7 @@ def add_arguments_vlbi_phaseup_concat(parser):
     parser.add_argument(
         "--flags",
         nargs="*",
-        type=cwl_file_list,
+        type=cwl_file,
         help="Flagging information in JSON format.",
     )
     parser.add_argument(
@@ -1177,16 +1177,6 @@ def cwl_file(entry: str) -> Union[str, None]:
         return None
     else:
         return json.loads(f'{{"class": "File", "path":"{os.path.abspath(entry)}"}}')
-
-
-def cwl_file_list(entries: list[str]) -> list[dict]:
-    """Create a CWL-friendly file list entry."""
-    entry_list = []
-    for entry in entries:
-        x = json.loads(f'{{"class": "File", "path":"{entry}"}}')
-        entry_list.append(x)
-    return entry_list
-
 
 def cwl_dir(entry: str) -> Union[str, None]:
     """Create a CWL-friendly directory entry."""
