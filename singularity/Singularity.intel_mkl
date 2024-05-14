@@ -260,7 +260,7 @@ EOF
     cd $INSTALLDIR
     wget https://lta.lofar.eu/software/lofar_lta-2.8.0.tar.gz
     tar xf lofar_lta-*
-    cd lofar_lta*
+    cd lofar_lta-2.8.0
     python setup.py install_oracle
     python setup.py install
     rm lofar_lta*.tar.gz
