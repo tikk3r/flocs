@@ -13,6 +13,24 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.1.0
+**Updates**
+* Added [breizorro](https://github.com/ratt-ru/breizorro).
+* Added [lofarsun](https://github.com/peijin94/LOFAR-Sun-tools).
+* Added [LoSiTo](https://github.com/darafferty/losito).
+* Added [SunPy](https://github.com/sunpy/sunpy).
+* Added jupyter lab.
+* Added [LOFAR LTA client](https://lta.lofar.eu/software/).
+* Added support for the subtract workflow in the LOFAR-VLBI pipeline.
+* Automatically bind data and runtime directories if a container is used.
+
+**Fixes**
+* Fixed boolean parsing in `create_ms_list.py`.
+* Fix DDFacet CPU allocation for Slurm.
+* Fix ms list creation arguments VLBI delay calibration runner.
+* Fix demix argument type for LINC configs.
+* Fix spurious apostrophes in some runners.
+* Removed unnecessary sed in vlbi runners.
 
 ## v5.0.0
 Base container updated to Fedora 38
