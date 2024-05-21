@@ -21,6 +21,7 @@ nav_order: 5
 * Added [SunPy](https://github.com/sunpy/sunpy).
 * Added jupyter lab.
 * Added [LOFAR LTA client](https://lta.lofar.eu/software/).
+* Added [PyMultiNest](https://github.com/JohannesBuchner/PyMultiNest) properly.
 * Added support for the subtract workflow in the LOFAR-VLBI pipeline.
 * Automatically bind data and runtime directories if a container is used.
 
