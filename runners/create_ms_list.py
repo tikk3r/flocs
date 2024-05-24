@@ -879,7 +879,7 @@ def add_arguments_vlbi_split_directions(parser):
     parser.add_argument(
         "--max_dp3_threads",
         type=int,
-        default=10,
+        default=4,
         help="Number of threads per process for DP3.",
     )
     parser.add_argument(
