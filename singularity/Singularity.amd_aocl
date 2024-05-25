@@ -217,12 +217,10 @@ From: fedora:38
 	export CXX=`which mpic++`
     mkdir /opt/hdf5
     cd /opt/hdf5
-    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
-    tar xf hdf5-${HDF5_VERSION}.tar.gz
-    cd hdf5-${HDF5_VERSION}
-    #wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.1/src/hdf5-1.14.1-2.tar.gz
-    #tar xf hdf5-1.14.1-2.tar.gz
-    #cd hdf5-1.14.1-2/
+    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/hdf5-1.14.3.tar.gz
+    gunzip hdf5-1.14.3.tar.gz
+    tar xf hdf5-1.14.3.tar
+    cd hdf5-1.14.3/
     # Thread safety required for WSClean's parallel gridding with facets.
     ./configure -prefix=/opt/hdf5 --enable-build-mode=production --enable-threadsafe --enable-shared --disable-sharedlib-rpath --disable-hl --enable-cxx -enable-unsupported
     make -j $J
