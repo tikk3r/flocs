@@ -25,6 +25,7 @@ cwlref-runner
 cwl_utils
 cycler
 Cython
+dask[complete]
 deap
 decorator
 emcee
