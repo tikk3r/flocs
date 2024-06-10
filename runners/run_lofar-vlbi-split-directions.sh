@@ -14,7 +14,7 @@ if [[ $1 == "-h" || $1 == "--help" ]]; then
     exit 0
 fi
 
-while getopts ":d:s:r:l:b:v:c:i:" opt; do
+while getopts ":d:s:r:l:b:v:c:i:e:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
