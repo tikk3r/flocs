@@ -4,4 +4,4 @@
 test
 *.swp
 *.MS
-mslist.json
+*.json
