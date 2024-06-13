@@ -124,7 +124,6 @@ class VLBIJSONConfig(LINCJSONConfig):
 
         if ddf_solsdir is not None:
             if os.path.exists(ddf_solsdir["path"]):
-                fpattern = os.path.join(ddf_solsdir["path"], "L*")
                 ddf_sol_freqs = get_dico_freqs(
                     ddf_solsdir["path"], solnames="killMS.DIS2_full.sols.npz"
                 )
@@ -143,9 +142,11 @@ class VLBIJSONConfig(LINCJSONConfig):
 
 def get_linc_default_phases(solfile):
     h5 = h5parm(solfile)
-    if 'target' not in h5.getSolsetNames():
-        raise ValueError('Failed to find default LINC target solset in LINC solutions. Has LINC target been run?')
-    ss = h5.getSolset('target')
+    if "target" not in h5.getSolsetNames():
+        raise ValueError(
+            "Failed to find default LINC target solset in LINC solutions. Has LINC target been run?"
+        )
+    ss = h5.getSolset("target")
     st_names = ss.getSoltabNames()
 
     if "TGSSphase_final" in st_names:
@@ -1199,6 +1200,7 @@ def cwl_file(entry: str) -> Union[str, None]:
     else:
         return json.loads(f'{{"class": "File", "path":"{os.path.abspath(entry)}"}}')
 
+
 def cwl_dir(entry: str) -> Union[str, None]:
     """Create a CWL-friendly directory entry."""
     if entry is None:
@@ -1350,7 +1352,9 @@ def parse_arguments_vlbi(args):
                 phasesol = get_linc_default_phases(args["solset"])
                 args["phasesol"] = phasesol
             except ValueError:
-                print("phaseol is set to auto, but failed to automatically determine LINC target phase solutions.")
+                print(
+                    "phaseol is set to auto, but failed to automatically determine LINC target phase solutions."
+                )
                 sys.exit(-1)
         config.save("mslist_VLBI_delay_calibration.json")
     elif args["parser_VLBI"] == "split-directions":
@@ -1393,7 +1397,9 @@ def parse_arguments_vlbi(args):
                 phasesol = get_linc_default_phases(args["solset"])
                 args["phasesol"] = phasesol
             except ValueError:
-                print("phaseol is set to auto, but failed to automatically determine LINC target phase solutions.")
+                print(
+                    "phaseol is set to auto, but failed to automatically determine LINC target phase solutions."
+                )
                 sys.exit(-1)
         config.save("mslist_VLBI_setup.json")
     elif args["parser_VLBI"] == "concatenate-flag":
