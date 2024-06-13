@@ -141,6 +141,22 @@ class VLBIJSONConfig(LINCJSONConfig):
         self.configdict["msin"] = final_mslist
 
 
+def get_linc_default_phases(solfile):
+    h5 = h5parm(solfile)
+    if 'target' not in h5.getSolsetNames():
+        raise ValueError('Failed to find default LINC target solset in LINC solutions. Has LINC target been run?')
+    ss = h5.getSolset('target')
+    st_names = ss.getSoltabNames()
+
+    if "TGSSphase_final" in st_names:
+        # Prefer selfcal solutions, resulting in this name.
+        return "TGSSphase_final"
+    elif "TGSSphase" in st_names:
+        return "TGSSphase"
+    else:
+        raise ValueError("Failed to find default phase solutions of LINC target.")
+
+
 def eval_bool(s: str) -> Union[bool, None]:
     if s is None:
         return None
@@ -816,7 +832,7 @@ def add_arguments_vlbi_delay_calibrator(parser):
         "--phasesol",
         type=str,
         default="TGSSphase",
-        help="The name of the target solution table to use from the solset input.",
+        help="The name of the target solution table to use from the solset input. If set to auto, default options will be tried (TGSSphase or TGSSphase_final).",
     )
     parser.add_argument(
         "--configfile",
@@ -958,7 +974,7 @@ def add_arguments_vlbi_setup(parser):
         "--phasesol",
         type=str,
         default="TGSSphase",
-        help="The name of the target solution table to use from the solset input.",
+        help="The name of the target solution table to use from the solset input. If set to auto, default options will be tried (TGSSphase or TGSSphase_final).",
     )
     parser.add_argument(
         "--min_separation",
@@ -1329,6 +1345,13 @@ def parse_arguments_vlbi(args):
             sys.exit(-1)
         for key, val in args.items():
             config.add_entry(key, val)
+        if args["phasesol"] == "auto":
+            try:
+                phasesol = get_linc_default_phases(args["solset"])
+                args["phasesol"] = phasesol
+            except ValueError:
+                print("phaseol is set to auto, but failed to automatically determine LINC target phase solutions.")
+                sys.exit(-1)
         config.save("mslist_VLBI_delay_calibration.json")
     elif args["parser_VLBI"] == "split-directions":
         args.pop("parser_VLBI")
@@ -1365,6 +1388,13 @@ def parse_arguments_vlbi(args):
             sys.exit(-1)
         for key, val in args.items():
             config.add_entry(key, val)
+        if args["phasesol"] == "auto":
+            try:
+                phasesol = get_linc_default_phases(args["solset"])
+                args["phasesol"] = phasesol
+            except ValueError:
+                print("phaseol is set to auto, but failed to automatically determine LINC target phase solutions.")
+                sys.exit(-1)
         config.save("mslist_VLBI_setup.json")
     elif args["parser_VLBI"] == "concatenate-flag":
         args.pop("parser_VLBI")
