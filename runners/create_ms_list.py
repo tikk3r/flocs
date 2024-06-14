@@ -1397,7 +1397,7 @@ def parse_arguments_vlbi(args):
             config.add_entry(key, val)
         if args["phasesol"] == "auto":
             try:
-                phasesol = get_linc_default_phases(args["solset"])
+                phasesol = get_linc_default_phases(args["solset"]["path"])
                 args["phasesol"] = phasesol
             except ValueError:
                 print(
