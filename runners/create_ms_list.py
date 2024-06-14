@@ -832,7 +832,7 @@ def add_arguments_vlbi_delay_calibrator(parser):
     parser.add_argument(
         "--phasesol",
         type=str,
-        default="TGSSphase",
+        default="auto",
         help="The name of the target solution table to use from the solset input. If set to auto, default options will be tried (TGSSphase or TGSSphase_final).",
     )
     parser.add_argument(
@@ -974,7 +974,7 @@ def add_arguments_vlbi_setup(parser):
     parser.add_argument(
         "--phasesol",
         type=str,
-        default="TGSSphase",
+        default="auto",
         help="The name of the target solution table to use from the solset input. If set to auto, default options will be tried (TGSSphase or TGSSphase_final).",
     )
     parser.add_argument(
