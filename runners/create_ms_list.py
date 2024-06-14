@@ -141,24 +141,24 @@ class VLBIJSONConfig(LINCJSONConfig):
 
 
 def get_linc_default_phases(solfile):
-    h5 = h5parm(solfile)
-    if "target" not in h5.getSolsetNames():
-        raise ValueError(
-            "Failed to find default LINC target solset in LINC solutions. Has LINC target been run?"
-        )
-    ss = h5.getSolset("target")
-    st_names = ss.getSoltabNames()
+    with h5parm(solfile) as h5:
+        if "target" not in h5.getSolsetNames():
+            raise ValueError(
+                "Failed to find default LINC target solset in LINC solutions. Has LINC target been run?"
+            )
+        ss = h5.getSolset("target")
+        st_names = ss.getSoltabNames()
 
-    if "TGSSscalarphase_final" in st_names:
-        return "TGSSscalarphase_final"
-    elif "TGSSscalarphase" in st_names:
-        return "TGSSscalarphase"
-    elif "TGSSphase_final" in st_names:
-        return "TGSSphase_final"
-    elif "TGSSphase" in st_names:
-        return "TGSSphase"
-    else:
-        raise ValueError("Failed to find default phase solutions of LINC target.")
+        if "TGSSscalarphase_final" in st_names:
+            return "TGSSscalarphase_final"
+        elif "TGSSscalarphase" in st_names:
+            return "TGSSscalarphase"
+        elif "TGSSphase_final" in st_names:
+            return "TGSSphase_final"
+        elif "TGSSphase" in st_names:
+            return "TGSSphase"
+        else:
+            raise ValueError("Failed to find default phase solutions of LINC target.")
 
 
 def eval_bool(s: str) -> Union[bool, None]:
