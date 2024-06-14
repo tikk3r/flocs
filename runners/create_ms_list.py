@@ -149,8 +149,11 @@ def get_linc_default_phases(solfile):
     ss = h5.getSolset("target")
     st_names = ss.getSoltabNames()
 
-    if "TGSSphase_final" in st_names:
-        # Prefer selfcal solutions, resulting in this name.
+    if "TGSSscalarphase_final" in st_names:
+        return "TGSSscalarphase_final"
+    elif "TGSSscalarphase" in st_names:
+        return "TGSSscalarphase"
+    elif "TGSSphase_final" in st_names:
         return "TGSSphase_final"
     elif "TGSSphase" in st_names:
         return "TGSSphase"
