@@ -159,11 +159,11 @@ else
     --logFile full_log.log \
     --writeLogs ${LOGSDIR} \
     --outdir ${RESULTSDIR} \
-    --tmp-outdir-prefix ${TMPDIR}/ \
+    --tmp-outdir-prefix "${TMPDIR}/" \
     --jobStore ${JOBSTORE} \
     --workDir ${WORKDIR} \
-    --coordinationDir ${RUNDIR}/coordination \
-    --tmpdir-prefix ${TMPDIR}_interm/ \
+    --coordinationDir ${WORKDIR}/coordination \
+    --tmpdir-prefix "${TMPDIR}/" \
     --disableAutoDeployment True \
     --bypass-file-store \
     --preserve-entire-environment \
