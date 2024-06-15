@@ -169,13 +169,7 @@ else
     --preserve-entire-environment \
     --batchSystem slurm \
     $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist_LINC_calibrator.json
-
-    #singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
-    #echo LINC starting
-    #echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
-    #echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist_LINC_calibrator.json' >> jobrunner.sh
-    #(time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh 2>&1) |& tee $WORKDIR/job_output_linc-calibrator.txt
-    #echo LINC ended
+    echo LINC ended
 fi
 echo Cleaning up...
 echo == Deleting LINC tmpdir..
