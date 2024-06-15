@@ -191,7 +191,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         help="Enable or disable baseline-based smoothing.",
     )
     parser.add_argument(
-        "--rfi_strategy",
+        "--rfistrategy",
         type=str,
         default=os.path.join(
             os.environ["LINC_DATA_ROOT"], "rfistrategies", "lofar-default.lua"
@@ -434,7 +434,7 @@ def add_arguments_linc_target(parser):
         help="Enable or disable baseline-based smoothing.",
     )
     parser.add_argument(
-        "--rfi_strategy",
+        "--rfistrategy",
         type=str,
         default=os.path.join(
             os.environ["LINC_DATA_ROOT"], "rfistrategies", "lofar-default.lua"
