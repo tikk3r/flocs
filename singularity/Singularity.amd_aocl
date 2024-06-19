@@ -586,7 +586,7 @@ From: fedora:38
     #
     mkdir -p $INSTALLDIR/ds9/bin
     cd $INSTALLDIR/ds9
-    wget http://ds9.si.edu/download/fedora36x86/ds9.fedora36x86.8.5.tar.gz
+    wget https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.6b1.tar.gz
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
