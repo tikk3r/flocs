@@ -26,11 +26,11 @@ From: fedora:38
 	export CASAREST_VERSION=latest
 	export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
-    export DPPP_VERSION=791b90f3
+    export DPPP_VERSION=8db55779
 	export DYSCO_VERSION=2e7f331
-    export EVERYBEAM_VERSION=22cd113b
+    export EVERYBEAM_VERSION=v0.6.0
     export FFTW_VERSION=3.5.8
-	export HDF5_VERSION=1.12.1
+	export HDF5_VERSION=1.14.3
     export IDG_VERSION=011687ed
 	export LAPACK_VERSION=3.8.0
 	export LOSOTO3_VERSION=latest
@@ -40,7 +40,7 @@ From: fedora:38
 	export PYTHON_CASACORE_VERSION=v3.5.0
     export RMEXTRACT_VERSION=f161b0a
 	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=843f87c8
+	export WSCLEAN_VERSION=master
 	export WCSLIB_VERSION=6.4
 	export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
@@ -653,6 +653,11 @@ EOF
     cd $INSTALLDIR
     git clone https://github.com/mhardcastle/lotss-hba-survey.git
 
+#
+# Install LINC
+#
+cd $INSTALLDIR
+git clone https://git.astron.nl/RD/LINC.git
 
     #
     # Install custom runners
@@ -706,7 +711,7 @@ EOF
     echo $'if [ "$MTUNE_MACHINE" != "$MTUNE" ]; then echo "WARNING - software has been build with -mtune=$MTUNE but current machine -mtune=$MTUNE_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
 	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
 	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DPPP/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DPPP/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
+	echo export PYTHONPATH=\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DPPP/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DPPP/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=/usr/local/cuda/bin:/opt/hdf5/bin:\$PATH >> $INSTALLDIR/init.sh
 	echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
@@ -718,6 +723,10 @@ EOF
 	echo export PATH=/opt/hdf5/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/sagecal/bin:\$PATH  >> $INSTALLDIR/init.sh
 	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/MultiNest/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/utility:\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/MultiNest/bin:\$PATH >> $INSTALLDIR/init.sh
@@ -744,6 +753,7 @@ EOF
     echo export NUMBA_CACHE_DIR=/tmp >> $INSTALLDIR/init.sh
 
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
+    echo export LINC_DATA_ROOT=/opt/lofar/LINC >> $INSTALLDIR/init.sh
 
     echo . \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
     # For some reason this doesn't work.
@@ -761,7 +771,7 @@ EOF
     echo export PATH=\$INSTALLDIR/killMS/killMS:\$PATH >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=\$INSTALLDIR/DPPP/lib/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=\$INSTALLDIR/lotss-hba-survey:\$INSTALLDIR/lotss-query:\$INSTALLDIR/killMS/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python${PYTHON_VERSION}/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
-    echo export PATH=$INSTALLDIR/DDFacet/SkyModel:\$INSTALLDIR/DynSpecMS/:\$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
+    echo export PATH=$INSTALLDIR/DDFacet/src/SkyModel:\$INSTALLDIR/DynSpecMS/:\$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
 
 %help
