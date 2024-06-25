@@ -634,6 +634,12 @@ def add_arguments_linc_target(parser):
         help="For the LBFGS solver: the degrees of freedom (DOF) given to the noise model.",
     )
     parser.add_argument(
+        "--aoflag_reorder",
+        type=bool,
+        default=False,
+        help="",
+    )
+    parser.add_argument(
         "--aoflag_chunksize",
         type=int,
         default=2000,
