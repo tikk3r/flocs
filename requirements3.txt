@@ -109,6 +109,7 @@ sharedarray<3.2.2
 shapely
 SQLAlchemy
 sshtunnel
+statsmodels
 subprocess32
 tables
 toil[cwl]==6.0.0
