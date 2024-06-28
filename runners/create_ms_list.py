@@ -124,7 +124,6 @@ class VLBIJSONConfig(LINCJSONConfig):
 
         if ddf_solsdir is not None:
             if os.path.exists(ddf_solsdir["path"]):
-                fpattern = os.path.join(ddf_solsdir["path"], "L*")
                 ddf_sol_freqs = get_dico_freqs(
                     ddf_solsdir["path"], solnames="killMS.DIS2_full.sols.npz"
                 )
@@ -139,6 +138,27 @@ class VLBIJSONConfig(LINCJSONConfig):
             x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
             final_mslist.append(x)
         self.configdict["msin"] = final_mslist
+
+
+def get_linc_default_phases(solfile):
+    with h5parm(solfile) as h5:
+        if "target" not in h5.getSolsetNames():
+            raise ValueError(
+                "Failed to find default LINC target solset in LINC solutions. Has LINC target been run?"
+            )
+        ss = h5.getSolset("target")
+        st_names = ss.getSoltabNames()
+
+        if "TGSSscalarphase_final" in st_names:
+            return "TGSSscalarphase_final"
+        elif "TGSSscalarphase" in st_names:
+            return "TGSSscalarphase"
+        elif "TGSSphase_final" in st_names:
+            return "TGSSphase_final"
+        elif "TGSSphase" in st_names:
+            return "TGSSphase"
+        else:
+            raise ValueError("Failed to find default phase solutions of LINC target.")
 
 
 def eval_bool(s: str) -> Union[bool, None]:
@@ -821,8 +841,8 @@ def add_arguments_vlbi_delay_calibrator(parser):
     parser.add_argument(
         "--phasesol",
         type=str,
-        default="TGSSphase",
-        help="The name of the target solution table to use from the solset input.",
+        default="auto",
+        help="The name of the target solution table to use from the solset input. If set to auto, default options will be tried (TGSSphase or TGSSphase_final).",
     )
     parser.add_argument(
         "--configfile",
@@ -963,8 +983,8 @@ def add_arguments_vlbi_setup(parser):
     parser.add_argument(
         "--phasesol",
         type=str,
-        default="TGSSphase",
-        help="The name of the target solution table to use from the solset input.",
+        default="auto",
+        help="The name of the target solution table to use from the solset input. If set to auto, default options will be tried (TGSSphase or TGSSphase_final).",
     )
     parser.add_argument(
         "--min_separation",
@@ -1189,6 +1209,7 @@ def cwl_file(entry: str) -> Union[str, None]:
     else:
         return json.loads(f'{{"class": "File", "path":"{os.path.abspath(entry)}"}}')
 
+
 def cwl_dir(entry: str) -> Union[str, None]:
     """Create a CWL-friendly directory entry."""
     if entry is None:
@@ -1333,6 +1354,15 @@ def parse_arguments_vlbi(args):
         except ValueError as e:
             print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
+        if args["phasesol"] == "auto":
+            try:
+                phasesol = get_linc_default_phases(args["solset"].path)
+                args["phasesol"] = phasesol
+            except ValueError:
+                print(
+                    "phaseol is set to auto, but failed to automatically determine LINC target phase solutions."
+                )
+                sys.exit(-1)
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_delay_calibration.json")
@@ -1369,6 +1399,15 @@ def parse_arguments_vlbi(args):
         except ValueError as e:
             print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
+        if args["phasesol"] == "auto":
+            try:
+                phasesol = get_linc_default_phases(args["solset"]["path"])
+                args["phasesol"] = phasesol
+            except ValueError:
+                print(
+                    "phaseol is set to auto, but failed to automatically determine LINC target phase solutions."
+                )
+                sys.exit(-1)
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_setup.json")
