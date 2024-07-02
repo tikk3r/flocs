@@ -1356,7 +1356,7 @@ def parse_arguments_vlbi(args):
             sys.exit(-1)
         if args["phasesol"] == "auto":
             try:
-                phasesol = get_linc_default_phases(args["solset"])
+                phasesol = get_linc_default_phases(args["solset"]["path"])
                 args["phasesol"] = phasesol
             except ValueError:
                 print(
@@ -1401,7 +1401,7 @@ def parse_arguments_vlbi(args):
             sys.exit(-1)
         if args["phasesol"] == "auto":
             try:
-                phasesol = get_linc_default_phases(args["solset"])
+                phasesol = get_linc_default_phases(args["solset"]["path"])
                 args["phasesol"] = phasesol
             except ValueError:
                 print(
