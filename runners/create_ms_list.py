@@ -151,10 +151,10 @@ def get_linc_default_phases(solfile):
 
         if "TGSSscalarphase_final" in st_names:
             return "TGSSscalarphase_final"
-        elif "TGSSscalarphase" in st_names:
-            return "TGSSscalarphase"
         elif "TGSSphase_final" in st_names:
             return "TGSSphase_final"
+        elif "TGSSscalarphase" in st_names:
+            return "TGSSscalarphase"
         elif "TGSSphase" in st_names:
             return "TGSSphase"
         else:
