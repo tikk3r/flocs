@@ -41,6 +41,31 @@ If you do not have root permissions on the machine you are building on, the Sing
 ```bash
 apptainer build --fakeroot <container name> <recipe file>
 ```
+{: .important}
+There is a potential issue surrounding `getopt` and the Fedora base container on which FLoCs is built. If you encounter the following error during build:
+```bash
+INFO:    User not listed in /etc/subuid, trying root-mapped namespace
+INFO:    The %post section will be run under fakeroot
+INFO:    Starting build...
+Copying blob 633a2a041c85 skipped: already exists  
+Copying config 15e89348c0 done   | 
+Writing manifest to image destination
+2024/07/05 11:30:56  info unpack layer: sha256:633a2a041c85d22a814d80c8fd43a885066522afeea82db646cff81983f3dbaf
+INFO:    Running post scriptlet
+/.singularity.d/libs/fakeroot: line 46: getopt: command not found
+/.singularity.d/libs/fakeroot: line 50: getopt: command not found
+fakeroot, create a fake root environment.
+   usage: fakeroot [-l|--lib fakerootlib] [-f|--faked fakedbin]
+                   [-i file] [-s file] [-u|--unknown-is-real]
+		   [-b|--fd-base fd] [-h|--help] [-v|--version]
+                   [--] [command]
+FATAL:   While performing build: while running engine: exit status 1
+```
+If `getopt` is available on your host machine, try including the following at the top of the recipe file:
+```
+%files
+    /usr/bin/getopt /usr/bin/getopt
+```
 
 ### Building with small temporary directories
 If the machine you are running at has little space available on e.g. `/var` or `/tmp` you may run into trouble during the build. To avoid this, the build's temporary and cache directories can be set as follows:
