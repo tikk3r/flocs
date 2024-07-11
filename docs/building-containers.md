@@ -61,7 +61,7 @@ fakeroot, create a fake root environment.
                    [--] [command]
 FATAL:   While performing build: while running engine: exit status 1
 ```
-If `getopt` is available on your host machine, try including the following at the top of the recipe file:
+and `getopt` is available on your host machine, try including the following at the top of the recipe file as a stop-gap:
 ```
 %files
     /usr/bin/getopt /usr/bin/getopt
