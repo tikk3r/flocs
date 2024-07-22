@@ -5,6 +5,14 @@ From: fedora:38
     export INSTALLDIR=/opt/lofar
     . $INSTALLDIR/init.sh
 
+%arguments
+        HAS_CUDA=true
+        MARCH=znver2
+        MTUNE=znver2
+        NOAVX512=false
+        DEBUG=false
+        OPENBLASTARGET=ZEN
+
 %post
 	# General environment settings.
 	export J=`nproc`
@@ -46,18 +54,18 @@ From: fedora:38
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
-    export HAS_CUDA=true
-    export MARCH='znver2'
-    export MTUNE='znver2'
-    export NOAVX512=false
-    export DEBUG=true
+    export HAS_CUDA={{ HAS_CUDA }}
+    export MARCH={{ MARCH }}
+    export MTUNE={{ MTUNE }}
+    export NOAVX512={{ NOAVX512 }}
+    export DEBUG={{ DEBUG }}
 
     export CPPSTD=c++17
     export OMP_NUM_THREADS=1
     export OMP_MAX_THREADS=1
     export OPENBLAS_NUM_THREADS=1
     export NUM_THREADS=128
-    export OPENBLAS_TARGET=ZEN
+    export OPENBLAS_TARGET={{ OPENBLASTARGET }}
 
     if [ $NOAVX512 = true ]; then
         export CFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
