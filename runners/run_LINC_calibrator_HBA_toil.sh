@@ -122,7 +122,6 @@ if [[ -z "$SIMG" ]]; then
     echo LINC ended
 else
     echo "Using container $SIMG"
-    #APPTAINER_BINDPATH=$LINC_DATA_ROOT/scripts:/opt/lofar/DynSpecMS,$APPTAINER_BINDPATH
     APPTAINER_BINDPATH=$LINC_DATA_ROOT,$APPTAINER_BINDPATH
     mkdir -p $WORKDIR/simgcache/pull/
     cp $SIMG $WORKDIR/simgcache/astronrd_linc.sif
@@ -131,29 +130,16 @@ else
     if [[ "$CONTAINERSTR" == *"apptainer"* ]]; then
         export APPTAINER_CACHEDIR=$WORKDIR/simgcache
         export CWL_SINGULARITY_CACHE=$APPTAINER_CACHEDIR
-        #export APPTAINERENV_LINC_DATA_ROOT=/opt/lofar/LINC
-        #export APPTAINERENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
-        #export APPTAINERENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
-        #export APPTAINERENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
-        #export APPTAINERENV_PREPEND_PATH=\$LINC_DATA_ROOT/scripts
         export APPTAINERENV_PREPEND_PATH=/opt/lofar/LINC
-        #export APPTAINERENV_PATH=\$LINC_DATA_ROOT/scripts:\$PATH
         export APPTAINERENV_PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH
     else
         export SINGULARITY_CACHEDIR=$WORKDIR/simgcache
         export CWL_SINGULARITY_CACHE=$SINGULARITY_CACHEDIR
-        #export SINGULARITYENV_LINC_DATA_ROOT=/opt/lofar/LINC
-        #export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
         export SINGULARITYENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
         export SINGULARITYENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
         export SINGULARITYENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
-        #export SINGULARITYENV_PATH=$LINC_DATA_ROOT/scripts:\$PATH
-        #export SINGULARITYENV_PYTHONPATH=$LINC_DATA_ROOT/scripts:\$PYTHONPATH
     fi
     export TOIL_CHECK_ENV=True
-    #export SING_USER_DEFINED_PATH=$APPTAINERENV_PATH
-    #export PATH=$LINC_DATA_ROOT/scripts:\$PATH
-    #export PYTHONPATH=$LINC_DATA_ROOT/scripts:\$PYTHONPATH
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
 
@@ -162,8 +148,7 @@ else
     export TOIL_SLURM_ARGS="--export=ALL --job-name LINC_Calibrator -p normal"
     mkdir $LOGSDIR/slurmlogs
 
-    #singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py LINC calibrator --ATeam_skymodel=$LINC_DATA_ROOT/skymodels/A-Team_Midres.skymodel $EXTRAOPTS $DATADIR
-    singularity exec -B $PWD,$BINDPATHS $SIMG python /project/lofarvwf/Data/CasA/flocs/runners/create_ms_list.py LINC calibrator --ATeam_skymodel=$LINC_DATA_ROOT/skymodels/A-Team_Midres.skymodel $EXTRAOPTS $DATADIR
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py LINC calibrator --ATeam_skymodel=$LINC_DATA_ROOT/skymodels/A-Team_Midres.skymodel $EXTRAOPTS $DATADIR
     echo LINC starting
 
     toil-cwl-runner \
