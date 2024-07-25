@@ -172,6 +172,7 @@ else
     --preserve-entire-environment \
     --batchSystem slurm \
     --batchLogsDir $LOGSDIR/slurmlogs \
+    --no-compute-checksum \ # This JSON dump at the end can result in an "[Errno 11] write could not complete without blocking" crash, so disable it.
     $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist_LINC_target.json
     echo LINC ended
 fi
