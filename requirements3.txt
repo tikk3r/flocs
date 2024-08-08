@@ -51,7 +51,7 @@ kiwisolver
 linecache2
 loess
 Mastodon.py
-matplotlib
+matplotlib>3.9.0
 markupsafe
 mimeparse
 mock
