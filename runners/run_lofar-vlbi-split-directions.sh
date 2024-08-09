@@ -53,7 +53,7 @@ fi
 
 if [[ ! -z "$SIMG" ]]; then
     if [[ ! -f $SIMG ]]; then
-        echo "Container $DATADIR does not exist or is not accessible!"
+        echo "Container $SIMG does not exist or is not accessible!"
         exit 3
     fi
 fi
