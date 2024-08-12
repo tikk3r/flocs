@@ -13,7 +13,7 @@ export FLOCS_ROOT
 LINC_ROOT=$SOFTWARE_ROOT/LINC
 export LINC_ROOT
 
-TEMPSTUFF=$(mktemp -d -p $PWD)_$OBSID
+TEMPSTUFF=$(mktemp -d -p $PWD --suffix _$OBSID)
 cd $TEMPSTUFF
 
 # Find the first Measurement Set
