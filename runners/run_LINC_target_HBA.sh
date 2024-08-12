@@ -150,7 +150,6 @@ cd $WORKDIR
 if [[ -z "$SIMG" ]]; then
     echo "No container specified."
     echo "Generating default pipeline configuration"
-    git clone https://github.com/tikk3r/flocs.git
 
     if [[ -z $TARGET_SKYMODEL ]]; then
         python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS --target_skymodel $TARGET_SKYMODEL $EXTRAOPTS $DATADIR
@@ -182,7 +181,6 @@ else
     fi
 
     echo "Generating default pipeline configuration"
-    git clone https://github.com/tikk3r/flocs.git
     if [[ -z $TARGET_SKYMODEL ]]; then
         singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS --target_skymodel $TARGET_SKYMODEL $EXTRAOPTS $DATADIR
     else
