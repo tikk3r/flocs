@@ -7,10 +7,10 @@ OUTPUT_DIR=/path/to/output/
 
 SOFTWARE_ROOT=/cosma/apps/do011/dc-swei1/
 export SOFTWARE_ROOT
-CONTAINER=\$SOFTWARE_ROOT/containers/flocs_v5.2.0beta_cascadelake_cascadelake_f38.sif
-FLOCS_ROOT=\$SOFTWARE_ROOT/flocs
+CONTAINER=$SOFTWARE_ROOT/containers/flocs_v5.2.0beta_cascadelake_cascadelake_f38.sif
+FLOCS_ROOT=$SOFTWARE_ROOT/flocs
 export FLOCS_ROOT
-LINC_ROOT=\$SOFTWARE_ROOT/LINC
+LINC_ROOT=$SOFTWARE_ROOT/LINC
 export LINC_ROOT
 
 TEMPSTUFF=$(mktemp -d -p $PWD)_$OBSID
@@ -26,10 +26,10 @@ cp $CALSOLS .
 ACTUAL_CALSOLS=$TEMPSTUFF/$(basename $CALSOLS)
 
 mkdir IONEX
-apptainer exec -B /snap8,/cosma8,/cosma/apps \$LINC_ROOT/scripts/createRMh5parm.py --ionexpath $PWD/IONEX --solsetName=target --server='http://ftp.aiub.unibe.ch/CODE' $ms $ACTUAL_CALSOLS
+apptainer exec -B /snap8,/cosma8,/cosma/apps $CONTAINER $LINC_ROOT/scripts/createRMh5parm.py --ionexpath $PWD/IONEX --solsetName=target --server='http://ftp.aiub.unibe.ch/CODE' $ms $ACTUAL_CALSOLS
 
 # Obtain a starting skymodel
-apptainer exec -B /snap8,/cosma8,/cosma/apps \$LINC_ROOT/scripts/download_skymodel_target.py $ms skymodel_\$OBSID_target.skymodel
+apptainer exec -B /snap8,/cosma8,/cosma/apps $CONTAINER $LINC_ROOT/scripts/download_skymodel_target.py $ms skymodel_$OBSID_target.skymodel
 
 sbatch <<EOT
 #!/bin/bash
