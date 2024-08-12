@@ -6,14 +6,14 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-e<options for create_ms_list.py>] -d <data path> -c <calibrator solutions>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-f <user-defined FLoCs>] [-e<options for create_ms_list.py>] -d <data path> -c <calibrator solutions>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
     exit 0
 fi
 
-while getopts ":d:s:r:l:b:c:e:" opt; do
+while getopts ":d:s:r:l:b:c:f:e:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
@@ -26,6 +26,8 @@ while getopts ":d:s:r:l:b:c:e:" opt; do
         l) LINC_DATA_ROOT="$OPTARG"
         ;;
         c) CALSOLS="$OPTARG"
+        ;;
+        f) FLOCS_ROOT="$OPTARG"
         ;;
         e) EXTRAOPTS="$OPTARG"
         ;;
@@ -96,6 +98,13 @@ if [ ! -d $LINC_DATA_ROOT ]; then
     mkdir -p $LINC_DATA_ROOT
     git clone https://git.astron.nl/RD/LINC.git $LINC_DATA_ROOT
 fi
+#
+# Check if FLoCs directory exists or is valid.
+if [ ! -d $FLOCS_ROOT ]; then
+    echo $FLOCS_ROOT does not exist and will be created. Cloning LINC...
+    mkdir -p $FLOCS_ROOT
+    git clone https://github.com/tikk3r/flocs.git $FLOCS_ROOT
+fi
 
 # If the directory is not empty, check if it contains LINC
 if [ -d $LINC_DATA_ROOT ] && [ ! -d $LINC_DATA_ROOT/steps ]; then
@@ -113,6 +122,20 @@ cd $LINC_DATA_ROOT
 export LINC_COMMIT=$(git rev-parse --short HEAD)
 cd -
 
+if [ -d $FLOCS_ROOT ] && [ ! -d $FLOCS_ROOT/runners ]; then
+    echo WARNING: $FLOCS_ROOT found, but required LINC folders are not found.
+    exit 1
+elif [ -d $FLOCS_ROOT ] && [ -d $FLOCS_ROOT/runners ]; then
+    echo $FLOCS_ROOT exists and seems to be valid. Continuing...
+fi
+# Get the full path to avoid pathing issues later on.
+FLOCS_ROOT=$(realpath $FLOCS_ROOT)
+export FLOCS_ROOT
+
+cd $FLOCS_ROOT
+export FLOCS_COMMIT=$(git rev-parse --short HEAD)
+cd -
+
 # Prepare workflow files.
 echo Making sure all scripts are executable
 chmod 755 $LINC_DATA_ROOT/scripts/*.py
@@ -127,7 +150,7 @@ if [[ -z "$SIMG" ]]; then
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
 
-    python flocs/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
+    python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
@@ -154,7 +177,7 @@ else
 
     echo "Generating default pipeline configuration"
     git clone https://github.com/tikk3r/flocs.git
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
+    singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist_LINC_target.json' >> jobrunner.sh
@@ -176,6 +199,7 @@ mv "$WORKDIR" "$FINALDIR/${obsid}_LINC_target"
 echo "==========================="
 echo "=== LINC Target Summary ==="
 echo "==========================="
+echo FLoCs version:     $FLOCS_COMMIT
 echo LINC version:      $LINC_COMMIT
 echo Output:            "$FINALDIR/${obsid}_LINC_target"
 echo Solutions:         "$FINALDIR/${obsid}_LINC_target/results_LINC_target/*h5"
