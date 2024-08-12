@@ -6,14 +6,14 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-e<options for create_ms_list.py>] -d <data path>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-f <user-defined FLoCS>] [-r <running directory>] [-e<options for create_ms_list.py>] -d <data path>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
     exit 0
 fi
 
-while getopts ":d:s:r:l:b:e:" opt; do
+while getopts ":d:s:r:l:f:b:e:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
@@ -24,6 +24,8 @@ while getopts ":d:s:r:l:b:e:" opt; do
         r) RUNDIR="$OPTARG"
         ;;
         l) LINC_DATA_ROOT="$OPTARG"
+        ;;
+        f) FLOCS_ROOT="$OPTARG"
         ;;
         e) EXTRAOPTS="$OPTARG"
         ;;
@@ -80,6 +82,7 @@ export TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
 if [[ -z "$LINC_DATA_ROOT" ]]; then
     export LINC_DATA_ROOT=$WORKDIR/LINC
 fi
+
 # Check if LINC directory exists or is valid.
 if [ ! -d $LINC_DATA_ROOT ]; then
     echo $LINC_DATA_ROOT does not exist and will be created. Cloning LINC...
@@ -87,9 +90,16 @@ if [ ! -d $LINC_DATA_ROOT ]; then
     git clone https://git.astron.nl/RD/LINC.git $LINC_DATA_ROOT
 fi
 
+# Check if FLoCs directory exists or is valid.
+if [ ! -d $FLOCS_ROOT ]; then
+    echo $FLOCS_ROOT does not exist and will be created. Cloning LINC...
+    mkdir -p $FLOCS_ROOT
+    git clone https://github.com/tikk3r/flocs.git $FLOCS_ROOT
+fi
+
 # If the directory is not empty, check if it contains LINC
 if [ -d $LINC_DATA_ROOT ] && [ ! -d $LINC_DATA_ROOT/steps ]; then
-    echo WARNING: $LINC_DATA_ROOT is not empty, but required LINC folders are not found.
+    echo WARNING: $LINC_DATA_ROOT found, but required LINC folders are not found.
     exit 1
 elif [ -d $LINC_DATA_ROOT ] && [ -d $LINC_DATA_ROOT/steps ]; then
     echo $LINC_DATA_ROOT exists and seems to contain LINC. Continuing...
@@ -103,6 +113,20 @@ cd $LINC_DATA_ROOT
 export LINC_COMMIT=$(git rev-parse --short HEAD)
 cd -
 
+if [ -d $FLOCS_ROOT ] && [ ! -d $FLOCS_ROOT/runners ]; then
+    echo WARNING: $FLOCS_ROOT found, but required LINC folders are not found.
+    exit 1
+elif [ -d $FLOCS_ROOT ] && [ -d $FLOCS_ROOT/runners ]; then
+    echo $FLOCS_ROOT exists and seems to be valid. Continuing...
+fi
+# Get the full path to avoid pathing issues later on.
+FLOCS_ROOT=$(realpath $FLOCS_ROOT)
+export FLOCS_ROOT
+
+cd $FLOCS_ROOT
+export FLOCS_COMMIT=$(git rev-parse --short HEAD)
+cd -
+
 mkdir -p $RESULTSDIR
 mkdir -p $LOGSDIR
 mkdir -p $TMPDIR
@@ -111,9 +135,8 @@ cd $WORKDIR
 if [[ -z "$SIMG" ]]; then
     echo "No container specified."
     echo "Generating default pipeline configuration"
-    git clone https://github.com/tikk3r/flocs.git
+    python $FLOCS_ROOT/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
 
-    python flocs/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
@@ -139,9 +162,7 @@ else
     fi
 
     echo "Generating default pipeline configuration"
-    git clone https://github.com/tikk3r/flocs.git
-
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
+    singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist_LINC_calibrator.json' >> jobrunner.sh
@@ -163,6 +184,7 @@ mv "$WORKDIR" "$FINALDIR/${obsid}_LINC_calibrator"
 echo "==============================="
 echo "=== LINC Calibrator Summary ==="
 echo "==============================="
+echo FLoCs version:     $FLOCS_COMMIT
 echo LINC version:      $LINC_COMMIT
 echo Output:            "$FINALDIR/${obsid}_LINC_calibrator"
 echo Solutions:         "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/*h5"
