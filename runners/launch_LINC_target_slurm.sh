@@ -29,7 +29,8 @@ mkdir IONEX
 apptainer exec -B /snap8,/cosma8,/cosma/apps $CONTAINER $LINC_ROOT/scripts/createRMh5parm.py --ionexpath $PWD/IONEX --solsetName=target --server='http://ftp.aiub.unibe.ch/CODE' $ms $ACTUAL_CALSOLS
 
 # Obtain a starting skymodel
-apptainer exec -B /snap8,/cosma8,/cosma/apps $CONTAINER $LINC_ROOT/scripts/download_skymodel_target.py $ms skymodel_$OBSID_target.skymodel
+SKYMODEL=$(realpath skymodel_$OBSID_target.skymodel)
+apptainer exec -B /snap8,/cosma8,/cosma/apps $CONTAINER $LINC_ROOT/scripts/download_skymodel_target.py $ms $SKYMODEL
 
 sbatch <<EOT
 #!/bin/bash
@@ -51,7 +52,7 @@ export LINC_ROOT
 
 DATA_DIR=$1
 
-bash \$FLOCS_ROOT/runners/run_LINC_target_HBA.sh -d \$DATA_DIR -s \$CONTAINER -b /cosma8,/cosma/apps -r \$WORKDIR -l \$LINC_ROOT -f \$FLOCS_ROOT -c $ACTUAL_CALSOLS -t $TEMPSTUFF/skymodel_\$OBSID_target.skymodel
+bash \$FLOCS_ROOT/runners/run_LINC_target_HBA.sh -d \$DATA_DIR -s \$CONTAINER -b /cosma8,/cosma/apps -r \$WORKDIR -l \$LINC_ROOT -f \$FLOCS_ROOT -c $ACTUAL_CALSOLS -t $SKYMODEL
 
 cp -r \$TMPDIR/\$OBSID_LINC_target \$OUTPUT_DIR/
 EOT
