@@ -151,7 +151,8 @@ if [[ -z "$SIMG" ]]; then
     echo "No container specified."
     echo "Generating default pipeline configuration"
 
-    if [[ -z $TARGET_SKYMODEL ]]; then
+    if [[ -f $TARGET_SKYMODEL ]]; then
+        echo Using user-provided sky model at $TARGET_SKYMODEL
         python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS --target_skymodel $TARGET_SKYMODEL $EXTRAOPTS $DATADIR
     else
         python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
@@ -181,7 +182,8 @@ else
     fi
 
     echo "Generating default pipeline configuration"
-    if [[ -z $TARGET_SKYMODEL ]]; then
+    if [[ -f $TARGET_SKYMODEL ]]; then
+        echo Using user-provided sky model at $TARGET_SKYMODEL
         singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS --target_skymodel $TARGET_SKYMODEL $EXTRAOPTS $DATADIR
     else
         singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
