@@ -13,6 +13,21 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.2.0
+**Updates**
+* Add `Dask[full]` Python package.
+* Add `statsmodels` Python package.
+* Added LINC and LOFAR-VLBI to the containers (mainly intended as mount points for local versions) to facilitate Toil usage.
+* Update DP3 to `930b81f8`
+* Update EveryBeam to `df937562`
+* Update LOFAR-H5plot to v2.9.1
+* Update WSClean to `7efb5092`
+* Upgrade HDF5 to 1.14.3
+
+**Fixes**
+* Added `-e` option for split directions runner.
+* Fixed RFI strategy parameter for LINC JSON generator.
+
 ## v5.1.0
 **Updates**
 * Added [breizorro](https://github.com/ratt-ru/breizorro).
