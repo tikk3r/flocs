@@ -54,5 +54,5 @@ DATA_DIR=$1
 
 bash \$FLOCS_ROOT/runners/run_LINC_target_HBA.sh -d \$DATA_DIR -s \$CONTAINER -b /cosma8,/cosma/apps -r \$WORKDIR -l \$LINC_ROOT -f \$FLOCS_ROOT -c $ACTUAL_CALSOLS -t $SKYMODEL
 
-cp -r \$TMPDIR/\$OBSID_LINC_target \$OUTPUT_DIR/
+cp -r \$WORKDIR/\${OBSID}_LINC_target \$OUTPUT_DIR/
 EOT

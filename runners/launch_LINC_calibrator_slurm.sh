@@ -26,5 +26,5 @@ DATA_DIR=$1
 
 bash \$FLOCS_ROOT/runners/run_LINC_calibrator_HBA.sh -d \$DATA_DIR -s \$CONTAINER -b /cosma8,/cosma/apps -r \$WORKDIR -l \$LINC_ROOT -f \$FLOCS_ROOT
 
-cp -r *LINC* \$OUTPUT_DIR
+cp -r \$WORKDIR/\${OBSID}_LINC_calibrator \$OUTPUT_DIR/
 EOT
