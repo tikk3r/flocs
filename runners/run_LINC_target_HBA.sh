@@ -92,6 +92,11 @@ export TMPDIR=$WORKDIR/tmpdir_LINC_target/
 if [[ -z "$LINC_DATA_ROOT" ]]; then
     export LINC_DATA_ROOT=$WORKDIR/LINC
 fi
+
+if [[ -z "$FLOCS_ROOT" ]]; then
+    export FLOCS_ROOT=$WORKDIR/flocs
+fi
+
 # Check if LINC directory exists or is valid.
 if [ ! -d $LINC_DATA_ROOT ]; then
     echo $LINC_DATA_ROOT does not exist and will be created. Cloning LINC...
