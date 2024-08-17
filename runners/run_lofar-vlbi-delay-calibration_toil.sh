@@ -171,27 +171,8 @@ mkdir -p $TMPDIR
 cd $WORKDIR
 
 if [[ -z "$SIMG" ]]; then
-    echo "No container specified."
-
-    pattern="${DATADIR}/*.MS"
-    files=( $pattern )
-    ms="${files[0]}"  # printf is safer!
-    wget https://raw.githubusercontent.com/lmorabit/lofar-vlbi/master/plot_field.py
-    python plot_field.py --MS $ms
-
-    export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
-    git clone https://github.com/tikk3r/flocs.git
-
-    python flocs/runners/create_ms_list.py VLBI delay-calibration --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
-
-    echo VLBI-cwl starting
-    # Switch to a non-GUI backend to avoid plotting issues.
-    echo export MPLBACKEND='Agg' > jobrunner.sh
-    echo export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH >> jobrunner.sh
-    echo export PYTHONPATH=\$VLBI_DATA_ROOT/scripts:\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist_VLBI_delay_calibration.json 2>&1' >> jobrunner.sh
-    (time bash jobrunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl_delay-calibration.txt
-    echo VLBI-cwl ended
+    echo "Using Toil without a container is currently not supported."
+    exit
 else
     echo "Using container $SIMG"
     # Pass along necessary variables to the container.
