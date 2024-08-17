@@ -195,9 +195,14 @@ if [[ -z "$SIMG" ]]; then
 else
     echo "Using container $SIMG"
     # Pass along necessary variables to the container.
+    APPTAINER_BINDPATH=$LINC_DATA_ROOT,$APPTAINER_BINDPATH
+    mkdir -p $WORKDIR/simgcache/pull/
+    cp $SIMG $WORKDIR/simgcache/astronrd_linc.sif
 
     CONTAINERSTR=$(singularity --version)
     if [[ "$CONTAINERSTR" == *"apptainer"* ]]; then
+        export APPTAINER_CACHEDIR=$WORKDIR/simgcache
+        export CWL_SINGULARITY_CACHE=$APPTAINER_CACHEDIR
         export APPTAINERENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
         export APPTAINERENV_VLBI_DATA_ROOT=$VLBI_DATA_ROOT
         export APPTAINERENV_RESULTSDIR=$RESULTSDIR
@@ -205,6 +210,8 @@ else
         export APPTAINERENV_TMPDIR=$TMPDIR
         export APPTAINERENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts
     else
+        export SINGULARITY_CACHEDIR=$WORKDIR/simgcache
+        export CWL_SINGULARITY_CACHE=$SINGULARITY_CACHEDIR
         export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
         export SINGULARITYENV_VLBI_DATA_ROOT=$VLBI_DATA_ROOT
         export SINGULARITYENV_RESULTSDIR=$RESULTSDIR
@@ -221,6 +228,7 @@ else
 
     git clone https://github.com/tikk3r/flocs.git
 
+    export TOIL_CHECK_ENV=True
     mkdir -p $WORKDIR/coordination
     export JOBSTORE=$WORKDIR/jobstore
     export TOIL_SLURM_ARGS="--export=ALL --job-name LINC_Calibrator -p normal"
