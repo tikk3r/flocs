@@ -195,7 +195,7 @@ if [[ -z "$SIMG" ]]; then
 else
     echo "Using container $SIMG"
     # Pass along necessary variables to the container.
-    APPTAINER_BINDPATH=$LINC_DATA_ROOT,$APPTAINER_BINDPATH
+    APPTAINER_BINDPATH=$VLBI_DATA_ROOT,$LINC_DATA_ROOT,$APPTAINER_BINDPATH
     mkdir -p $WORKDIR/simgcache/pull/
     cp $SIMG $WORKDIR/simgcache/astronrd_linc.sif
 
