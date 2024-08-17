@@ -6,14 +6,14 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-f <user-defined FLoCs>] [-e<options for create_ms_list.py>] -d <data path> -c <calibrator solutions>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-f <user-defined FLoCs>] [-t <user-defined target skymodel>] [-e<options for create_ms_list.py>] -d <data path> -c <calibrator solutions>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
     exit 0
 fi
 
-while getopts ":d:s:r:l:b:c:f:e:" opt; do
+while getopts ":d:s:r:l:b:c:f:t:e:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
@@ -28,6 +28,8 @@ while getopts ":d:s:r:l:b:c:f:e:" opt; do
         c) CALSOLS="$OPTARG"
         ;;
         f) FLOCS_ROOT="$OPTARG"
+        ;;
+        t) TARGET_SKYMODEL="$OPTARG"
         ;;
         e) EXTRAOPTS="$OPTARG"
         ;;
@@ -50,7 +52,7 @@ fi
 
 if [[ ! -z "$SIMG" ]]; then
     if [[ ! -f $SIMG ]]; then
-        echo "Container $DATADIR does not exist or is not accessible!"
+        echo "Container $SIMG does not exist or is not accessible!"
         exit 3
     fi
 fi
@@ -153,9 +155,13 @@ cd $WORKDIR
 if [[ -z "$SIMG" ]]; then
     echo "No container specified."
     echo "Generating default pipeline configuration"
-    git clone https://github.com/tikk3r/flocs.git
 
-    python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
+    if [[ -f $TARGET_SKYMODEL ]]; then
+        echo Using user-provided sky model at $TARGET_SKYMODEL
+        python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS --target_skymodel $TARGET_SKYMODEL $EXTRAOPTS $DATADIR
+    else
+        python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
+    fi
     echo LINC starting
     echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
@@ -181,8 +187,12 @@ else
     fi
 
     echo "Generating default pipeline configuration"
-    git clone https://github.com/tikk3r/flocs.git
-    singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
+    if [[ -f $TARGET_SKYMODEL ]]; then
+        echo Using user-provided sky model at $TARGET_SKYMODEL
+        singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS --target_skymodel $TARGET_SKYMODEL $EXTRAOPTS $DATADIR
+    else
+        singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py LINC target --cal_solutions $CALSOLS $EXTRAOPTS $DATADIR
+    fi
     echo LINC starting
     echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist_LINC_target.json' >> jobrunner.sh
