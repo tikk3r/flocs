@@ -221,6 +221,11 @@ else
 
     git clone https://github.com/tikk3r/flocs.git
 
+    mkdir -p $WORKDIR/coordination
+    export JOBSTORE=$WORKDIR/jobstore
+    export TOIL_SLURM_ARGS="--export=ALL --job-name LINC_Calibrator -p normal"
+    mkdir $LOGSDIR/slurmlogs
+
     singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py VLBI delay-calibration --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
 
     echo VLBI-cwl starting
