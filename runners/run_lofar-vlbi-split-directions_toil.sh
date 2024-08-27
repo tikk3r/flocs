@@ -7,7 +7,7 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] [-e<options for create_ms_list.py>] -d <data path> -c <LINC solutions>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-v <user-defined VLBI-cwl] [-r <running directory>] [-e<options for create_ms_list.py>] -d <data path> -c <VLBI solutions>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
@@ -28,7 +28,7 @@ while getopts ":d:s:r:l:b:v:c:e:" opt; do
         ;;
         v) VLBI_DATA_ROOT="$OPTARG"
         ;;
-        c) TARGETSOLS="$OPTARG"
+        c) DELAYSOLS="$OPTARG"
         ;;
         e) EXTRAOPTS="$OPTARG"
         ;;
@@ -41,6 +41,8 @@ while getopts ":d:s:r:l:b:v:c:e:" opt; do
     esac
 done
 
+ulimit -S -n 30000
+
 # Check if user gave sensible paths.
 if [[ ! -d $DATADIR ]]; then
     echo "Data directory $DATADIR does not exist or is not accessible!"
@@ -51,17 +53,17 @@ fi
 
 if [[ ! -z "$SIMG" ]]; then
     if [[ ! -f $SIMG ]]; then
-        echo "Container $DATADIR does not exist or is not accessible!"
+        echo "Container $SIMG does not exist or is not accessible!"
         exit 3
     fi
 fi
 
-if [[ ! -f $TARGETSOLS ]]; then
-    echo "Calibrator solutions $TARGETSOLS do not exist or are not accessible!"
+if [[ ! -f $DELAYSOLS ]]; then
+    echo "Calibrator solutions $DELAYSOLS do not exist or are not accessible!"
     exit 4
 else
     export DATADIR=$(readlink -f $DATADIR)
-    export TARGETSOLS=$(readlink -f $TARGETSOLS)
+    export DELAYSOLS=$(readlink -f $DELAYSOLS)
 fi
 
 if [[ -z $RUNDIR ]]; then
@@ -171,38 +173,19 @@ mkdir -p $TMPDIR
 cd $WORKDIR
 
 if [[ -z "$SIMG" ]]; then
-    echo "No container specified."
-
-    pattern="${DATADIR}/*.MS"
-    files=( $pattern )
-    ms="${files[0]}"  # printf is safer!
-    wget https://raw.githubusercontent.com/lmorabit/lofar-vlbi/master/plot_field.py
-    python plot_field.py --MS $ms
-
-    export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
-    git clone https://github.com/tikk3r/flocs.git
-
-    python flocs/runners/create_ms_list.py VLBI delay-calibration --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
-
-    echo VLBI-cwl starting
-    # Switch to a non-GUI backend to avoid plotting issues.
-    echo export MPLBACKEND='Agg' > jobrunner.sh
-    echo export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH >> jobrunner.sh
-    echo export PYTHONPATH=\$VLBI_DATA_ROOT/scripts:\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist_VLBI_delay_calibration.json 2>&1' >> jobrunner.sh
-    (time bash jobrunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl_delay-calibration.txt
-    echo VLBI-cwl ended
+    echo "No container specified. Toil runners require a container."
+    exit
 else
     echo "Using container $SIMG"
     # Pass along necessary variables to the container.
-    APPTAINER_BINDPATH=$VLBI_DATA_ROOT,$LINC_DATA_ROOT,$APPTAINER_BINDPATH
+    APPTAINER_BINDPATH="$VLBI_DATA_ROOT:/opt/lofar/VLBI-cwl/,$LINC_DATA_ROOT:/opt/lofar/LINC/,$APPTAINER_BINDPATH"
     mkdir -p $WORKDIR/simgcache/pull/
     cp $SIMG $WORKDIR/simgcache/lofar_vlbi.sif
 
     CONTAINERSTR=$(singularity --version)
     if [[ "$CONTAINERSTR" == *"apptainer"* ]]; then
         export APPTAINER_CACHEDIR=/cosma/apps/do011/dc-swei1/containers/
-        export APPTAINER_CACHEDIR=/cosma/apps/do011/dc-swei1/containers/pull
+        export APPTAINER_PULLDIR=/cosma/apps/do011/dc-swei1/containers/pull
         export CWL_SINGULARITY_CACHE=$APPTAINER_CACHEDIR
         export APPTAINERENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
         export APPTAINERENV_VLBI_DATA_ROOT=$VLBI_DATA_ROOT
@@ -210,8 +193,8 @@ else
         export APPTAINERENV_LOGSDIR=$LOGSDIR
         export APPTAINERENV_TMPDIR=$TMPDIR
         export APPTAINERENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts
-	export APPTAINERENV_PYTHONPATH=$VLBI_DATA_ROOT/scripts:\$PYTHONPATH
-	export APPTAINER_SHELL=/bin/bash
+        export APPTAINERENV_PYTHONPATH=$VLBI_DATA_ROOT/scripts:\$PYTHONPATH
+        export APPTAINER_SHELL=/bin/bash
     else
         export SINGULARITY_CACHEDIR=$WORKDIR/simgcache
         export CWL_SINGULARITY_CACHE=$SINGULARITY_CACHEDIR
@@ -221,8 +204,8 @@ else
         export SINGULARITYENV_LOGSDIR=$LOGSDIR
         export SINGULARITYENV_TMPDIR=$TMPDIR
         export SINGULARITYENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts
-	export SINGULARITYENV_PYTHONPATH=$VLBI_DATA_ROOT/scripts:\$PYTHONPATH
-	export SINGULARITY_SHELL=/bin/bash
+        export SINGULARITYENV_PYTHONPATH=$VLBI_DATA_ROOT/scripts:\$PYTHONPATH
+        export SINGULARITY_SHELL=/bin/bash
     fi
 
     pattern="${DATADIR}/*.MS"
@@ -236,10 +219,12 @@ else
     export TOIL_CHECK_ENV=True
     mkdir -p $WORKDIR/coordination
     export JOBSTORE=$WORKDIR/jobstore
-    export TOIL_SLURM_ARGS="--export=ALL --job-name VLBI-Delay-Calibration -A do011 -p dine2,cosma8-ska,cosma8-ska2 -t 24:00:00"
+    export TOIL_SLURM_ARGS="--export=ALL -A do011 -p dine2,cosma8-ska2 -t 24:00:00"
     mkdir $LOGSDIR/slurmlogs
 
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py VLBI delay-calibration --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
+    head -n 10 image_catalogue.csv > image_catalogue_top10.csv
+
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py VLBI split-directions --delay_solset=$DELAYSOLS --do_selfcal=True --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT --image_cat=image_catalogue_top10.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
 
     echo VLBI-cwl starting
     toil-cwl-runner \
@@ -263,8 +248,8 @@ else
     --batchLogsDir $LOGSDIR/slurmlogs \
     --no-compute-checksum \
     --setEnv PYTHONPATH=$VLBI_DATA_ROOT/scripts:\$PYTHONPATH \
-    $VLBI_DATA_ROOT/workflows/delay-calibration.cwl \
-    mslist_VLBI_delay_calibration.json
+    $VLBI_DATA_ROOT/workflows/alternative_workflows/split-directions-toil.cwl \
+    mslist_VLBI_split_directions.json
     echo VLBI-cwl ended
 fi
 echo Cleaning up...
@@ -277,7 +262,7 @@ pattern="${DATADIR}/*.MS"
 files=( $pattern )
 ms="${files[0]}"  # printf is safer!
 obsid=$(echo $(basename $ms) | awk -F'_' '{print $1}')
-mv "$WORKDIR" "$FINALDIR/${obsid}_LOFAR-VLBI_Delay-Calibration"
+mv "$WORKDIR" "$FINALDIR/${obsid}_LOFAR-VLBI_Split-Directions"
 
 echo "==========================="
 echo "=== LOFAR-VLBI  Summary ==="
