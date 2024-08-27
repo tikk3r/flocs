@@ -197,6 +197,7 @@ else
         export APPTAINER_SHELL=/bin/bash
     else
         export SINGULARITY_CACHEDIR=$WORKDIR/simgcache
+        export SINGULARITY_PULLDIR=$WORKDIR/simgcache/pull
         export CWL_SINGULARITY_CACHE=$SINGULARITY_CACHEDIR
         export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
         export SINGULARITYENV_VLBI_DATA_ROOT=$VLBI_DATA_ROOT
