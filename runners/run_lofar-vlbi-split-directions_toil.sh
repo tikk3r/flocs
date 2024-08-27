@@ -225,7 +225,7 @@ else
 
     head -n 10 image_catalogue.csv > image_catalogue_top10.csv
 
-    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py VLBI split-directions --delay_solset=$DELAYSOLS --do_selfcal=True --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT --image_cat=image_catalogue_top10.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
+    singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py VLBI split-directions --delay_solset=$DELAYSOLS --do_selfcal=True --configfile=$VLBI_DATA_ROOT/facetselfcal_config_target.txt --h5merger=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT --image_cat=image_catalogue_top10.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
 
     echo VLBI-cwl starting
     toil-cwl-runner \
@@ -248,7 +248,7 @@ else
     --batchSystem slurm \
     --batchLogsDir $LOGSDIR/slurmlogs \
     --no-compute-checksum \
-    --setEnv PYTHONPATH=$VLBI_DATA_ROOT/scripts:\$PYTHONPATH \
+    #--setEnv PYTHONPATH=$VLBI_DATA_ROOT/scripts:\$PYTHONPATH \
     $VLBI_DATA_ROOT/workflows/alternative_workflows/split-directions-toil.cwl \
     mslist_VLBI_split_directions.json
     echo VLBI-cwl ended
