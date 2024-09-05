@@ -102,7 +102,7 @@ SciencePlots
 scikit-learn
 scipy<1.12
 seaborn
-skbuild
+scikit-build
 sunpy
 git+https://github.com/ratt-ru/shadeMS.git
 six
