@@ -102,6 +102,7 @@ From: fedora:38
 	dnf -y install bison flex ncurses tar bzip2 which gettext nomacs
 	dnf -y install cmake3 nodejs
     dnf -y install swarp rclone bc
+    dnf -y install ripgrep
     # Necessary for nomacs
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 
