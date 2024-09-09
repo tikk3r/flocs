@@ -515,11 +515,6 @@ From: fedora:38
     mkdir $INSTALLDIR/DPPP/usermodules
     wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DPPP/usermodules/polconv.py
 
-	#
-	# Install RMextract
-	#
-    pip install "RMextract[lofar-utils]==$RMEXTRACT_VERSION"
-
     #
     # Install LoSiTo
     #

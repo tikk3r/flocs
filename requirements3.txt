@@ -94,6 +94,7 @@ regions
 reproject
 requests
 requests-oauthlib
+RMextract[lofar-utils]==0.5.0
 RM-Tools
 rsa
 rtree
