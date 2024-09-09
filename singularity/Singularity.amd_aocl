@@ -46,7 +46,7 @@ From: fedora:38
 	export OPENBLAS_VERSION=v0.3.22
 	export PYBDSF_VERSION=720f5c3
 	export PYTHON_CASACORE_VERSION=v3.5.0
-    export RMEXTRACT_VERSION=f161b0a
+    export RMEXTRACT_VERSION=0.5.0
 	export SUPERLU_VERSION=5.2.1
 	export WSCLEAN_VERSION=7efb5092
 	export WCSLIB_VERSION=6.4
@@ -518,15 +518,7 @@ From: fedora:38
 	#
 	# Install RMextract
 	#
-	mkdir -p $INSTALLDIR/RMextract/build
-	cd $INSTALLDIR/RMextract/build
-    git clone https://github.com/lofar-astron/RMextract.git src
-    cd src
-    if [ "$RMEXTRACT_VERSION" != "latest" ]; then git checkout $RMEXTRACT_VERSION; fi
-    python setup.py build --add-lofar-utils
-    python setup.py install --add-lofar-utils
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/RMextract
+    pip install "RMextract[lofar-utils]==$RMEXTRACT_VERSION"
 
     #
     # Install LoSiTo
