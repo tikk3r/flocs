@@ -261,7 +261,7 @@ EOF
     pip install --upgrade pip wheel "Cython==0.29.30"
     pip install "numpy==1.26.2"
     pip install --no-binary pandas 'pandas==2.0.0'
-    pip install --no-binary h5py h5py
+    pip install h5py
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
     pip install legacystamps
