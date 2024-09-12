@@ -149,16 +149,17 @@ def get_linc_default_phases(solfile):
         ss = h5.getSolset("target")
         st_names = ss.getSoltabNames()
 
-        if "TGSSscalarphase_final" in st_names:
-            return "TGSSscalarphase_final"
-        elif "TGSSphase_final" in st_names:
-            return "TGSSphase_final"
-        elif "TGSSscalarphase" in st_names:
-            return "TGSSscalarphase"
-        elif "TGSSphase" in st_names:
-            return "TGSSphase"
-        else:
-            raise ValueError("Failed to find default phase solutions of LINC target.")
+        skymodels = ["TGSS", "GSM"]
+        for sm in skymodels:
+            if f"{sm}scalarphase_final" in st_names:
+                return f"{sm}scalarphase_final"
+            elif f"{sm}phase_final" in st_names:
+                return f"{sm}phase_final"
+            elif f"{sm}scalarphase" in st_names:
+                return f"{sm}scalarphase"
+            elif f"{sm}phase" in st_names:
+                return f"{sm}phase"
+        raise ValueError("Failed to find default phase solutions of LINC target.")
 
 
 def eval_bool(s: str) -> Union[bool, None]:
