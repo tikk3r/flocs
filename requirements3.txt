@@ -29,7 +29,7 @@ dask[complete]
 deap
 decorator
 emcee
-EveryStamp
+git+https://github.com/tikk3r/EveryStamp.git
 funcsigs
 future
 google-api-python-client
@@ -50,6 +50,7 @@ git+https://github.com/ratt-ru/kittens.git
 kiwisolver
 linecache2
 loess
+git+https://github.com/jurjen93/lofar_helpers@inference_script#subdirectory=neural_networks
 Mastodon.py
 matplotlib>3.9.0
 markupsafe
