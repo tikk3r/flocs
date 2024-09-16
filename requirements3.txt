@@ -50,6 +50,7 @@ git+https://github.com/ratt-ru/kittens.git
 kiwisolver
 linecache2
 loess
+git+https://git.astron.nl/RD/LSMTool.git@v1.6
 git+https://github.com/jurjen93/lofar_helpers@inference_script#subdirectory=neural_networks
 Mastodon.py
 matplotlib>3.9.0
