@@ -43,7 +43,6 @@ From: fedora:38
     export IDG_VERSION=011687ed
 	export LAPACK_VERSION=3.8.0
 	export LOSOTO3_VERSION=latest
-    export LSMTOOL_VERSION=master
 	export OPENBLAS_VERSION=v0.3.22
 	export PYBDSF_VERSION=720f5c3
 	export PYTHON_CASACORE_VERSION=v3.5.0
@@ -480,18 +479,6 @@ EOF
     cd $INSTALLDIR
 	rm -rf $INSTALLDIR/losoto
 
-	#
-	# Install LSMTool.
-	#
-	mkdir -p $INSTALLDIR/lsmtool
-	cd $INSTALLDIR/lsmtool
-    git clone https://github.com/darafferty/LSMTool.git lsmtool 
-	cd $INSTALLDIR/lsmtool/lsmtool
-    if [ "$LSMTOOL_VERSION" != "latest" ]; then git checkout $LSMTOOL_VERSION; fi
-	python setup.py install
-    cd $INSTALLDIR
-	rm -rf $INSTALLDIR/lsmtool
-
     #
     # Install-WSClean
     #
@@ -700,7 +687,6 @@ git clone https://git.astron.nl/RD/VLBI-cwl.git
 	echo export HDF5_VERSION=$HDF5_VERSION >> $INSTALLDIR/init.sh
 	echo export LAPACK_VERSION=$LAPACK_VERSION >> $INSTALLDIR/init.sh
 	echo export LOSOTO3_VERSION=$LOSOTO3_VERSION >> $INSTALLDIR/init.sh
-    echo export LSMTOOL_VERSION=$LSMTOOL_VERSION >> $INSTALLDIR/init.sh
 	echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
     echo export RMEXTRACT_VERSION=$RMEXTRACT_VERSION >> $INSTALLDIR/init.sh
 	echo export SUPERLU_VERSION=$SUPERLU_VERSION >> $INSTALLDIR/init.sh
