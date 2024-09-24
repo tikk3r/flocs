@@ -13,6 +13,27 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.3.0
+Python 3.8 reaches end-of-life in October 2024, therefore this release drops support for it.
+
+**Updates**
+* Add VLBI-cwl to the container.
+* Add `libaio`
+* Add [ripgrep](https://github.com/BurntSushi/ripgrep).
+* Add `scikit-build`.
+* Add `torch`.
+* Add option for local flocs directory to runners.
+* Drop support for Python 3.8.
+* Install `RMextract` from PyPI.
+* Update casacore to 3.6.1.
+* Update DP3 to v6.2
+* Update WSClean to v3.5
+
+**Fixes**
+* Fix `h5py` installation (reported by @cristina-star)
+* Fix LOFAR LTA client installation (reported by @cristina-star)
+* Fix build due to old setuptools (reported by @mat-ole)
+
 ## v5.2.0
 **Updates**
 * Add `Dask[full]` Python package.
