@@ -95,16 +95,8 @@ From: fedora:38
     # System installs
 	#
 	dnf -y update
-    dnf -y install dnf-plugins-core
-	dnf -y install patch sudo yum-utils hostname
-	dnf -y install git svn wget vim nano
-	dnf -y install automake autoconf cmake make
-	dnf -y install gcc gcc-c++ gcc-gfortran
-	dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel libaio libaio-devel
-	dnf -y install bison flex ncurses tar bzip2 which gettext nomacs
-	dnf -y install cmake3 nodejs
-    dnf -y install swarp rclone bc
-    dnf -y install ripgrep
+    dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    dnf -y install $(</opt/lofar/packages.txt)
     # Necessary for nomacs
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 
@@ -126,54 +118,10 @@ From: fedora:38
 	make install
 	rm -rf /opt/OpenBLAS/src
 
-    
-    dnf -y install python
-	dnf -y install python-pip python3-tkinter
-    dnf -y install libsigc++20-devel gtkmm30-devel
-    dnf -y install lua lua-devel
-    dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    dnf -y install pgplot
-    dnf -y install python3-numpy-f2py
-    dnf -y install qt5-qtbase qt5-qtx11extras
-    dnf -y install perf
-    dnf -y install rsync
-    dnf -y install openmpi openmpi-devel
-    dnf -y install htop
-    dnf -y install python3-pybind11 pybind11-devel mysql mysql-devel python-devel python3-devel python3.11-devel
     if [ $DEBUG = true ]; then
 	    dnf -y install gdb valgrind
 	    debuginfo-install -y libstdc++
     fi
-
-    #
-    # Install Boost
-    #
-    dnf -y install boost boost-devel boost-python3 boost-python3-devel
-
-    #
-    # Install FFTW
-    #
-    dnf -y install fftw-devel fftw-libs
-
-	#
-	# Install SuperLU
-	#
-	dnf -y install SuperLU SuperLU-devel
-
-	#
-	# Install Armadillo
-	#
-	dnf -y install armadillo armadillo-devel
-
-	#
-	# Install cfitsio
-	#
-    dnf -y install cfitsio cfitsio-devel
-
-	#
-	# Install wcslib
-	#
-    dnf -y install wcslib wcslib-devel 
 
     #
     # Install HDF5 with parallel support
@@ -226,7 +174,6 @@ EOF
 
     ln -s /usr/lib64/libnsl.so.2.0.0 /usr/lib64/libnsl.so
 
-    dnf -y install postgresql-devel libnsl libnsl2-devel
     flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
     flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
     export FLEXIBLAS=OPENBLAS
@@ -520,10 +467,6 @@ EOF
     export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
     export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
     export PATCH_DDFACET_CPUS=$INSTALLDIR/patches/DDFacet_cpus.patch
-
-
-    dnf -y install dnf-plugins-core patch yum-utils git svn wget automake autoconf cmake make
-    dnf -y install patch lzma xz-devel fpack mariadb-devel git automake autoconf cmake make gcc gcc-c++ gcc-gfortran redhat-rpm-config wget postgresql-devel nodejs
 
     pip --no-cache-dir install meqtrees-cattery --no-deps
     pip --no-cache-dir install owlcat --no-deps
