@@ -627,9 +627,9 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument("--reference_stationSB", type=int, default=None, help="")
     parser.add_argument(
-        "--ionex_server", type=str, default="http://ftp.aiub.unibe.ch/CODE/", help=""
+        "--ionex_server", type=str, default="ftp://gssc.esa.int/gnss/products/ionex/", help=""
     )
-    parser.add_argument("--ionex_prefix", type=str, default="CODG", help="")
+    parser.add_argument("--ionex_prefix", type=str, default="UQRG", help="")
     parser.add_argument("--proxy_server", type=str, default=None, help="")
     parser.add_argument("--proxy_port", type=int, default=None, help="")
     parser.add_argument("--proxy_type", type=str, default=None, help="")
