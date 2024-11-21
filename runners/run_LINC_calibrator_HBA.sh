@@ -83,6 +83,10 @@ if [[ -z "$LINC_DATA_ROOT" ]]; then
     export LINC_DATA_ROOT=$WORKDIR/LINC
 fi
 
+if [[ -z "$FLOCS_ROOT" ]]; then
+    export FLOCS_ROOT=$WORKDIR/flocs
+fi
+
 # Check if LINC directory exists or is valid.
 if [ ! -d $LINC_DATA_ROOT ]; then
     echo $LINC_DATA_ROOT does not exist and will be created. Cloning LINC...
@@ -114,7 +118,7 @@ export LINC_COMMIT=$(git rev-parse --short HEAD)
 cd -
 
 if [ -d $FLOCS_ROOT ] && [ ! -d $FLOCS_ROOT/runners ]; then
-    echo WARNING: $FLOCS_ROOT found, but required LINC folders are not found.
+    echo WARNING: $FLOCS_ROOT found, but required flocs folders are not found.
     exit 1
 elif [ -d $FLOCS_ROOT ] && [ -d $FLOCS_ROOT/runners ]; then
     echo $FLOCS_ROOT exists and seems to be valid. Continuing...

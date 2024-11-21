@@ -108,8 +108,12 @@ class VLBIJSONConfig(LINCJSONConfig):
         elif workflow == "setup":
             if (prefac_h5parm is None) or (not prefac_h5parm["path"]):
                 raise ValueError("No LINC solutions specified!")
+            prefac_freqs = get_prefactor_freqs(
+                solname=prefac_h5parm["path"], solset="target"
+            )
             for dd in files:
-                mslist.append(dd)
+                if check_dd_freq(dd, prefac_freqs):
+                    mslist.append(dd)
         elif workflow == "concatenate-flag":
             for dd in files:
                 mslist.append(dd)
@@ -149,16 +153,17 @@ def get_linc_default_phases(solfile):
         ss = h5.getSolset("target")
         st_names = ss.getSoltabNames()
 
-        if "TGSSscalarphase_final" in st_names:
-            return "TGSSscalarphase_final"
-        elif "TGSSphase_final" in st_names:
-            return "TGSSphase_final"
-        elif "TGSSscalarphase" in st_names:
-            return "TGSSscalarphase"
-        elif "TGSSphase" in st_names:
-            return "TGSSphase"
-        else:
-            raise ValueError("Failed to find default phase solutions of LINC target.")
+        skymodels = ["TGSS", "GSM"]
+        for sm in skymodels:
+            if f"{sm}scalarphase_final" in st_names:
+                return f"{sm}scalarphase_final"
+            elif f"{sm}phase_final" in st_names:
+                return f"{sm}phase_final"
+            elif f"{sm}scalarphase" in st_names:
+                return f"{sm}scalarphase"
+            elif f"{sm}phase" in st_names:
+                return f"{sm}phase"
+        raise ValueError("Failed to find default phase solutions of LINC target.")
 
 
 def eval_bool(s: str) -> Union[bool, None]:
@@ -626,9 +631,9 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument("--reference_stationSB", type=int, default=None, help="")
     parser.add_argument(
-        "--ionex_server", type=str, default="http://ftp.aiub.unibe.ch/CODE/", help=""
+        "--ionex_server", type=str, default="ftp://gssc.esa.int/gnss/products/ionex/", help=""
     )
-    parser.add_argument("--ionex_prefix", type=str, default="CODG", help="")
+    parser.add_argument("--ionex_prefix", type=str, default="UQRG", help="")
     parser.add_argument("--proxy_server", type=str, default=None, help="")
     parser.add_argument("--proxy_port", type=int, default=None, help="")
     parser.add_argument("--proxy_type", type=str, default=None, help="")
@@ -1257,7 +1262,7 @@ def get_dico_freqs(input_dir: str, solnames: str = "killMS.DIS2_full.sols.npz") 
     Returns:
         freqs: array of frequencies covered by the solutions.
     """
-    sol_dirs = glob.glob(os.path.join(input_dir, "L*pre-cal.ms"))
+    sol_dirs = glob.glob(os.path.join(input_dir, "L*pre-cal*.ms"))
     freqs = []
     for sol_dir in sol_dirs:
         npz_file = os.path.join(sol_dir, solnames)

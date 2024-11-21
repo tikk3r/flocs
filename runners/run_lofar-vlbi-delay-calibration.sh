@@ -176,7 +176,7 @@ if [[ -z "$SIMG" ]]; then
     pattern="${DATADIR}/*.MS"
     files=( $pattern )
     ms="${files[0]}"  # printf is safer!
-    wget https://raw.githubusercontent.com/lmorabit/lofar-vlbi/master/plot_field.py
+    wget https://raw.githubusercontent.com/LOFAR-VLBI/lofar-vlbi-pipeline/refs/heads/master/plot_field.py
     python plot_field.py --MS $ms
 
     export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
@@ -216,7 +216,7 @@ else
     pattern="${DATADIR}/*.MS"
     files=( $pattern )
     ms="${files[0]}"  # printf is safer!
-    wget https://raw.githubusercontent.com/lmorabit/lofar-vlbi/master/plot_field.py
+    wget https://raw.githubusercontent.com/LOFAR-VLBI/lofar-vlbi-pipeline/refs/heads/master/plot_field.py
     singularity exec -B $PWD,$BINDPATHS $SIMG python plot_field.py --MS $ms
 
     git clone https://github.com/tikk3r/flocs.git
