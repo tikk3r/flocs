@@ -441,7 +441,7 @@ EOF
     rm -rf $INSTALLDIR/idg/src
 
     #
-    # Install DPPP
+    # Install DP3
     #
     mkdir -p $INSTALLDIR/DPPP/build
     git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DPPP/src
