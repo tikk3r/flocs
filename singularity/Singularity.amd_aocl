@@ -83,7 +83,6 @@ From: fedora:38
     export LD_LIBRARY_PATH="/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
     echo export LD_LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib/intel64/:/opt/intel/oneapi/compiler/latest/linux/compiler/lib/intel64_lin/:/opt/intel/oneapi/tbb/latest/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mkl/latest/lib/intel64:/opt/intel/oneapi/compiler/latest/linux/lib:/opt/intel/oneapi/compiler/latest/linux/lib/x64:/opt/intel/oneapi/compiler/latest/linux/compiler/lib/intel64_lin:/opt/intel/oneapi/mkl/latest/lib/intel64:$LD_LIBRARY_PATH
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
-    export make=`which make`
     export OLD_PYTHONPATH=$PYTHONPATH
 
     mkdir -p $INSTALLDIR
@@ -106,6 +105,7 @@ From: fedora:38
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     # Necessary for nomacs
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
+    export make=`which make`
 
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
