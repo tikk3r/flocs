@@ -13,6 +13,19 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.3.1
+This is the final release with fedora 38, as it is EOL.
+
+**Updates**
+* Add `cx_Oracle` Python package.
+* Add Oracle Instant Client
+* DNF installs common to all both recipes are now (mostly) consolidated into a single file.
+
+**Fixes**
+* Fix installation of `sub_sources_outside_region.py`.
+* Fix h5py installation.
+* Fix LSMTool installation.
+
 ## v5.3.0
 Python 3.8 reaches end-of-life in October 2024, therefore this release drops support for it.
 
