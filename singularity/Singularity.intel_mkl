@@ -54,7 +54,7 @@ From: fedora:38
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
-    export HAS_={{ HAS_ }}
+    export HAS_CUDA={{ HAS_CUDA }}
     export HAS_MKL={{ HAS_MKL }}
     export MARCH={{ MARCH }}
     export MTUNE={{ MTUNE }}
