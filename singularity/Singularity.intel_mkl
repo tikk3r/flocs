@@ -364,7 +364,7 @@ EOF
     rm -rf $INSTALLDIR/dysco/src
 
     #
-    # Install SAGEcal
+    # Install SAGECal
     #
     mkdir -p $INSTALLDIR/sagecal/build
     cd $INSTALLDIR/sagecal
@@ -483,7 +483,7 @@ EOF
     rm -rf $INSTALLDIR/losoto
 
     #
-    # Install-WSClean
+    # Install WSClean
     #
     mkdir $INSTALLDIR/wsclean
     cd ${INSTALLDIR}/wsclean && git clone https://gitlab.com/aroffringa/wsclean.git && cd wsclean && git checkout $WSCLEAN_VERSION && echo export WSCLEAN_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
@@ -638,16 +638,16 @@ EOF
     cd $INSTALLDIR
     git clone https://github.com/mhardcastle/lotss-hba-survey.git
 
-#
-# Install LINC
-#
-cd $INSTALLDIR
-git clone https://git.astron.nl/RD/LINC.git
+    #
+    # Install LINC
+    #
+    cd $INSTALLDIR
+    git clone https://git.astron.nl/RD/LINC.git
 
 
-# Install VLBI-cwl
-cd $INSTALLDIR
-git clone https://git.astron.nl/RD/VLBI-cwl.git
+    # Install VLBI-cwl
+    cd $INSTALLDIR
+    git clone https://git.astron.nl/RD/VLBI-cwl.git
 
     #
     # Install custom runners
