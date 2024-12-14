@@ -243,12 +243,12 @@ From: fedora:41
 
     if [ $HAS_CUDA = true ]; then
         #
-        # Install CUDA 12.3
+        # Install CUDA 12.6
         #
-        sudo dnf -y config-manager addrepo --from-repofile=http://developer.download.nvidia.com/compute/cuda/repos/fedora41/x86_64/cuda-fedora41.repo
+        sudo dnf -y config-manager addrepo --from-repofile=https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
         sudo dnf -y clean all
         sudo dnf -y upgrade
-        sudo dnf -y install cuda-12-3
+        sudo dnf -y install cuda-12-6
     fi
 
     ln -s /usr/lib64/libnsl.so.2.0.0 /usr/lib64/libnsl.so
