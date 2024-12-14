@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:38
+From: fedora:41
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -220,7 +220,7 @@ EOF
         #
         # Install CUDA 12.3
         #
-        sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora37/x86_64/cuda-fedora37.repo
+        sudo dnf -y config-manager addrepo --from-repofile=http://developer.download.nvidia.com/compute/cuda/repos/fedora41/x86_64/cuda-fedora41.repo
         sudo dnf -y clean all
         sudo dnf -y upgrade
         sudo dnf -y install cuda-12-3
@@ -249,7 +249,6 @@ EOF
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/requirements3.txt -O $INSTALLDIR/requirements3.txt
     pip --version
     pip install --upgrade "setuptools>=v74.0.0 "
-    pip install xmlrunner
     pip --no-cache-dir install virtualenv
 
     /usr/bin/python -m pip uninstall -y numpy
