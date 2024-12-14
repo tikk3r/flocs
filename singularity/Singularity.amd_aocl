@@ -410,7 +410,7 @@ From: fedora:41
     cd $INSTALLDIR/sagecal
     git clone https://github.com/nlesc-dirac/sagecal.git src
     cd build
-    cmake -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal -DLIB_ONLY=True ../src
+    cmake -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal -DLIB_ONLY=True -Wno-dev -DCMAKE_CXX_FLAGS='-g -O3 -fopenmp -ffast-math -lmvec -lm' -DCMAKE_C_FLAGS='-g -O3 -fopenmp -ffast-math -lmvec -lm' ../src
     make -j $j
     make install
     rm -rf $INSTALLDIR/sagecal/build
