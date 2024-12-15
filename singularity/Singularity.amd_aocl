@@ -103,6 +103,7 @@ From: fedora:41
     dnf -y install ripgrep
     wget https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
+    rm oracle-instantclient-basic-*.rpm
     # Necessary for nomacs
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
     export make=`which make`
