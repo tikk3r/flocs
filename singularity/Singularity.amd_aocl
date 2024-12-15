@@ -130,14 +130,14 @@ From: fedora:41
     #
     mkdir /opt/aocl
     cd /opt/aocl
-    wget https://download.amd.com/developer/eula/aocl/aocl-4-0/aocl-linux-aocc-4.0.tar.gz
-    tar xf aocl-linux-aocc-4.0.tar.gz
+    wget https://download.amd.com/developer/eula/aocl/aocl-5-0/aocl-linux-aocc-5.0.0.tar.gz
+    tar xf aocl-linux-aocc-5.0.0.tar.gz
     rm aocl-linux-aocc-*.tar.gz
-    cd aocl-linux-aocc-4.0
+    cd aocl-linux-aocc-5.0.0
     ./install.sh -t /opt/aocl -i lp64
-    source /opt/aocl/4.0/amd-libs.cfg
-    export CPLUS_INCLUDE_PATH=/opt/aocl/4.0/include:$CPLUS_INCLUDE_PATH
-    export CPATH=/opt/aocl/4.0/include:$CPLUS_INCLUDE_PATH
+    source /opt/aocl/5.0.0/aocc/amd-libs.cfg
+    export CPLUS_INCLUDE_PATH=/opt/aocl/5.0.0/aocc/include:$CPLUS_INCLUDE_PATH
+    export CPATH=/opt/aocl/5.0.0/aocc/include:$CPLUS_INCLUDE_PATH
 
     # Get libflang.so, libpgmath.so
     mkdir -p /opt/flang
