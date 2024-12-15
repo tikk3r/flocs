@@ -480,6 +480,8 @@ From: fedora:41
     ../src
     make -j $J
     make install
+    cd $INSTALLDIR/
+    rm -rf $INSTALLDIR/EveryBeam/src/
 
     #   
     # Install Image Domain Gridder (IDG)
