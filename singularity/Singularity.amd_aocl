@@ -285,6 +285,18 @@ From: fedora:41
     pip install "numpy==1.26.2"
     pip install --no-binary pandas 'pandas==2.0.0'
     pip install --no-binary h5py h5py
+
+    # temporary fix for https://github.com/tikk3r/flocs/issues/100#issuecomment-2543192437
+    wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
+    tar -xzvf 0.5.2.tar.gz
+	rm 0.5.2.tar.gz
+    cd datashape-0.5.2/
+    sed -i 's/SafeConfigParser/ConfigParser/g' versioneer.py
+    sed -i 's/readfp/read_file/g' versioneer.py
+    pip install .
+	cd ..
+	rm -rf datashape-0.5.2/
+
     pip install -r $INSTALLDIR/requirements3.txt
     pip install lofar-h5plot
     pip install legacystamps
