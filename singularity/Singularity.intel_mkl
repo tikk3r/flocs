@@ -42,7 +42,7 @@ From: fedora:41
     export HDF5_VERSION=1.14.3
     export IDG_VERSION=011687ed
     export LAPACK_VERSION=3.8.0
-    export LOSOTO3_VERSION=latest
+    export _VERSION=latest
     export OPENBLAS_VERSION=v0.3.22
     export PYBDSF_VERSION=720f5c3
     export PYTHON_CASACORE_VERSION=v3.5.2
@@ -483,7 +483,7 @@ EOF
     pip install --no-deps git+https://github.com/darafferty/losito.git
 
     #
-    # Install LoSoTo Py 3
+    # Install LoSoTo
     #
     mkdir -p $INSTALLDIR/losoto/build
     cd $INSTALLDIR/losoto/build
@@ -700,7 +700,7 @@ EOF
     echo export FFTW_VERSION=$FFTW_VERSION >> $INSTALLDIR/init.sh
     echo export HDF5_VERSION=$HDF5_VERSION >> $INSTALLDIR/init.sh
     echo export LAPACK_VERSION=$LAPACK_VERSION >> $INSTALLDIR/init.sh
-    echo export LOSOTO3_VERSION=$LOSOTO3_VERSION >> $INSTALLDIR/init.sh
+    echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
     echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
     echo export RMEXTRACT_VERSION=$RMEXTRACT_VERSION >> $INSTALLDIR/init.sh
     echo export SUPERLU_VERSION=$SUPERLU_VERSION >> $INSTALLDIR/init.sh
@@ -782,7 +782,7 @@ EOF
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
 
 %help
-    This Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
+    This Apptainer/Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
