@@ -42,7 +42,7 @@ From: fedora:41
     export HDF5_VERSION=1.14.3
     export IDG_VERSION=011687ed
     export LAPACK_VERSION=3.8.0
-    export _VERSION=latest
+    export LOSOTO_VERSION=latest
     export OPENBLAS_VERSION=v0.3.22
     export PYBDSF_VERSION=720f5c3
     export PYTHON_CASACORE_VERSION=v3.5.2
