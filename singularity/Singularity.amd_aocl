@@ -30,8 +30,6 @@ From: fedora:41
     export BOOST_DOT_VERSION=1.69.0
     export BOOST_VERSION=1.69.0
     export CASACORE_VERSION=v3.5.0
-    # Leave at latest, release versions crash for some reason.
-    export CASAREST_VERSION=latest
     export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
     export DPPP_VERSION=v6.2
@@ -766,7 +764,6 @@ From: fedora:41
     echo export ARMADILLO_VERSION=$ARMADILLO_VERSION >> $INSTALLDIR/init.sh
     echo export BLAS_VERSION=$BLAS_VERSION >> $INSTALLDIR/init.sh
     echo export BOOST_VERSION=$BOOST_VERSION >> $INSTALLDIR/init.sh
-    echo export CASAREST_VERSION=$CASAREST_VERSION >> $INSTALLDIR/init.sh
     echo export CFITSIO_VERSION=$CFITSIO_VERSION >> $INSTALLDIR/init.sh
     echo export FFTW_VERSION=$FFTW_VERSION >> $INSTALLDIR/init.sh
     echo export HDF5_VERSION=$HDF5_VERSION >> $INSTALLDIR/init.sh
