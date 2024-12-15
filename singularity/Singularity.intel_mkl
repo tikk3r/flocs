@@ -247,7 +247,7 @@ EOF
     # Setup the Python environment.
     #
     sudo dnf -y install python3-cx-oracle
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/requirements.txt -O $INSTALLDIR/requirements.txt
     pip --version
     pip install --upgrade "setuptools>=v74.0.0 "
     pip --no-cache-dir install virtualenv
@@ -276,7 +276,7 @@ EOF
     cd ..
     rm -rf datashape-0.5.2/
 
-    pip install -r $INSTALLDIR/requirements3.txt
+    pip install -r $INSTALLDIR/requirements.txt
     pip install lofar-h5plot
     pip install legacystamps
     pip install Kittens
