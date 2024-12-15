@@ -429,6 +429,8 @@ EOF
     cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam -DBUILD_WITH_PYTHON=ON -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ../src
     make -j $J
     make install
+    cd $INSTALLDIR/
+    rm -rf $INSTALLDIR/EveryBeam/src/
 
     #   
     # Install Image Domain Gridder (IDG)
