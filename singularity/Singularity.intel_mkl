@@ -283,6 +283,7 @@ EOF
     python setup.py install
     cd ..
     rm lofar_lta*.tar.gz
+    rm -rf lofar_lta-2.8.0/
 
     #
     # Install Montage
