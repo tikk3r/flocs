@@ -377,7 +377,6 @@ From: fedora:41
     -DDATA_DIR=${INSTALLDIR}/casacore/data \
     -DBUILD_PYTHON=False \
     -DUSE_OPENMP=True \
-    -DUSE_FFTW3=TRUE \
     -DUSE_HDF5=True \
     -DBUILD_PYTHON3=True \
     -DBUILD_DYSCO=OFF \
