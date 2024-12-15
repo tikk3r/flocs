@@ -132,6 +132,7 @@ From: fedora:41
     cd /opt/aocl
     wget https://download.amd.com/developer/eula/aocl/aocl-4-0/aocl-linux-aocc-4.0.tar.gz
     tar xf aocl-linux-aocc-4.0.tar.gz
+    rm aocl-linux-aocc-*.tar.gz
     cd aocl-linux-aocc-4.0
     ./install.sh -t /opt/aocl -i lp64
     source /opt/aocl/4.0/amd-libs.cfg
