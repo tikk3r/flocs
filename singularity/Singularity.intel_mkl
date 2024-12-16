@@ -15,10 +15,10 @@ From: fedora:40
         OPENBLASTARGET=SANDYBRIDGE
 
 %post
-	# General environment settings.
-	export J=`nproc`
-	export INSTALLDIR=/opt/lofar
-	export PYTHON_VERSION=3.12
+    # General environment settings.
+    export J=`nproc`
+    export INSTALLDIR=/opt/lofar
+    export PYTHON_VERSION=3.12
     export OPENBLAS_NUM_THREADS=1
 
     # Path to where the patch for python-casacore's setup is stored.
@@ -29,14 +29,14 @@ From: fedora:40
     export ARMADILLO_VERSION=9.900.3
     export BLAS_VERSION=3.8.0
     export BOOST_DOT_VERSION=1.69.0
-	export BOOST_VERSION=1.69.0
-	export CASACORE_VERSION=v3.6.1
-	# Leave at latest, release versions crash for some reason.
-	export CASAREST_VERSION=latest
-	export CFITSIO_VERSION=7.3.47
+    export BOOST_VERSION=1.69.0
+    export CASACORE_VERSION=v3.6.1
+    # Leave at latest, release versions crash for some reason.
+    export CASAREST_VERSION=latest
+    export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
     export DPPP_VERSION=48e75b34
-	export DYSCO_VERSION=2e7f331
+    export DYSCO_VERSION=2e7f331
     export EVERYBEAM_VERSION=65685cba
     export FFTW_VERSION=3.5.8
     export HDF5_VERSION=1.14.3
@@ -92,8 +92,8 @@ From: fedora:40
 
     #
     # System installs
-	  #
-	  dnf -y update
+    #
+    dnf -y update
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install $(</opt/lofar/packages.txt)
     wget https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
@@ -505,7 +505,7 @@ EOF
     ## Strip out version requirements.
     sed -i 's/>=.*;/;/' DDFacet/setup.py
     sed -i 's/<=.*"/"/' DDFacet/setup.py
-    sed -i "s/MIN_REQ = 8/MIN_REQ = 12/" DDFacet/setup.py
+    sed -i "s/MIN_REQ = 8/MIN_REQ = ${PYTHON_VERSION#*.}/" setup.py
     # sed doesn't support negative lookahead, so we use perl here.
     grep -rl "np.float" DDFacet | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
     grep -rl "np.int" DDFacet | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
