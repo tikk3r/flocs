@@ -21,7 +21,7 @@ From: fedora:41
     export OPENBLAS_NUM_THREADS=1
 
     # Path to where the patch for python-casacore's setup is stored.
-    export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
+    export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup.patch
     
     # Settings relevant to the installed software.
     export AOFLAGGER_VERSION=master
@@ -535,9 +535,9 @@ From: fedora:41
     ls ${INSTALLDIR}
     
     # Setup DDF
-    export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
-    export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
-    export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
+    export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/killms_predict.patch
+    export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/killms_array.patch
+    export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/killms_gridder.patch
     export PATCH_DDFACET_CPUS=$INSTALLDIR/patches/DDFacet_cpus.patch
 
     pip --no-cache-dir install meqtrees-cattery --no-deps
