@@ -99,7 +99,7 @@ From: fedora:41
     dnf -y install gcc gcc-c++ gcc-gfortran
     dnf -y install arpack-devel python-devel python3-devel lapack-devel libpng-devel libxml2-devel readline-devel ncurses-devel f2py bzip2-devel libicu-devel python3-scipy python-setuptools gsl gsl-devel gdal gdal-devel libpqxx libpqxx-devel libaio libaio-devel
     dnf -y install bison flex ncurses tar bzip2 which gettext nomacs
-    dnf -y install cmake3 nodejs
+    dnf -y install cmake nodejs
     dnf -y install swarp rclone bc
     dnf -y install ripgrep
     wget https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
@@ -122,7 +122,7 @@ From: fedora:41
     git clone https://github.com/xianyi/OpenBLAS.git src
     cd src && git checkout $OPENBLAS_VERSION
     mkdir build && cd build
-    cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DNUM_CORES=256 -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DNUM_CORES=256 -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
     make -j$J
     make install
     rm -rf /opt/OpenBLAS/src
@@ -349,7 +349,7 @@ EOF
     cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
-    cd ${INSTALLDIR}/casacore/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=False -DUSE_OPENMP=True -DUSE_HDF5=True -DBUILD_PYTHON3=True -DBUILD_DYSCO=OFF -DBLAS_LIBRARIES=/opt/OpenBLAS/lib64/libopenblas.so ../src/ 
+    cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=False -DUSE_OPENMP=True -DUSE_HDF5=True -DBUILD_PYTHON3=True -DBUILD_DYSCO=OFF -DBLAS_LIBRARIES=/opt/OpenBLAS/lib64/libopenblas.so ../src/ 
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
@@ -369,7 +369,7 @@ EOF
     mkdir -p $INSTALLDIR/dysco/build
     cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
     cd src && git checkout $DYSCO_VERSION && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd $INSTALLDIR/dysco/build && cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
+    cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/dysco/build
     rm -rf $INSTALLDIR/dysco/src
@@ -392,7 +392,7 @@ EOF
     #
     mkdir -p ${INSTALLDIR}/aoflagger/build
     cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ${INSTALLDIR}/aoflagger/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
+    cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
     cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
     cd ${INSTALLDIR}/aoflagger/build && make install
     cd $INSTALLDIR
@@ -408,7 +408,7 @@ EOF
     git clone https://github.com/lofar-astron/LofarStMan.git
     cd LofarStMan
     mkdir build && cd build
-    cmake3 -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofarstman ..
+    cmake -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofarstman ..
     make -j$J
     make install
     cd $INSTALLDIR
@@ -424,7 +424,7 @@ EOF
     cd src && git checkout $EVERYBEAM_VERSION
     echo export EVERYBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/EveryBeam/build
-    cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam -DBUILD_WITH_PYTHON=ON -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ../src
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam -DBUILD_WITH_PYTHON=ON -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ../src
     make -j $J
     make install
     cd $INSTALLDIR/
@@ -440,13 +440,13 @@ EOF
     sed -i '1i #include <array>' $INSTALLDIR/idg/src/idg-lib/src/CUDA/common/routines/Beam.cpp
     sed -i '1i #include <array>' $INSTALLDIR/idg/src/idg-lib/src/CUDA/Generic/routines/Imaging.cpp
     if [ $HAS_CUDA = true ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_INCLUDE_DIRS=/opt/intel/oneapi/mkl/latest/include/ -DBUILD_LIB_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_INCLUDE_DIRS=/opt/intel/oneapi/mkl/latest/include/ -DBUILD_LIB_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
     elif [ $HAS_CUDA = false ] && [ $HAS_MKL = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_INCLUDE_DIRS=/opt/intel/oneapi/mkl/latest/include/ -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=ON -DMKL_INCLUDE_DIRS=/opt/intel/oneapi/mkl/latest/include/ -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
     elif [ $HAS_CUDA = true ] && [ $HAS_MKL = false ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
     else
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=OFF -DTARGET_CPU=$MARCH ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=OFF -DTARGET_CPU=$MARCH ..
     fi
     make -j $J
     make install
@@ -463,9 +463,9 @@ EOF
     echo export DP3_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/DP3/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
+        cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
     else
-        cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-fomit-frame-pointer -flto' -DCMAKE_C_FLAGS='-fomit-frame-pointer -flto' -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
+        cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-fomit-frame-pointer -flto' -DCMAKE_C_FLAGS='-fomit-frame-pointer -flto' -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
     fi
     # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install
@@ -507,9 +507,9 @@ EOF
     export CXX=`which mpic++`
     # TARGET_CPU is a WSClean 2.10.2 feature. Change to PORTABLE=TRUE if using and older version to avoid -march=native being triggered.
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True ..
     else
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-fomit-frame-pointer -flto' -DCMAKE_C_FLAGS='-fomit-frame-pointer -flto' -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-fomit-frame-pointer -flto' -DCMAKE_C_FLAGS='-fomit-frame-pointer -flto' -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ..
     fi
     make -j ${J}
     make install
