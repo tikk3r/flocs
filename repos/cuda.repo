@@ -1,0 +1,4 @@
+[cuda]
+name=CUDA
+enabled=1
+baseurl=http://developer.download.nvidia.com/compute/cuda/repos/fedora41/x86_64/cuda-fedora41.repo

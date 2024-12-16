@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:38
+From: fedora:41
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -14,42 +14,40 @@ From: fedora:38
         OPENBLASTARGET=ZEN
 
 %post
-	# General environment settings.
-	export J=`nproc`
-	export INSTALLDIR=/opt/lofar
-	export PYTHON_VERSION=3.11
+    # General environment settings.
+    export J=`nproc`
+    export INSTALLDIR=/opt/lofar
+    export PYTHON_VERSION=3.11
     export OPENBLAS_NUM_THREADS=1
 
-	# Path to where the patch for python-casacore's setup is stored.
-	export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
-	
-	# Settings relevant to the installed software.
-	export AOFLAGGER_VERSION=master
-	export ARMADILLO_VERSION=9.900.3
-	export BLAS_VERSION=3.8.0
+    # Path to where the patch for python-casacore's setup is stored.
+    export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup_patch.patch
+    
+    # Settings relevant to the installed software.
+    export AOFLAGGER_VERSION=master
+    export ARMADILLO_VERSION=9.900.3
+    export BLAS_VERSION=3.8.0
     export BOOST_DOT_VERSION=1.69.0
-	export BOOST_VERSION=1.69.0
-	export CASACORE_VERSION=v3.5.0
-	# Leave at latest, release versions crash for some reason.
-	export CASAREST_VERSION=latest
-	export CFITSIO_VERSION=7.3.47
+    export BOOST_VERSION=1.69.0
+    export CASACORE_VERSION=v3.5.0
+    export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
-    export DPPP_VERSION=v6.2
-	export DYSCO_VERSION=2e7f331
+    export DP3_VERSION=v6.2
+    export DYSCO_VERSION=2e7f331
     export EVERYBEAM_VERSION=df937562
     export FFTW_VERSION=3.5.8
-	export HDF5_VERSION=1.14.3
+    export HDF5_VERSION=1.14.3
     export IDG_VERSION=011687ed
-	export LAPACK_VERSION=3.8.0
-	export LOSOTO3_VERSION=latest
-	export OPENBLAS_VERSION=v0.3.22
-	export PYBDSF_VERSION=720f5c3
-	export PYTHON_CASACORE_VERSION=v3.5.0
+    export LAPACK_VERSION=3.8.0
+    export LOSOTO_VERSION=latest
+    export OPENBLAS_VERSION=v0.3.22
+    export PYBDSF_VERSION=720f5c3
+    export PYTHON_CASACORE_VERSION=v3.5.2
     export RMEXTRACT_VERSION=0.5.0
-	export SUPERLU_VERSION=5.2.1
-	export WSCLEAN_VERSION=v3.5
-	export WCSLIB_VERSION=6.4
-	export HDF5_USE_FILE_LOCKING=FALSE
+    export SUPERLU_VERSION=5.2.1
+    export WSCLEAN_VERSION=v3.5
+    export WCSLIB_VERSION=6.4
+    export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
     export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
@@ -83,40 +81,41 @@ From: fedora:38
     export LD_LIBRARY_PATH="/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
     echo export LD_LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib/intel64/:/opt/intel/oneapi/compiler/latest/linux/compiler/lib/intel64_lin/:/opt/intel/oneapi/tbb/latest/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mkl/latest/lib/intel64:/opt/intel/oneapi/compiler/latest/linux/lib:/opt/intel/oneapi/compiler/latest/linux/lib/x64:/opt/intel/oneapi/compiler/latest/linux/compiler/lib/intel64_lin:/opt/intel/oneapi/mkl/latest/lib/intel64:$LD_LIBRARY_PATH
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
-    export make=`which make`
     export OLD_PYTHONPATH=$PYTHONPATH
 
-	mkdir -p $INSTALLDIR
+    mkdir -p $INSTALLDIR
 
     #
     # System installs
-	#
+	  #
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
-	dnf -y update
+	  dnf -y update
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install $(<$INSTALLDIR/dnf-packages.txt)
     wget https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
+    rm oracle-instantclient-basic-*.rpm
     # Necessary for nomacs
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
+    export make=`which make`
 
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
     mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patches/
     
-	# Install OpenBLAS
-	mkdir -p /opt/OpenBLAS
-	cd /opt/OpenBLAS
-	git clone https://github.com/xianyi/OpenBLAS.git src
-	cd src && git checkout $OPENBLAS_VERSION
-	mkdir build && cd build
-	cmake3 -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DNUM_CORES=256  -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
-	make -j$J
-	make install
-	rm -rf /opt/OpenBLAS/src
+    # Install OpenBLAS
+    mkdir -p /opt/OpenBLAS
+    cd /opt/OpenBLAS
+    git clone https://github.com/xianyi/OpenBLAS.git src
+    cd src && git checkout $OPENBLAS_VERSION
+    mkdir build && cd build
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DNUM_CORES=256  -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
+    make -j$J
+    make install
+    rm -rf /opt/OpenBLAS/src
 
     #
-	# AMD installs
+    # AMD installs
     #
     mkdir /opt/aocl
     cd /opt/aocl
@@ -128,11 +127,11 @@ From: fedora:38
     export CPLUS_INCLUDE_PATH=/opt/aocl/4.0/include:$CPLUS_INCLUDE_PATH
     export CPATH=/opt/aocl/4.0/include:$CPLUS_INCLUDE_PATH
 
-	# Get libflang.so, libpgmath.so
-	mkdir -p /opt/flang
-	cd /opt/flang
-	wget https://github.com/flang-compiler/flang/releases/download/flang_20190329/flang-20190329-x86-70.tgz
-	tar xf flang-20190329-x86-70.tgz
+    # Get libflang.so, libpgmath.so
+    mkdir -p /opt/flang
+    cd /opt/flang
+    wget https://github.com/flang-compiler/flang/releases/download/flang_20190329/flang-20190329-x86-70.tgz
+    tar xf flang-20190329-x86-70.tgz
 
     # Explicitely reinstall FFTW since it wasn't built with threads.
     rm -rf $AOCL_ROOT/amd-fftw $AOCL_ROOT/lib/libfftw*.so $AOCL_ROOT/include/fftw3*
@@ -155,24 +154,24 @@ From: fedora:38
     # End AMD installs
     #
 
-	export LD_LIBRARY_PATH=/opt/flang/lib:$LD_LIBRARY_PATH
-	export PATH=/opt/flang/bin:$PATH
-	export CPATH=/opt/flang/include:$CPATH
-	export CPLUS_INCLUDE_PATH=/opt/flang/include:$CPLUS_INCLUDE_PATH
+    export LD_LIBRARY_PATH=/opt/flang/lib:$LD_LIBRARY_PATH
+    export PATH=/opt/flang/bin:$PATH
+    export CPATH=/opt/flang/include:$CPATH
+    export CPLUS_INCLUDE_PATH=/opt/flang/include:$CPLUS_INCLUDE_PATH
 
-	export CC=`which gcc`
-	export CXX=`which g++`
+    export CC=`which gcc`
+    export CXX=`which g++`
     
     if [ $DEBUG = true ]; then
-	    dnf -y install gdb valgrind
-	    debuginfo-install -y libstdc++
+        dnf -y install gdb valgrind
+        debuginfo-install -y libstdc++
     fi
 
     #
     # Install HDF5 with parallel support
     #
     export CC=`which mpicc`
-	export CXX=`which mpic++`
+    export CXX=`which mpic++`
     mkdir /opt/hdf5
     cd /opt/hdf5
     wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/hdf5-1.14.3.tar.gz
@@ -187,13 +186,13 @@ From: fedora:38
     cd /opt/hdf5
     rm -r hdf5-1.*
     export CC=`which gcc`
-	export CXX=`which g++`
+    export CXX=`which g++`
 
     if [ $HAS_CUDA = true ]; then
         #
-        # Install CUDA 11.5
+        # Install CUDA 12.6
         #
-        sudo dnf -y config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/fedora37/x86_64/cuda-fedora37.repo
+        sudo dnf -y config-manager addrepo --from-repofile=http://developer.download.nvidia.com/compute/cuda/repos/fedora41/x86_64/cuda-fedora41.repo
         sudo dnf -y clean all
         sudo dnf -y upgrade
         sudo dnf -y install cuda-12-3
@@ -218,7 +217,7 @@ From: fedora:38
     # Setup the Python environment.
     #
     sudo dnf -y install python3-cx-oracle
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/requirements3.txt -O $INSTALLDIR/requirements3.txt
+    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/requirements.txt -O $INSTALLDIR/requirements.txt
     pip --version
     #pip install --upgrade setuptools
     pip --no-cache-dir install virtualenv
@@ -232,7 +231,7 @@ From: fedora:38
     pip install "numpy==1.26.2"
     pip install --no-binary pandas 'pandas==2.0.0'
     pip install --no-binary h5py h5py
-    pip install -r $INSTALLDIR/requirements3.txt
+    pip install -r $INSTALLDIR/requirements.txt
     pip install lofar-h5plot
     pip install legacystamps
     pip install Kittens
@@ -252,6 +251,7 @@ From: fedora:38
     python setup.py install
     cd ..
     rm lofar_lta*.tar.gz
+    rm -rf lofar_lta-2.8.0/
 
     #
     # Install Montage
@@ -286,91 +286,90 @@ From: fedora:38
     rm -rf $INSTALLDIR/difmap/*.tar.gz
     export CFLAGS=$OLD_CFLAGS
 
-	#
-	# Install PyBDSF
-	#
-	mkdir -p ${INSTALLDIR}/pybdsf
-	cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION} && echo export PYBDSF_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    #
+    # Install PyBDSF
+    #
+    mkdir -p ${INSTALLDIR}/pybdsf
+    cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION} && echo export PYBDSF_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/pybdsf/pybdsf
     pip install bdsf
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/pybdsf/pybdsf
 
-	#
-	# Install CASAcore
-	#
-	mkdir -p ${INSTALLDIR}/casacore/build
-	mkdir -p ${INSTALLDIR}/casacore/data
-	cd $INSTALLDIR/casacore
+    #
+    # Install CASAcore
+    #
+    mkdir -p ${INSTALLDIR}/casacore/build
+    mkdir -p ${INSTALLDIR}/casacore/data
+    cd $INSTALLDIR/casacore
     git clone https://github.com/casacore/casacore.git src
-	cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-	cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
-	cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
-	cd ${INSTALLDIR}/casacore/build
-	cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
-	-DDATA_DIR=${INSTALLDIR}/casacore/data \
-	-DBUILD_PYTHON=False \
-	-DUSE_OPENMP=True \
-	-DUSE_FFTW3=TRUE \
-	-DUSE_HDF5=True \
-	-DBUILD_PYTHON3=True \
-	-DBUILD_DYSCO=OFF \
-	-DCXX11="ON" \
+    cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
+    cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
+    cd ${INSTALLDIR}/casacore/build
+    cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
+    -DDATA_DIR=${INSTALLDIR}/casacore/data \
+    -DBUILD_PYTHON=False \
+    -DUSE_OPENMP=True \
+    -DUSE_HDF5=True \
+    -DBUILD_PYTHON3=True \
+    -DBUILD_DYSCO=OFF \
+    -DCXX11="ON" \
         -DBLAS_LIBRARIES="${AOCL_ROOT}/lib/libblis.so" \
-	-DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
-	-DFFTW3_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3_threads.so" \
-	-DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
-	-DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
-	-DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
+    -DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
+    -DFFTW3_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3_threads.so" \
+    -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
+    -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
+    -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
         -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
         -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
         -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
-	../src/ 
-	cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
-	cd ${INSTALLDIR}/casacore/build && make install
+    ../src/ 
+    cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
+    cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/casacore/build
     rm -rf $INSTALLDIR/casacore/src
 
-	#
-	# Install Python-CASAcore
-	#
-	# In case anything was installed previously
-	pip uninstall -y python-casacore
+    #
+    # Install Python-CASAcore
+    #
+    # In case anything was installed previously
+    pip uninstall -y python-casacore
     pip install --no-deps --no-binary python-casacore "python-casacore==3.5.2"
     
-	#
-	# Install Dysco
-	#
-	mkdir -p $INSTALLDIR/dysco/build
-	cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
+    #
+    # Install Dysco
+    #
+    mkdir -p $INSTALLDIR/dysco/build
+    cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
     cd src && git checkout $DYSCO_VERSION && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-	cd $INSTALLDIR/dysco/build && cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
+    cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/dysco/build
     rm -rf $INSTALLDIR/dysco/src
 
-	#
-	# Install SAGEcal
-	#
-	mkdir -p $INSTALLDIR/sagecal/build
-	cd $INSTALLDIR/sagecal
-	git clone https://github.com/nlesc-dirac/sagecal.git src
-	cd build
-	cmake -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal -DLIB_ONLY=True ../src
-	make -j $j
-	make install
-	rm -rf $INSTALLDIR/sagecal/build
-	rm -rf $INSTALLDIR/sagecal/src
+    #
+    # Install SAGECal
+    #
+    mkdir -p $INSTALLDIR/sagecal/build
+    cd $INSTALLDIR/sagecal
+    git clone https://github.com/nlesc-dirac/sagecal.git src
+    cd build
+    cmake -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal -DLIB_ONLY=True -Wno-dev ../src
+    make -j $j
+    make install
+    rm -rf $INSTALLDIR/sagecal/build
+    rm -rf $INSTALLDIR/sagecal/src
 
-	#
-	# Install AOFlagger
-	#
-	mkdir -p ${INSTALLDIR}/aoflagger/build
-	cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-	cd ${INSTALLDIR}/aoflagger/build && cmake3 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
-	cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
-	cd ${INSTALLDIR}/aoflagger/build && make install
+    #
+    # Install AOFlagger
+    #
+    mkdir -p ${INSTALLDIR}/aoflagger/build
+    cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
+    cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
+    cd ${INSTALLDIR}/aoflagger/build && make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/aoflagger/aoflagger
     rm -rf $INSTALLDIR/aoflagger/build
@@ -384,7 +383,7 @@ From: fedora:38
     git clone https://github.com/lofar-astron/LofarStMan.git
     cd LofarStMan
     mkdir build && cd build
-    cmake3 -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofarstman ..
+    cmake -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofarstman ..
     make -j$J
     make install
     cd $INSTALLDIR
@@ -400,7 +399,7 @@ From: fedora:38
     cd src && git checkout $EVERYBEAM_VERSION
     echo export EVERYBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/EveryBeam/build
-    cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
     -DBUILD_WITH_PYTHON=ON \
     -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
     -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
@@ -412,6 +411,8 @@ From: fedora:38
     ../src
     make -j $J
     make install
+    cd $INSTALLDIR/
+    rm -rf $INSTALLDIR/EveryBeam/src/
 
     #   
     # Install Image Domain Gridder (IDG)
@@ -423,9 +424,9 @@ From: fedora:38
     sed -i '1i #include <array>' $INSTALLDIR/idg/src/idg-lib/src/CUDA/common/routines/Beam.cpp
     sed -i '1i #include <array>' $INSTALLDIR/idg/src/idg-lib/src/CUDA/Generic/routines/Imaging.cpp
     if [ $HAS_CUDA = true ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug -DTARGET_CPU=$MARCH ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Debug -DTARGET_CPU=$MARCH ..
     else
-        cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=OFF -DTARGET_CPU=$MARCH ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=OFF -DTARGET_CPU=$MARCH ..
     fi
     make -j $J
     make install
@@ -433,27 +434,27 @@ From: fedora:38
     rm -rf $INSTALLDIR/idg/src
 
     #
-    # Install DPPP
+    # Install DP3
     #
-    mkdir -p $INSTALLDIR/DPPP/build
-    git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DPPP/src
-    cd $INSTALLDIR/DPPP/src
-    git checkout ${DPPP_VERSION}
-    echo export DPPP_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd $INSTALLDIR/DPPP/build
+    mkdir -p $INSTALLDIR/DP3/build
+    git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DP3/src
+    cd $INSTALLDIR/DP3/src
+    git checkout ${DP3_VERSION}
+    echo export DP3_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd $INSTALLDIR/DP3/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF \
+        cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF \
         -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
         -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
-	-DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
+    -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
         -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include/" \
         -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
         ../src
     else
-        cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DPPP -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF \
+        cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF \
         -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
         -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
-	-DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
+    -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
         -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include/" \
         -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
         ../src
@@ -461,33 +462,33 @@ From: fedora:38
     # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/DPPP/build
-    rm -rf $INSTALLDIR/DPPP/src
-    mkdir $INSTALLDIR/DPPP/usermodules
-    wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DPPP/usermodules/polconv.py
+    rm -rf $INSTALLDIR/DP3/build
+    rm -rf $INSTALLDIR/DP3/src
+    mkdir $INSTALLDIR/DP3/usermodules
+    wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DP3/usermodules/polconv.py
 
     #
     # Install LoSiTo
     #
     pip install --no-deps git+https://github.com/darafferty/losito.git
 
-	#
-	# Install LoSoTo Py 3
-	#
-	mkdir -p $INSTALLDIR/losoto/build
-	cd $INSTALLDIR/losoto/build
+    #
+    # Install LoSoTo
+    #
+    mkdir -p $INSTALLDIR/losoto/build
+    cd $INSTALLDIR/losoto/build
     git clone https://github.com/revoltek/losoto.git src
     cd src
     # Some fixes for certain LoSoTo versions until it is fixed upstream.
-	find . -type f -name '*.py' -exec sed -i 's/np\.float16(weights)/weights.astype(float)/' {} \;
-	find . -type f -name '*.py' -exec sed -i 's/np\.float16/float/g' {} \;
-	find . -type f -name '*.py' -exec sed -i 's/Float16Atom/FloatAtom/g' {} \;
-	pip install --no-deps .
+    find . -type f -name '*.py' -exec sed -i 's/np\.float16(weights)/weights.astype(float)/' {} \;
+    find . -type f -name '*.py' -exec sed -i 's/np\.float16/float/g' {} \;
+    find . -type f -name '*.py' -exec sed -i 's/Float16Atom/FloatAtom/g' {} \;
+    pip install --no-deps .
     cd $INSTALLDIR
-	rm -rf $INSTALLDIR/losoto
+    rm -rf $INSTALLDIR/losoto
 
     #
-    # Install-WSClean
+    # Install WSClean
     #
     mkdir $INSTALLDIR/wsclean
     cd ${INSTALLDIR}/wsclean && git clone https://gitlab.com/aroffringa/wsclean.git && cd wsclean && git checkout $WSCLEAN_VERSION && echo export WSCLEAN_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
@@ -501,17 +502,17 @@ From: fedora:38
         cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True ..
     else
         cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean \
-	-DTARGET_CPU=${MARCH} \
-	-DFFTW3_LIB="${AOCL_ROOT}/lib/libfftw3.so" \
-	-DFFTW3_THREADS_LIB="${AOCL_ROOT}/lib/libfftw3_threads.so" \
-	-DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
-	-DFFTW3F_THREADS_LIB="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
-	-DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
-	-DBLAS_openblas_LIBRARY="${AOCL_ROOT}/lib/libblis.so" \
-	-DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
-	-DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+    -DTARGET_CPU=${MARCH} \
+    -DFFTW3_LIB="${AOCL_ROOT}/lib/libfftw3.so" \
+    -DFFTW3_THREADS_LIB="${AOCL_ROOT}/lib/libfftw3_threads.so" \
+    -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
+    -DFFTW3F_THREADS_LIB="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
+    -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
+    -DBLAS_openblas_LIBRARY="${AOCL_ROOT}/lib/libblis.so" \
+    -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
+    -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
         -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
-	..
+    ..
     fi
     make -j ${J}
     make install
@@ -519,7 +520,7 @@ From: fedora:38
     rm -rf $INSTALLDIR/wsclean/wsclean
     # Switch back to normal compilers
     export CC=`which gcc`
-	export CXX=`which g++`
+    export CXX=`which g++`
 
     #
     # Install DS9
@@ -530,10 +531,10 @@ From: fedora:38
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
-	echo "Installation directory contents:"
-	ls ${INSTALLDIR}
-	
-	# Setup DDF
+    echo "Installation directory contents:"
+    ls ${INSTALLDIR}
+    
+    # Setup DDF
     export PATCH_KILLMS_MAKEFILE_PREDICT=$INSTALLDIR/patches/patch_killms_predict.patch
     export PATCH_KILLMS_MAKEFILE_ARRAY=$INSTALLDIR/patches/patch_killms_array.patch
     export PATCH_KILLMS_MAKEFILE_GRIDDER=$INSTALLDIR/patches/patch_killms_gridder.patch
@@ -651,15 +652,15 @@ From: fedora:38
     cd $INSTALLDIR
     git clone https://github.com/mhardcastle/lotss-hba-survey.git
 
-#
-# Install LINC
-#
-cd $INSTALLDIR
-git clone https://git.astron.nl/RD/LINC.git
+    #
+    # Install LINC
+    #
+    cd $INSTALLDIR
+    git clone https://git.astron.nl/RD/LINC.git
 
-# Install VLBI-cwl
-cd $INSTALLDIR
-git clone https://git.astron.nl/RD/VLBI-cwl.git
+    # Install VLBI-cwl
+    cd $INSTALLDIR
+    git clone https://git.astron.nl/RD/VLBI-cwl.git
 
     #
     # Install custom runners
@@ -683,26 +684,25 @@ git clone https://git.astron.nl/RD/VLBI-cwl.git
     dnf -y clean all
     unset J
     
-	#
-	# init-lofar
-	#
+    #
+    # init-lofar
+    #
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
 
     # Store version information.
-	echo export ARMADILLO_VERSION=$ARMADILLO_VERSION >> $INSTALLDIR/init.sh
-	echo export BLAS_VERSION=$BLAS_VERSION >> $INSTALLDIR/init.sh
-	echo export BOOST_VERSION=$BOOST_VERSION >> $INSTALLDIR/init.sh
-	echo export CASAREST_VERSION=$CASAREST_VERSION >> $INSTALLDIR/init.sh
-	echo export CFITSIO_VERSION=$CFITSIO_VERSION >> $INSTALLDIR/init.sh
+    echo export ARMADILLO_VERSION=$ARMADILLO_VERSION >> $INSTALLDIR/init.sh
+    echo export BLAS_VERSION=$BLAS_VERSION >> $INSTALLDIR/init.sh
+    echo export BOOST_VERSION=$BOOST_VERSION >> $INSTALLDIR/init.sh
+    echo export CFITSIO_VERSION=$CFITSIO_VERSION >> $INSTALLDIR/init.sh
     echo export FFTW_VERSION=$FFTW_VERSION >> $INSTALLDIR/init.sh
-	echo export HDF5_VERSION=$HDF5_VERSION >> $INSTALLDIR/init.sh
-	echo export LAPACK_VERSION=$LAPACK_VERSION >> $INSTALLDIR/init.sh
-	echo export LOSOTO3_VERSION=$LOSOTO3_VERSION >> $INSTALLDIR/init.sh
-	echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
+    echo export HDF5_VERSION=$HDF5_VERSION >> $INSTALLDIR/init.sh
+    echo export LAPACK_VERSION=$LAPACK_VERSION >> $INSTALLDIR/init.sh
+    echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
+    echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
     echo export RMEXTRACT_VERSION=$RMEXTRACT_VERSION >> $INSTALLDIR/init.sh
-	echo export SUPERLU_VERSION=$SUPERLU_VERSION >> $INSTALLDIR/init.sh
-	echo export WCSLIB_VERSION=$WCSLIB_VERSION >> $INSTALLDIR/init.sh
-	echo export HDF5_USE_FILE_LOCKING=$HDF5_USE_FILE_LOCKING >> $INSTALLDIR/init.sh
+    echo export SUPERLU_VERSION=$SUPERLU_VERSION >> $INSTALLDIR/init.sh
+    echo export WCSLIB_VERSION=$WCSLIB_VERSION >> $INSTALLDIR/init.sh
+    echo export HDF5_USE_FILE_LOCKING=$HDF5_USE_FILE_LOCKING >> $INSTALLDIR/init.sh
 
     echo export MARCH=$MARCH >> $INSTALLDIR/init.sh
     echo export MTUNE=$MTUNE >> $INSTALLDIR/init.sh
@@ -710,35 +710,35 @@ git clone https://git.astron.nl/RD/VLBI-cwl.git
     echo $'export MTUNE_MACHINE=$(gcc -mtune=native -Q --help=target | grep "\-mtune=" | head -n 1 | awk \'{print $2}\')' >> $INSTALLDIR/init.sh
     echo $'if [ "$MARCH_MACHINE" != "$MARCH" ]; then echo "WARNING - software has been build with -march=$MARCH but current machine reports -march=$MARCH_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
     echo $'if [ "$MTUNE_MACHINE" != "$MTUNE" ]; then echo "WARNING - software has been build with -mtune=$MTUNE but current machine -mtune=$MTUNE_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
-	echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
-	echo source \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
-	echo source /opt/aocl/4.0/amd-libs.cfg >> $INSTALLDIR/init.sh
-	echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
-	echo export PYTHONPATH=\$INSTALLDIR/VLBI-cwl/scripts:\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DPPP/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DPPP/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
+    echo source \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
+    echo source /opt/aocl/4.0/amd-libs.cfg >> $INSTALLDIR/init.sh
+    echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
+    echo export PYTHONPATH=\$INSTALLDIR/VLBI-cwl/scripts:\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=\$INSTALLDIR/aoflagger/lib:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=/usr/local/cuda/bin:/opt/hdf5/bin:\$PATH >> $INSTALLDIR/init.sh
-	echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
+    # echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/DPPP/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/DP3/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export PATH=/opt/hdf5/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/sagecal/bin:\$PATH  >> $INSTALLDIR/init.sh
-	echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/dysco/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=/opt/hdf5/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/sagecal/bin:\$PATH  >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/VLBI-cwl/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/MultiNest/bin:\$PATH >> $INSTALLDIR/init.sh
 
-	echo export LD_LIBRARY_PATH=/opt/flang/lib:$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-	echo export PATH=/opt/flang/bin:\$PATH >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=/opt/flang/lib:$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    echo export PATH=/opt/flang/bin:\$PATH >> $INSTALLDIR/init.sh
 
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/hdf5/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-	echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DPPP/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/EveryBeam/lib:/opt/hdf5/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DP3/lib:\$INSTALLDIR/dysco/lib:\$INSTALLDIR/EveryBeam/lib:/opt/hdf5/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/opt/OpenBLAS/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/sagecal/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
@@ -747,10 +747,10 @@ git clone https://git.astron.nl/RD/VLBI-cwl.git
     echo export LD_LIBRARY_PATH=/opt/lofar/pyenv-py3/lib/instantclient_11_2:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     # OPENBLAS_NUM_THREADS=1 is required for WSClean
     echo export NCPU=\$\(nproc\) >> $INSTALLDIR/init.sh
-	echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
-	echo export OPENBLAS_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
-	echo export OMP_NUM_THREADS=\$NCPU >> $INSTALLDIR/init.sh
-	echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
+    echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
+    echo export OPENBLAS_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
+    echo export OMP_NUM_THREADS=\$NCPU >> $INSTALLDIR/init.sh
+    echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
     echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
     echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
     echo flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
@@ -771,18 +771,18 @@ git clone https://git.astron.nl/RD/VLBI-cwl.git
     echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
     echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/killMS/killMS:\$PATH >> $INSTALLDIR/init.sh
-    echo export PYTHONPATH=\$INSTALLDIR/DPPP/lib/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export PYTHONPATH=\$INSTALLDIR/DP3/lib/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=\$INSTALLDIR/lotss-hba-survey:\$INSTALLDIR/lotss-query:\$INSTALLDIR/killMS/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/lib/python${PYTHON_VERSION}/site-packages:$INSTALLDIR/killMS:$INSTALLDIR/killMS/Predict:$INSTALLDIR/killMS/Array:$INSTALLDIR/killMS/Array/Dot:$INSTALLDIR/killMS/Gridder:$INSTALLDIR/DDFacet/bin:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PATH=$INSTALLDIR/DDFacet/src/SkyModel:\$INSTALLDIR/DynSpecMS/:\$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
 
 %help
-    This Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
+    This Apptainer/Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
     * Difmap: $INSTALLDIR/difmap
-    * DP3: $INSTALLDIR/DPPP
+    * DP3: $INSTALLDIR/DP3
     * Dysco: $INSTALLDIR/dysco
     * DS9: $INSTALLDIR/ds9
     * Dysco: $INSTALLDIR/dysco
