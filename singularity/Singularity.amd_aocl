@@ -17,7 +17,7 @@ From: fedora:41
     # General environment settings.
     export J=`nproc`
     export INSTALLDIR=/opt/lofar
-    export PYTHON_VERSION=3.13
+    export PYTHON_VERSION=3.11
     export OPENBLAS_NUM_THREADS=1
 
     # Path to where the patch for python-casacore's setup is stored.
@@ -128,14 +128,13 @@ From: fedora:41
     #
     mkdir /opt/aocl
     cd /opt/aocl
-    wget https://download.amd.com/developer/eula/aocl/aocl-5-0/aocl-linux-aocc-5.0.0.tar.gz
-    tar xf aocl-linux-aocc-5.0.0.tar.gz
-    rm aocl-linux-aocc-*.tar.gz
-    cd aocl-linux-aocc-5.0.0
+    wget https://download.amd.com/developer/eula/aocl/aocl-4-0/aocl-linux-aocc-4.0.tar.gz
+    tar xf aocl-linux-aocc-4.0.tar.gz
+    cd aocl-linux-aocc-4.0
     ./install.sh -t /opt/aocl -i lp64
-    source /opt/aocl/5.0.0/aocc/amd-libs.cfg
-    export CPLUS_INCLUDE_PATH=/opt/aocl/5.0.0/aocc/include:$CPLUS_INCLUDE_PATH
-    export CPATH=/opt/aocl/5.0.0/aocc/include:$CPLUS_INCLUDE_PATH
+    source /opt/aocl/4.0/amd-libs.cfg
+    export CPLUS_INCLUDE_PATH=/opt/aocl/4.0/include:$CPLUS_INCLUDE_PATH
+    export CPATH=/opt/aocl/4.0/include:$CPLUS_INCLUDE_PATH
 
     # Get libflang.so, libpgmath.so
     mkdir -p /opt/flang
@@ -245,10 +244,10 @@ From: fedora:41
         #
         # Install CUDA 12.6
         #
-        sudo dnf -y config-manager addrepo --from-repofile=https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
+        sudo dnf -y config-manager addrepo --from-repofile=http://developer.download.nvidia.com/compute/cuda/repos/fedora41/x86_64/cuda-fedora41.repo
         sudo dnf -y clean all
         sudo dnf -y upgrade
-        sudo dnf -y install cuda-12-6
+        sudo dnf -y install cuda-12-3
     fi
 
     ln -s /usr/lib64/libnsl.so.2.0.0 /usr/lib64/libnsl.so
@@ -285,18 +284,6 @@ From: fedora:41
     pip install "numpy==1.26.2"
     pip install --no-binary pandas 'pandas==2.0.0'
     pip install --no-binary h5py h5py
-
-    # temporary fix for https://github.com/tikk3r/flocs/issues/100#issuecomment-2543192437
-    wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
-    tar -xzvf 0.5.2.tar.gz
-    rm 0.5.2.tar.gz
-    cd datashape-0.5.2/
-    sed -i 's/SafeConfigParser/ConfigParser/g' versioneer.py
-    sed -i 's/readfp/read_file/g' versioneer.py
-    pip install .
-    cd ..
-    rm -rf datashape-0.5.2/
-
     pip install -r $INSTALLDIR/requirements.txt
     pip install lofar-h5plot
     pip install legacystamps
@@ -422,7 +409,7 @@ From: fedora:41
     cd $INSTALLDIR/sagecal
     git clone https://github.com/nlesc-dirac/sagecal.git src
     cd build
-    cmake -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal -DLIB_ONLY=True -Wno-dev -DCMAKE_CXX_FLAGS='-g -O3 -fopenmp -ffast-math -lmvec -lm' -DCMAKE_C_FLAGS='-g -O3 -fopenmp -ffast-math -lmvec -lm' ../src
+    cmake -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal -DLIB_ONLY=True -Wno-dev ../src
     make -j $j
     make install
     rm -rf $INSTALLDIR/sagecal/build
