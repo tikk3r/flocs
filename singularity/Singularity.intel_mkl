@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:41
+From: fedora:40
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -15,10 +15,10 @@ From: fedora:41
         OPENBLASTARGET=SANDYBRIDGE
 
 %post
-    # General environment settings.
-    export J=`nproc`
-    export INSTALLDIR=/opt/lofar
-    export PYTHON_VERSION=3.11
+	# General environment settings.
+	export J=`nproc`
+	export INSTALLDIR=/opt/lofar
+	export PYTHON_VERSION=3.12
     export OPENBLAS_NUM_THREADS=1
 
     # Path to where the patch for python-casacore's setup is stored.
@@ -29,13 +29,15 @@ From: fedora:41
     export ARMADILLO_VERSION=9.900.3
     export BLAS_VERSION=3.8.0
     export BOOST_DOT_VERSION=1.69.0
-    export BOOST_VERSION=1.69.0
-    export CASACORE_VERSION=v3.5.0
-    export CFITSIO_VERSION=7.3.47
+	export BOOST_VERSION=1.69.0
+	export CASACORE_VERSION=v3.6.1
+	# Leave at latest, release versions crash for some reason.
+	export CASAREST_VERSION=latest
+	export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
-    export DP3_VERSION=v6.2
-    export DYSCO_VERSION=2e7f331
-    export EVERYBEAM_VERSION=df937562
+    export DPPP_VERSION=48e75b34
+	export DYSCO_VERSION=2e7f331
+    export EVERYBEAM_VERSION=65685cba
     export FFTW_VERSION=3.5.8
     export HDF5_VERSION=1.14.3
     export IDG_VERSION=011687ed
@@ -68,11 +70,11 @@ From: fedora:41
     export OPENBLAS_TARGET={{ OPENBLASTARGET }}
 
     if [ $NOAVX512 = true ]; then
-        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
     else
-        export CFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE}"
-        export CXXFLAGS="-Wno-dev -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
+        export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE}"
+        export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
     fi
     if [ $DEBUG = true ]; then
         export CFLAGS="-g $CFLAGS"
@@ -206,7 +208,7 @@ EOF
         source /opt/intel/oneapi/mkl/latest/env/vars.sh
     fi
     pip install --upgrade pip wheel "Cython==0.29.30"
-    pip install "numpy==1.26.2"
+    pip install "numpy<2"
     pip install --no-binary pandas 'pandas==2.0.0'
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements.txt
@@ -359,7 +361,7 @@ EOF
     cd src && git checkout $EVERYBEAM_VERSION
     echo export EVERYBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/EveryBeam/build
-    cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam -DBUILD_WITH_PYTHON=ON -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ../src
+    cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam -DBUILD_WITH_PYTHON=ON -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so -DTARGET_CPU=$MARCH ../src
     make -j $J
     make install
     cd $INSTALLDIR/
@@ -503,7 +505,7 @@ EOF
     ## Strip out version requirements.
     sed -i 's/>=.*;/;/' DDFacet/setup.py
     sed -i 's/<=.*"/"/' DDFacet/setup.py
-    sed -i "s/MIN_REQ = 8/MIN_REQ = 11/" DDFacet/setup.py
+    sed -i "s/MIN_REQ = 8/MIN_REQ = 12/" DDFacet/setup.py
     # sed doesn't support negative lookahead, so we use perl here.
     grep -rl "np.float" DDFacet | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
     grep -rl "np.int" DDFacet | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
@@ -514,8 +516,8 @@ EOF
 
     sed -i "s/npzfile\.iteritems/npzfile\.items/" DDFacet/DDFacet/Imager/ClassFacetMachine.py
     sed -i "4d" DDFacet/pyproject.toml
-    sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' DDFacet/setup.cfg
-    sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' DDFacet/setup.cfg
+    sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python${PYTHON_VERSION}/site-packages/numpy/core/include?' DDFacet/setup.cfg
+    sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python${PYTHON_VERSION}/site-packages/numpy/core/include?' DDFacet/setup.cfg
     pip install --no-deps DDFacet/
 
 
@@ -533,8 +535,8 @@ EOF
     #grep -rl "np.int(" killMS | xargs sed -i 's/np\.int(/np\.int_(/g'
     grep -rl "np.bool" killMS | xargs perl -pi -e 's/np\.bool(?![0-9a-zA-Z])/np\.bool_/'
     grep -rl "np.bool8" killMS | xargs perl -pi -e 's/np\.bool8/np\.bool_/'
-    sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' killMS/setup.cfg
-    sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python3.11/site-packages/numpy/core/include?' killMS/setup.cfg
+    sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python${PYTHON_VERSION}/site-packages/numpy/core/include?' killMS/setup.cfg
+    sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python${PYTHON_VERSION}/site-packages/numpy/core/include?' killMS/setup.cfg
     sed -i "147d" killMS/setup.py
     pip install --no-deps killMS/
 
