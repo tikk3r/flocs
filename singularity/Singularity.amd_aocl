@@ -24,7 +24,7 @@ From: fedora:40
     export PYTHON_CASACORE_PATCH=$INSTALLDIR/python-casacore/python_casacore_setup.patch
     
     # Settings relevant to the installed software.
-    export AOFLAGGER_VERSION=master
+    export AOFLAGGER_VERSION=bdf03b28
     export ARMADILLO_VERSION=9.900.3
     export BLAS_VERSION=3.8.0
     export BOOST_DOT_VERSION=1.69.0
@@ -35,7 +35,7 @@ From: fedora:40
     export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
     export DPPP_VERSION=48e75b34
-    export DYSCO_VERSION=2e7f331
+    export DYSCO_VERSION=682fe5
     export EVERYBEAM_VERSION=65685cba
     export FFTW_VERSION=3.5.8
     export HDF5_VERSION=1.14.3
@@ -100,6 +100,7 @@ From: fedora:40
     # Necessary for nomacs
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
     export make=`which make`
+    export cmake="`which cmake` -Wno-dev"
 
     mkdir -p $INSTALLDIR/patches
     cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
