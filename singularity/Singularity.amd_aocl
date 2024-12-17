@@ -681,6 +681,7 @@ From: fedora:40
     rm -rf /var/cache/dnf/*
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*
+    dnf -y autoremove
     dnf -y clean all
     
     #
