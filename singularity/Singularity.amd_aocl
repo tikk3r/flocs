@@ -571,23 +571,20 @@ From: fedora:40
     # Install DDFacet
     #
     cd $INSTALLDIR
-    git clone --single-branch -b v0.7.2 https://github.com/saopicc/DDFacet.git
+    git clone --single-branch -b 5cec4db8 https://github.com/saopicc/DDFacet.git
     ## Strip out version requirements.
-    sed -i 's/>=.*;/;/' DDFacet/setup.py
-    sed -i 's/<=.*"/"/' DDFacet/setup.py
-    sed -i "s/MIN_REQ = 8/MIN_REQ = ${PYTHON_VERSION#*.}/" DDFacet/setup.py
+    sed -i 's/<=.*"/"/' DDFacet/pyproject.toml
     # sed doesn't support negative lookahead, so we use perl here.
-    grep -rl "np.float" DDFacet | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
-    grep -rl "np.int" DDFacet | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
-    grep -rl "np.complex" DDFacet | xargs perl -pi -e 's/np\.complex(?![0-9a-zA-Z])/np\.complex128/g'
-    #grep -rl "np.int(" DDFacet | xargs sed -i 's/np\.int(/np\.int_(/g'
     grep -rl "np.bool" DDFacet | xargs perl -pi -e 's/np\.bool(?![0-9a-zA-Z])/np\.bool_/'
-    grep -rl "np.bool8" DDFacet | xargs perl -pi -e 's/np\.bool8/np\.bool_/'
 
     sed -i "s/npzfile\.iteritems/npzfile\.items/" DDFacet/DDFacet/Imager/ClassFacetMachine.py
-    sed -i "4d" DDFacet/pyproject.toml
-    sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python${PYTHON_VERSION}/site-packages/numpy/core/include?' DDFacet/setup.cfg
-    sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python${PYTHON_VERSION}/site-packages/numpy/core/include?' DDFacet/setup.cfg
+    sed -i "s/3\.11/3.13/g" DDFacet/pyproject.toml
+
+    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
+    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
+    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
+    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
+
     pip install --no-deps DDFacet/
 
 
@@ -595,19 +592,17 @@ From: fedora:40
     # Install killMS
     #
     cd $INSTALLDIR
-    git clone --single-branch -b v3.1.0 https://github.com/saopicc/killMS.git
+    git clone --single-branch -b v3.2.0 https://github.com/saopicc/killMS.git
+    sed -i 's/<=.*"/"/' killMS/pyproject.toml
+    sed -i "s/3\.11/3.13/g" killMS/pyproject.toml
+    find killMS/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
+    find killMS/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
+    find killMS/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
+    find killMS/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
+
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Predict/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Array/Dot/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Gridder/Makefile
-    grep -rl "np.float" killMS | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
-    grep -rl "np.int" killMS | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
-    grep -rl "np.complex" killMS | xargs perl -pi -e 's/np\.complex(?![0-9a-zA-Z])/np\.complex128/g'
-    #grep -rl "np.int(" killMS | xargs sed -i 's/np\.int(/np\.int_(/g'
-    grep -rl "np.bool" killMS | xargs perl -pi -e 's/np\.bool(?![0-9a-zA-Z])/np\.bool_/'
-    grep -rl "np.bool8" killMS | xargs perl -pi -e 's/np\.bool8/np\.bool_/'
-    sed -i '9s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python${PYTHON_VERSION}/site-packages/numpy/core/include?' killMS/setup.cfg
-    sed -i '13s?$? -DPYTHON_NUMPY_INCLUDE_DIR=/opt/lofar/pyenv-py3/lib64/python${PYTHON_VERSION}/site-packages/numpy/core/include?' killMS/setup.cfg
-    sed -i "147d" killMS/setup.py
     pip install --no-deps killMS/
 
 
