@@ -506,7 +506,7 @@ EOF
     ## Strip out version requirements.
     sed -i 's/>=.*;/;/' DDFacet/setup.py
     sed -i 's/<=.*"/"/' DDFacet/setup.py
-    sed -i "s/MIN_REQ = 8/MIN_REQ = ${PYTHON_VERSION#*.}/" DDFacet/setup.py
+    sed -i "s/MIN_REQ = 8/MIN_REQ = ${PYTHON_VERSION#*.}/" setup.py
     # sed doesn't support negative lookahead, so we use perl here.
     grep -rl "np.float" DDFacet | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
     grep -rl "np.int" DDFacet | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
