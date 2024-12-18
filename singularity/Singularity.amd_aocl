@@ -196,13 +196,11 @@ From: fedora:39
         #
         # Install CUDA 12.6
         #
-        sudo dnf -y config-manager addrepo --from-repofile=http://developer.download.nvidia.com/compute/cuda/repos/fedora41/x86_64/cuda-fedora41.repo
+        sudo dnf -y config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
         sudo dnf -y clean all
         sudo dnf -y upgrade
         sudo dnf -y install cuda-12-3
     fi
-
-    ln -s /usr/lib64/libnsl.so.2.0.0 /usr/lib64/libnsl.so
 
     flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
     flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
@@ -231,6 +229,17 @@ From: fedora:39
     # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
     printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
+
+    wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
+    tar -xzvf 0.5.2.tar.gz
+    rm 0.5.2.tar.gz
+    cd datashape-0.5.2/
+    sed -i 's/SafeConfigParser/ConfigParser/g' versioneer.py
+    sed -i 's/readfp/read_file/g' versioneer.py
+    pip install .
+    cd ..
+    rm -rf datashape-0.5.2/
+
     pip install --upgrade pip wheel "Cython==0.29.30"
     pip install "numpy==1.26.2"
     pip install --no-binary pandas 'pandas==2.0.0'
@@ -572,7 +581,10 @@ From: fedora:39
     # Install DDFacet
     #
     cd $INSTALLDIR
-    git clone --single-branch -b 5cec4db8 https://github.com/saopicc/DDFacet.git
+    git clone https://github.com/saopicc/DDFacet.git
+    cd DDFacet
+    git checkout 5cec4db8 
+    cd ..
     ## Strip out version requirements.
     sed -i 's/<=.*"/"/' DDFacet/pyproject.toml
     # sed doesn't support negative lookahead, so we use perl here.
