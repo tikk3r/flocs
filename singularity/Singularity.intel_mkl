@@ -95,7 +95,9 @@ From: fedora:39
     #
     dnf -y update
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    dnf -y install $(</opt/lofar/packages.txt)
+    dnf -y install wget
+    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
+    dnf -y install $(</opt/lofar/dnf-packages.txt)
     wget https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
@@ -729,4 +731,4 @@ EOF
     To enter a shell within the image, use
         singularity shell -B <paths,that,need,to,be,accessible> <path to image>
 
-    The container base is Fedora 38.
+    The container base is Fedora 39.
