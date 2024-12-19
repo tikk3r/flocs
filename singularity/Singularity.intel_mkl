@@ -31,8 +31,6 @@ From: fedora:39
     export BOOST_DOT_VERSION=1.69.0
     export BOOST_VERSION=1.69.0
     export CASACORE_VERSION=v3.6.1
-    # Leave at latest, release versions crash for some reason.
-    export CASAREST_VERSION=latest
     export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
     export DPPP_VERSION=48e75b34
@@ -45,7 +43,7 @@ From: fedora:39
     export LOSOTO_VERSION=latest
     export OPENBLAS_VERSION=v0.3.22
     export PYBDSF_VERSION=720f5c3
-    export PYTHON_CASACORE_VERSION=v3.5.2
+    export PYTHON_CASACORE_VERSION=3.5.2
     export RMEXTRACT_VERSION=0.5.0
     export SUPERLU_VERSION=5.2.1
     export WSCLEAN_VERSION=v3.5
@@ -95,7 +93,9 @@ From: fedora:39
     #
     dnf -y update
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    dnf -y install $(</opt/lofar/packages.txt)
+    dnf -y install wget
+    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
+    dnf -y install $(</opt/lofar/dnf-packages.txt)
     wget https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
@@ -170,13 +170,11 @@ EOF
         #
         # Install CUDA 12.6
         #
-        sudo dnf -y config-manager addrepo --from-repofile=https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
+        sudo dnf -y config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
         sudo dnf -y clean all
         sudo dnf -y upgrade
         sudo dnf -y install cuda-12-6
     fi
-
-    ln -s /usr/lib64/libnsl.so.2.0.0 /usr/lib64/libnsl.so
 
     flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
     flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
@@ -208,6 +206,17 @@ EOF
     if [ $HAS_MKL = true ]; then
         source /opt/intel/oneapi/mkl/latest/env/vars.sh
     fi
+
+    wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
+    tar -xzvf 0.5.2.tar.gz
+    rm 0.5.2.tar.gz
+    cd datashape-0.5.2/
+    sed -i 's/SafeConfigParser/ConfigParser/g' versioneer.py
+    sed -i 's/readfp/read_file/g' versioneer.py
+    pip install .
+    cd ..
+    rm -rf datashape-0.5.2/
+
     pip install --upgrade pip wheel "Cython==0.29.30"
     pip install "numpy<2"
     pip install --no-binary pandas 'pandas==2.0.0'
@@ -299,7 +308,7 @@ EOF
     #
     # In case anything was installed previously
     pip uninstall -y python-casacore
-    pip install --no-deps --no-binary python-casacore "python-casacore==3.5.2"
+    pip install --no-deps --no-binary python-casacore "python-casacore==${PYTHON_CASACORE_VERSION}"
     
     #
     # Install Dysco
@@ -462,7 +471,7 @@ EOF
     #
     mkdir -p $INSTALLDIR/ds9/bin
     cd $INSTALLDIR/ds9
-    wget http://ds9.si.edu/download/fedora36x86/ds9.fedora36x86.8.5.tar.gz
+    wget https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.6.tar.gz
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
@@ -502,7 +511,10 @@ EOF
     # Install DDFacet
     #
     cd $INSTALLDIR
-    git clone --single-branch -b 5cec4db8 https://github.com/saopicc/DDFacet.git
+    git clone https://github.com/saopicc/DDFacet.git
+    cd DDFacet
+    git checkout 5cec4db8 
+    cd ..
     ## Strip out version requirements.
     sed -i 's/<=.*"/"/' DDFacet/pyproject.toml
     # sed doesn't support negative lookahead, so we use perl here.
@@ -668,7 +680,6 @@ EOF
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/sagecal/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/lofarstman/lib64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/MultiNest/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=/opt/lofar/pyenv-py3/lib/instantclient_11_2:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     # OPENBLAS_NUM_THREADS=1 is required for WSClean
     echo export NCPU=\$\(nproc\) >> $INSTALLDIR/init.sh
     echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
@@ -729,4 +740,4 @@ EOF
     To enter a shell within the image, use
         singularity shell -B <paths,that,need,to,be,accessible> <path to image>
 
-    The container base is Fedora 38.
+    The container base is Fedora 39.

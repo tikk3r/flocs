@@ -2,7 +2,7 @@ altair
 asn1crypto
 astLib
 astropy-healpix
-astropy<6
+astropy>6
 astroquery
 atomicwrites
 attrs
@@ -106,10 +106,10 @@ ruamel.yaml
 SciencePlots
 scikit-build
 scikit-learn
-scipy<1.12
+scipy
 seaborn
 shapely
-sharedarray<3.2.2
+sharedarray
 six
 SQLAlchemy
 sshtunnel
