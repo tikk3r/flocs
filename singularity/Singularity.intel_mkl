@@ -31,8 +31,6 @@ From: fedora:39
     export BOOST_DOT_VERSION=1.69.0
     export BOOST_VERSION=1.69.0
     export CASACORE_VERSION=v3.6.1
-    # Leave at latest, release versions crash for some reason.
-    export CASAREST_VERSION=latest
     export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
     export DPPP_VERSION=48e75b34
