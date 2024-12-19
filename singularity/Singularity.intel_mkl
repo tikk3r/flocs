@@ -33,7 +33,7 @@ From: fedora:39
     export CASACORE_VERSION=v3.6.1
     export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
-    export DPPP_VERSION=48e75b34
+    export DP3_VERSION=48e75b34
     export DYSCO_VERSION=682fe5
     export EVERYBEAM_VERSION=65685cba
     export FFTW_VERSION=3.5.8
