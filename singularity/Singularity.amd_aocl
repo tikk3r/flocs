@@ -694,7 +694,6 @@ From: fedora:39
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*
     dnf -y clean all
-    unset J
     
     #
     # init-lofar
