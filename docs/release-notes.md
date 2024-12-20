@@ -38,7 +38,6 @@ Python 3.8 reaches end-of-life in October 2024, therefore this release drops sup
 * Add option for local flocs directory to runners.
 * Drop support for Python 3.8.
 * Install `RMextract` from PyPI.
-* Update casacore to 3.6.1.
 * Update DP3 to v6.2
 * Update WSClean to v3.5
 
