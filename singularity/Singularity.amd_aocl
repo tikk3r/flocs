@@ -355,7 +355,11 @@ From: fedora:39
     mkdir -p $INSTALLDIR/dysco/build
     cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
     cd src && git checkout $DYSCO_VERSION && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+        cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
+    else
+        cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=False ../src && make -s -j $J && make install
+    fi
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/dysco/build
     rm -rf $INSTALLDIR/dysco/src
@@ -378,7 +382,11 @@ From: fedora:39
     #
     mkdir -p ${INSTALLDIR}/aoflagger/build
     cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+        cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
+    else
+        cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=False ../src
+    fi
     cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
     cd ${INSTALLDIR}/aoflagger/build && make install
     cd $INSTALLDIR
