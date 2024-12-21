@@ -19,7 +19,6 @@ From: fedora:39
     export J=`nproc`
     export INSTALLDIR=/opt/lofar
     export PYTHON_VERSION=3.12
-    export OPENBLAS_NUM_THREADS=1
 
     # Settings relevant to the installed software.
     export AOFLAGGER_VERSION=bdf03b28
