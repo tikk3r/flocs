@@ -714,7 +714,7 @@ EOF
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
 
 %help
-    This Apptainer/Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
+    This Apptainer (formerly Singularity) image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
@@ -730,10 +730,10 @@ EOF
     Python packages such as losoto, lsmtool and RMextract are available in the environment /opt/lofar/pyenv-py3. By default this Python 3 environment is already active.
 
     To execute a command directly, use
-        singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
+        apptainer exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
     for example, to run a genericpipeline parset, the following command can be used:
-        singularity exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
+        apptainer exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
     To enter a shell within the image, use
-        singularity shell -B <paths,that,need,to,be,accessible> <path to image>
+        apptainer shell -B <paths,that,need,to,be,accessible> <path to image>
 
     The container base is Fedora 39.
