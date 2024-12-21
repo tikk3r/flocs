@@ -196,10 +196,10 @@ EOF
     pip --no-cache-dir install virtualenv
 
     /usr/bin/python -m pip uninstall -y numpy
-    virtualenv $INSTALLDIR/pyenv-py3 --python=python3
+    virtualenv $INSTALLDIR/pyenv --python=python3
     # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
-    printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
-    source $INSTALLDIR/pyenv-py3/bin/activate
+    printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv/bin/activate)" > $INSTALLDIR/pyenv/bin/activate
+    source $INSTALLDIR/pyenv/bin/activate
     if [ $HAS_MKL = true ]; then
         source /opt/intel/oneapi/mkl/latest/env/vars.sh
     fi
@@ -624,7 +624,7 @@ EOF
     #
     # init-lofar
     #
-    ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
+    ln -s $INSTALLDIR/pyenv/bin/h5plot /usr/bin/h5plot
 
     # Store version information.
     echo export ARMADILLO_VERSION=$ARMADILLO_VERSION >> $INSTALLDIR/init.sh
@@ -694,7 +694,7 @@ EOF
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
     echo export LINC_DATA_ROOT=/opt/lofar/LINC >> $INSTALLDIR/init.sh
 
-    echo . \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
+    echo . \$INSTALLDIR/pyenv/bin/activate >> $INSTALLDIR/init.sh
     # For some reason this doesn't work.
     # echo . /opt/intel/oneapi/mkl/latest/env/vars.sh >> $INSTALLDIR/init.sh
 
@@ -727,7 +727,7 @@ EOF
     * IDG: $INSTALLDIR/idg
     * WSClean: $INSTALLDIR/wsclean
 
-    Python packages such as losoto, lsmtool and RMextract are available in the environment /opt/lofar/pyenv-py3. By default this Python 3 environment is already active.
+    Python packages such as losoto, lsmtool and RMextract are available in the environment /opt/lofar/pyenv. By default this Python environment is already active.
 
     To execute a command directly, use
         singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>

@@ -223,10 +223,10 @@ From: fedora:39
     pip --no-cache-dir install virtualenv
 
     /usr/bin/python -m pip uninstall -y numpy
-    virtualenv $INSTALLDIR/pyenv-py3 --python=python3
+    virtualenv $INSTALLDIR/pyenv --python=python3
     # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
-    printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
-    source $INSTALLDIR/pyenv-py3/bin/activate
+    printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv/bin/activate)" > $INSTALLDIR/pyenv/bin/activate
+    source $INSTALLDIR/pyenv/bin/activate
 
     wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
     tar -xzvf 0.5.2.tar.gz
@@ -696,7 +696,7 @@ From: fedora:39
     #
     # init-lofar
     #
-    ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
+    ln -s $INSTALLDIR/pyenv/bin/h5plot /usr/bin/h5plot
 
     # Store version information.
     echo export ARMADILLO_VERSION=$ARMADILLO_VERSION >> $INSTALLDIR/init.sh
@@ -720,7 +720,7 @@ From: fedora:39
     echo $'if [ "$MARCH_MACHINE" != "$MARCH" ]; then echo "WARNING - software has been build with -march=$MARCH but current machine reports -march=$MARCH_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
     echo $'if [ "$MTUNE_MACHINE" != "$MTUNE" ]; then echo "WARNING - software has been build with -mtune=$MTUNE but current machine -mtune=$MTUNE_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
     echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
-    echo source \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
+    echo source \$INSTALLDIR/pyenv/bin/activate >> $INSTALLDIR/init.sh
     echo source /opt/aocl/4.0/amd-libs.cfg >> $INSTALLDIR/init.sh
     echo export HDF5_USE_FILE_LOCKING=FALSE >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=\$INSTALLDIR/VLBI-cwl/scripts:\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
@@ -798,7 +798,7 @@ From: fedora:39
     * IDG: $INSTALLDIR/idg
     * WSClean: $INSTALLDIR/wsclean
 
-    Python packages such as losoto, lsmtool and RMextract are available in the environment /opt/lofar/pyenv-py3. By default this Python 3 environment is already active.
+    Python packages such as losoto, lsmtool and RMextract are available in the environment /opt/lofar/pyenv. By default this Python environment is already active.
 
     To execute a command directly, use
         singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
