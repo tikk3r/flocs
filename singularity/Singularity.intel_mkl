@@ -29,6 +29,7 @@ From: fedora:39
     export DP3_VERSION=48e75b34
     export DYSCO_VERSION=682fe5
     export EVERYBEAM_VERSION=65685cba
+    export HDF5_VERSION=1.14.3
     export IDG_VERSION=011687ed
     export LAPACK_VERSION=3.8.0
     export LOSOTO_VERSION=latest
@@ -120,10 +121,10 @@ From: fedora:39
     export CXX=`which mpic++`
     mkdir /opt/hdf5
     cd /opt/hdf5
-    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/hdf5-1.14.3.tar.gz
-    gunzip hdf5-1.14.3.tar.gz
-    tar xf hdf5-1.14.3.tar
-    cd hdf5-1.14.3/
+    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+    gunzip hdf5-${HDF5_VERSION}.tar.gz
+    tar xf hdf5-${HDF5_VERSION}.tar
+    cd hdf5-${HDF5_VERSION}/
     # Thread safety required for WSClean's parallel gridding with facets.
     ./configure -prefix=/opt/hdf5 --enable-build-mode=production --enable-threadsafe --enable-shared --disable-sharedlib-rpath --disable-hl --enable-cxx -enable-unsupported
     make -j $J
