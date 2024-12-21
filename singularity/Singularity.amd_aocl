@@ -166,7 +166,7 @@ From: fedora:39
     export CXX=`which g++`
     
     if [ $DEBUG = true ]; then
-        dnf -y install gdb valgrind
+        dnf -y install gdb valgrind mc
         debuginfo-install -y libstdc++
     fi
 
