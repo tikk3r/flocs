@@ -784,6 +784,8 @@ From: fedora:39
     echo export PATH=$INSTALLDIR/DDFacet/src/SkyModel:\$INSTALLDIR/DynSpecMS/:\$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
 
+    pip list
+
 %help
     This Apptainer/Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
 
