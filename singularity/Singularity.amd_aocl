@@ -355,7 +355,11 @@ From: fedora:39
     mkdir -p $INSTALLDIR/dysco/build
     cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
     cd src && git checkout $DYSCO_VERSION && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+        cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
+    else
+        cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DTARGET_CPU=$MARCH -DPORTABLE=False ../src && make -s -j $J && make install
+    fi
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/dysco/build
     rm -rf $INSTALLDIR/dysco/src
@@ -378,7 +382,11 @@ From: fedora:39
     #
     mkdir -p ${INSTALLDIR}/aoflagger/build
     cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+        cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
+    else
+        cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False ../src
+    fi
     cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
     cd ${INSTALLDIR}/aoflagger/build && make install
     cd $INSTALLDIR
@@ -785,13 +793,12 @@ From: fedora:39
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
 
 %help
-    This Apptainer/Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
+    This Apptainer (formerly Singularity) image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
     * Difmap: $INSTALLDIR/difmap
     * DP3: $INSTALLDIR/DP3
-    * Dysco: $INSTALLDIR/dysco
     * DS9: $INSTALLDIR/ds9
     * Dysco: $INSTALLDIR/dysco
     * EveryBeam: $INSTALLDIR/EveryBeam
@@ -801,10 +808,10 @@ From: fedora:39
     Python packages such as losoto, lsmtool and RMextract are available in the environment /opt/lofar/pyenv-py3. By default this Python 3 environment is already active.
 
     To execute a command directly, use
-        singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
+        apptainer exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
     for example, to run a genericpipeline parset, the following command can be used:
-        singularity exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
+        apptainer exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
     To enter a shell within the image, use
-        singularity shell -B <paths,that,need,to,be,accessible> <path to image>
+        apptainer shell -B <paths,that,need,to,be,accessible> <path to image>
 
-    The container base is Fedora 38.
+    The container base is Fedora 39.
