@@ -19,21 +19,15 @@ From: fedora:39
     export J=`nproc`
     export INSTALLDIR=/opt/lofar
     export PYTHON_VERSION=3.12
-    export OPENBLAS_NUM_THREADS=1
 
     # Settings relevant to the installed software.
     export AOFLAGGER_VERSION=bdf03b28
-    export ARMADILLO_VERSION=9.900.3
     export BLAS_VERSION=3.8.0
-    export BOOST_DOT_VERSION=1.69.0
-    export BOOST_VERSION=1.69.0
     export CASACORE_VERSION=v3.6.1
-    export CFITSIO_VERSION=7.3.47
     export DDFPIPELINE_VERSION=72e5285
     export DP3_VERSION=48e75b34
     export DYSCO_VERSION=682fe5
     export EVERYBEAM_VERSION=65685cba
-    export FFTW_VERSION=3.5.8
     export HDF5_VERSION=1.14.3
     export IDG_VERSION=011687ed
     export LAPACK_VERSION=3.8.0
@@ -42,12 +36,9 @@ From: fedora:39
     export PYBDSF_VERSION=720f5c3
     export PYTHON_CASACORE_VERSION=3.6.1
     export RMEXTRACT_VERSION=0.5.0
-    export SUPERLU_VERSION=5.2.1
     export WSCLEAN_VERSION=v3.5
-    export WCSLIB_VERSION=6.4
     export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
-    export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
     export HAS_CUDA={{ HAS_CUDA }}
     export HAS_MKL={{ HAS_MKL }}
@@ -120,7 +111,7 @@ From: fedora:39
     rm -rf /opt/OpenBLAS/src
 
     if [ $DEBUG = true ]; then
-        dnf -y install gdb valgrind
+        dnf -y install gdb valgrind mc
         debuginfo-install -y libstdc++
     fi
 
@@ -131,10 +122,10 @@ From: fedora:39
     export CXX=`which mpic++`
     mkdir /opt/hdf5
     cd /opt/hdf5
-    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/hdf5-1.14.3.tar.gz
-    gunzip hdf5-1.14.3.tar.gz
-    tar xf hdf5-1.14.3.tar
-    cd hdf5-1.14.3/
+    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION%.*}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+    gunzip hdf5-${HDF5_VERSION}.tar.gz
+    tar xf hdf5-${HDF5_VERSION}.tar
+    cd hdf5-${HDF5_VERSION}/
     # Thread safety required for WSClean's parallel gridding with facets.
     ./configure -prefix=/opt/hdf5 --enable-build-mode=production --enable-threadsafe --enable-shared --disable-sharedlib-rpath --disable-hl --enable-cxx -enable-unsupported
     make -j $J
@@ -313,7 +304,11 @@ EOF
     mkdir -p $INSTALLDIR/dysco/build
     cd $INSTALLDIR/dysco && git clone https://github.com/aroffringa/dysco.git src
     cd src && git checkout $DYSCO_VERSION && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+        cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DPORTABLE=True ../src && make -s -j $J && make install
+    else
+        cd $INSTALLDIR/dysco/build && cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/dysco -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DTARGET_CPU=$MARCH -DPORTABLE=False ../src && make -s -j $J && make install
+    fi
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/dysco/build
     rm -rf $INSTALLDIR/dysco/src
@@ -341,7 +336,11 @@ EOF
     #
     mkdir -p ${INSTALLDIR}/aoflagger/build
     cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
+    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+        cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
+    else
+        cd ${INSTALLDIR}/aoflagger/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False ../src
+    fi
     cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
     cd ${INSTALLDIR}/aoflagger/build && make install
     cd $INSTALLDIR
@@ -632,18 +631,10 @@ EOF
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
 
     # Store version information.
-    echo export ARMADILLO_VERSION=$ARMADILLO_VERSION >> $INSTALLDIR/init.sh
     echo export BLAS_VERSION=$BLAS_VERSION >> $INSTALLDIR/init.sh
-    echo export BOOST_VERSION=$BOOST_VERSION >> $INSTALLDIR/init.sh
-    echo export CFITSIO_VERSION=$CFITSIO_VERSION >> $INSTALLDIR/init.sh
-    echo export FFTW_VERSION=$FFTW_VERSION >> $INSTALLDIR/init.sh
-    echo export HDF5_VERSION=$HDF5_VERSION >> $INSTALLDIR/init.sh
-    echo export LAPACK_VERSION=$LAPACK_VERSION >> $INSTALLDIR/init.sh
     echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
     echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
     echo export RMEXTRACT_VERSION=$RMEXTRACT_VERSION >> $INSTALLDIR/init.sh
-    echo export SUPERLU_VERSION=$SUPERLU_VERSION >> $INSTALLDIR/init.sh
-    echo export WCSLIB_VERSION=$WCSLIB_VERSION >> $INSTALLDIR/init.sh
     echo export HDF5_USE_FILE_LOCKING=$HDF5_USE_FILE_LOCKING >> $INSTALLDIR/init.sh
 
     echo export MARCH=$MARCH >> $INSTALLDIR/init.sh
@@ -719,13 +710,12 @@ EOF
     echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
 
 %help
-    This Apptainer/Singularity image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
+    This Apptainer (formerly Singularity) image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
     * Difmap: $INSTALLDIR/difmap
     * DP3: $INSTALLDIR/DP3
-    * Dysco: $INSTALLDIR/dysco
     * DS9: $INSTALLDIR/ds9
     * Dysco: $INSTALLDIR/dysco
     * EveryBeam: $INSTALLDIR/EveryBeam
@@ -735,10 +725,10 @@ EOF
     Python packages such as losoto, lsmtool and RMextract are available in the environment /opt/lofar/pyenv-py3. By default this Python 3 environment is already active.
 
     To execute a command directly, use
-        singularity exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
+        apptainer exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
     for example, to run a genericpipeline parset, the following command can be used:
-        singularity exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
+        apptainer exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
     To enter a shell within the image, use
-        singularity shell -B <paths,that,need,to,be,accessible> <path to image>
+        apptainer shell -B <paths,that,need,to,be,accessible> <path to image>
 
     The container base is Fedora 39.
