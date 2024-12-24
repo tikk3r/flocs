@@ -309,23 +309,23 @@ From: fedora:39
     cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/build
     cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
-    -DDATA_DIR=${INSTALLDIR}/casacore/data \
-    -DBUILD_PYTHON=False \
-    -DUSE_OPENMP=True \
-    -DUSE_HDF5=True \
-    -DBUILD_PYTHON3=True \
-    -DBUILD_DYSCO=OFF \
-    -DCXX11="ON" \
-    -DBLAS_LIBRARIES="${AOCL_ROOT}/lib/libblis.so" \
-    -DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
-    -DFFTW3_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3_threads.so" \
-    -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
-    -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
-    -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
-    -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
-    -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
-    -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
-    ../src/ 
+        -DDATA_DIR=${INSTALLDIR}/casacore/data \
+        -DBUILD_PYTHON=False \
+        -DUSE_OPENMP=True \
+        -DUSE_HDF5=True \
+        -DBUILD_PYTHON3=True \
+        -DBUILD_DYSCO=OFF \
+        -DCXX11="ON" \
+        -DBLAS_LIBRARIES="${AOCL_ROOT}/lib/libblis.so" \
+        -DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
+        -DFFTW3_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3_threads.so" \
+        -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
+        -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
+        -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
+        -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
+        -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
+        -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
+        ../src/ 
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
