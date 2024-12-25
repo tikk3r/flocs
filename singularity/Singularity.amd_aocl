@@ -21,7 +21,6 @@ From: fedora:39
 
     # Settings relevant to the installed software.
     export AOFLAGGER_VERSION=bdf03b28
-    export BLAS_VERSION=3.8.0
     export CASACORE_VERSION=v3.6.1
     export DDFPIPELINE_VERSION=72e5285
     export DP3_VERSION=48e75b34
@@ -697,7 +696,6 @@ From: fedora:39
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
 
     # Store version information.
-    echo export BLAS_VERSION=$BLAS_VERSION >> $INSTALLDIR/init.sh
     echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
     echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
     echo export RMEXTRACT_VERSION=$RMEXTRACT_VERSION >> $INSTALLDIR/init.sh
