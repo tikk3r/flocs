@@ -51,8 +51,8 @@ From: fedora:39
     export OPENBLAS_TARGET={{ OPENBLASTARGET }}
 
     if [ $NOAVX512 = true ]; then
-        export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -mno-avx512f"
+        export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f"
     else
         export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE}"
         export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
