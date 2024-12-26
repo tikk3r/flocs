@@ -22,7 +22,6 @@ From: fedora:39
 
     # Settings relevant to the installed software.
     export AOFLAGGER_VERSION=bdf03b28
-    export BLAS_VERSION=3.8.0
     export CASACORE_VERSION=v3.6.1
     export DDFPIPELINE_VERSION=72e5285
     export DP3_VERSION=48e75b34
@@ -160,7 +159,6 @@ EOF
         #
         sudo dnf -y config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
         sudo dnf -y clean all
-        sudo dnf -y upgrade
         sudo dnf -y install cuda-12-6
     fi
 
@@ -284,7 +282,16 @@ EOF
     cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
-    cd ${INSTALLDIR}/casacore/build && cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ -DDATA_DIR=${INSTALLDIR}/casacore/data -DBUILD_PYTHON=False -DUSE_OPENMP=True -DUSE_HDF5=True -DBUILD_PYTHON3=True -DBUILD_DYSCO=OFF -DBLAS_LIBRARIES=/opt/OpenBLAS/lib64/libopenblas.so ../src/ 
+    cd ${INSTALLDIR}/casacore/build
+    cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
+        -DDATA_DIR=${INSTALLDIR}/casacore/data \
+        -DBUILD_PYTHON=False \
+        -DUSE_OPENMP=True \
+        -DUSE_HDF5=True \
+        -DBUILD_PYTHON3=True \
+        -DBUILD_DYSCO=OFF \
+        -DBLAS_LIBRARIES=/opt/OpenBLAS/lib64/libopenblas.so \
+        ../src/ 
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
@@ -389,7 +396,7 @@ EOF
     elif [ $HAS_CUDA = true ] && [ $HAS_MKL = false ]; then
         cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
     else
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=OFF -DTARGET_CPU=$MARCH ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=OFF -DTARGET_CPU=$MARCH -DCMAKE_BUILD_TYPE=Release ..
     fi
     make -j $J
     make install
@@ -408,7 +415,7 @@ EOF
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
     else
-        cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-fomit-frame-pointer -flto' -DCMAKE_C_FLAGS='-fomit-frame-pointer -flto' -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
+        cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-flto' -DCMAKE_C_FLAGS='-flto' -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
     fi
     # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install
@@ -452,7 +459,7 @@ EOF
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True ..
     else
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-fomit-frame-pointer -flto' -DCMAKE_C_FLAGS='-fomit-frame-pointer -flto' -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-flto' -DCMAKE_C_FLAGS='-flto' -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ..
     fi
     make -j ${J}
     make install
@@ -626,7 +633,6 @@ EOF
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
 
     # Store version information.
-    echo export BLAS_VERSION=$BLAS_VERSION >> $INSTALLDIR/init.sh
     echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
     echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
     echo export RMEXTRACT_VERSION=$RMEXTRACT_VERSION >> $INSTALLDIR/init.sh

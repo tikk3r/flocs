@@ -26,10 +26,18 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Check dependency installation
       run: |
-        sudo apt -y install postgresql
+        sudo apt -y install postgresql wget
         python -m pip install --upgrade pip
         python -m pip install flake8 "numpy<2" pytest wheel
-        python -m pip install git+https://github.com/ratt-ru/shadeMS.git@issue-124
+        wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
+        tar -xzvf 0.5.2.tar.gz
+        rm 0.5.2.tar.gz
+        cd datashape-0.5.2/
+        sed -i 's/SafeConfigParser/ConfigParser/g' versioneer.py
+        sed -i 's/readfp/read_file/g' versioneer.py
+        pip install .
+        cd ..
+        rm -rf datashape-0.5.2/
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Check library imports
       run: |
