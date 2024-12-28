@@ -727,7 +727,6 @@ From: fedora:39
     echo export PATH=\$INSTALLDIR/VLBI-cwl/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/MultiNest/bin:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=/opt/flang/bin:\$PATH >> $INSTALLDIR/init.sh
 
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/hdf5/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
