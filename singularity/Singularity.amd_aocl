@@ -79,7 +79,7 @@ From: fedora:39
     dnf -y install wget
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
     dnf -y install $(<$INSTALLDIR/dnf-packages.txt)
-    wget https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
+    wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
     # Necessary for nomacs
@@ -107,7 +107,7 @@ From: fedora:39
     #
     mkdir /opt/aocl
     cd /opt/aocl
-    wget https://download.amd.com/developer/eula/aocl/aocl-4-0/aocl-linux-aocc-4.0.tar.gz
+    wget --progress=bar:force:noscroll https://download.amd.com/developer/eula/aocl/aocl-4-0/aocl-linux-aocc-4.0.tar.gz
     tar xf aocl-linux-aocc-4.0.tar.gz
     rm aocl-linux-*.tar.gz
     cd aocl-linux-aocc-4.0
@@ -119,7 +119,7 @@ From: fedora:39
     # Get libflang.so, libpgmath.so
     mkdir -p /opt/flang
     cd /opt/flang
-    wget https://github.com/flang-compiler/flang/releases/download/flang_20190329/flang-20190329-x86-70.tgz
+    wget --progress=bar:force:noscroll https://github.com/flang-compiler/flang/releases/download/flang_20190329/flang-20190329-x86-70.tgz
     tar xf flang-20190329-x86-70.tgz
     rm flang-*.tgz
 
@@ -166,7 +166,7 @@ From: fedora:39
     export CXX=`which mpic++`
     mkdir /opt/hdf5
     cd /opt/hdf5
-    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION%.*}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+    wget --progress=bar:force:noscroll https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION%.*}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
     gunzip hdf5-${HDF5_VERSION}.tar.gz
     tar xf hdf5-${HDF5_VERSION}.tar
     cd hdf5-${HDF5_VERSION}/
@@ -216,7 +216,7 @@ From: fedora:39
     printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
 
-    wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
+    wget --progress=bar:force:noscroll https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
     tar -xzvf 0.5.2.tar.gz
     rm 0.5.2.tar.gz
     cd datashape-0.5.2/
@@ -243,7 +243,7 @@ From: fedora:39
     # Install LTA client
     #
     cd $INSTALLDIR
-    wget https://lta.lofar.eu/software/lofar_lta-2.8.0.tar.gz
+    wget --progress=bar:force:noscroll https://lta.lofar.eu/software/lofar_lta-2.8.0.tar.gz
     tar xf lofar_lta-*
     cd lofar_lta-2.8.0
     #python setup.py install_oracle
@@ -257,7 +257,7 @@ From: fedora:39
     #
     #mkdir -p /opt/montage
     #cd /opt/montage
-    #wget https://github.com/Caltech-IPAC/Montage/archive/v6.0.tar.gz -O Montage_v6.0.tar.gz
+    #wget --progress=bar:force:noscroll https://github.com/Caltech-IPAC/Montage/archive/v6.0.tar.gz -O Montage_v6.0.tar.gz
     #tar xf Montage_v6.0.tar.gz
     #cd Montage-6.0
     #make -j $J
@@ -269,11 +269,11 @@ From: fedora:39
     #
     mkdir -p $INSTALLDIR/difmap
     cd $INSTALLDIR/difmap
-    #wget ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
-    wget https://github.com/tikk3r/flocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
+    #wget --progress=bar:force:noscroll ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
+    wget --progress=bar:force:noscroll https://github.com/tikk3r/flocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
     tar xf difmap2.5e.tar.gz
     cd uvf_difmap
-    wget https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
+    wget --progress=bar:force:noscroll https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
 
     sed -i.bak -e '97d' configure
     sed -i.bak -e '97 i PGPLOT_LIB=/usr/lib64/libpgplot.so.5' configure
@@ -303,7 +303,7 @@ From: fedora:39
     cd $INSTALLDIR/casacore
     git clone https://github.com/casacore/casacore.git src
     cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ${INSTALLDIR}/casacore/data && wget --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
+    cd ${INSTALLDIR}/casacore/data && wget --progress=bar:force:noscroll --retry-connrefused ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/data && tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/build
     cmake -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
@@ -535,7 +535,7 @@ From: fedora:39
     #
     mkdir -p $INSTALLDIR/ds9/bin
     cd $INSTALLDIR/ds9
-    wget https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.6.tar.gz
+    wget --progress=bar:force:noscroll https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.6.tar.gz
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
@@ -635,12 +635,12 @@ From: fedora:39
     sed -i '353s/readonly=True/readonly=False/' $INSTALLDIR/ddf-pipeline/utils/auxcodes.py
     mkdir $INSTALLDIR/DDFCatalogues
     cd $INSTALLDIR/DDFCatalogues
-    wget https://www.extragalactic.info/bootstrap/VLSS.fits
-    wget https://www.extragalactic.info/bootstrap/wenss.fits
-    wget https://www.extragalactic.info/bootstrap/B2.fits
-    wget https://www.extragalactic.info/bootstrap/NVSS.fits
-    #wget https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
-    wget http://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
+    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/VLSS.fits
+    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/wenss.fits
+    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/B2.fits
+    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/NVSS.fits
+    #wget --progress=bar:force:noscroll https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
+    wget --progress=bar:force:noscroll http://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
     cd $INSTALLDIR
     wget https://raw.githubusercontent.com/rvweeren/lofar_facet_selfcal/main/sub-sources-outside-region.py -O /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
     chmod 755 /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
