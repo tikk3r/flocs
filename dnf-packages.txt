@@ -33,7 +33,6 @@ gsl
 gsl-devel
 gtkmm30-devel
 hostname
-htop
 lapack-devel
 libaio
 libaio-devel
