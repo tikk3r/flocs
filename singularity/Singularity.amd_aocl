@@ -113,7 +113,7 @@ From: fedora:39
     ./install.sh -t /opt/aocl -i lp64
     source /opt/aocl/4.0/amd-libs.cfg
     export CPLUS_INCLUDE_PATH=/opt/aocl/4.0/include:$CPLUS_INCLUDE_PATH
-    export CPATH=/opt/aocl/4.0/include:$CPLUS_INCLUDE_PATH
+    export CPATH=/opt/aocl/4.0/include:$CPATH
 
     # Get libflang.so, libpgmath.so
     mkdir -p /opt/flang
