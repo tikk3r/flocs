@@ -313,7 +313,6 @@ From: fedora:39
         -DUSE_HDF5=True \
         -DBUILD_PYTHON3=True \
         -DBUILD_DYSCO=OFF \
-        -DCXX11="ON" \
         -DBLAS_LIBRARIES="${AOCL_ROOT}/lib/libblis.so" \
         -DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
         -DFFTW3_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3_threads.so" \
