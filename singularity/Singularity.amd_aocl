@@ -449,17 +449,11 @@ From: fedora:39
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
         -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
-        -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
-        -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
-        -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include/" \
         -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
         ../src
     else
         cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
         -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
-        -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
-        -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
-        -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include/" \
         -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
         ../src
     fi
