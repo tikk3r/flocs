@@ -459,7 +459,7 @@ EOF
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True ..
     else
-        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-flto' -DCMAKE_C_FLAGS='-flto' -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ..
+        cmake -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-flto' -DCMAKE_C_FLAGS='-flto' ..
     fi
     make -j ${J}
     make install
