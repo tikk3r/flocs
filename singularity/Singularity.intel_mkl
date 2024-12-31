@@ -121,10 +121,9 @@ From: fedora:39
     export CXX=`which mpic++`
     mkdir /opt/hdf5
     cd /opt/hdf5
-    export HDF5_VERSION_USCORE=${HDF5_VERSION/./_}
-    echo HDF5_VERSION_USCORE
-    echo ${HDF5_VERSION_SHORT/./_}
-    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION_SHORT/./_}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+    export HDF5_VERSION_USCORE=${HDF5_VERSION//./_}
+    echo $HDF5_VERSION_USCORE
+    echo ${HDF5_VERSION_USCORE%_*}
     wget https://support.hdfgroup.org/releases/hdf5/v1_14/v${HDF5_VERSION_USCORE%_*}/downloads/hdf5-${HDF5_VERSION}.tar.gz
     gunzip hdf5-${HDF5_VERSION}.tar.gz
     tar xf hdf5-${HDF5_VERSION}.tar
