@@ -27,7 +27,7 @@ From: fedora:39
     export DP3_VERSION=48e75b34
     export DYSCO_VERSION=682fe5
     export EVERYBEAM_VERSION=65685cba
-    export HDF5_VERSION=1.14.3
+    export HDF5_VERSION=1.14.5
     export IDG_VERSION=011687ed
     export LAPACK_VERSION=3.8.0
     export LOSOTO_VERSION=latest
@@ -121,7 +121,8 @@ From: fedora:39
     export CXX=`which mpic++`
     mkdir /opt/hdf5
     cd /opt/hdf5
-    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION%.*}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+    export HDF5_VERSION_SHORT = ${HDF5_VERSION%.*}
+    wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION_SHORT/./_}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
     gunzip hdf5-${HDF5_VERSION}.tar.gz
     tar xf hdf5-${HDF5_VERSION}.tar
     cd hdf5-${HDF5_VERSION}/
