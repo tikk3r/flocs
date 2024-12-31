@@ -122,8 +122,6 @@ From: fedora:39
     mkdir /opt/hdf5
     cd /opt/hdf5
     export HDF5_VERSION_USCORE=${HDF5_VERSION//./_}
-    echo $HDF5_VERSION_USCORE
-    echo ${HDF5_VERSION_USCORE%_*}
     wget https://support.hdfgroup.org/releases/hdf5/v${HDF5_VERSION_USCORE%_*}/v${HDF5_VERSION_USCORE}/downloads/hdf5-${HDF5_VERSION}.tar.gz
     gunzip hdf5-${HDF5_VERSION}.tar.gz
     tar xf hdf5-${HDF5_VERSION}.tar
