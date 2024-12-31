@@ -227,7 +227,7 @@ From: fedora:39
     rm -rf datashape-0.5.2/
 
     pip install --upgrade pip wheel "Cython==0.29.30"
-    pip install "numpy==1.26.2"
+    pip install "numpy<2"
     pip install --no-binary pandas 'pandas==2.0.0'
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements.txt
