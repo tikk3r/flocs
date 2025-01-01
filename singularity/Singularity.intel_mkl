@@ -205,7 +205,7 @@ EOF
 
     pip install --upgrade pip wheel "Cython==0.29.30"
     pip install "numpy<2"
-    pip install --no-binary pandas 'pandas==2.0.0'
+    pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements.txt
     pip install lofar-h5plot
