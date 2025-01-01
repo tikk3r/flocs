@@ -181,7 +181,7 @@ EOF
     sudo dnf -y install python3-cx-oracle
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/requirements.txt -O $INSTALLDIR/requirements.txt
     pip --version
-    pip install --upgrade "setuptools>=v74.0.0 "
+    pip install --upgrade setuptools
     pip --no-cache-dir install virtualenv
 
     /usr/bin/python -m pip uninstall -y numpy
