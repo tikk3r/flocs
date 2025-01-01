@@ -51,8 +51,8 @@ From: fedora:39
     export OPENBLAS_TARGET={{ OPENBLASTARGET }}
 
     if [ $NOAVX512 = true ]; then
-        export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
-        export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f -mno-avx512pf -mno-avx512er -mno-avx512cd -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512ifma -mno-avx512vbmi"
+        export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -mno-avx512f"
+        export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f"
     else
         export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE}"
         export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
@@ -227,7 +227,7 @@ From: fedora:39
     rm -rf datashape-0.5.2/
 
     pip install --upgrade pip wheel "Cython==0.29.30"
-    pip install "numpy==1.26.2"
+    pip install "numpy<2"
     pip install --no-binary pandas 'pandas==2.0.0'
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements.txt
