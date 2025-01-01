@@ -517,6 +517,8 @@ EOF
     #
     # Install DDFacet
     #
+    export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
+    export CXXFLAGS="$CXXFLAGS -Wno-error=incompatible-pointer-types"
     cd $INSTALLDIR
     git clone https://github.com/saopicc/DDFacet.git
     cd DDFacet
