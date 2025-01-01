@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:39
+From: fedora:40
 
 %environment
     export INSTALLDIR=/opt/lofar
