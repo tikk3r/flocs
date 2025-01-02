@@ -41,6 +41,7 @@ google-api-python-client
 google-auth
 google-auth-httplib2
 google-auth-oauthlib
+h5py -no-binary=h5py
 httplib2
 idna
 iniparse
