@@ -41,7 +41,6 @@ google-api-python-client
 google-auth
 google-auth-httplib2
 google-auth-oauthlib
-h5py -no-binary=h5py
 httplib2
 idna
 iniparse
@@ -52,9 +51,12 @@ ipython
 jinja2
 jupyterlab
 kitchen
+Kittens
 kiwisolver
+legacystamps
 linecache2
 loess
+lofar-h5plot
 markupsafe
 Mastodon.py
 matplotlib>3.9.0
