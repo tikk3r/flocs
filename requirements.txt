@@ -54,6 +54,7 @@ kitchen
 kiwisolver
 linecache2
 loess
+lofarSun
 markupsafe
 Mastodon.py
 matplotlib>3.9.0
