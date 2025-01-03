@@ -57,6 +57,7 @@ kiwisolver
 legacystamps
 linecache2
 loess
+lofarSun
 lofar-h5plot
 markupsafe
 Mastodon.py
