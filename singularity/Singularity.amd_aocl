@@ -230,7 +230,7 @@ From: fedora:40
 
     pip install --upgrade pip wheel Cython
     pip install "numpy<2"
-    pip install --no-binary pandas 'pandas==2.0.0'
+    pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements.txt
     pip install lofar-h5plot
