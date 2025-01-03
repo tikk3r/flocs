@@ -228,16 +228,12 @@ From: fedora:39
     cd ..
     rm -rf datashape-0.5.2/
 
-    pip install --upgrade pip wheel "Cython==0.29.30"
+    pip install --upgrade pip wheel Cython
     pip install "numpy<2"
-    pip install --no-binary pandas 'pandas==2.0.0'
+    pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements.txt
-    pip install lofar-h5plot
-    pip install legacystamps
-    pip install Kittens
     # Install this separately since it keeps forcefully downgrading numpy.
-    pip install --no-deps aplpy
     pip install --no-deps lofarSun
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
@@ -361,7 +357,12 @@ From: fedora:39
     cd $INSTALLDIR/sagecal
     git clone https://github.com/nlesc-dirac/sagecal.git src
     cd build
-    cmake $CMAKE_ADD_OPTION -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal -DLIB_ONLY=True -Wno-dev ../src
+    cmake $CMAKE_ADD_OPTION -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so \
+        -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal \
+        -DLIB_ONLY=True \
+        -Wno-dev \
+        -DCMAKE_CXX_FLAGS='-g0' -DCMAKE_C_FLAGS='-g0' -DCMAKE_Fortran_FLAGS='-g0' \
+        ../src
     make -j $j
     make install
     rm -rf $INSTALLDIR/sagecal/build
@@ -411,11 +412,8 @@ From: fedora:39
     cmake $CMAKE_ADD_OPTION \
     -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
     -DBUILD_WITH_PYTHON=ON \
-    -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
     -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
-    -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
     -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
-    -DBLAS_openblas_LIBRARY="${AOCL_ROOT}/lib/libblis.so" \
     -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
     -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
     -DTARGET_CPU=$MARCH \
@@ -435,7 +433,7 @@ From: fedora:39
     sed -i '1i #include <array>' $INSTALLDIR/idg/src/idg-lib/src/CUDA/common/routines/Beam.cpp
     sed -i '1i #include <array>' $INSTALLDIR/idg/src/idg-lib/src/CUDA/Generic/routines/Imaging.cpp
     if [ $HAS_CUDA = true ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCUDA_INCLUDE_DIR=/usr/local/cuda/include -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DTARGET_CPU=$MARCH ..
     else
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/idg -DBUILD_WITH_MKL=OFF -DBUILD_LIB_CUDA=OFF -DTARGET_CPU=$MARCH -DCMAKE_BUILD_TYPE=Release ..
     fi
@@ -454,19 +452,13 @@ From: fedora:39
     echo export DP3_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/DP3/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF \
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
         -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
-        -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
-        -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
-        -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include/" \
         -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
         ../src
     else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF \
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
         -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
-        -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
-        -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
-        -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include/" \
         -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
         ../src
     fi
@@ -520,7 +512,6 @@ From: fedora:39
         -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
         -DFFTW3F_THREADS_LIB="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
         -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
-        -DBLAS_openblas_LIBRARY="${AOCL_ROOT}/lib/libblis.so" \
         -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
         -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
         -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \

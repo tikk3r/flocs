@@ -184,7 +184,7 @@ EOF
     sudo dnf -y install python3-cx-oracle
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/requirements.txt -O $INSTALLDIR/requirements.txt
     pip --version
-    pip install --upgrade "setuptools>=v74.0.0 "
+    pip install --upgrade setuptools
     pip --no-cache-dir install virtualenv
 
     /usr/bin/python -m pip uninstall -y numpy
@@ -206,16 +206,12 @@ EOF
     cd ..
     rm -rf datashape-0.5.2/
 
-    pip install --upgrade pip wheel "Cython==0.29.30"
+    pip install --upgrade pip wheel Cython
     pip install "numpy<2"
-    pip install --no-binary pandas 'pandas==2.0.0'
+    pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/requirements.txt
-    pip install lofar-h5plot
-    pip install legacystamps
-    pip install Kittens
     # Install this separately since it keeps forcefully downgrading numpy.
-    pip install --no-deps aplpy
     pip install --no-deps lofarSun
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
@@ -331,7 +327,12 @@ EOF
     cd $INSTALLDIR/sagecal
     git clone https://github.com/nlesc-dirac/sagecal.git src
     cd build
-    cmake $CMAKE_ADD_OPTION -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal -DLIB_ONLY=True -Wno-dev ../src
+    cmake $CMAKE_ADD_OPTION -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so \
+        -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal \
+        -DLIB_ONLY=True \
+        -Wno-dev \
+        -DCMAKE_CXX_FLAGS='-g0' -DCMAKE_C_FLAGS='-g0' -DCMAKE_Fortran_FLAGS='-g0' \
+        ../src
     make -j $j
     make install
     rm -rf $INSTALLDIR/sagecal/build
@@ -378,7 +379,7 @@ EOF
     cd src && git checkout $EVERYBEAM_VERSION
     echo export EVERYBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/EveryBeam/build
-    cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam -DBUILD_WITH_PYTHON=ON -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so -DTARGET_CPU=$MARCH ../src
+    cmake3 -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam -DBUILD_WITH_PYTHON=ON -DTARGET_CPU=$MARCH ../src
     make -j $J
     make install
     cd $INSTALLDIR/
@@ -417,9 +418,9 @@ EOF
     echo export DP3_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/DP3/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ ../src
     else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-flto' -DCMAKE_C_FLAGS='-flto' -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBUILD_BENCHMARKS=OFF ../src
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-flto' -DCMAKE_C_FLAGS='-flto' -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ ../src
     fi
     # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install
@@ -463,7 +464,7 @@ EOF
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True ..
     else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-flto' -DCMAKE_C_FLAGS='-flto' -DBLAS_openblas_LIBRARY=/opt/OpenBLAS/lib64/libopenblas.so ..
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DCMAKE_CXX_FLAGS='-flto' -DCMAKE_C_FLAGS='-flto' ..
     fi
     make -j ${J}
     make install
