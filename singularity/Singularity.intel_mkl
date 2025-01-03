@@ -214,7 +214,6 @@ EOF
     pip install legacystamps
     pip install Kittens
     # Install this separately since it keeps forcefully downgrading numpy.
-    pip install --no-deps aplpy
     pip install --no-deps lofarSun
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 

@@ -1,4 +1,5 @@
 altair
+aplpy
 asn1crypto
 astLib
 astropy-healpix
