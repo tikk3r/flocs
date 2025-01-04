@@ -701,6 +701,7 @@ EOF
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
     if [ $HAS_MKL = true ]; then
         echo export MKLROOT=/opt/intel/oneapi/mkl/2025.0 >> $INSTALLDIR/init.sh
+        echo export PATH=/opt/intel/oneapi/mkl/2025.0/bin:\$PATH >> $INSTALLDIR/init.sh
         echo export LD_LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib/intel64/:/opt/intel/oneapi/compiler/latest/lib/:/opt/intel/oneapi/tbb/latest/env/../lib/intel64/gcc4.8:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     fi
 
