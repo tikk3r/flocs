@@ -222,7 +222,7 @@ EOF
     tar xf lofar_lta-*
     cd lofar_lta-2.8.0
     #python setup.py install_oracle
-    python setup.py install
+    pip install .
     cd ..
     rm lofar_lta*.tar.gz
     rm -rf lofar_lta-2.8.0/
