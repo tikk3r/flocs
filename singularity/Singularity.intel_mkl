@@ -72,7 +72,6 @@ From: fedora:39
     export LD_LIBRARY_PATH="/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/opt/intel/oneapi/mkl/latest/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
     echo export LD_LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib/intel64/:/opt/intel/oneapi/compiler/latest/lib:/opt/intel/oneapi/tbb/latest/env/../lib/intel64/gcc4.8:$LD_LIBRARY_PATH
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
-    export OLD_PYTHONPATH=$PYTHONPATH
 
     mkdir -p $INSTALLDIR
 
@@ -142,15 +141,15 @@ From: fedora:39
         #
         # Install Intel MKL
         #
-        tee > /tmp/oneAPI.repo << EOF
-        [oneAPI]
-        name=Intel® oneAPI repository
-        baseurl=https://yum.repos.intel.com/oneapi
-        enabled=1
-        gpgcheck=1
-        repo_gpgcheck=1
-        gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        EOF
+tee > /tmp/oneAPI.repo << EOF
+[oneAPI]
+name=Intel® oneAPI repository
+baseurl=https://yum.repos.intel.com/oneapi
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+EOF
         sudo mv /tmp/oneAPI.repo /etc/yum.repos.d/
         dnf -y install intel-oneapi-mkl intel-oneapi-mkl-devel
     fi
@@ -623,7 +622,6 @@ From: fedora:39
     #
     # Finaly cleanup of unnecessary stuff
     # 
-    export PYTHONPATH=$OLD_PYTHONPATH
     rm -rf /var/cache/dnf/*
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*

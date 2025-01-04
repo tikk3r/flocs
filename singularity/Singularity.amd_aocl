@@ -67,7 +67,6 @@ From: fedora:39
     export CMAKE_PREFIX_PATH="/opt/hdf5:/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/idg:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
     export LD_LIBRARY_PATH="/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
-    export OLD_PYTHONPATH=$PYTHONPATH
 
     mkdir -p $INSTALLDIR
 
@@ -675,7 +674,6 @@ From: fedora:39
     #
     # Finaly cleanup of unnecessary stuff
     # 
-    export PYTHONPATH=$OLD_PYTHONPATH
     rm -rf /var/cache/dnf/*
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*
