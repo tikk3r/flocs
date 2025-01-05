@@ -707,7 +707,6 @@ From: fedora:39
     echo source /opt/aocl/4.0/amd-libs.cfg >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=\$INSTALLDIR/VLBI-cwl/scripts:\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=\$INSTALLDIR/aoflagger/lib:\$PYTHONPATH >> $INSTALLDIR/init.sh
-    echo export PATH=/usr/local/cuda/bin:\$PATH >> $INSTALLDIR/init.sh
     # echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
