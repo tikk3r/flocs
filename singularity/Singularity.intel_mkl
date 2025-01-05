@@ -65,9 +65,6 @@ From: fedora:39
         export CFLAGS="-g $CFLAGS"
         export CXXFLAGS="-g $CXXFLAGS"
         export CMAKE_ADD_OPTION="-LA"
-        export cmake=`which cmake`
-    else
-        export cmake="`which cmake` -Wno-dev"
     fi
     export CPLUS_INCLUDE_PATH="/opt/intel/oneapi/mkl/latest/include:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/13:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
     export CPATH="/usr/include/python${PYTHON_VERSION}:/opt/intel/oneapi/mkl/latest/include:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
@@ -93,6 +90,7 @@ From: fedora:39
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 
     export make=`which make`
+    export cmake="`which cmake` -Wno-dev"
     export CC=`which gcc`
     export CXX=`which g++`
 
