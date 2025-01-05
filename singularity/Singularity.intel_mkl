@@ -164,6 +164,8 @@ EOF
         sudo dnf -y config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
         sudo dnf -y clean all
         sudo dnf -y install cuda-12-6
+        export CUDA_HOME =/usr/local/cuda
+        export PATH=$CUDA_HOME/bin:$PATH
     fi
 
     flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
@@ -682,6 +684,10 @@ EOF
     echo export OMP_NUM_THREADS=\$NCPU >> $INSTALLDIR/init.sh
     echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
     echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
+    if [ $HAS_CUDA = true ]; then
+        echo export CUDA_HOME =/usr/local/cuda >> $INSTALLDIR/init.sh
+        echo export PATH=$CUDA_HOME/bin:\$PATH >> $INSTALLDIR/init.sh
+    fi
     echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
     echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
     echo flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
