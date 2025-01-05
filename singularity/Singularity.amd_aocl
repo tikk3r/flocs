@@ -181,6 +181,7 @@ From: fedora:40
     rm -r hdf5-1.*
     export CC=`which gcc`
     export CXX=`which g++`
+    export HDF5_DIR=/opt/hdf5
 
     if [ $HAS_CUDA = true ]; then
         #
@@ -747,7 +748,7 @@ From: fedora:40
 
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
     echo export LINC_DATA_ROOT=/opt/lofar/LINC >> $INSTALLDIR/init.sh
-
+    echo export HDF5_DIR=/opt/hdf5 >> $INSTALLDIR/init.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh

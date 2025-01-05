@@ -137,7 +137,7 @@ From: fedora:40
     rm -r hdf5-1.*
     export CC=`which gcc`
     export CXX=`which g++`
-
+    export HDF5_DIR=/opt/hdf5
 
     if [ $HAS_MKL = true ]; then
         #
@@ -692,6 +692,7 @@ EOF
 
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
     echo export LINC_DATA_ROOT=/opt/lofar/LINC >> $INSTALLDIR/init.sh
+    echo export HDF5_DIR=/opt/hdf5 >> $INSTALLDIR/init.sh
 
     echo . \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
     # For some reason this doesn't work.
