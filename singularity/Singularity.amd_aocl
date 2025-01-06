@@ -326,6 +326,7 @@ From: fedora:39
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/casacore/build
     rm -rf $INSTALLDIR/casacore/src
+    export CASACORE_ROOT_DIR=$INSTALLDIR/casacore
 
     #
     # Install Python-CASAcore
@@ -747,6 +748,7 @@ From: fedora:39
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
+    echo export CASACORE_ROOT_DIR=\$INSTALLDIR/casacore >> $INSTALLDIR/init.sh
 
     echo "# DDF environment settings" >> $INSTALLDIR/init.sh
     echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
