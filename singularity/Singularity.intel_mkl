@@ -329,7 +329,6 @@ EOF
     cmake $CMAKE_ADD_OPTION -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so \
         -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal \
         -DLIB_ONLY=True \
-        -Wno-dev \
         -DCMAKE_CXX_FLAGS='-g0' -DCMAKE_C_FLAGS='-g0' -DCMAKE_Fortran_FLAGS='-g0' \
         ../src
     make -j $j
