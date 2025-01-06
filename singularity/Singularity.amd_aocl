@@ -352,6 +352,7 @@ From: fedora:39
     #
     # Install SAGECal
     #
+    export CFITSIO_ROOT_DIR=/usr/lib64/
     mkdir -p $INSTALLDIR/sagecal/build
     cd $INSTALLDIR/sagecal
     git clone https://github.com/nlesc-dirac/sagecal.git src
@@ -743,6 +744,7 @@ From: fedora:39
 
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
     echo export LINC_DATA_ROOT=/opt/lofar/LINC >> $INSTALLDIR/init.sh
+    echo export CFITSIO_ROOT_DIR=/usr/lib64/ >> $INSTALLDIR/init.sh
 
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
