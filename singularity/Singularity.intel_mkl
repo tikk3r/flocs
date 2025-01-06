@@ -322,7 +322,6 @@ EOF
     #
     # Install SAGECal
     #
-    export CFITSIO_ROOT_DIR=/usr/lib64/
     mkdir -p $INSTALLDIR/sagecal/build
     cd $INSTALLDIR/sagecal
     git clone https://github.com/nlesc-dirac/sagecal.git src
@@ -332,6 +331,7 @@ EOF
         -DLIB_ONLY=True \
         -Wno-dev \
         -DCMAKE_CXX_FLAGS='-g0' -DCMAKE_C_FLAGS='-g0' -DCMAKE_Fortran_FLAGS='-g0' \
+        -DCFITSIO_ROOT_DIR=/usr/lib64/ \
         ../src
     make -j $j
     make install
@@ -697,7 +697,6 @@ EOF
     echo . \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
     # For some reason this doesn't work.
     # echo . /opt/intel/oneapi/mkl/latest/env/vars.sh >> $INSTALLDIR/init.sh
-    echo export CFITSIO_ROOT_DIR=/usr/lib64/ >> $INSTALLDIR/init.sh
 
     echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
