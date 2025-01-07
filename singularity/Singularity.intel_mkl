@@ -460,7 +460,7 @@ EOF
     # TARGET_CPU is a WSClean 2.10.2 feature. Change to PORTABLE=TRUE if using and older version to avoid -march=native being triggered.
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True ..
-    if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ] && [ $HAS_MKL = true ]; then
+    elif [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ] && [ $HAS_MKL = true ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DBLAS_iomp5_LIBRARY=/opt/intel/oneapi/compiler/2025.0/lib/libiomp5.so ..
     elif [ $HAS_MKL = true ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} \
