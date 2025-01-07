@@ -740,8 +740,8 @@ From: fedora:40
     echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
     if [ $HAS_CUDA = true ]; then
         echo export CUDA_HOME=/usr/local/cuda >> $INSTALLDIR/init.sh
-        echo export PATH=$CUDA_HOME/bin:\$PATH >> $INSTALLDIR/init.sh
-        echo export LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+        echo export PATH=\$CUDA_HOME/bin:\$PATH >> $INSTALLDIR/init.sh
+        echo export LD_LIBRARY_PATH=\$CUDA_HOME/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     fi
     echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
     echo flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
