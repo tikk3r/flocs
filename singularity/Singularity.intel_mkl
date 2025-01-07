@@ -329,6 +329,7 @@ EOF
         -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal \
         -DLIB_ONLY=True \
         -DCMAKE_CXX_FLAGS='-g0' -DCMAKE_C_FLAGS='-g0' -DCMAKE_Fortran_FLAGS='-g0' \
+        -DBLA_VENDOR=Intel10_64lp
         ../src
     make -j $j
     make install
