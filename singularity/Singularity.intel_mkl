@@ -71,8 +71,7 @@ From: fedora:40
     export CPLUS_INCLUDE_PATH="/opt/intel/oneapi/mkl/latest/include:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/14:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
     export CPATH="/usr/include/python${PYTHON_VERSION}:/opt/intel/oneapi/mkl/latest/include:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:/opt/intel/mkl/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
     export CMAKE_PREFIX_PATH="/opt/hdf5:/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/idg:/opt/intel/mkl/lib/intel64:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
-    export LD_LIBRARY_PATH="/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/opt/intel/oneapi/mkl/latest/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
-    export LD_LIBRARY_PATH="/opt/intel/oneapi/mkl/latest/lib/intel64/:/opt/intel/oneapi/compiler/latest/lib:/opt/intel/oneapi/tbb/latest/env/../lib/intel64/gcc4.8:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
 
     mkdir -p $INSTALLDIR
@@ -137,7 +136,7 @@ From: fedora:40
     rm -r hdf5-1.*
     export CC=`which gcc`
     export CXX=`which g++`
-
+    export HDF5_DIR=/opt/hdf5
 
     if [ $HAS_MKL = true ]; then
         #
@@ -340,7 +339,7 @@ EOF
     # Install AOFlagger
     #
     mkdir -p ${INSTALLDIR}/aoflagger/build
-    cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export DYSCO_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export AOFLAGGER_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
     else
@@ -699,6 +698,7 @@ EOF
 
     echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
     echo export LINC_DATA_ROOT=/opt/lofar/LINC >> $INSTALLDIR/init.sh
+    echo export HDF5_DIR=/opt/hdf5 >> $INSTALLDIR/init.sh
 
     echo . \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
     # For some reason this doesn't work.

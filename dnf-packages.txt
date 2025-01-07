@@ -49,9 +49,8 @@ lua
 lua-devel
 lzma
 make
+mariadb
 mariadb-devel
-mysql
-mysql-devel
 nano
 ncurses
 ncurses-devel
