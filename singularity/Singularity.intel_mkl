@@ -464,11 +464,11 @@ EOF
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DBLAS_iomp5_LIBRARY=/opt/intel/oneapi/compiler/2025.0/lib/libiomp5.so ..
     elif [ $HAS_MKL = true ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} \
-            -DCMAKE_CXX_FLAGS='${CMAKE_CXX_FLAGS} -flto' -DCMAKE_C_FLAGS='${CMAKE_C_FLAGS} -flto' \
+            -DCMAKE_CXX_FLAGS='${CXXFLAGS} -flto' -DCMAKE_C_FLAGS='${CFLAGS} -flto' \
             -DBLAS_iomp5_LIBRARY=/opt/intel/oneapi/compiler/2025.0/lib/libiomp5.so ..
     else
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} \
-            -DCMAKE_CXX_FLAGS='${CMAKE_CXX_FLAGS} -flto' -DCMAKE_C_FLAGS='${CMAKE_C_FLAGS} -flto' ..
+            -DCMAKE_CXX_FLAGS='${CXXFLAGS} -flto' -DCMAKE_C_FLAGS='${CFLAGS} -flto' ..
     fi
     make -j ${J}
     make install
