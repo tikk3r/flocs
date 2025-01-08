@@ -32,7 +32,7 @@ From: fedora:40
     export LAPACK_VERSION=3.8.0
     export LOSOTO_VERSION=latest
     export OPENBLAS_VERSION=v0.3.28
-    export PYBDSF_VERSION=720f5c3
+    export PYBDSF_VERSION=8471637
     export PYTHON_CASACORE_VERSION=3.6.1
     export RMEXTRACT_VERSION=0.5.0
     export WSCLEAN_VERSION=443bd576
@@ -265,7 +265,7 @@ EOF
     mkdir -p ${INSTALLDIR}/pybdsf
     cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION} && echo export PYBDSF_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/pybdsf/pybdsf
-    pip install bdsf
+    pip install .
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/pybdsf/pybdsf
 
