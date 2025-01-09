@@ -731,6 +731,7 @@ From: fedora:40
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/sagecal/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/lofarstman/lib64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/MultiNest/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=/opt/flang/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     # OPENBLAS_NUM_THREADS=1 is required for WSClean
     echo export NCPU=\$\(nproc\) >> $INSTALLDIR/init.sh
     echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
