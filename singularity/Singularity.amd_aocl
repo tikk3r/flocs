@@ -404,7 +404,6 @@ From: fedora:40
     #
     # Install EveryBeam library
     #
-    echo Installing EveryBeam
     mkdir -p $INSTALLDIR/EveryBeam/build
     cd $INSTALLDIR/EveryBeam
     git clone https://git.astron.nl/RD/EveryBeam.git src
