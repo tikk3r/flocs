@@ -202,6 +202,9 @@ From: fedora:40
     flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
     export FLEXIBLAS=OPENBLAS
     export FLEXIBLAS64=OPENBLAS
+    if [ $DEBUG = true ]; then
+        flexiblas list
+    fi
 
     # MultiNest
     cd $INSTALLDIR
