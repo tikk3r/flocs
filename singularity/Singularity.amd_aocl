@@ -418,6 +418,7 @@ From: fedora:40
     -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
     -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
     -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+    -DBLA_VENDOR=AOCL_mt \
     -DTARGET_CPU=$MARCH \
     ../src
     make -j $J
