@@ -127,5 +127,4 @@ traceback2
 unittest2
 uritemplate
 urllib3
-wheel
 unittest-xml-reporting
