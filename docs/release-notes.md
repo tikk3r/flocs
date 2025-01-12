@@ -20,10 +20,13 @@ Updates base container to Fedora 40:
 - Python version is now 3.12
 
 **Updates**
+* Add nctfp for FTP downloads.
 * Big cleanup of container recipes (@AlexKurek).
+* Increased verbosity in debug builds.
 * Update AOFlagger to bdf03b28.
 * Update casacore 3.5.0 -> 3.6.1.
 * Update `create_ms_list.py` for updated ddf options (@lonbar).
+* Update CUDA 12.3 -> 12.6
 * Update DDFacet to 5cec4db.
 * Update DP3 v6.2 -> 48e75b34.
 * Update Dysco  2e7f331 -> 682fe5.
@@ -37,6 +40,7 @@ Updates base container to Fedora 40:
 
 **Notes**
 * MKL temporarily disabled for IDG in favour of upgrading IDG to the latest version.
+* Wget is now at version 2, meaning no FTP support anymore. Use `ncftpget` instead.
 
 ## v5.3.1
 This is the final release with fedora 38, as it is EOL.
