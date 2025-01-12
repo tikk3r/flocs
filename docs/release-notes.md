@@ -13,6 +13,31 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.4.0
+Updates base container to Fedora 40:
+
+- Software is now compiled with GCC 14.
+- Python version is now 3.12
+
+**Updates**
+* Big cleanup of container recipes (@AlexKurek).
+* Update AOFlagger to bdf03b28.
+* Update casacore 3.5.0 -> 3.6.1.
+* Update `create_ms_list.py` for updated ddf options (@lonbar).
+* Update DDFacet to 5cec4db.
+* Update DP3 v6.2 -> 48e75b34.
+* Update Dysco  2e7f331 -> 682fe5.
+* Update EveryBeam to 65685cba.
+* Update HDF5 to 1.14.5
+* Update IDG 011687ed -> 2af6f285.
+* Update killMS to v3.2.0.
+* Update python-casacore 3.5.0 -> 3.6.1.
+* Update OpenBLAS v0.3.22 -> v0.3.28.
+* Update WSClean v3.5 -> 443bd576.
+
+**Notes**
+* MKL temporarily disabled for IDG in favour of upgrading IDG to the latest version.
+
 ## v5.3.1
 This is the final release with fedora 38, as it is EOL.
 
