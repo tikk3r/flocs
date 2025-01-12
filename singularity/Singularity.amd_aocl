@@ -204,7 +204,7 @@ From: fedora:40
     cd $INSTALLDIR
     git clone https://github.com/JohannesBuchner/MultiNest
     cd MultiNest/build
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest ..
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest -DBLA_VENDOR=AOCL_mt ..
     make
     cd $INSTALLDIR
 
@@ -505,7 +505,7 @@ From: fedora:40
     export CXX=`which mpic++`
     # TARGET_CPU is a WSClean 2.10.2 feature. Change to PORTABLE=TRUE if using and older version to avoid -march=native being triggered.
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True ..
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DBLA_VENDOR=AOCL_mt ..
     else
         cmake $CMAKE_ADD_OPTION \
         -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean \
@@ -518,6 +518,7 @@ From: fedora:40
         -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
         -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
         -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+        -DBLA_VENDOR=AOCL_mt \
         ..
     fi
     make -j ${J}
