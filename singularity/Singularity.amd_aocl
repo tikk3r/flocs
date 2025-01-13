@@ -374,10 +374,6 @@ From: fedora:40
     cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export AOFLAGGER_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
-    elif [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ] && [ $HAS_MKL = true ]; then
-        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DPORTABLE=True -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so ../src
-    elif [ $HAS_MKL = true ]; then
-        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so ../src
     else
         cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False ../src
     fi
