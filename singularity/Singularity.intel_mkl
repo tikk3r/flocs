@@ -702,8 +702,8 @@ EOF
     echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
     if [ $HAS_MKL = true ]; then
         echo export MKLROOT=$MKLROOT >> $INSTALLDIR/init.sh
-        echo export PATH=$MKLROOT/bin:\$PATH >> $INSTALLDIR/init.sh
-        echo export LD_LIBRARY_PATH=$MKLROOT/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+        echo export PATH=\$MKLROOT/bin:\$PATH >> $INSTALLDIR/init.sh
+        echo export LD_LIBRARY_PATH=\$MKLROOT/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     fi
 
 
