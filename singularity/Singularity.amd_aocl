@@ -563,11 +563,7 @@ From: fedora:40
     # Install in the existing lofar python folder
     mkdir -p /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/
     touch /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/__init__.py
-    if [ $HAS_MKL = true ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so ../src
-    else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
-    fi
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
     make -j $J
     make install
     cd $INSTALLDIR
