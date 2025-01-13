@@ -170,6 +170,7 @@ EOF
     export FLEXIBLAS64=OPENBLAS
     if [ $DEBUG = true ]; then
         flexiblas list
+        flexiblas print
     fi
 
     # MultiNest
