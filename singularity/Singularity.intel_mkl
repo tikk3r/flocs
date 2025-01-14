@@ -480,8 +480,7 @@ EOF
     elif [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ] && [ $HAS_MKL = true ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DPORTABLE=True -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so ..
     elif [ $HAS_MKL = true ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} \
-            -DCMAKE_CXX_FLAGS='-flto' -DCMAKE_C_FLAGS='-flto' -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so ..
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so ..
     else
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/wsclean -DTARGET_CPU=${MARCH} ..
     fi
