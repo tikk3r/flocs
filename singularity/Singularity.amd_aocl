@@ -135,12 +135,14 @@ From: fedora:40
     git clone https://github.com/amd/amd-fftw.git
     cd amd-fftw
     # Install single precision version
-    ./configure --enable-float --enable-threads --enable-sse2 --enable-avx --enable-avx2 --enable-avx512 --enable-mpi --enable-openmp --enable-shared --enable-amd-opt --enable-amd-mpifft --prefix=/opt/aocl/4.0
+    ./configure --enable-float --enable-threads --enable-sse2 --enable-avx --enable-avx2 --enable-avx512 --enable-mpi --enable-openmp --enable-shared --enable-amd-opt \
+        --enable-amd-mpifft --enable-amd-app-opt --prefix=/opt/aocl/4.0
     make -j $J
     make install
     # Install double precision version
     make clean
-    ./configure --enable-threads --enable-sse2 --enable-avx --enable-avx2 --enable-avx512 --enable-mpi --enable-openmp --enable-shared --enable-amd-opt --enable-amd-mpifft --prefix=/opt/aocl/4.0
+    ./configure --enable-threads --enable-sse2 --enable-avx --enable-avx2 --enable-avx512 --enable-mpi --enable-openmp --enable-shared --enable-amd-opt --enable-amd-mpifft \
+        --enable-amd-app-opt --prefix=/opt/aocl/4.0
     make -j $J
     make install
     cd $INSTALLDIR
