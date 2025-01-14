@@ -311,23 +311,22 @@ From: fedora:40
     tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/build
     cmake $CMAKE_ADD_OPTION \
-        -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
+        -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore \
         -DDATA_DIR=${INSTALLDIR}/casacore/data \
         -DBUILD_PYTHON=False \
         -DUSE_OPENMP=True \
         -DUSE_HDF5=True \
         -DBUILD_PYTHON3=True \
         -DBUILD_DYSCO=OFF \
-        -DBLAS_LIBRARIES="${AOCL_ROOT}/lib/libblis.so" \
         -DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
         -DFFTW3_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3_threads.so" \
         -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
         -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
         -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
-        -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
         -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
         -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
-        ../src/ 
+        -DBLA_VENDOR=AOCL_mt \
+        ../src
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
@@ -414,15 +413,15 @@ From: fedora:40
     echo export EVERYBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/EveryBeam/build
     cmake $CMAKE_ADD_OPTION \
-    -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
-    -DBUILD_WITH_PYTHON=ON \
-    -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
-    -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
-    -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
-    -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
-    -DBLA_VENDOR=AOCL_mt \
-    -DTARGET_CPU=$MARCH \
-    ../src
+        -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
+        -DBUILD_WITH_PYTHON=ON \
+        -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
+        -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
+        -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+        -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+        -DBLA_VENDOR=AOCL_mt \
+        -DTARGET_CPU=$MARCH \
+        ../src
     make -j $J
     make install
     cd $INSTALLDIR/
