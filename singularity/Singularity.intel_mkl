@@ -172,7 +172,6 @@ EOF
     export FLEXIBLAS=OPENBLAS
     export FLEXIBLAS64=OPENBLAS
     if [ $DEBUG = true ]; then
-        flexiblas list
         flexiblas print
     fi
 
