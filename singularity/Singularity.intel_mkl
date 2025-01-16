@@ -166,7 +166,7 @@ EOF
         export CUDA_HOME=/usr/local/cuda
         export PATH=$CUDA_HOME/bin:$PATH
         # Make CUDA 12.6 work with GCC 14. Explanation: https://negativo17.org/cuda-with-unsupported-gcc-versions/
-        sudo dnf -y config-manager --add-repo https://negativo17.org/repos/fedora-multimedia.repo
+        sudo dnf -y config-manager --add-repo https://copr.fedorainfracloud.org/coprs/slaanesh/cuda-gcc/repo/fedora-40/slaanesh-cuda-gcc-fedora-40.repo
         sudo dnf -y clean all
         sudo dnf -y install cuda-gcc
         source /etc/profile.d/cuda-gcc.sh
