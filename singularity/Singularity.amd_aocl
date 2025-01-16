@@ -81,7 +81,6 @@ From: fedora:40
     dnf -y update
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install wget
-    dnf -y install ImageMagick*
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
     dnf -y install $(<$INSTALLDIR/dnf-packages.txt)
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
@@ -202,6 +201,9 @@ From: fedora:40
     flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
     export FLEXIBLAS=OPENBLAS
     export FLEXIBLAS64=OPENBLAS
+    if [ $DEBUG = true ]; then
+        flexiblas print
+    fi
 
     # MultiNest
     cd $INSTALLDIR
@@ -312,23 +314,22 @@ From: fedora:40
     tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/build
     cmake $CMAKE_ADD_OPTION \
-        -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
+        -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore \
         -DDATA_DIR=${INSTALLDIR}/casacore/data \
         -DBUILD_PYTHON=False \
         -DUSE_OPENMP=True \
         -DUSE_HDF5=True \
         -DBUILD_PYTHON3=True \
         -DBUILD_DYSCO=OFF \
-        -DBLAS_LIBRARIES="${AOCL_ROOT}/lib/libblis.so" \
         -DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
         -DFFTW3_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3_threads.so" \
         -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
         -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
         -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
-        -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
         -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
         -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
-        ../src/ 
+        -DBLA_VENDOR=AOCL_mt \
+        ../src
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
@@ -415,15 +416,15 @@ From: fedora:40
     echo export EVERYBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/EveryBeam/build
     cmake $CMAKE_ADD_OPTION \
-    -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
-    -DBUILD_WITH_PYTHON=ON \
-    -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
-    -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
-    -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
-    -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
-    -DBLA_VENDOR=AOCL_mt \
-    -DTARGET_CPU=$MARCH \
-    ../src
+        -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
+        -DBUILD_WITH_PYTHON=ON \
+        -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
+        -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
+        -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+        -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+        -DBLA_VENDOR=AOCL_mt \
+        -DTARGET_CPU=$MARCH \
+        ../src
     make -j $J
     make install
     cd $INSTALLDIR/
@@ -458,15 +459,13 @@ From: fedora:40
     echo export DP3_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/DP3/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
-        -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
-        -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
-        ../src
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so \
+        -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so \
+        -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBLA_VENDOR=AOCL_mt ../src
     else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
-        -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
-        -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
-        ../src
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so \
+        -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so \
+        -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBLA_VENDOR=AOCL_mt ../src
     fi
     # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install
@@ -518,8 +517,8 @@ From: fedora:40
         -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
         -DFFTW3F_THREADS_LIB="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
         -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
-        -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
-        -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+        -DCMAKE_CXX_FLAGS="-L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+        -DCMAKE_C_FLAGS="-L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
         -DBLA_VENDOR=AOCL_mt \
         ..
     fi
