@@ -365,8 +365,7 @@ From: fedora:40
     cd $INSTALLDIR/sagecal
     git clone https://github.com/nlesc-dirac/sagecal.git src
     cd build
-    cmake $CMAKE_ADD_OPTION -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so \
-        -DBLA_VENDOR=AOCL_mt \
+    cmake $CMAKE_ADD_OPTION -DBLA_VENDOR=AOCL_mt \
         -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal \
         -DLIB_ONLY=True \
         ../src
