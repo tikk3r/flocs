@@ -13,6 +13,17 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.4.1
+**Updates**
+* Add ImageMagick.
+* Set `BLA_VENDOR` option for AOFlagger, EveryBeam, IDG and WSClean.
+* Update ddf-pipeline 72e5285 -> df58808.
+* Update PyBDSF 720f5c3 -> 8471637.
+
+**Bug fixes**
+* Clean up oneAPI/MKL related environment variables.
+* Fix DDFacet and killMS for running ddf-pipeline.
+
 ## v5.4.0
 Updates base container to Fedora 40:
 
