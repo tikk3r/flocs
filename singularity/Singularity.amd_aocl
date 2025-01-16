@@ -762,8 +762,7 @@ From: fedora:40
         echo export PATH=\$CUDA_HOME/bin:\$PATH >> $INSTALLDIR/init.sh
         echo export LD_LIBRARY_PATH=\$CUDA_HOME/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
        # Make CUDA 12.6 work with GCC 14. Explanation: https://negativo17.org/cuda-with-unsupported-gcc-versions/
-        echo export NVCC_CCBIN=g++-13 >> $INSTALLDIR/init.sh
-        echo export NVCC_PREPEND_FLAGS='-ccbin /usr/bin/g++-13' >> $INSTALLDIR/init.sh
+        echo "source /etc/profile.d/cuda-gcc.sh" >> $INSTALLDIR/init.sh
     fi
     echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
     echo flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
