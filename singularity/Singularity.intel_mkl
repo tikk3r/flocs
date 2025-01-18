@@ -307,7 +307,12 @@ EOF
     #
     # In case anything was installed previously
     pip uninstall -y python-casacore
-    pip install --no-deps --no-binary python-casacore "python-casacore==${PYTHON_CASACORE_VERSION}"
+    mkdir -p ${INSTALLDIR}/python-casacore
+    cd ${INSTALLDIR}/python-casacore && git clone https://github.com/casacore/python-casacore.git && cd ${INSTALLDIR}/python-casacore/python-casacore && git checkout ${PYTHON_CASACORE_VERSION} && echo export PYTHON_CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd ${INSTALLDIR}/python-casacore/python-casacore
+    pip install .
+    cd $INSTALLDIR
+    rm -rf $INSTALLDIR/python-casacore/python-casacore
     
     #
     # Install Dysco
