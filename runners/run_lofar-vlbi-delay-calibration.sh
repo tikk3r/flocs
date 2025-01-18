@@ -216,7 +216,7 @@ else
     pattern="${DATADIR}/*.MS"
     files=( $pattern )
     ms="${files[0]}"  # printf is safer!
-    wget https://raw.githubusercontent.com/LOFAR-VLBI/lofar-vlbi-pipeline/refs/heads/master/plot_field.py
+    wget https://raw.githubusercontent.com/LOFAR-VLBI/lofar-vlbi-pipeline/refs/heads/master/plot_field.py --continue_no_lotss
     singularity exec -B $PWD,$BINDPATHS $SIMG python plot_field.py --MS $ms
 
     git clone https://github.com/tikk3r/flocs.git

@@ -29,7 +29,7 @@ From: fedora:40
     export HDF5_VERSION=1.14.5
     export IDG_VERSION=2af6f285
     export LOSOTO_VERSION=latest
-    export OPENBLAS_VERSION=v0.3.28
+    export OPENBLAS_VERSION=v0.3.29
     export PYBDSF_VERSION=8471637
     export PYTHON_CASACORE_VERSION=3.6.1
     export RMEXTRACT_VERSION=0.5.0
@@ -47,7 +47,8 @@ From: fedora:40
     export OMP_NUM_THREADS=1
     export OMP_MAX_THREADS=1
     export OPENBLAS_NUM_THREADS=1
-    export NUM_THREADS=128
+    export BLIS_NUM_THREADS=$OPENBLAS_NUM_THREADS
+    export NUM_THREADS=256
     export OPENBLAS_TARGET={{ OPENBLASTARGET }}
 
     if [ $NOAVX512 = true ]; then
@@ -101,7 +102,7 @@ From: fedora:40
     git clone https://github.com/xianyi/OpenBLAS.git src
     cd src && git checkout $OPENBLAS_VERSION
     mkdir build && cd build
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=256 -DNUM_CORES=256  -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=$NUM_THREADS -DNUM_CORES=$NUM_THREADS  -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
     make -j$J
     make install
     rm -rf /opt/OpenBLAS/src
@@ -201,6 +202,9 @@ From: fedora:40
     flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
     export FLEXIBLAS=OPENBLAS
     export FLEXIBLAS64=OPENBLAS
+    if [ $DEBUG = true ]; then
+        flexiblas print
+    fi
 
     # MultiNest
     cd $INSTALLDIR
@@ -311,23 +315,22 @@ From: fedora:40
     tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/build
     cmake $CMAKE_ADD_OPTION \
-        -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
+        -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore \
         -DDATA_DIR=${INSTALLDIR}/casacore/data \
         -DBUILD_PYTHON=False \
         -DUSE_OPENMP=True \
         -DUSE_HDF5=True \
         -DBUILD_PYTHON3=True \
         -DBUILD_DYSCO=OFF \
-        -DBLAS_LIBRARIES="${AOCL_ROOT}/lib/libblis.so" \
         -DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
         -DFFTW3_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3_threads.so" \
         -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
         -DFFTW3F_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
         -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
-        -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
         -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
         -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
-        ../src/ 
+        -DBLA_VENDOR=AOCL_mt \
+        ../src
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
@@ -363,8 +366,7 @@ From: fedora:40
     cd $INSTALLDIR/sagecal
     git clone https://github.com/nlesc-dirac/sagecal.git src
     cd build
-    cmake $CMAKE_ADD_OPTION -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so \
-        -DBLA_VENDOR=AOCL_mt \
+    cmake $CMAKE_ADD_OPTION -DBLA_VENDOR=AOCL_mt \
         -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal \
         -DLIB_ONLY=True \
         ../src
@@ -414,15 +416,15 @@ From: fedora:40
     echo export EVERYBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/EveryBeam/build
     cmake $CMAKE_ADD_OPTION \
-    -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
-    -DBUILD_WITH_PYTHON=ON \
-    -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
-    -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
-    -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
-    -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
-    -DBLA_VENDOR=AOCL_mt \
-    -DTARGET_CPU=$MARCH \
-    ../src
+        -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
+        -DBUILD_WITH_PYTHON=ON \
+        -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
+        -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
+        -DCMAKE_CXX_FLAGS="-L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+        -DCMAKE_C_FLAGS="-L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
+        -DBLA_VENDOR=AOCL_mt \
+        -DTARGET_CPU=$MARCH \
+        ../src
     make -j $J
     make install
     cd $INSTALLDIR/
@@ -457,15 +459,13 @@ From: fedora:40
     echo export DP3_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/DP3/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
-        -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
-        -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
-        ../src
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so \
+        -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so \
+        -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBLA_VENDOR=AOCL_mt ../src
     else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
-        -DBLAS_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libblis.so \
-        -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
-        ../src
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so \
+        -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so \
+        -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DBLA_VENDOR=AOCL_mt ../src
     fi
     # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install
@@ -517,9 +517,8 @@ From: fedora:40
         -DFFTW3F_LIB="${AOCL_ROOT}/lib/libfftw3f.so" \
         -DFFTW3F_THREADS_LIB="${AOCL_ROOT}/lib/libfftw3f_threads.so" \
         -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
-        -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
-        -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast -flto" \
-        -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast -flto" \
+        -DCMAKE_CXX_FLAGS="-L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast -flto" \
+        -DCMAKE_C_FLAGS="-L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast -flto" \
         -DBLA_VENDOR=AOCL_mt \
         ..
     fi
@@ -587,8 +586,7 @@ From: fedora:40
 
     sed -i "s/npzfile\.iteritems/npzfile\.items/" DDFacet/DDFacet/Imager/ClassFacetMachine.py
     sed -i "s/3\.11/3.13/g" DDFacet/pyproject.toml
-
-    sed -i 's/DATA["Weights"]!=1/DATA["Weights"] is not 1/' DDFacet/Data/ClassVisServer.py
+    sed -i 's/DATA\["Weights"\]!=1/DATA\["Weights"\] is not 1/' DDFacet/DDFacet/Data/ClassVisServer.py
 
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
@@ -609,6 +607,9 @@ From: fedora:40
     find killMS/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
     find killMS/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
     find killMS/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
+
+    grep -rl "np.float" killMS | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
+    grep -rl "np.int" killMS | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
 
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Predict/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Array/Dot/Makefile
@@ -745,6 +746,7 @@ From: fedora:40
     echo export OPENBLAS_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
     echo export OMP_NUM_THREADS=\$NCPU >> $INSTALLDIR/init.sh
     echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
+    echo export BLIS_NUM_THREADS=\$OPENBLAS_NUM_THREADS >> $INSTALLDIR/init.sh
     echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
     if [ $HAS_CUDA = true ]; then
         echo export CUDA_HOME=/usr/local/cuda >> $INSTALLDIR/init.sh
