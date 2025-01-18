@@ -332,8 +332,7 @@ EOF
     git clone https://github.com/nlesc-dirac/sagecal.git src
     cd build
     if [ $HAS_MKL = true ]; then
-        cmake $CMAKE_ADD_OPTION -DOpenBLAS_LIB=/opt/OpenBLAS/lib64/libopenblas.so \
-            -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal \
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal \
             -DLIB_ONLY=True \
             -DBLA_VENDOR=Intel10_64lp \
             ../src
