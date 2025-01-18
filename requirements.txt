@@ -124,7 +124,7 @@ tables
 toil[cwl]==6.0.0
 tqdm
 traceback2
+unittest-xml-reporting
 unittest2
 uritemplate
 urllib3
-unittest-xml-reporting
