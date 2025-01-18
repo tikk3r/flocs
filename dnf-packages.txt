@@ -1,5 +1,3 @@
-SuperLU
-SuperLU-devel
 armadillo
 armadillo-devel
 arpack-devel
@@ -82,9 +80,12 @@ redhat-rpm-config
 ripgrep
 rsync
 sudo
+SuperLU
+SuperLU-devel
 svn
 swarp
 tar
+texinfo
 vim
 wcslib
 wcslib-devel
@@ -92,4 +93,3 @@ wget
 which
 xz-devel
 yum-utils
-texinfo
