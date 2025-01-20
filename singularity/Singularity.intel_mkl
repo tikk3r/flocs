@@ -213,7 +213,27 @@ EOF
     rm -rf datashape-0.5.2/
 
     pip install --upgrade pip wheel Cython
-    pip install "numpy<2"
+    if [ $HAS_MKL = true ]; then
+        wget https://github.com/numpy/numpy/releases/download/v1.26.4/numpy-1.26.4.tar.gz
+        tar xvzf numpy-1.26.4.tar.gz
+        rm numpy-1.26.4.tar.gz
+        cd numpy-1.26.4/
+        python -m pip install . -Csetup-args=-Dblas-order=mkl,openblas,blis -Csetup-args=-Dlapack-order=mkl,openblas,lapack
+        cd ..
+        rm -rf numpy-1.26.4/
+
+        wget https://github.com/scipy/scipy/releases/download/v1.15.1/scipy-1.15.1.tar.gz
+        tar xvzf scipy-1.15.1.tar.gz
+        rm scipy-1.15.1.tar.gz
+        cd scipy-1.15.1/
+        export PKG_CONFIG_PATH=$MKLROOT/lib/pkgconfig/
+        ls $PKG_CONFIG_PATH
+        python -m pip install . -Csetup-args=-Dblas=mkl-dynamic-lp64-iomp -Csetup-args=-Dlapack=mkl-dynamic-lp64-iomp
+        cd ..
+        rm -rf scipy-1.15.1/
+    else
+        pip install "numpy<2"
+    fi
     pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/flocs/requirements.txt
@@ -741,6 +761,7 @@ EOF
         echo export MKLROOT=$MKLROOT >> $INSTALLDIR/init.sh
         echo export PATH=\$MKLROOT/bin:\$PATH >> $INSTALLDIR/init.sh
         echo export LD_LIBRARY_PATH=\$MKLROOT/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+        echo export PKG_CONFIG_PATH=\$PKG_CONFIG_PATH >> $INSTALLDIR/init.sh
     fi
 
 
