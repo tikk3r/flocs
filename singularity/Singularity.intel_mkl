@@ -93,10 +93,6 @@ From: fedora:40
     export cmake=`which cmake`
     export CC=`which gcc`
     export CXX=`which g++`
-
-    mkdir -p $INSTALLDIR/patches
-    cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
-    mv $INSTALLDIR/flocs/patches/* $INSTALLDIR/patches/
     
     # Install OpenBLAS
     mkdir -p /opt/OpenBLAS
@@ -642,6 +638,7 @@ EOF
     #
     # Install custom runners
     #
+    cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
     mkdir -p /opt/lofar/runners
     cd /opt/lofar/
     cp flocs/runners/run* ./runners/
