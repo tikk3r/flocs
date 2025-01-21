@@ -419,7 +419,6 @@ From: fedora:40
         -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/EveryBeam \
         -DBUILD_WITH_PYTHON=ON \
         -DFFTW3F_LIBRARY="${AOCL_ROOT}/lib/libfftw3f.so" \
-        -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
         -DCMAKE_CXX_FLAGS="-L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
         -DCMAKE_C_FLAGS="-L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
         -DBLA_VENDOR=AOCL_mt \
