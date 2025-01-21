@@ -429,7 +429,7 @@ EOF
     # Install DP3
     #
     mkdir -p $INSTALLDIR/DP3/build
-    git clone https://git.astron.nl/RD/DP3.git $INSTALLDIR/DP3/src
+    git clone --depth 1 https://git.astron.nl/RD/DP3.git $INSTALLDIR/DP3/src
     cd $INSTALLDIR/DP3/src
     git checkout ${DP3_VERSION}
     echo export DP3_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
