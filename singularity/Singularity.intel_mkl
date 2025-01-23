@@ -214,7 +214,11 @@ EOF
         tar xzf numpy-1.26.4.tar.gz
         rm numpy-1.26.4.tar.gz
         cd numpy-1.26.4/
-        pip install . -Csetup-args=-Dblas-order=mkl,openblas,blis -Csetup-args=-Dlapack-order=mkl,openblas,lapack
+        if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
+            pip install . -Csetup-args=-Dblas-order=mkl,openblas,blis -Csetup-args=-Dlapack-order=mkl,openblas,lapack
+        else
+            pip install . -Csetup-args=-Dcpu-baseline="native" -Csetup-args=-Dcpu-dispatch="none" -Csetup-args=-Dblas-order=mkl,openblas,blis -Csetup-args=-Dlapack-order=mkl,openblas,lapack
+        fi
         cd ..
         rm -rf numpy-1.26.4/
 
