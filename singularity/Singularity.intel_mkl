@@ -218,7 +218,7 @@ EOF
         tar xzf numpy-1.26.4.tar.gz
         rm numpy-1.26.4.tar.gz
         cd numpy-1.26.4/
-        python -m pip install . -Csetup-args=-Dblas-order=mkl,openblas,blis -Csetup-args=-Dlapack-order=mkl,openblas,lapack
+        pip install . -Csetup-args=-Dblas-order=mkl,openblas,blis -Csetup-args=-Dlapack-order=mkl,openblas,lapack
         cd ..
         rm -rf numpy-1.26.4/
 
@@ -226,11 +226,11 @@ EOF
         tar xzf scipy-1.15.1.tar.gz
         rm scipy-1.15.1.tar.gz
         cd scipy-1.15.1/
-        export PKG_CONFIG_PATH=$MKLROOT/lib/pkgconfig/
-        ls $PKG_CONFIG_PATH
-        python -m pip install . -Csetup-args=-Dblas=mkl-dynamic-lp64-iomp -Csetup-args=-Dlapack=mkl-dynamic-lp64-iomp
+        pip install . -Csetup-args=-Dblas=mkl-dynamic-lp64-iomp -Csetup-args=-Dlapack=mkl-dynamic-lp64-iomp
         cd ..
         rm -rf scipy-1.15.1/
+
+        export PKG_CONFIG_PATH=$MKLROOT/lib/pkgconfig/
     else
         pip install "numpy<2"
     fi
