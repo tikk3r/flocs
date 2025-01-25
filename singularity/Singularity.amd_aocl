@@ -282,7 +282,7 @@ From: fedora:40
     export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
     export OLD_CFLAGS=$CFLAGS
     export CFLAGS="-L/usr/lib64/libpgplot.so.5"
-    gcc ./makeall
+    CC=`which gcc` ./makeall
     rm -rf $INSTALLDIR/difmap/*.tar.gz
     export CFLAGS=$OLD_CFLAGS
 
