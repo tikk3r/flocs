@@ -9,11 +9,13 @@ cd $RUNDIR
 IMGNAME=$(basename $SIMG .fits)
 
 echo Copying input data
-cp -r $BENCH_DATA/out_121-168MHz_uv.dysco.concat.delaycorrected_lotssskymodel.MS .
+rsync -avP $BENCH_DATA/*.ms .
+rsync -avP $BENCH_DATA/*.h5 .
+rsync -avP $BENCH_DATA/*.reg .
 echo Done
 
 echo Imaging starting
-apptainer exec -B $PWD,$TMPDIR,$HOME $SIMG wsclean \
+apptainer exec -B $PWD,$TMPDIR $SIMG wsclean \
 -j 30 \
 -verbose \
 -update-model-required \
@@ -28,7 +30,7 @@ apptainer exec -B $PWD,$TMPDIR,$HOME $SIMG wsclean \
 -auto-mask 3 \
 -auto-threshold 1.0 \
 -pol i \
--name benchmark_image_1asec_DI_$IMGNAME \
+-name benchmark_image_1asec_dd_scalarvis_$IMGNAME \
 -scale 0.4arcsec \
 -taper-gaussian 1.2asec \
 -niter 150000 \
@@ -46,9 +48,15 @@ apptainer exec -B $PWD,$TMPDIR,$HOME $SIMG wsclean \
 -gridder wgridder \
 -apply-primary-beam \
 -use-differential-lofar-beam \
-*.MS
+-apply-facet-beam \
+-facet-beam-update 600 \
+-scalar-visibilities \
+-facet-regions facets_1.2asec.reg \
+-apply-facet-solutions merged_L686962.h5 amplitude000,phase000 \
+-dd-psf-grid 3 3 \
+*.ms
 echo Done
 
 echo Copying back results
-cp *.fits $OUTPUT_DIR
+rsync -avP *.fits $OUTPUT_DIR
 echo Done

@@ -13,7 +13,7 @@ cp -r $BENCH_DATA/L656064_121_168MHz_uv_pre-cal.concat.ms .
 echo Done
 
 echo Imaging starting
-time apptainer exec -B $PWD,$TMPDIR,$HOME,/project $SIMG wsclean \
+time apptainer exec -B $PWD,$TMPDIR,$HOME $SIMG wsclean \
 -j 30 \
 -verbose \
 -update-model-required \
