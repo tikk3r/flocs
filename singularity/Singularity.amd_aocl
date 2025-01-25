@@ -89,8 +89,6 @@ From: fedora:40
     rm oracle-instantclient-basic-*.rpm
     # Necessary for nomacs
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
-    export make=`which make`
-    export cmake=`which cmake`
 
     # Install OpenBLAS
     mkdir -p /opt/OpenBLAS
