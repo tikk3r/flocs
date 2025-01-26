@@ -206,7 +206,35 @@ else
 
     echo "Generating default pipeline configuration"
     singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py VLBI facet-subtract $EXTRAOPTS $DATADIR
+
+    export TOIL_CHECK_ENV=True
+    mkdir -p $WORKDIR/coordination
+    export JOBSTORE=$WORKDIR/jobstore
+    export TOIL_SLURM_ARGS="--export=ALL -A do011 -p dine2 -t 24:00:00"
+    mkdir $LOGSDIR/slurmlogs
+
     echo Facet subtract starting
+    toil-cwl-runner \ 
+    --no-read-only \ 
+    --retryCount 2 \ 
+    --singularity \ 
+    --disableCaching \ 
+    --writeLogsFromAllJobs True \ 
+    --logFile full_log.log \ 
+    --writeLogs $LOGSDIR \ 
+    --outdir $RESULTSDIR \ 
+    --tmp-outdir-prefix $TMPDIR/ \ 
+    --jobStore $JOBSTORE \ 
+    --workDir $WORKDIR \
+    --tmpdir-prefix ${TMPDIR}_interm/ \
+    --disableAutoDeployment True \
+    --bypass-file-store \
+    --preserve-entire-environment \
+    --batchSystem slurm \
+    --clean onSuccess \
+    --no-compute-checksum \
+    $VLBI_DATA_ROOT/workflows/facet_subtract.cwl \
+    mslist_VLBI_facet_subtract.json
     echo Facet subtract ended
 fi
 echo Cleaning up...
