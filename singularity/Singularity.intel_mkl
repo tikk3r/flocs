@@ -172,7 +172,11 @@ EOF
     cd $INSTALLDIR
     git clone https://github.com/JohannesBuchner/MultiNest
     cd MultiNest/build
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest -DBLA_VENDOR=Intel10_64lp ..
+    if [ $HAS_MKL = true ]; then
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest -DBLA_VENDOR=Intel10_64lp ..
+    else
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest ..
+    fi
     make
     cd $INSTALLDIR
 
