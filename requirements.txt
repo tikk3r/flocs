@@ -71,7 +71,6 @@ nmmn
 nose
 numdifftools
 numexpr
-numpy<2
 oauthlib
 pluggy
 polars
@@ -112,7 +111,6 @@ ruamel.yaml
 SciencePlots
 scikit-build
 scikit-learn
-scipy
 seaborn
 shapely
 sharedarray
