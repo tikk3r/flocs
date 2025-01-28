@@ -1223,7 +1223,7 @@ def add_arguments_vlbi_facet_subtract(parser):
         help="Folder containing the WSClean model images (including channel images) of the intermediate resolution image.",
     )
     parser.add_argument(
-        "--selfcal",
+        "--facetselfcal",
         type=cwl_dir,
         help="Path to the lofar_facet_selfcal repository.",
     )
