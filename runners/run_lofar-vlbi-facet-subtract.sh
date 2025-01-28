@@ -110,6 +110,8 @@ fi
 
 LOFAR_HELPERS_ROOT=$WORKDIR/lofar_helpers
 FACETSELFCAL_ROOT=$WORKDIR/lofar_facet_selfcal
+git clone https://github.com/jurjen93/lofar_helpers.git $LOFAR_HELPERS_ROOT
+git clone https://github.com/rvweeren/lofar_facet_selfcal.git $FACETSELFCAL_ROOT
 
 # Check if LINC directory exists or is valid.
 if [ ! -d $LINC_DATA_ROOT ]; then
