@@ -1230,12 +1230,26 @@ def add_arguments_vlbi_facet_subtract(parser):
     parser.add_argument(
         "--scratch",
         type=bool,
+        default=False,
         help="Use the node's local scratch disk.",
     )
     parser.add_argument(
         "--concat",
         type=bool,
+        default=False,
         help="Concatenate the subtracted MeasurementSets into a single one.",
+    )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".ms",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
     )
 
 
@@ -1504,14 +1518,14 @@ def parse_arguments_vlbi(args):
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_process_ddf.json")
-    elif args["parser_VLBI"] == "facet_subtract":
+    elif args["parser_VLBI"] == "facet-subtract":
         args.pop("parser_VLBI")
         print("Generating VLBI process_ddf config")
         try:
             config = VLBIJSONConfig(
                 args["mspath"],
                 prefac_h5parm=None,
-                ddf_solsdir=args["solsdir"],
+                ddf_solsdir=None,
                 workflow="process_ddf",
                 ms_suffix=args["ms_suffix"],
             )
@@ -1600,7 +1614,7 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     modeparser_vlbi_facet_subtract = modeparser_vlbi.add_parser(
-        "facet_subtract",
+        "facet-subtract",
         help="Generate a configuration file for the facet_subtract.cwl sub-workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
