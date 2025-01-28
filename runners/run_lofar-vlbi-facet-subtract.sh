@@ -205,7 +205,7 @@ else
     fi
 
     echo "Generating default pipeline configuration"
-    singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py VLBI facet-subtract $EXTRAOPTS $DATADIR
+    singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py VLBI facet-subtract --h5parm $DDSOLS --model_image_folder $MODEL_IMAGES --lofar_helpers=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT $EXTRAOPTS $DATADIR
 
     export TOIL_CHECK_ENV=True
     mkdir -p $WORKDIR/coordination
