@@ -1520,7 +1520,7 @@ def parse_arguments_vlbi(args):
         config.save("mslist_VLBI_process_ddf.json")
     elif args["parser_VLBI"] == "facet-subtract":
         args.pop("parser_VLBI")
-        print("Generating VLBI process_ddf config")
+        print("Generating VLBI facet-subtract config")
         try:
             config = VLBIJSONConfig(
                 args["mspath"],
