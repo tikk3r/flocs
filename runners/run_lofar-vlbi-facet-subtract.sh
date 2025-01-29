@@ -193,12 +193,18 @@ else
     # Pass along necessary variables to the container.
     CONTAINERSTR=$(singularity --version)
     if [[ "$CONTAINERSTR" == *"apptainer"* ]]; then
+        export APPTAINER_CACHEDIR=/cosma/apps/do011/dc-swei1/containers/apptainer_cache
+        export APPTAINER_PULLDIR=$APPTAINER_CACHEDIR/pull
+        export APPTAINER_TMPDIR=$APPTAINER_CACHEDIR/tmp
         export APPTAINERENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
         export APPTAINERENV_RESULTSDIR=$WORKDIR/results_facet_subtract/
         export APPTAINERENV_LOGSDIR=$WORKDIR/logs_facet_subtract/
         export APPTAINERENV_TMPDIR=$WORKDIR/tmpdir_facet_subtract/
         export APPTAINERENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
     else
+        export SINGULARITY_CACHEDIR=/cosma/apps/do011/dc-swei1/containers/apptainer_cache
+        export SINGULARITY_PULLDIR=$SINGULARITY_CACHEDIR/pull
+        export SINGULARITY_TMPDIR=$SINGULARITY_CACHEDIR/tmp
         export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
         export SINGULARITYENV_RESULTSDIR=$WORKDIR/results_facet_subtract/
         export SINGULARITYENV_LOGSDIR=$WORKDIR/logs_facet_subtract/
@@ -207,13 +213,15 @@ else
     fi
 
     echo "Generating default pipeline configuration"
-    singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py VLBI facet-subtract --h5parm $DD_SOLS --model_image_folder $MODEL_IMAGES --lofar_helpers=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT $EXTRAOPTS $DATADIR
+    singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py VLBI facet-subtract --h5parm $DD_SOLS --model_image_folder $MODEL_IMAGES --scratch True --lofar_helpers=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT $EXTRAOPTS $DATADIR
 
     export TOIL_CHECK_ENV=True
     mkdir -p $WORKDIR/coordination
     export JOBSTORE=$WORKDIR/jobstore
     export TOIL_SLURM_ARGS="--export=ALL -A do011 -p dine2 -t 24:00:00"
     mkdir $LOGSDIR/slurmlogs
+
+    export CWL_SINGULARITY_CACHE=/cosma/apps/do011/dc-swei1/containers/apptainer_cache/
 
     echo Facet subtract starting
     toil-cwl-runner \ 
