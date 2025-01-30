@@ -218,7 +218,7 @@ EOF
         tar xzf numpy-1.26.4.tar.gz
         rm numpy-1.26.4.tar.gz
         cd numpy-1.26.4/
-        pip install . -Csetup-args=-Dblas-order=mkl-dynamic-lp64-iomp -Csetup-args=-Dlapack-order=mkl-dynamic-lp64-iomp
+        pip install . -Csetup-args=-Dblas-order=mkl-dynamic-lp64-iomp -Csetup-args=-Dlapack-order=mkl-dynamic-lp64-iomp -Csetup-args=-Db_lto=true
         if [ $DEBUG = true ]; then
             python -c 'import numpy; numpy.show_config()'
         fi
@@ -229,7 +229,7 @@ EOF
         tar xzf scipy-1.15.1.tar.gz
         rm scipy-1.15.1.tar.gz
         cd scipy-1.15.1/
-        pip install . -Csetup-args=-Dblas=mkl-dynamic-lp64-iomp -Csetup-args=-Dlapack=mkl-dynamic-lp64-iomp
+        pip install . -Csetup-args=-Dblas=mkl-dynamic-lp64-iomp -Csetup-args=-Dlapack=mkl-dynamic-lp64-iomp -Csetup-args=-Db_lto=true
         if [ $DEBUG = true ]; then
             python -c 'import numpy; numpy.show_config()'
         fi
