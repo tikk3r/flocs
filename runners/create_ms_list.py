@@ -1229,13 +1229,13 @@ def add_arguments_vlbi_facet_subtract(parser):
     )
     parser.add_argument(
         "--scratch",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Use the node's local scratch disk.",
     )
     parser.add_argument(
         "--concat",
-        type=bool,
+        type=eval_bool,
         default=False,
         help="Concatenate the subtracted MeasurementSets into a single one.",
     )
