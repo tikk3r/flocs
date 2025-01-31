@@ -283,7 +283,7 @@ EOF
     mkdir -p ${INSTALLDIR}/casacore/data
     cd $INSTALLDIR/casacore
     git clone https://github.com/casacore/casacore.git src
-    cd ${INSTALLDIR}/casacore/src && git checkout tags/${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd ${INSTALLDIR}/casacore/src && git checkout ${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/casacore/data
     ncftpget ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
     tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
