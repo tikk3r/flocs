@@ -27,7 +27,6 @@ From: fedora:40
     export EVERYBEAM_VERSION=59c755a6
     export HDF5_VERSION=1.14.5
     export IDG_VERSION=2af6f285
-    export LOSOTO_VERSION=latest
     export OPENBLAS_VERSION=v0.3.29
     export PYBDSF_VERSION=8471637
     export PYTHON_CASACORE_VERSION=3.6.1
@@ -462,26 +461,6 @@ From: fedora:40
     wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DP3/usermodules/polconv.py
 
     #
-    # Install LoSiTo
-    #
-    pip install --no-deps git+https://github.com/darafferty/losito.git
-
-    #
-    # Install LoSoTo
-    #
-    mkdir -p $INSTALLDIR/losoto/build
-    cd $INSTALLDIR/losoto/build
-    git clone https://github.com/revoltek/losoto.git src
-    cd src
-    # Some fixes for certain LoSoTo versions until it is fixed upstream.
-    find . -type f -name '*.py' -exec sed -i 's/np\.float16(weights)/weights.astype(float)/' {} \;
-    find . -type f -name '*.py' -exec sed -i 's/np\.float16/float/g' {} \;
-    find . -type f -name '*.py' -exec sed -i 's/Float16Atom/FloatAtom/g' {} \;
-    pip install --no-deps .
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/losoto
-
-    #
     # Install WSClean
     #
     mkdir $INSTALLDIR/wsclean
@@ -684,7 +663,6 @@ From: fedora:40
 
     # Store version information.
     echo export FLOCS_VERSION=5.5.0 >> $INSTALLDIR/init.sh
-    echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
     echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
     echo export RMEXTRACT_VERSION=$RMEXTRACT_VERSION >> $INSTALLDIR/init.sh
     echo export HDF5_USE_FILE_LOCKING=$HDF5_USE_FILE_LOCKING >> $INSTALLDIR/init.sh
