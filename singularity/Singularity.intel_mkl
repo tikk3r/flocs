@@ -240,7 +240,7 @@ EOF
 
         export PKG_CONFIG_PATH=$MKLROOT/lib/pkgconfig/
     else
-        pip install "numpy<2"
+        pip install "numpy<2" scipy
     fi
     pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
