@@ -78,9 +78,9 @@ export APPTAINER_BINDPATH
 echo "Binding the following paths to the container:"
 sed 's/:/\n/g' <<< "$APPTAINER_BINDPATH"
 
-# Warn on low disk space (< 25 TB).
-reqSpace=15000000000000
-reqSpaceHum=$(echo "scale=1;$reqSpace/1000000000000" | bc -l)T
+# Warn on low disk space (< 15 TB).
+reqSpace=15000000000
+reqSpaceHum=$(echo "scale=1;$reqSpace/1000000000" | bc -l)T
 availSpace=$(df $RUNDIR | awk 'NR==2 { print $4 }')
 availSpaceHum=$(df -H $RUNDIR | awk 'NR==2 { print $4 }')
 if (( availSpace < reqSpace )); then
