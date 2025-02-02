@@ -213,7 +213,7 @@ EOF
     rm -rf datashape-0.5.2/
 
     pip install --upgrade pip wheel Cython
-    if [ $HAS_MKL = true ]; then
+    if [ $MARCH = 'native' ] && [ $MTUNE = 'native' ] && [ $HAS_MKL = true ]; then
         wget https://github.com/numpy/numpy/releases/download/v1.26.4/numpy-1.26.4.tar.gz
         tar xzf numpy-1.26.4.tar.gz
         rm numpy-1.26.4.tar.gz
