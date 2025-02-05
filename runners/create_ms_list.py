@@ -1353,8 +1353,10 @@ def parse_arguments_linc(args: dict):
             print("Full-resolution data requested, updating defaults to:")
             print(f"{args['avg_timeresolution']} -> 1")
             print(f"{args['avg_freqresolution']} -> 12.21kHz")
+            print(f"{args['filter_baselines']} -> *&")
             args["avg_timeresolution"] = 1
             args["avg_freqresolution"] = "12.21kHz"
+            args["filter_baselines"] = "*&"
         config = LINCJSONConfig(
             args["mspath"],
             prefac_h5parm=args["cal_solutions"],
