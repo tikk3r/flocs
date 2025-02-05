@@ -728,6 +728,18 @@ def add_arguments_linc_target(parser):
         help="Limits the input skymodel to sources that exceed the given flux density limit in Jy (default: None for HBA, i.e. all sources of the catalogue will be kept, and 1.0 for LBA).",
     )
     parser.add_argument(
+        "--output_fullres_data",
+        type=eval_bool,
+        default=False,
+        help="Output the target data at full, unaveraged resolution. This is used, for example, for further VLBI-style processing."
+    )
+    parser.add_argument(
+        "--calib_nchan",
+        type=int,
+        default=None,
+        help="Number of channels to combine during the phase calibration. 0 means combine all channels.",
+    )
+    parser.add_argument(
         "mspath",
         type=str,
         default="",
@@ -1334,6 +1346,12 @@ def parse_arguments_linc(args: dict):
     elif args["parser_LINC"] == "target":
         args.pop("parser_LINC")
         print("Generating LINC Target config")
+        if args["output_fullres_data"]:
+            print("Full-resolution data requested, updating defaults to:")
+            print(f"{args['avg_timeresolution']} -> 1")
+            print(f"{args['avg_freqresolution']} -> 12.21kHz")
+            args["avg_timeresolution"] = 1
+            args["avg_freqresolution"] = "12.21kHz"
         config = LINCJSONConfig(
             args["mspath"],
             prefac_h5parm=args["cal_solutions"],
