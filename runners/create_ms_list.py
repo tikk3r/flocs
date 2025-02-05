@@ -632,7 +632,10 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument("--reference_stationSB", type=int, default=None, help="")
     parser.add_argument(
-        "--ionex_server", type=str, default="ftp://gssc.esa.int/gnss/products/ionex/", help=""
+        "--ionex_server",
+        type=str,
+        default="ftp://gssc.esa.int/gnss/products/ionex/",
+        help="",
     )
     parser.add_argument("--ionex_prefix", type=str, default="UQRG", help="")
     parser.add_argument("--proxy_server", type=str, default=None, help="")
@@ -731,7 +734,7 @@ def add_arguments_linc_target(parser):
         "--output_fullres_data",
         type=eval_bool,
         default=False,
-        help="Output the target data at full, unaveraged resolution. This is used, for example, for further VLBI-style processing."
+        help="Output the target data at full, unaveraged resolution. This is used, for example, for further VLBI-style processing.",
     )
     parser.add_argument(
         "--calib_nchan",
@@ -811,13 +814,13 @@ def add_arguments_vlbi_process_ddf(parser):
     parser.add_argument(
         "--h5merger",
         type=cwl_dir,
-        help="External LOFAR helper scripts for merging h5 files."
+        help="External LOFAR helper scripts for merging h5 files.",
     )
     parser.add_argument(
         "--do_subtraction",
         type=bool,
         default=False,
-        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data."
+        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data.",
     )
 
 
@@ -923,7 +926,7 @@ def add_arguments_vlbi_delay_calibrator(parser):
         "--do_subtraction",
         type=bool,
         default=False,
-        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data."
+        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data.",
     )
 
 
