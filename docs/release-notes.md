@@ -13,6 +13,24 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.5.0
+Updates a number of packages to support new features like the Stokes I model column and various new MS compression aspects that are being or have been developed.
+
+**Updates**
+* Add benchmark commands for imaging.
+* Build MultiNest with MKL.
+* Limit Dask to `<=2024.8.2`
+* Switch Dysco installation to casacore.
+* Update casacore v3.6.1 -> b027afe
+* Update DP3 443bd576 -> a2b1077d
+* Update EveryBeam -> 59c755a6
+* Update WSClean 443bd576 -> c1e4fcb2/5fdad9bf
+* Install lofar_facet_selfcal via pip
+
+**Bug fixes**
+* Fix running ddf-pipeline on Slurm
+* Fix shadeMS installation
+
 ## v5.4.1
 **Updates**
 * Add ImageMagick.
