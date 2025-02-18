@@ -228,7 +228,6 @@ EOF
     wget --progress=bar:force:noscroll https://lta.lofar.eu/software/lofar_lta-2.8.0.tar.gz
     tar xf lofar_lta-*
     cd lofar_lta-2.8.0
-    #python setup.py install_oracle
     pip install .
     cd ..
     rm lofar_lta*.tar.gz
