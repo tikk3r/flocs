@@ -236,7 +236,7 @@ else
     export TOIL_CHECK_ENV=True
     mkdir -p $WORKDIR/coordination
     export JOBSTORE=$WORKDIR/jobstore
-    export TOIL_SLURM_ARGS="--export=ALL --job-name VLBI-Delay-Calibration -A do011 -p dine2,cosma8-ska,cosma8-ska2 -t 24:00:00"
+    export TOIL_SLURM_ARGS="--export=ALL -t 24:00:00"
     mkdir $LOGSDIR/slurmlogs
 
     singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py VLBI delay-calibration --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
@@ -244,7 +244,7 @@ else
     echo VLBI-cwl starting
     toil-cwl-runner \
     --no-read-only \
-    --retryCount 0 \
+    --retryCount 3 \
     --singularity \
     --disableCaching \
     --writeLogsFromAllJobs True \
@@ -269,7 +269,7 @@ else
 fi
 echo Cleaning up...
 echo == Deleting LOFAR-VLBI tmpdir..
-#rm -rf $WORKDIR/tmpdir_VLBI_CWL/
+rm -rf $WORKDIR/tmpdir_VLBI_CWL/
 
 echo == Moving results...
 FINALDIR=$(dirname $WORKDIR)
