@@ -295,7 +295,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         "--demix_sources",
         type=str,
         nargs="*",
-        default=["CasA", "CygA"],
+        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
         help="Sources to demix.",
     )
     parser.add_argument(
@@ -495,7 +495,7 @@ def add_arguments_linc_target(parser):
         "--demix_sources",
         type=str,
         nargs="*",
-        default=["CasA", "CygA"],
+        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
         help="Sources to demix.",
     )
     parser.add_argument(
