@@ -597,6 +597,9 @@ From: fedora:40
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Predict/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Array/Dot/Makefile
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Gridder/Makefile
+    
+    sed -i '261s/np\.complex/np\.complex128/' killMS/killMS/Data/ClassMS.py
+
     pip install --no-deps killMS/
 
 
