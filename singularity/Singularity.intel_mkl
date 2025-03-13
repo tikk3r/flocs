@@ -226,17 +226,17 @@ EOF
         cd ..
         rm -rf numpy-1.26.4/
 
-        wget https://github.com/scipy/scipy/releases/download/v1.15.1/scipy-1.15.1.tar.gz
-        tar xzf scipy-1.15.1.tar.gz
-        rm scipy-1.15.1.tar.gz
-        cd scipy-1.15.1/
+        wget https://github.com/scipy/scipy/releases/download/v1.15.2/scipy-1.15.2.tar.gz
+        tar xzf scipy-1.15.2.tar.gz
+        rm scipy-1.15.2.tar.gz
+        cd scipy-1.15.2/
         pip install . -Csetup-args=-Dblas=mkl-dynamic-lp64-iomp -Csetup-args=-Dlapack=mkl-dynamic-lp64-iomp -Csetup-args=-Db_lto=true
         if [ $DEBUG = true ]; then
             pip install pyyaml
             python -c 'import numpy; numpy.show_config()'
         fi
         cd ..
-        rm -rf scipy-1.15.1/
+        rm -rf scipy-1.15.2/
 
         export PKG_CONFIG_PATH=$MKLROOT/lib/pkgconfig/
     else
