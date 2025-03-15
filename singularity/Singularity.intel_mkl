@@ -186,7 +186,6 @@ EOF
 
     sudo dnf -y install python3-cx-oracle
     pip --version
-    pip install --upgrade setuptools
     pip --no-cache-dir install virtualenv
 
     # Install shadeMS in its own environment to avoid conflicts.
