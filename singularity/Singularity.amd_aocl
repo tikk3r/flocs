@@ -23,8 +23,8 @@ From: fedora:40
     export AOFLAGGER_VERSION=bdf03b28
     export CASACORE_VERSION=a4c457b
     export DDFPIPELINE_VERSION=df58808
-    export DP3_VERSION=f475bc30
-    export EVERYBEAM_VERSION=59c755a6
+    export DP3_VERSION=6320b6cf
+    export EVERYBEAM_VERSION=v0.6.2
     export HDF5_VERSION=1.14.5
     export IDG_VERSION=2af6f285
     export LOSOTO_VERSION=e4ed09a
@@ -32,7 +32,7 @@ From: fedora:40
     export PYBDSF_VERSION=8471637
     export PYTHON_CASACORE_VERSION=3.6.1
     export RMEXTRACT_VERSION=0.5.0
-    export WSCLEAN_VERSION=c1e4fcb2
+    export WSCLEAN_VERSION=df9a4fd2
     export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
 
