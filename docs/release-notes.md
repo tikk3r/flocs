@@ -13,6 +13,18 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.5.1
+**Updates**
+* Update losoto to e4ed09a
+* Update DP3 f475bc30 ->6320b6cf
+* Update EveryBeam 59c755a6 -> v0.6.2
+* Update WSClean c1e4fcb2 -> df9a4fd2
+
+**Bugfixes**
+* Fix default value for `demix_sources` in create_ms_list.py.
+* Fix #247 
+* Revert 458b1d0, adafefe, e1273c5 and 97da310 due to performance regressions.
+
 ## v5.5.0
 Updates a number of packages to support new features like the Stokes I model column and various new MS compression aspects that are being or have been developed.
 
