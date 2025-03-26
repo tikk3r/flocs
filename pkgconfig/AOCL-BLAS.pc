@@ -1,0 +1,8 @@
+libdir=/opt/aocl/4.0/lib 
+includedir=/opt/aocl/4.0/include
+version=4.0                    
+Name: AOCL-BLAS
+Description: AOCL-BLAS Perf Libraries
+Version: ${version}
+Cflags: -I${includedir}
+Libs: -L${libdir} -lblis

@@ -112,7 +112,6 @@ ruamel.yaml
 SciencePlots
 scikit-build
 scikit-learn
-scipy
 seaborn
 shapely
 sharedarray

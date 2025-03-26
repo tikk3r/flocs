@@ -240,7 +240,44 @@ From: fedora:40
     rm -rf datashape-0.5.2/
 
     pip install --upgrade pip wheel Cython
-    pip install "numpy<2"
+
+    #
+    # Install NumPy
+    #
+    if [ $MARCH = 'native' ] && [ $MTUNE = 'native' ]; then
+        wget -P /tmp/ \
+            https://raw.githubusercontent.com/AlexKurek/flocs/refs/heads/numpy-and-scipy-against-aocl/pkgconfig/AOCL-BLAS.pc \
+            https://raw.githubusercontent.com/AlexKurek/flocs/refs/heads/numpy-and-scipy-against-aocl/pkgconfig/AOCL-LAPACK.pc
+        sudo mv -t /opt/aocl/4.0/lib/pkgconfig/ /tmp/AOCL-BLAS.pc /tmp/AOCL-LAPACK.pc
+        export PKG_CONFIG_PATH=/opt/aocl/4.0/lib/pkgconfig/
+
+        wget https://github.com/numpy/numpy/releases/download/v1.26.4/numpy-1.26.4.tar.gz
+        tar xzf numpy-1.26.4.tar.gz
+        rm numpy-1.26.4.tar.gz
+        cd numpy-1.26.4/
+        pip install . -Csetup-args=-Dblas-order=AOCL-BLAS,openblas -Csetup-args=-Dlapack-order=AOCL-LAPACK,openblas -Csetup-args=-Db_lto=true
+        if [ $DEBUG = true ]; then
+            pip install pyyaml
+            python -c 'import numpy; numpy.show_config()'
+        fi
+        cd ..
+        rm -rf numpy-1.26.4/
+
+        wget https://github.com/scipy/scipy/releases/download/v1.15.1/scipy-1.15.1.tar.gz
+        tar xzf scipy-1.15.1.tar.gz
+        rm scipy-1.15.1.tar.gz
+        cd scipy-1.15.1/
+        pip install . -Csetup-args=-Dblas=AOCL-BLAS -Csetup-args=-Dlapack=AOCL-LAPACK -Csetup-args=-Db_lto=true
+        if [ $DEBUG = true ]; then
+            pip install pyyaml
+            python -c 'import numpy; numpy.show_config()'
+        fi
+        cd ..
+        rm -rf scipy-1.15.1/
+    else
+        pip install "numpy<2" scipy
+    fi
+
     pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/flocs/requirements.txt
@@ -707,6 +744,9 @@ From: fedora:40
     echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo source \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
     echo source /opt/aocl/4.0/amd-libs.cfg >> $INSTALLDIR/init.sh
+    if [ $MARCH = 'native' ] && [ $MTUNE = 'native' ]; then
+        echo export PKG_CONFIG_PATH=/opt/aocl/4.0/lib/pkgconfig/ >> $INSTALLDIR/init.sh
+    fi
     echo export PYTHONPATH=\$INSTALLDIR/VLBI-cwl/scripts:\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=\$INSTALLDIR/aoflagger/lib:\$PYTHONPATH >> $INSTALLDIR/init.sh
     # echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
