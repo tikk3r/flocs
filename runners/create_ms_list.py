@@ -1396,11 +1396,10 @@ def parse_arguments_vlbi(args):
                 skip_setup=args["skip_setup"],
             )
             args.pop("mspath")
-            args.pop("skip_setup")
         except ValueError as e:
             print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
-        if args["phasesol"] == "auto":
+        if (not args["skip_setup"]) and args["phasesol"] == "auto":
             try:
                 phasesol = get_linc_default_phases(args["solset"]["path"])
                 args["phasesol"] = phasesol
@@ -1409,6 +1408,7 @@ def parse_arguments_vlbi(args):
                     "phaseol is set to auto, but failed to automatically determine LINC target phase solutions."
                 )
                 sys.exit(-1)
+        args.pop("skip_setup")
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_delay_calibration.json")
