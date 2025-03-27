@@ -284,7 +284,7 @@ EOF
     git clone --single-branch --branch master https://github.com/casacore/casacore.git src
     cd ${INSTALLDIR}/casacore/src && git checkout ${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/casacore/data
-    ncftpget ftp://anonymous@ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar
+    wget -nv https://www.astron.nl/iers/WSRT_Measures.ztar
     tar xf WSRT_Measures.ztar && rm WSRT_Measures.ztar
     cd ${INSTALLDIR}/casacore/build
     if [ $HAS_MKL = true ]; then
