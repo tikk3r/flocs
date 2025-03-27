@@ -1414,7 +1414,6 @@ def parse_arguments_vlbi(args):
         config.save("mslist_VLBI_delay_calibration.json")
     elif args["parser_VLBI"] == "split-directions":
         args.pop("parser_VLBI")
-        args.pop("skip_setup")
         print("Generating VLBI Split Directions config")
         try:
             config = VLBIJSONConfig(
@@ -1432,10 +1431,6 @@ def parse_arguments_vlbi(args):
             config.add_entry(key, val)
         config.save("mslist_VLBI_split_directions.json")
     elif args["parser_VLBI"] == "setup":
-        if args["skip_setup"]:
-            raise ValueError("Cannot run setup when --skip-setup is given.")
-        else:
-            args.pop("skip_setup")
         args.pop("parser_VLBI")
         print("Generating VLBI setup config")
         try:
@@ -1463,7 +1458,6 @@ def parse_arguments_vlbi(args):
             config.add_entry(key, val)
         config.save("mslist_VLBI_setup.json")
     elif args["parser_VLBI"] == "concatenate-flag":
-        args.pop("skip_setup")
         args.pop("parser_VLBI")
         print("Generating VLBI setup config")
         try:
@@ -1483,7 +1477,6 @@ def parse_arguments_vlbi(args):
         config.save("mslist_VLBI_concatenate-flag.json")
     elif args["parser_VLBI"] == "phaseup-concat":
         args.pop("parser_VLBI")
-        args.pop("skip_setup")
         print("Generating VLBI phaseup-concat config")
         try:
             config = VLBIJSONConfig(
@@ -1502,7 +1495,6 @@ def parse_arguments_vlbi(args):
         config.save("mslist_VLBI_phaseup-concat.json")
     elif args["parser_VLBI"] == "process_ddf":
         args.pop("parser_VLBI")
-        args.pop("skip_setup")
         print("Generating VLBI process_ddf config")
         try:
             config = VLBIJSONConfig(
