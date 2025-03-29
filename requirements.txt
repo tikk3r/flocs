@@ -34,7 +34,6 @@ funcsigs
 future
 git+https://git.astron.nl/RD/LSMTool.git@v1.6
 git+https://github.com/sara-nl/cortExchange#egg=cortexchange
-git+https://github.com/rvweeren/lofar_facet_selfcal.git
 git+https://github.com/jurjen93/lofar_helpers.git
 git+https://github.com/jurjen93/lofar_helpers@inference_script#subdirectory=neural_networks
 git+https://github.com/ratt-ru/kittens.git

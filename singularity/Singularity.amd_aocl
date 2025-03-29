@@ -244,6 +244,11 @@ From: fedora:40
     pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
     pip install -r $INSTALLDIR/flocs/requirements.txt
+    # Install facetselfcal this way to make sure data gets installed.
+    cd /opt/lofar
+    git clone https://github.com/rvweeren/lofar_facet_selfcal.git
+    pip install lofar_facet_selfcal
+    rm -rf lofar_facet_selfcal
     # Install this separately since it keeps forcefully downgrading numpy.
     pip install --no-deps lofarSun
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
