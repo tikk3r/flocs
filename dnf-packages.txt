@@ -51,7 +51,6 @@ make
 mariadb
 mariadb-devel
 nano
-ncftp
 ncurses
 ncurses-devel
 nodejs
