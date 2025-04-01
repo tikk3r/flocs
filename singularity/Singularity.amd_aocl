@@ -323,10 +323,8 @@ From: fedora:40
     cmake $CMAKE_ADD_OPTION \
         -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
         -DDATA_DIR=${INSTALLDIR}/casacore/data \
-        -DBUILD_PYTHON=False \
         -DUSE_OPENMP=True \
         -DUSE_HDF5=True \
-        -DBUILD_PYTHON3=True \
         -DBUILD_DYSCO=ON \
         -DBLAS_LIBRARIES="${AOCL_ROOT}/lib/libblis.so" \
         -DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
