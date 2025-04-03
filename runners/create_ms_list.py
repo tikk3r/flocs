@@ -79,6 +79,7 @@ class VLBIJSONConfig(LINCJSONConfig):
         ddf_solsdir: Union[None, dict],
         ms_suffix: str = ".MS",
         workflow: str = "delay-calibration",
+        skip_setup: bool = False,
     ):
         self.configdict = {}
 
@@ -89,14 +90,23 @@ class VLBIJSONConfig(LINCJSONConfig):
 
         mslist = []
         if workflow == "delay-calibration":
-            if not prefac_h5parm:
-                raise ValueError("Invalid path to LINC solutions specified.")
-            prefac_freqs = get_prefactor_freqs(
-                solname=prefac_h5parm["path"], solset="target"
-            )
-            for dd in files:
-                if check_dd_freq(dd, prefac_freqs):
+            if skip_setup:
+                if prefac_h5parm:
+                    raise ValueError(
+                        "LINC solutions should not be specified if VLBI setup is skipped."
+                    )
+                self.configdict["solset"] = None
+                for dd in files:
                     mslist.append(dd)
+            else:
+                if not prefac_h5parm:
+                    raise ValueError("Invalid path to LINC solutions specified.")
+                prefac_freqs = get_prefactor_freqs(
+                    solname=prefac_h5parm["path"], solset="target"
+                )
+                for dd in files:
+                    if check_dd_freq(dd, prefac_freqs):
+                        mslist.append(dd)
         elif workflow == "split-directions":
             if (prefac_h5parm is None) or (not prefac_h5parm["path"]):
                 raise ValueError("No delay calibrator solutions specified!")
@@ -295,7 +305,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         "--demix_sources",
         type=str,
         nargs="*",
-        default=["CasA", "CygA"],
+        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
         help="Sources to demix.",
     )
     parser.add_argument(
@@ -495,7 +505,7 @@ def add_arguments_linc_target(parser):
         "--demix_sources",
         type=str,
         nargs="*",
-        default=["CasA", "CygA"],
+        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
         help="Sources to demix.",
     )
     parser.add_argument(
@@ -632,7 +642,10 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument("--reference_stationSB", type=int, default=None, help="")
     parser.add_argument(
-        "--ionex_server", type=str, default="ftp://gssc.esa.int/gnss/products/ionex/", help=""
+        "--ionex_server",
+        type=str,
+        default="ftp://gssc.esa.int/gnss/products/ionex/",
+        help="",
     )
     parser.add_argument("--ionex_prefix", type=str, default="UQRG", help="")
     parser.add_argument("--proxy_server", type=str, default=None, help="")
@@ -728,6 +741,17 @@ def add_arguments_linc_target(parser):
         help="Limits the input skymodel to sources that exceed the given flux density limit in Jy (default: None for HBA, i.e. all sources of the catalogue will be kept, and 1.0 for LBA).",
     )
     parser.add_argument(
+        "--output_fullres_data",
+        action="store_true",
+        help="Output the target data at full, unaveraged resolution. This is used, for example, for further VLBI-style processing.",
+    )
+    parser.add_argument(
+        "--calib_nchan",
+        type=int,
+        default=None,
+        help="Number of channels to combine during the phase calibration. 0 means combine all channels.",
+    )
+    parser.add_argument(
         "mspath",
         type=str,
         default="",
@@ -799,17 +823,22 @@ def add_arguments_vlbi_process_ddf(parser):
     parser.add_argument(
         "--h5merger",
         type=cwl_dir,
-        help="External LOFAR helper scripts for merging h5 files."
+        help="External LOFAR helper scripts for merging h5 files.",
     )
     parser.add_argument(
         "--do_subtraction",
         type=bool,
         default=False,
-        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data."
+        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data.",
     )
 
 
 def add_arguments_vlbi_delay_calibrator(parser):
+    parser.add_argument(
+        "--skip-setup",
+        action="store_true",
+        help="Use when LINC has been run in full resolution mode and the VLBI pipeline's setup steps (flagging, applying LINC solutions) should be skipped.",
+    )
     parser.add_argument(
         "--solset",
         type=cwl_file,
@@ -911,7 +940,7 @@ def add_arguments_vlbi_delay_calibrator(parser):
         "--do_subtraction",
         type=bool,
         default=False,
-        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data."
+        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data.",
     )
 
 
@@ -1380,6 +1409,14 @@ def parse_arguments_linc(args: dict):
     elif args["parser_LINC"] == "target":
         args.pop("parser_LINC")
         print("Generating LINC Target config")
+        if args["output_fullres_data"]:
+            print("Full-resolution data requested, updating defaults to:")
+            print(f"avg_timeresolution: {args['avg_timeresolution']} -> 1")
+            print(f"avg_freqresolution: {args['avg_freqresolution']} -> 12.21kHz")
+            print(f"filter_baselines: {args['filter_baselines']} -> *&")
+            args["avg_timeresolution"] = 1
+            args["avg_freqresolution"] = "12.21kHz"
+            args["filter_baselines"] = "*&"
         config = LINCJSONConfig(
             args["mspath"],
             prefac_h5parm=args["cal_solutions"],
@@ -1402,12 +1439,13 @@ def parse_arguments_vlbi(args):
                 ddf_solsdir=args["ddf_solsdir"],
                 workflow="delay-calibration",
                 ms_suffix=args["ms_suffix"],
+                skip_setup=args["skip_setup"],
             )
             args.pop("mspath")
         except ValueError as e:
             print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
-        if args["phasesol"] == "auto":
+        if (not args["skip_setup"]) and args["phasesol"] == "auto":
             try:
                 phasesol = get_linc_default_phases(args["solset"]["path"])
                 args["phasesol"] = phasesol
@@ -1416,6 +1454,7 @@ def parse_arguments_vlbi(args):
                     "phaseol is set to auto, but failed to automatically determine LINC target phase solutions."
                 )
                 sys.exit(-1)
+        args.pop("skip_setup")
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_delay_calibration.json")
