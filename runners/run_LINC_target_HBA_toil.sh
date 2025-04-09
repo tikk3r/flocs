@@ -6,14 +6,14 @@ echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-e<options for create_ms_list.py>] -d <data path>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-r <running directory>] [-e<options for create_ms_list.py>] -d <data path> -p <partitions>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
     exit 0
 fi
 
-while getopts ":d:s:r:l:b:e:" opt; do
+while getopts ":d:s:r:l:b:e:p:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
@@ -26,6 +26,8 @@ while getopts ":d:s:r:l:b:e:" opt; do
         l) LINC_DATA_ROOT="$OPTARG"
         ;;
         e) EXTRAOPTS="$OPTARG"
+        ;;
+        p) PARTITIONS="$OPTARG"
         ;;
         \?) echo "Invalid option -$OPTARG" >&2
             echo
@@ -146,14 +148,18 @@ else
 
     mkdir -p $WORKDIR/coordination
     export JOBSTORE=$WORKDIR/jobstore
-    export TOIL_SLURM_ARGS="--export=ALL --job-name LINC_Calibrator -p normal"
+    export TOIL_SLURM_ARGS="--export=ALL -p $PARTITIONS"
     mkdir $LOGSDIR/slurmlogs
 
     singularity exec -B $PWD,$BINDPATHS $SIMG python flocs/runners/create_ms_list.py LINC target --ATeam_skymodel=$LINC_DATA_ROOT/skymodels/A-Team_Midres.skymodel $EXTRAOPTS $DATADIR
-    echo LINC starting
 
+    echo LINC starting
+    if [ "$PARTITIONS" = "local" ]; then
+        export SCHEDULER="single_machine"
+    else
+        export SCHEDULER="slurm"
+    fi
     toil-cwl-runner \
-    --logLevel debug \
     --no-read-only \
     --retryCount 0 \
     --singularity \
@@ -169,10 +175,11 @@ else
     --tmpdir-prefix "${TMPDIR}/" \
     --disableAutoDeployment True \
     --bypass-file-store \
-    --preserve-entire-environment \
-    --batchSystem slurm \
+    --batchSystem $SCHEDULER \
     --batchLogsDir $LOGSDIR/slurmlogs \
-    --no-compute-checksum \ # This JSON dump at the end can result in an "[Errno 11] write could not complete without blocking" crash, so disable it.
+    --no-compute-checksum \
+    --setEnv PATH=$LINC_DATA_ROOT/scripts:\$PATH \
+    --setEnv PYTHONPATH=$LINC_DATA_ROOT/scripts:\$PYTHONPATH \
     $LINC_DATA_ROOT/workflows/HBA_target.cwl mslist_LINC_target.json
     echo LINC ended
 fi
