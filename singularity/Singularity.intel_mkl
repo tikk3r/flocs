@@ -566,6 +566,8 @@ EOF
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
 
+    find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
+
     pip install --no-deps DDFacet/
 
 
@@ -589,6 +591,8 @@ EOF
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Gridder/Makefile
 
     sed -i '261s/np\.complex/np\.complex128/' killMS/killMS/Data/ClassMS.py
+
+    find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
 
     pip install --no-deps killMS/
 
