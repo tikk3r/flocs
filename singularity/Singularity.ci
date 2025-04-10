@@ -182,16 +182,6 @@ EOF
     printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
 
-    wget --progress=bar:force:noscroll https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
-    tar -xzvf 0.5.2.tar.gz
-    rm 0.5.2.tar.gz
-    cd datashape-0.5.2/
-    sed -i 's/SafeConfigParser/ConfigParser/g' versioneer.py
-    sed -i 's/readfp/read_file/g' versioneer.py
-    pip install .
-    cd ..
-    rm -rf datashape-0.5.2/
-
     pip install --upgrade pip wheel Cython
     pip install "numpy<2"
     pip install --no-binary pandas pandas
