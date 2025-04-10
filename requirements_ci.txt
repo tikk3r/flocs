@@ -1,4 +1,3 @@
-altair
 aplpy
 asn1crypto
 astLib
@@ -26,19 +25,13 @@ cwlref-runner
 cx_Oracle
 cycler
 Cython
-dask[complete]<=2024.8.2
 deap
 decorator
 emcee
 funcsigs
 future
 git+https://git.astron.nl/RD/LSMTool.git@v1.6
-git+https://github.com/sara-nl/cortExchange#egg=cortexchange
 git+https://github.com/jurjen93/lofar_helpers.git
-git+https://github.com/jurjen93/lofar_helpers@inference_script#subdirectory=neural_networks
-git+https://github.com/ratt-ru/kittens.git
-git+https://github.com/tikk3r/EveryStamp.git
-git+https://github.com/jurjen93/sidereal_visibility_avg
 google-api-python-client
 google-auth
 google-auth-httplib2
@@ -53,12 +46,9 @@ ipython
 jinja2
 jupyterlab
 kitchen
-Kittens
 kiwisolver
-legacystamps
 linecache2
 loess
-lofar-h5plot
 markupsafe
 Mastodon.py
 matplotlib>3.9.0
@@ -73,7 +63,6 @@ numexpr
 numpy<2
 oauthlib
 pluggy
-polars
 Polygon3
 prettytable
 progressbar
