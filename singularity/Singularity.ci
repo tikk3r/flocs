@@ -221,8 +221,6 @@ EOF
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
     pip install lofar_facet_selfcal
     rm -rf lofar_facet_selfcal
-    # Install this separately since it keeps forcefully downgrading numpy.
-    pip install --no-deps lofarSun
 
     #
     # Install LTA client
