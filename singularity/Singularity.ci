@@ -6,8 +6,8 @@ From: fedora:40
     . $INSTALLDIR/init.sh
 
 %arguments
-        HAS_CUDA=true
-        HAS_MKL=true
+        HAS_CUDA=false
+        HAS_MKL=false
         MARCH=sandybridge
         MTUNE=sandybridge
         NOAVX512=true
@@ -221,51 +221,6 @@ EOF
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
     pip install lofar_facet_selfcal
     rm -rf lofar_facet_selfcal
-
-    #
-    # Install LTA client
-    #
-    cd $INSTALLDIR
-    wget --progress=bar:force:noscroll https://lta.lofar.eu/software/lofar_lta-2.8.0.tar.gz
-    tar xf lofar_lta-*
-    cd lofar_lta-2.8.0
-    pip install .
-    cd ..
-    rm lofar_lta*.tar.gz
-    rm -rf lofar_lta-2.8.0/
-
-    #
-    # Install Montage
-    #
-    #mkdir -p /opt/montage
-    #cd /opt/montage
-    #wget --progress=bar:force:noscroll https://github.com/Caltech-IPAC/Montage/archive/v6.0.tar.gz -O Montage_v6.0.tar.gz
-    #tar xf Montage_v6.0.tar.gz
-    #cd Montage-6.0
-    #make -j $J
-    #rm -rf /opt/montage/Montage_v6.0.tar.gz
-    
-
-    #
-    # Install difmap
-    #
-    mkdir -p $INSTALLDIR/difmap
-    cd $INSTALLDIR/difmap
-    #wget --progress=bar:force:noscroll ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
-    wget --progress=bar:force:noscroll https://github.com/tikk3r/flocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
-    tar xf difmap2.5e.tar.gz
-    cd uvf_difmap
-    wget https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
-
-    sed -i.bak -e '97d' configure
-    sed -i.bak -e '97 i PGPLOT_LIB=/usr/lib64/libpgplot.so.5' configure
-    ./configure linux-i486-gcc
-    export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
-    export OLD_CFLAGS=$CFLAGS
-    export CFLAGS="-L/usr/lib64/libpgplot.so.5"
-    CC=`which gcc` ./makeall
-    rm -rf $INSTALLDIR/difmap/*.tar.gz
-    export CFLAGS=$OLD_CFLAGS
 
     #
     # Install PyBDSF
@@ -537,118 +492,6 @@ EOF
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/LOFARBeam/build
     rm -rf $INSTALLDIR/LOFARBeam/src
-
-    #
-    # Install DDFacet
-    #
-    export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
-    export CXXFLAGS="$CXXFLAGS -Wno-error=incompatible-pointer-types"
-    cd $INSTALLDIR
-    git clone https://github.com/saopicc/DDFacet.git
-    cd DDFacet
-    git checkout 5cec4db8 
-    patch -u DDFacet/Other/AsyncProcessPool.py -i $INSTALLDIR/flocs/patches/DDFacet_cpus.patch
-    cd ..
-    ## Strip out version requirements.
-    sed -i 's/<=.*"/"/' DDFacet/pyproject.toml
-    # sed doesn't support negative lookahead, so we use perl here.
-    grep -rl "np.bool" DDFacet | xargs perl -pi -e 's/np\.bool(?![0-9a-zA-Z])/np\.bool_/'
-
-    sed -i "s/npzfile\.iteritems/npzfile\.items/" DDFacet/DDFacet/Imager/ClassFacetMachine.py
-    sed -i "s/3\.11/3.13/g" DDFacet/pyproject.toml
-    sed -i 's/DATA\["Weights"\]!=1/DATA\["Weights"\] is not 1/' DDFacet/DDFacet/Data/ClassVisServer.py
-
-    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
-    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
-    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
-    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
-
-    find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
-
-    pip install --no-deps DDFacet/
-
-
-    #
-    # Install killMS
-    #
-    cd $INSTALLDIR
-    git clone --single-branch -b v3.2.0 https://github.com/saopicc/killMS.git
-    sed -i 's/<=.*"/"/' killMS/pyproject.toml
-    sed -i "s/3\.11/3.13/g" killMS/pyproject.toml
-    find killMS/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
-    find killMS/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
-    find killMS/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
-    find killMS/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
-
-    grep -rl "np.float" killMS | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
-    grep -rl "np.int" killMS | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
-
-    sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Predict/Makefile
-    sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Array/Dot/Makefile
-    sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Gridder/Makefile
-
-    sed -i '261s/np\.complex/np\.complex128/' killMS/killMS/Data/ClassMS.py
-
-    find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
-
-    pip install --no-deps killMS/
-
-
-    #   
-    # Install DynSpecMS
-    #   
-    cd $INSTALLDIR && git clone https://github.com/cyriltasse/DynSpecMS.git
-    cd $INSTALLDIR/DynSpecMS && git checkout ApplyBeam
-
-    #
-    # Install ddf-pipeline
-    #
-    rm -rf $INSTALLDIR/ddf-pipeline
-    cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
-    cd ddf-pipeline && git checkout $DDFPIPELINE_VERSION && cd ..
-    cd $INSTALLDIR
-    sed -i "s/DDF.py/DDF.py --Misc-IgnoreDeprecationMarking=1/" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/--Beam-PhasedArrayMode/--Beam-LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/--PhasedArrayMode/--LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/bootstrap.py
-    sed -i '353s/readonly=True/readonly=False/' $INSTALLDIR/ddf-pipeline/utils/auxcodes.py
-    mkdir $INSTALLDIR/DDFCatalogues
-    cd $INSTALLDIR/DDFCatalogues
-    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/VLSS.fits
-    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/wenss.fits
-    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/B2.fits
-    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/NVSS.fits
-    #wget --progress=bar:force:noscroll https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
-    wget --progress=bar:force:noscroll http://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
-    cd $INSTALLDIR
-    rm /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
-    ln -s `which sub-sources-outside-region` /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
-
-    sed -i 's/SafeConfigParser/ConfigParser/g' /opt/lofar/ddf-pipeline/utils/options.py
-
-    #
-    # Install lotss-query
-    #
-    cd $INSTALLDIR
-    git clone https://github.com/mhardcastle/lotss-query.git
-
-    #
-    # Install lotss-hba-survey
-    #
-    cd $INSTALLDIR
-    git clone https://github.com/mhardcastle/lotss-hba-survey.git
-
-    #
-    # Install LINC
-    #
-    cd $INSTALLDIR
-    git clone https://git.astron.nl/RD/LINC.git
-
-
-    # Install VLBI-cwl
-    cd $INSTALLDIR
-    git clone https://git.astron.nl/RD/VLBI-cwl.git
 
     #
     # Install custom runners
