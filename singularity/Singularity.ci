@@ -453,47 +453,6 @@ EOF
     export CXX=`which g++`
 
     #
-    # Install DS9
-    #
-    mkdir -p $INSTALLDIR/ds9/bin
-    cd $INSTALLDIR/ds9
-    wget --progress=bar:force:noscroll https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.6.tar.gz
-    tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
-    rm ds9*.tar.gz
-
-    echo "Installation directory contents:"
-    ls ${INSTALLDIR}
-    
-    # Setup DDF
-    pip --no-cache-dir install meqtrees-cattery --no-deps
-    pip --no-cache-dir install owlcat --no-deps
-
-    #
-    # Install the standalone StationResponse libraries. DDFacet still uses these.
-    #   
-    echo Installing LOFARBeam...
-    mkdir -p $INSTALLDIR/LOFARBeam/build
-    cd $INSTALLDIR/LOFARBeam
-    git clone https://github.com/lofar-astron/LOFARBeam.git src
-    cd src
-    sed -i "s/-std=c++11/-std=${CPPSTD}/" CMakeLists.txt
-    echo export LOFARBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ../build
-    # Install in the existing lofar python folder
-    mkdir -p /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/
-    touch /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/__init__.py
-    if [ $HAS_MKL = true ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so ../src
-    else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
-    fi
-    make -j $J
-    make install
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/LOFARBeam/build
-    rm -rf $INSTALLDIR/LOFARBeam/src
-
-    #
     # Install custom runners
     #
     mkdir -p /opt/lofar/runners
