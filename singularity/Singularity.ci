@@ -376,11 +376,6 @@ EOF
     wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DP3/usermodules/polconv.py
 
     #
-    # Install LoSiTo
-    #
-    pip install --no-deps git+https://github.com/darafferty/losito.git
-
-    #
     # Install LoSoTo
     #
     mkdir -p $INSTALLDIR/losoto/build
