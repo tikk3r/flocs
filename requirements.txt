@@ -14,6 +14,8 @@ bces
 bilby
 blurhash
 boost
+boto3
+botocore
 breizorro
 cachetools
 certifi
@@ -67,6 +69,7 @@ mock
 mocpy
 more-itertools
 nmmn
+mypy_boto3_s3
 nose
 numdifftools
 numexpr
