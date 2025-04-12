@@ -186,7 +186,7 @@ EOF
     pip install "numpy<2"
     pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
-    pip install -r $INSTALLDIR/flocs/requirements.txt
+    pip install -r $INSTALLDIR/flocs/requirements_ci.txt
     # Install facetselfcal this way to make sure data gets installed.
     cd /opt/lofar
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
