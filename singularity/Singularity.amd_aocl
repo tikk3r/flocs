@@ -239,7 +239,7 @@ From: fedora:40
     cd ..
     rm -rf datashape-0.5.2/
 
-    pip install --upgrade pip wheel Cython
+    pip install --upgrade pip wheel Cython "setuptools>=59.5.0"
     pip install "numpy<2"
     pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
