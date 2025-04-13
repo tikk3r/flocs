@@ -113,6 +113,7 @@ rtree
 ruamel.yaml
 SciencePlots
 scikit-build
+scikit-fuzzy
 scikit-learn
 scipy
 seaborn
