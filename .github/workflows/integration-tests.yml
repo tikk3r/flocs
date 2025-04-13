@@ -28,7 +28,7 @@ jobs:
       run: |
         sudo apt -y install postgresql wget
         python -m pip install --upgrade pip "setuptools>=59.5.0"
-        python -m pip install flake8 "numpy<2" pytest wheel
+        python -m pip install flake8 "numpy<2" pytest wheel uv
         wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
         tar -xzvf 0.5.2.tar.gz
         rm 0.5.2.tar.gz
@@ -38,7 +38,7 @@ jobs:
         pip install .
         cd ..
         rm -rf datashape-0.5.2/
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements.txt ]; then uv pip install -r requirements.txt; fi
     - name: Check library imports
       run: |
         python tests/test_all_imports.py
