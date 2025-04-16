@@ -78,3 +78,23 @@ Galactic plane field with complex, large-scale diffuse emission.
 
 ![LINC target phases polXX L801462]({{ site.baseurl }}/docs/assets/images/L801462_ph_polXX.png)
 ![LINC target phases poldif L801462]({{ site.baseurl }}/docs/assets/images/L801462_ph_poldif.png)
+
+
+## VLBI delay calibration
+
+### ILTJ110224.07+574725.2
+
+Bright ~1 Jy point-like source in LockmanC. A reasonably simple field and calm ionospheric conditions.
+
+**Problems**
+
+* Oil stain-like patterns in the phase solutions instead of nice continues wrapping
+
+**Causes:**
+
+* in this case: bad _LINC Target_ solutions due to using the chunked 2 MHz calibration strategy. N.B. that this happens even when using the highly complete LOTSS sky model.
+* in general: another possibility is a too high value for the smoothness constraint.
+
+**Solution:** run LINC Target with `num_SB_per_group=-1` and `calib_nchan=1` such that the smoothness constraint can do its work.
+
+![delay solutions oil stains]({{ site.baseurl }}/docs/assets/images/ILTJ110224.07+574725.2_scalarphase1.png)
