@@ -2,6 +2,7 @@ import argparse
 import glob
 import json
 import os
+import subprocess
 import sys
 
 import casacore.tables as ct
@@ -51,6 +52,24 @@ class LINCJSONConfig:
             self.configdict["A-Team_skymodel"] = value
         else:
             self.configdict[key] = value
+
+    def create_linc_versions_file(self, overwrite=False):
+        if "LINC_DATA_ROOT" not in os.environ:
+            raise ValueError(
+                "WARNING: LINC_DATA_ROOT environment variable has not been set. Cannot generate $LINC_DATA_ROOT/.versions file."
+            )
+        linc_version = subprocess.check_output(
+            "cd /home/ddkq81/software/LINC/ && git describe --tags", shell=True
+        )
+        pip_versions = subprocess.check_output("pip freeze | sed 's/==/: /g'")
+        linc_version_file = os.path.join(os.environ["LINC_DATA_ROOT"], ".versions")
+
+        if os.path.isfile(linc_version_file) and not overwrite:
+            raise ValueError("$LINC_DATA_ROOT/.versions exists and overwite is False")
+        if not os.path.isfile(linc_version_file) or overwrite:
+            with open(linc_version_file, "wb") as f:
+                f.write(linc_version)
+                f.write(pip_versions)
 
     def save(self, fname: str):
         if not fname.endswith(".json"):
@@ -1234,6 +1253,7 @@ def add_arguments_vlbi_phaseup_concat(parser):
         default=".MS",
         help="Extension to look for when searching `mspath` for MeasurementSets",
     )
+
 
 def add_arguments_vlbi_facet_subtract(parser):
     parser.add_argument(
