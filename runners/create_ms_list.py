@@ -2,6 +2,7 @@ import argparse
 import glob
 import json
 import os
+import subprocess
 import sys
 
 import casacore.tables as ct
@@ -14,7 +15,13 @@ from typing import Union
 class LINCJSONConfig:
     """Class for generating JSON configuration files to be passed to the LINC pipeline."""
 
-    def __init__(self, mspath: str, ms_suffix: str = ".MS", prefac_h5parm={"path": ""}):
+    def __init__(
+        self,
+        mspath: str,
+        ms_suffix: str = ".MS",
+        prefac_h5parm={"path": ""},
+        update_version_file: bool = False,
+    ):
         self.configdict = {}
 
         filedir = os.path.join(mspath, f"*{ms_suffix}")
@@ -45,12 +52,35 @@ class LINCJSONConfig:
                 x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
                 final_mslist.append(x)
             self.configdict["msin"] = final_mslist
+        self.create_linc_versions_file(update_version_file)
 
     def add_entry(self, key: str, value: object):
         if "ATeam" in key:
             self.configdict["A-Team_skymodel"] = value
         else:
             self.configdict[key] = value
+
+    def create_linc_versions_file(self, overwrite=False):
+        if "LINC_DATA_ROOT" not in os.environ:
+            raise ValueError(
+                "WARNING: LINC_DATA_ROOT environment variable has not been set. Cannot generate $LINC_DATA_ROOT/.versions file."
+            )
+        linc_version = subprocess.check_output(
+            "cd /home/ddkq81/software/LINC/ && git describe --tags",
+            shell=True,
+            text=True,
+        )
+        pip_versions = subprocess.check_output(
+            "pip freeze | sed 's/==/: /g'", shell=True
+        )
+        linc_version_file = os.path.join(os.environ["LINC_DATA_ROOT"], ".versions")
+
+        if os.path.isfile(linc_version_file) and not overwrite:
+            raise ValueError("$LINC_DATA_ROOT/.versions exists and overwite is False")
+        if not os.path.isfile(linc_version_file) or overwrite:
+            with open(linc_version_file, "wb") as f:
+                f.write(f"LINC: {linc_version}".encode("utf-8"))
+                f.write(pip_versions)
 
     def save(self, fname: str):
         if not fname.endswith(".json"):
@@ -189,6 +219,11 @@ def eval_bool(s: str) -> Union[bool, None]:
 
 
 def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
+    parser.add_argument(
+        "--update-version-file",
+        action="store_true",
+        help="Overwrite the $LINC_DATA_ROOT/.versions file if it exists.",
+    )
     parser.add_argument(
         "--refant",
         type=str,
@@ -432,6 +467,11 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
 
 
 def add_arguments_linc_target(parser):
+    parser.add_argument(
+        "--update-version-file",
+        action="store_true",
+        help="Overwrite the $LINC_DATA_ROOT/.versions file if it exists.",
+    )
     parser.add_argument(
         "--cal_solutions",
         type=cwl_file,
@@ -1235,6 +1275,7 @@ def add_arguments_vlbi_phaseup_concat(parser):
         help="Extension to look for when searching `mspath` for MeasurementSets",
     )
 
+
 def add_arguments_vlbi_facet_subtract(parser):
     parser.add_argument(
         "--h5parm",
@@ -1401,7 +1442,11 @@ def parse_arguments_linc(args: dict):
     if args["parser_LINC"] == "calibrator":
         args.pop("parser_LINC")
         print("Generating LINC Calibrator config")
-        config = LINCJSONConfig(args["mspath"], ms_suffix=args["ms_suffix"])
+        config = LINCJSONConfig(
+            args["mspath"],
+            ms_suffix=args["ms_suffix"],
+            update_version_file=args["update_version_file"],
+        )
         args.pop("mspath")
         for key, val in args.items():
             config.add_entry(key, val)
@@ -1421,6 +1466,7 @@ def parse_arguments_linc(args: dict):
             args["mspath"],
             prefac_h5parm=args["cal_solutions"],
             ms_suffix=args["ms_suffix"],
+            update_version_file=args["update_version_file"],
         )
         for key, val in args.items():
             config.add_entry(key, val)
