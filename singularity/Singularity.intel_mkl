@@ -24,7 +24,7 @@ From: fedora:40
     export AOFLAGGER_VERSION=bdf03b28
     export CASACORE_VERSION=v3.7.1
     export DDFPIPELINE_VERSION=df58808
-    export DP3_VERSION=cea72f48
+    export DP3_VERSION=v6.4
     export EVERYBEAM_VERSION=v0.6.2
     export HDF5_VERSION=1.14.5
     export IDG_VERSION=2af6f285
@@ -211,7 +211,7 @@ EOF
     cd ..
     rm -rf datashape-0.5.2/
 
-    pip install --upgrade pip wheel Cython
+    pip install --upgrade pip wheel Cython "setuptools>=59.5.0"
     pip install "numpy<2"
     pip install --no-binary pandas pandas
     pip install --no-binary h5py h5py
@@ -562,6 +562,8 @@ EOF
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
 
+    find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
+
     pip install --no-deps DDFacet/
 
 
@@ -585,6 +587,8 @@ EOF
     sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Gridder/Makefile
 
     sed -i '261s/np\.complex/np\.complex128/' killMS/killMS/Data/ClassMS.py
+
+    find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
 
     pip install --no-deps killMS/
 

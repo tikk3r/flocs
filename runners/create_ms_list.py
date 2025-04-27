@@ -2,6 +2,7 @@ import argparse
 import glob
 import json
 import os
+import subprocess
 import sys
 
 import casacore.tables as ct
@@ -14,7 +15,13 @@ from typing import Union
 class LINCJSONConfig:
     """Class for generating JSON configuration files to be passed to the LINC pipeline."""
 
-    def __init__(self, mspath: str, ms_suffix: str = ".MS", prefac_h5parm={"path": ""}):
+    def __init__(
+        self,
+        mspath: str,
+        ms_suffix: str = ".MS",
+        prefac_h5parm={"path": ""},
+        update_version_file: bool = False,
+    ):
         self.configdict = {}
 
         filedir = os.path.join(mspath, f"*{ms_suffix}")
@@ -45,12 +52,35 @@ class LINCJSONConfig:
                 x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
                 final_mslist.append(x)
             self.configdict["msin"] = final_mslist
+        self.create_linc_versions_file(update_version_file)
 
     def add_entry(self, key: str, value: object):
         if "ATeam" in key:
             self.configdict["A-Team_skymodel"] = value
         else:
             self.configdict[key] = value
+
+    def create_linc_versions_file(self, overwrite=False):
+        if "LINC_DATA_ROOT" not in os.environ:
+            raise ValueError(
+                "WARNING: LINC_DATA_ROOT environment variable has not been set. Cannot generate $LINC_DATA_ROOT/.versions file."
+            )
+        linc_version = subprocess.check_output(
+            "cd /home/ddkq81/software/LINC/ && git describe --tags",
+            shell=True,
+            text=True,
+        )
+        pip_versions = subprocess.check_output(
+            "pip freeze | sed 's/==/: /g'", shell=True
+        )
+        linc_version_file = os.path.join(os.environ["LINC_DATA_ROOT"], ".versions")
+
+        if os.path.isfile(linc_version_file) and not overwrite:
+            raise ValueError("$LINC_DATA_ROOT/.versions exists and overwite is False")
+        if not os.path.isfile(linc_version_file) or overwrite:
+            with open(linc_version_file, "wb") as f:
+                f.write(f"LINC: {linc_version}".encode("utf-8"))
+                f.write(pip_versions)
 
     def save(self, fname: str):
         if not fname.endswith(".json"):
@@ -189,6 +219,11 @@ def eval_bool(s: str) -> Union[bool, None]:
 
 
 def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
+    parser.add_argument(
+        "--update-version-file",
+        action="store_true",
+        help="Overwrite the $LINC_DATA_ROOT/.versions file if it exists.",
+    )
     parser.add_argument(
         "--refant",
         type=str,
@@ -432,6 +467,11 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
 
 
 def add_arguments_linc_target(parser):
+    parser.add_argument(
+        "--update-version-file",
+        action="store_true",
+        help="Overwrite the $LINC_DATA_ROOT/.versions file if it exists.",
+    )
     parser.add_argument(
         "--cal_solutions",
         type=cwl_file,
@@ -1236,6 +1276,53 @@ def add_arguments_vlbi_phaseup_concat(parser):
     )
 
 
+def add_arguments_vlbi_facet_subtract(parser):
+    parser.add_argument(
+        "--h5parm",
+        type=cwl_file,
+        help="Single h5parm with DD solutions from direction dependent calibration.",
+    )
+    parser.add_argument(
+        "--lofar_helpers",
+        type=cwl_dir,
+        help="Path to the lofar_helpers repository.",
+    )
+    parser.add_argument(
+        "--model_image_folder",
+        type=cwl_dir,
+        help="Folder containing the WSClean model images (including channel images) of the intermediate resolution image.",
+    )
+    parser.add_argument(
+        "--facetselfcal",
+        type=cwl_dir,
+        help="Path to the lofar_facet_selfcal repository.",
+    )
+    parser.add_argument(
+        "--scratch",
+        type=eval_bool,
+        default=False,
+        help="Use the node's local scratch disk.",
+    )
+    parser.add_argument(
+        "--concat",
+        type=eval_bool,
+        default=False,
+        help="Concatenate the subtracted MeasurementSets into a single one.",
+    )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".ms",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
+    )
+
+
 def cwl_file(entry: str) -> Union[str, None]:
     """Create a CWL-friendly file entry."""
     if entry is None:
@@ -1355,7 +1442,11 @@ def parse_arguments_linc(args: dict):
     if args["parser_LINC"] == "calibrator":
         args.pop("parser_LINC")
         print("Generating LINC Calibrator config")
-        config = LINCJSONConfig(args["mspath"], ms_suffix=args["ms_suffix"])
+        config = LINCJSONConfig(
+            args["mspath"],
+            ms_suffix=args["ms_suffix"],
+            update_version_file=args["update_version_file"],
+        )
         args.pop("mspath")
         for key, val in args.items():
             config.add_entry(key, val)
@@ -1375,6 +1466,7 @@ def parse_arguments_linc(args: dict):
             args["mspath"],
             prefac_h5parm=args["cal_solutions"],
             ms_suffix=args["ms_suffix"],
+            update_version_file=args["update_version_file"],
         )
         for key, val in args.items():
             config.add_entry(key, val)
@@ -1511,6 +1603,24 @@ def parse_arguments_vlbi(args):
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_process_ddf.json")
+    elif args["parser_VLBI"] == "facet-subtract":
+        args.pop("parser_VLBI")
+        print("Generating VLBI facet-subtract config")
+        try:
+            config = VLBIJSONConfig(
+                args["mspath"],
+                prefac_h5parm=None,
+                ddf_solsdir=None,
+                workflow="process_ddf",
+                ms_suffix=args["ms_suffix"],
+            )
+            args.pop("mspath")
+        except ValueError as e:
+            print("\nERROR: Failed to generate config file. Error was: " + str(e))
+            sys.exit(-1)
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_VLBI_facet_subtract.json")
 
 
 if __name__ == "__main__":
@@ -1588,6 +1698,11 @@ if __name__ == "__main__":
         help="Generate a configuration file for the process_ddf.cwl sub-workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+    modeparser_vlbi_facet_subtract = modeparser_vlbi.add_parser(
+        "facet-subtract",
+        help="Generate a configuration file for the facet_subtract.cwl sub-workflow.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
     add_arguments_linc_calibrator(modeparser_linc_calibrator)
     add_arguments_linc_target(modeparser_linc_target)
@@ -1598,6 +1713,7 @@ if __name__ == "__main__":
     add_arguments_vlbi_concatenate_flag(modeparser_vlbi_concatenate_flag)
     add_arguments_vlbi_phaseup_concat(modeparser_vlbi_phaseup_concat)
     add_arguments_vlbi_process_ddf(modeparser_vlbi_process_ddf)
+    add_arguments_vlbi_facet_subtract(modeparser_vlbi_facet_subtract)
 
     args = vars(parser.parse_args())
     if args["parser"] == "LINC":
