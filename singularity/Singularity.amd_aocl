@@ -247,7 +247,7 @@ From: fedora:40
     # Install facetselfcal this way to make sure data gets installed.
     cd /opt/lofar
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
-    pip install lofar_facet_selfcal
+    pip install ./lofar_facet_selfcal
     rm -rf lofar_facet_selfcal
     # Install this separately since it keeps forcefully downgrading numpy.
     pip install --no-deps lofarSun
