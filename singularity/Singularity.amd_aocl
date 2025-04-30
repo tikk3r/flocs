@@ -573,6 +573,7 @@ From: fedora:40
     git checkout 5cec4db8 
     patch -u DDFacet/Other/AsyncProcessPool.py -i $INSTALLDIR/flocs/patches/DDFacet_cpus.patch
     cd ..
+    sed -i '5d' DDFacet/pyproject.toml
     ## Strip out version requirements.
     sed -i 's/<=.*"/"/' DDFacet/pyproject.toml
     # sed doesn't support negative lookahead, so we use perl here.
