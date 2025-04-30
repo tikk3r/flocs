@@ -220,6 +220,11 @@ def eval_bool(s: str) -> Union[bool, None]:
 
 def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
     parser.add_argument(
+        "--save-raw-solutions",
+        action="store_true",
+        help="Save the intermediate, raw solution tables for (bandpass, faraday, ion, polalign).",
+    )
+    parser.add_argument(
         "--update-version-file",
         action="store_true",
         help="Overwrite the $LINC_DATA_ROOT/.versions file if it exists.",
