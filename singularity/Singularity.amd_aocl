@@ -598,6 +598,7 @@ From: fedora:40
     #
     cd $INSTALLDIR
     git clone --single-branch -b v3.2.0 https://github.com/saopicc/killMS.git
+    sed -i '5d' killMS/pyproject.toml
     sed -i 's/<=.*"/"/' killMS/pyproject.toml
     sed -i "s/3\.11/3.13/g" killMS/pyproject.toml
     find killMS/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
