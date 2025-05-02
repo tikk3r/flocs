@@ -76,7 +76,7 @@ class LINCJSONConfig:
         linc_version_file = os.path.join(os.environ["LINC_DATA_ROOT"], ".versions")
 
         if os.path.isfile(linc_version_file) and not overwrite:
-            raise ValueError("$LINC_DATA_ROOT/.versions exists and overwite is False")
+            print(f"Using existing {os.environ['LINC_DATA_ROOT']}/.versions")
         if not os.path.isfile(linc_version_file) or overwrite:
             with open(linc_version_file, "wb") as f:
                 f.write(f"LINC: {linc_version}".encode("utf-8"))
