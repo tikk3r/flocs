@@ -131,9 +131,15 @@ class VLBIJSONConfig(LINCJSONConfig):
             else:
                 if not prefac_h5parm:
                     raise ValueError("Invalid path to LINC solutions specified.")
-                prefac_freqs = get_prefactor_freqs(
-                    solname=prefac_h5parm["path"], solset="target"
-                )
+                try:
+                    prefac_freqs = get_prefactor_freqs(
+                        solname=prefac_h5parm["path"], solset="target"
+                    )
+                except Exception as e:
+                    print("Full exception:")
+                    print(e)
+                    if "Cannot find solset" in e.args[0].lower():
+                        print("\ntarget solset not found. Did you pass the LINC target solutions?")
                 for dd in files:
                     if check_dd_freq(dd, prefac_freqs):
                         mslist.append(dd)
