@@ -11,7 +11,14 @@ h5name = sys.argv[1]
 
 
 class LINCTargetFlagger:
-    def __init__(self, h5name, solset, soltab):
+    def __init__(self, h5name: str, solset: str, soltab: str):
+        """Initialise a solution flagger.
+
+        Args:
+            h5name (str): name of the h5parm to be flagged.
+            solset (str): name of the solset containing the soltab to be flagged.
+            soltab (str): name of the soltab containing the solutions to be flagged.
+        """
         self.h5 = h5parm(h5name, readonly=False)
         self.ss = self.h5.getSolset(solset)
         self.st = self.ss.getSoltab(soltab)
@@ -47,7 +54,12 @@ class LINCTargetFlagger:
             s.append(circstd(data - pd_filtered))
         return s
 
-    def flag_solutions(self, blank_data):
+    def flag_solutions(self, blank_data: bool):
+        """Flag bad phase solutions.
+
+        Args:
+            blank_data (bool): whether to set the phases to NaN (True) or just set the weights to 0 (False).
+        """
         print("[BEGIN] flagging solutions")
         s = self.get_core_scatter()
         mean_scatter = np.average(s)
