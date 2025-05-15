@@ -7,8 +7,6 @@ from scipy.signal import medfilt
 from scipy.stats import binned_statistic, circstd
 from tqdm import tqdm
 
-h5name = sys.argv[1]
-
 
 class LINCTargetFlagger:
     def __init__(self, h5name: str, solset: str, soltab: str):
