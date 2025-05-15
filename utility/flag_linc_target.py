@@ -1,3 +1,4 @@
+import argparse
 import sys
 
 import numpy as np
@@ -8,73 +9,115 @@ from tqdm import tqdm
 
 h5name = sys.argv[1]
 
-h5 = h5parm(h5name, readonly=True)
-ss = h5.getSolset("target")
-st = ss.getSoltab("TGSSphase_final")
 
-metadata = st.getValues()[1]
-t = metadata["time"]
+class LINCTargetFlagger:
+    def __init__(self, h5name, solset, soltab):
+        self.h5 = h5parm(h5name, readonly=False)
+        self.ss = self.h5.getSolset(solset)
+        self.st = self.ss.getSoltab(soltab)
 
-refant = metadata["ant"][0]
+        self.metadata = self.st.getValues()[1]
+        self.t = self.metadata["time"]
+        self.ants = self.metadata["ant"]
 
-phases_ref = st.getValues(refAnt="CS007HBA1")[0]
-weights = st.getValues(weight=True)[0]
-phases_ref = np.transpose(phases_ref, (0, 3, 2, 1))
-phases_ref_diff = (phases_ref[:, 1, :, :] - phases_ref[:, 0, :, :] + np.pi) % (
-    2 * np.pi
-) - np.pi
+        self.refant = self.metadata["ant"][0]
 
-ants = metadata["ant"]
+    def load_weights(self):
+        print("[BEGIN] loading weights")
+        self.weights = self.st.getValues(weight=True)[0]
+        print("[END] loading weights")
 
-def get_core_scatter():
-    has_cs = np.char.find(metadata["ant"], "CS") >= 0
-    s = []
-    for ant in np.where(has_cs)[0]:
-        data = phases_ref_diff[:, 0, ant]
-        data[~np.isfinite(data)] = 0
-        pd_filtered = medfilt(data, 59)
-        print(f"Scatter for antenna {ant} is {circstd(data-pd_filtered)}")
-        s.append(circstd(data - pd_filtered))
-    return s
+    def load_wrapped_phases(self):
+        print("[BEGIN] loading phases")
+        self.phases_ref = self.st.getValues(refAnt="CS007HBA1")[0]
+        self.phases_ref = np.transpose(self.phases_ref, (0, 3, 2, 1))
+        self.phases_ref_diff = (
+            self.phases_ref[:, 1, :, :] - self.phases_ref[:, 0, :, :] + np.pi
+        ) % (2 * np.pi) - np.pi
+        print("[END] loading phases")
 
+    def get_core_scatter(self):
+        has_cs = np.char.find(self.ants, "CS") >= 0
+        s = []
+        for ant in np.where(has_cs)[0]:
+            data = self.phases_ref_diff[:, 0, ant]
+            data[~np.isfinite(data)] = 0
+            pd_filtered = medfilt(data, 59)
+            print(f"Scatter for antenna {ant} is {circstd(data-pd_filtered)}")
+            s.append(circstd(data - pd_filtered))
+        return s
 
-s = get_core_scatter()
+    def flag_solutions(self, blank_data):
+        print("[BEGIN] flagging solutions")
+        s = self.get_core_scatter()
+        mean_scatter = np.average(s)
+        median_scatter = np.median(s)
+        print(f"{mean_scatter=}, {median_scatter=}")
 
-mean_scatter = np.average(s)
-median_scatter = np.median(s)
-print(f"{mean_scatter=}, {median_scatter=}")
+        pbar_ant = tqdm(total=len(self.metadata["ant"]))
+        pbar_chan = tqdm(total=len(self.metadata["freq"]))
+        for station in self.metadata["ant"]:
+            pbar_ant.update()
+            for channel in range(len(self.metadata["freq"])):
+                pbar_chan.update()
+                if "CS" not in station and "RS" not in station:
+                    continue
+                idx = np.argwhere(self.metadata["ant"] == station)
+                phasediff = self.phases_ref_diff[:, channel, idx].squeeze()
 
-BLANK_DATA = False
+                phasediff[~np.isfinite(phasediff)] = 0
+                t = self.metadata["time"]
+                bins = len(phasediff) // 8 + 1
+                binned_std, _, _ = binned_statistic(
+                    t, phasediff, statistic=circstd, bins=bins
+                )
+                bstd_full = np.repeat(binned_std, 8)[: len(phasediff)]
+
+                mask_bad_timeslot = bstd_full > 3 * median_scatter
+                self.phases_ref[mask_bad_timeslot] = np.nan
+                self.weights[mask_bad_timeslot] = 0.0
+            pbar_chan.reset()
+        if blank_data:
+            self.st.setValues(self.phases_ref)
+        self.st.setValues(self.weights, weight=True)
+        self.h5.close()
+        print("[END] flagging solutions")
 
 
 def main():
-    pbar_ant = tqdm(total=len(metadata["ant"]))
-    pbar_chan = tqdm(total=len(metadata["freq"]))
-    for station in metadata["ant"]:
-        pbar_ant.update()
-        for channel in range(len(metadata["freq"])):
-            pbar_chan.update()
-            if "CS" not in station and "RS" not in station:
-                continue
-            idx = np.argwhere(metadata["ant"] == station)
-            phasediff = phases_ref_diff[:, channel, idx].squeeze()
+    parser = argparse.ArgumentParser(
+        description="Flag bad regions in LINC target diagonal phase solutions."
+    )
+    parser.add_argument("--h5parm", type=str, help="H5parm that will be flagged.")
+    parser.add_argument(
+        "--solset",
+        type=str,
+        help="Solset containing the target solutions.",
+        default="target",
+    )
+    parser.add_argument(
+        "--soltab",
+        type=str,
+        help="Soltab containing diagonal phase solutoins to flag.",
+        default="TGSSphase_final",
+    )
+    parser.add_argument(
+        "--sigma",
+        type=float,
+        default=3.0,
+        help="Flag time bins for which circstd(XX-YY) exceeds this multiple of the reference value.",
+    )
+    parser.add_argument(
+        "--blank-data",
+        action="store_true",
+        help="Also set data to NaN in addition to setting weights to 0.",
+    )
+    args = parser.parse_args()
 
-            phasediff[~np.isfinite(phasediff)] = 0
-            t = metadata["time"]
-            bins = len(phasediff) // 8 + 1
-            binned_std, _, _ = binned_statistic(
-                t, phasediff, statistic=circstd, bins=bins
-            )
-            bstd_full = np.repeat(binned_std, 8)[: len(phasediff)]
-
-            mask_bad_timeslot = bstd_full > 3 * median_scatter
-            phases_ref[mask_bad_timeslot] = np.nan
-            weights[mask_bad_timeslot] = 0.0
-        pbar_chan.reset()
-    if BLANK_DATA:
-        st.setValues(phases_ref)
-    st.setValues(weights, weight=True)
-    h5.close()
+    flagger = LINCTargetFlagger(args.h5parm, args.solset, args.soltab)
+    flagger.load_weights()
+    flagger.load_wrapped_phases()
+    flagger.flag_solutions(args.blank_data)
 
 
 main()
