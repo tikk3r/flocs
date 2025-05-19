@@ -13,6 +13,17 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.6.0
+**Updates**
+* Add `scikit-fuzzy`
+* Enable DP3 metadata compression by default.
+* Update create_ms_list.py to support LINC full resolution input for delay calibration through `--skip-setup`.
+* Update create_ms_list.py to output raw LINC calibrator solutions.
+* Update create_ms_list.py to automatically generate LINC's `.versions` file.
+* Update casacore -> v3.7.1
+* Update DP3 -> c7fe69da
+* Update WSClean -> df9a4fd2
+
 ## v5.5.1
 **Updates**
 * Update losoto to e4ed09a
