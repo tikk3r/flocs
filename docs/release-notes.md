@@ -22,7 +22,7 @@ nav_order: 5
 * Update create_ms_list.py to automatically generate LINC's `.versions` file.
 * Update casacore -> v3.7.1
 * Update DP3 -> c7fe69da
-* Update WSClean -> df9a4fd2
+* Update WSClean -> 36818404
 
 ## v5.5.1
 **Updates**
