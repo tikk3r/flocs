@@ -31,6 +31,18 @@ LINC Calibrator corrects for systematic effects: an offset between the XX and YY
 
 ![LINC calibrator phases polXX]({{ site.baseurl }}/docs/assets/images/polalign_ph_polXX_bad.png)
 
+### Bad bandpass
+**Problems:**
+
+* International station bandpasses are completely wrong shape. They should look similar, to the Dutch ones (but higher values).
+* Lots of flagged data in general.
+
+**Notes:**
+
+* This data was taken during a G2 geomagnetic storm, i.e. a bad scenario with probably a very wild/disturbed ionosphere.
+
+![LINC calibrator bandpasses]({{ site.baseurl }}/docs/assets/images/bandpass_time5185634402.00278_L2014928.png)
+
 ## LINC Target
 
 LINC Target mainly solves for direction-independent ionospheric effects. The resulting phase solutions should reflect ionospheric behaviour and must therefore appear physical. This means that you expect smooth variations, especially as a function of frequency, that is trackable by eye. If solutions get noisy, discrete or you can no longer see a smooth pattern by eye that are indications of problems and depending on their severity demand further inspection of your data before proceeding to further more complicated pipelines. In general it is useful to think of it as any problem you introduce at a given step being *uncorrectable* in later steps.
