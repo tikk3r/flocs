@@ -307,7 +307,6 @@ EOF
     # Install Python-CASAcore
     #
     # In case anything was installed previously
-    uv pip uninstall -y python-casacore
     uv pip install --no-deps --no-binary python-casacore "python-casacore==${PYTHON_CASACORE_VERSION}"
     
     #
