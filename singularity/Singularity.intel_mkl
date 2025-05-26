@@ -88,6 +88,8 @@ From: fedora:40
     # Necessary for nomacs
     sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 
+    dnf -y install https://na.edge.kernel.org/fedora/releases/39/Everything/x86_64/os/Packages/o/openssl1.1-1.1.1q-5.fc39.x86_64.rpm
+
     export CC=`which gcc`
     export CXX=`which g++`
     
