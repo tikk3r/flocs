@@ -179,7 +179,7 @@ if [[ -z "$SIMG" ]]; then
     wget https://raw.githubusercontent.com/LOFAR-VLBI/lofar-vlbi-pipeline/refs/heads/master/plot_field.py
     python plot_field.py --MS $ms --continue_no_lotss
 
-    export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH
+    export PATH=$VLBI_DATA_ROOT/scripts:$LINC_DATA_ROOT/scripts:$PATH
     git clone https://github.com/tikk3r/flocs.git
 
     python flocs/runners/create_ms_list.py VLBI delay-calibration --solset=$TARGETSOLS --configfile=$VLBI_DATA_ROOT/facetselfcal_config.txt --h5merger=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT --delay_calibrator=delay_calibrators.csv --linc=$LINC_DATA_ROOT $EXTRAOPTS $DATADIR
@@ -187,7 +187,7 @@ if [[ -z "$SIMG" ]]; then
     echo VLBI-cwl starting
     # Switch to a non-GUI backend to avoid plotting issues.
     echo export MPLBACKEND='Agg' > jobrunner.sh
-    echo export PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts:$PATH >> jobrunner.sh
+    echo export PATH=$VLBI_DATA_ROOT/scripts:$LINC_DATA_ROOT/scripts:$PATH >> jobrunner.sh
     echo export PYTHONPATH=\$VLBI_DATA_ROOT/scripts:\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
     echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $VLBI_DATA_ROOT/workflows/delay-calibration.cwl mslist_VLBI_delay_calibration.json 2>&1' >> jobrunner.sh
     (time bash jobrunner.sh) |& tee $WORKDIR/job_output_vlbi-cwl_delay-calibration.txt
@@ -203,14 +203,14 @@ else
         export APPTAINERENV_RESULTSDIR=$RESULTSDIR
         export APPTAINERENV_LOGSDIR=$LOGSDIR
         export APPTAINERENV_TMPDIR=$TMPDIR
-        export APPTAINERENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts
+        export APPTAINERENV_PREPEND_PATH=$VLBI_DATA_ROOT/scripts:$LINC_DATA_ROOT/scripts
     else
         export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
         export SINGULARITYENV_VLBI_DATA_ROOT=$VLBI_DATA_ROOT
         export SINGULARITYENV_RESULTSDIR=$RESULTSDIR
         export SINGULARITYENV_LOGSDIR=$LOGSDIR
         export SINGULARITYENV_TMPDIR=$TMPDIR
-        export SINGULARITYENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts:$VLBI_DATA_ROOT/scripts
+        export SINGULARTIYENV_PREPEND_PATH=$VLBI_DATA_ROOT/scripts:$LINC_DATA_ROOT/scripts
     fi
 
     pattern="${DATADIR}/*.MS"
