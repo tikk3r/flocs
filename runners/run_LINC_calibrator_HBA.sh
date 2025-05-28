@@ -173,6 +173,12 @@ else
     (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh 2>&1) |& tee $WORKDIR/job_output_linc-calibrator.txt
     echo LINC ended
 fi
+
+if grep "is permanentFail" 'job_output_full.txt'; then
+    echo "Pipeline failed to finish successfully. Here's my best post-mortem:"
+    grep "permanentFail" 'job_output_full.txt'
+fi
+
 echo Cleaning up...
 echo == Deleting LINC tmpdir..
 rm -rf $WORKDIR/tmpdir_LINC_calibrator
