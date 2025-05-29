@@ -123,6 +123,7 @@ shapely
 sharedarray
 six
 sshtunnel
+spinifex
 statsmodels
 subprocess32
 sunpy
