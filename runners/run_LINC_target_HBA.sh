@@ -105,7 +105,7 @@ if [ ! -d $LINC_DATA_ROOT ]; then
     mkdir -p $LINC_DATA_ROOT
     git clone https://git.astron.nl/RD/LINC.git $LINC_DATA_ROOT
     cd $LINC_DATA_ROOT
-    git checkout 7a4283a6
+    git checkout full_bandwidth_solve
     cd -
 fi
 #
