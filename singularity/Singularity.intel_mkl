@@ -298,10 +298,8 @@ EOF
         cmake $CMAKE_ADD_OPTION \
             -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
             -DDATA_DIR=${INSTALLDIR}/casacore/data \
-            -DBUILD_PYTHON=False \
             -DUSE_OPENMP=True \
             -DUSE_HDF5=True \
-            -DBUILD_PYTHON3=True \
             -DBUILD_DYSCO=ON \
             -DBLA_VENDOR=Intel10_64lp \
             ../src
@@ -309,10 +307,8 @@ EOF
         cmake $CMAKE_ADD_OPTION \
             -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/casacore/ \
             -DDATA_DIR=${INSTALLDIR}/casacore/data \
-            -DBUILD_PYTHON=False \
             -DUSE_OPENMP=True \
             -DUSE_HDF5=True \
-            -DBUILD_PYTHON3=True \
             -DBUILD_DYSCO=ON \
             -DBLAS_LIBRARIES=/opt/OpenBLAS/lib64/libopenblas.so \
             ../src
