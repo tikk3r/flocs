@@ -28,7 +28,7 @@ jobs:
           wget https://github.com/mikefarah/yq/releases/download/v4.45.4/yq_linux_amd64 -O yq
           chmod u+x yq
           pip install uv
-          uv pip install numpy losoto python-casacore
+          uv pip install --system numpy losoto python-casacore
     - name: Generate templates
       run: |
           git clone https://git.astron.nl/RD/LINC.git
