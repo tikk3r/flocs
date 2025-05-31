@@ -793,7 +793,7 @@ def add_arguments_linc_target(parser):
     parser.add_argument(
         "--calib_nchan",
         type=int,
-        default=None,
+        default=1,
         help="Number of channels to combine during the phase calibration. 0 means combine all channels.",
     )
     parser.add_argument(
