@@ -26,6 +26,7 @@ jobs:
       run: |
           sudo apt -y install git jq wget
           wget https://github.com/mikefarah/yq/releases/download/v4.45.4/yq_linux_amd64 -O yq
+          chmod u+x yq
           pip install cwltool
     - name: Generate templates
       run: |
