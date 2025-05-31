@@ -22,17 +22,19 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.12
-    - name: Setup
+    - name: Setup dependencies
       run: |
         sudo apt -y install git jq yq
         pip install cwltool
-    - name: Check LINC options
+    - name: Generate templates
       run: |
           git clone https://git.astron.nl/RD/LINC.git
           cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc.yml
           yq --tojson template_linc.yml > template_linc.json
           export LINC_DATA_ROOT=$PWD/LINC
           python runners/create_ms_list.py LINC target .
+    - name: Check LINC options
+      run: |
           jq -r 'keys[] as $k | "\($k)"' mslist_LINC_target.json > keys_flocs
           jq -r 'keys[] as $k | "\($k)"' template.json > keys_template
           if [[ $(diff -q keys_template keys_flocs) ]]; then echo "Keys do not match LINC" && sys.exit(1); f
