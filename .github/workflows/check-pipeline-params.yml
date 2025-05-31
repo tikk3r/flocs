@@ -24,13 +24,14 @@ jobs:
         python-version: 3.12
     - name: Setup dependencies
       run: |
-        sudo apt -y install git jq yq
-        pip install cwltool
+          sudo apt -y install git jq wget
+          wget https://github.com/mikefarah/yq/releases/download/v4.45.4/yq_linux_amd64 -O yq
+          pip install cwltool
     - name: Generate templates
       run: |
           git clone https://git.astron.nl/RD/LINC.git
           cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc.yml
-          yq --tojson template_linc.yml > template_linc.json
+          ./yq --tojson template_linc.yml > template_linc.json
           export LINC_DATA_ROOT=$PWD/LINC
           python runners/create_ms_list.py LINC target .
     - name: Check LINC options
