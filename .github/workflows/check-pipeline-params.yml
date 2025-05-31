@@ -1,0 +1,39 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: pipeline parameters
+
+on:
+  schedule:
+      - cron: "0 0 * * 1"
+  push:
+    branches: [ fedora-py3 ]
+  pull_request:
+    branches: [ fedora-py3 ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.12
+    - name: Setup
+      run: |
+        sudo apt -y install git jq yq
+        pip install cwltool
+    - name: Check LINC options
+      run: |
+          git clone https://git.astron.nl/RD/LINC.git
+          cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc.yml
+          yq --tojson template_linc.yml > template_linc.json
+          export LINC_DATA_ROOT=$PWD/LINC
+          python runners/create_ms_list.py LINC target .
+          jq -r 'keys[] as $k | "\($k)"' mslist_LINC_target.json > keys_flocs
+          jq -r 'keys[] as $k | "\($k)"' template.json > keys_template
+          if [[ $(diff -q keys_template keys_flocs) ]]; then echo "Keys do not match LINC" && sys.exit(1); f
+

@@ -1453,6 +1453,7 @@ def parse_arguments_linc(args: dict):
             update_version_file=args["update_version_file"],
         )
         args.pop("mspath")
+        args.pop("update_version_file")
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_LINC_calibrator.json")
@@ -1473,6 +1474,7 @@ def parse_arguments_linc(args: dict):
             ms_suffix=args["ms_suffix"],
             update_version_file=args["update_version_file"],
         )
+        args.pop("update_version_file")
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_LINC_target.json")
