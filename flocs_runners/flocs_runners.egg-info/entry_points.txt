@@ -1,0 +1,2 @@
+[console_scripts]
+flocs-create-ms-list = create_ms_list:main

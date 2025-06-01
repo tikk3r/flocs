@@ -1664,7 +1664,7 @@ def parse_arguments_vlbi(args):
         config.save("mslist_VLBI_facet_subtract.json")
 
 
-if __name__ == "__main__":
+def main():
     if "LINC_DATA_ROOT" not in os.environ:
         print(
             "WARNING: LINC_DATA_ROOT environment variable has not been set! Please set this variable and rerun the script."
@@ -1761,3 +1761,6 @@ if __name__ == "__main__":
         parse_arguments_linc(args)
     elif args["parser"] == "VLBI":
         parse_arguments_vlbi(args)
+
+if __name__ == "__main__":
+    main()
