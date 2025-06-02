@@ -6,7 +6,10 @@ from typing import Optional, Union
 
 import casacore.tables as ct
 import numpy as np
+import structlog
 from losoto.h5parm import h5parm
+
+logger = structlog.getLogger()
 
 
 def cwl_file(entry: str) -> Optional[str]:
@@ -134,9 +137,9 @@ class LINCJSONConfig:
         self.configdict = {}
 
         filedir = os.path.join(mspath, f"*{ms_suffix}")
-        print(f"Searching {filedir}")
+        logger.info(f"Searching {filedir}")
         files = sorted(glob.glob(filedir))
-        print(f"Found {len(files)} files")
+        logger.info(f"Found {len(files)} files")
 
         if not prefac_h5parm["path"].endswith("h5") and not prefac_h5parm[
             "path"
@@ -185,7 +188,7 @@ class LINCJSONConfig:
         linc_version_file = os.path.join(os.environ["LINC_DATA_ROOT"], ".versions")
 
         if os.path.isfile(linc_version_file) and not overwrite:
-            print(f"Using existing {os.environ['LINC_DATA_ROOT']}/.versions")
+            logger.info(f"Using existing {os.environ['LINC_DATA_ROOT']}/.versions")
         if not os.path.isfile(linc_version_file) or overwrite:
             with open(linc_version_file, "wb") as f:
                 f.write(f"LINC: {linc_version}".encode("utf-8"))
@@ -196,4 +199,4 @@ class LINCJSONConfig:
             fname += ".json"
         with open(fname, "w") as outfile:
             json.dump(self.configdict, outfile, indent=4)
-        print(f"Written configuration to {fname}")
+        logger.info(f"Written configuration to {fname}")
