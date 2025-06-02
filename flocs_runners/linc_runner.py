@@ -1,14 +1,17 @@
-from .utils import cwl_file, cwl_dir
+from .utils import cwl_file, cwl_dir, LINCJSONConfig
 import os
 import sys
+import structlog
 import typer
 from typer import Argument, Option
 from typing import List, Optional, Tuple
 from typing_extensions import Annotated
 
+logger = structlog.getLogger()
+
 if "LINC_DATA_ROOT" not in os.environ:
-    print(
-        "WARNING: LINC_DATA_ROOT environment variable has not been set. Cannot generate $LINC_DATA_ROOT/.versions file."
+    logger.warning(
+        "LINC_DATA_ROOT environment variable has not been set. Cannot generate $LINC_DATA_ROOT/.versions file."
     )
     sys.exit(-1)
 
@@ -228,7 +231,18 @@ def calibrator(
         ),
     ] = 2000,
 ):
-    pass
+    args = locals()
+    logger.info("Generating LINC Calibrator config")
+    config = LINCJSONConfig(
+        args["mspath"],
+        ms_suffix=args["ms_suffix"],
+        update_version_file=args["update_version_file"],
+    )
+    args.pop("mspath")
+    args.pop("update_version_file")
+    for key, val in args.items():
+        config.add_entry(key, val)
+    config.save("mslist_LINC_calibrator.json")
 
 
 @app.command()
