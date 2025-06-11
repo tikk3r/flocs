@@ -458,6 +458,18 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         help="Split the set into intervals with the given maximum size, and flag each interval independently. This lowers the amount of memory required.",
     )
     parser.add_argument(
+        "--maxStddev",
+        type=float,
+        default=-1.0,
+        help="Maximum allowable standard deviation when outlier clipping is done. For phases, this value should be in radians, for amplitudes in log(amp). If None (or negative), a value of 0.1 rad is used for phases and 0.01 for amplitudes (default: ``-1.0``)",
+    )
+    parser.add_argument(
+        "--min_probability",
+        type=float,
+        default=0.5,
+        help="Minimal accepted threshold given by the probability criterion of the demix tuning for a patch to be selected for demixing (default: ``0.5``)",
+    )
+    parser.add_argument(
         "mspath",
         type=str,
         default="",
@@ -687,17 +699,6 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument("--reference_stationSB", type=int, default=None, help="")
     parser.add_argument(
-        "--ionex_server",
-        type=str,
-        default="ftp://gssc.esa.int/gnss/products/ionex/",
-        help="",
-    )
-    parser.add_argument("--ionex_prefix", type=str, default="UQRG", help="")
-    parser.add_argument("--proxy_server", type=str, default=None, help="")
-    parser.add_argument("--proxy_port", type=int, default=None, help="")
-    parser.add_argument("--proxy_type", type=str, default=None, help="")
-    parser.add_argument("--proxy_pass", type=str, default=None, help="")
-    parser.add_argument(
         "--clip_sources",
         type=str,
         nargs="*",
@@ -761,10 +762,10 @@ def add_arguments_linc_target(parser):
         help="Self calibration strategy to follow.",
     )
     parser.add_argument(
-        "--selfcal_hba_uvlambdamin",
+        "--hba_uvlambdamin",
         type=float,
         default=200.0,
-        help="Specifies minimum uv-distance in units of wavelength to be used when performing selfcal with HBA.",
+        help="Specifies minimum uv-distance in units of wavelength to be used during calibration.",
     )
     parser.add_argument(
         "--selfcal_hba_imsize",
@@ -795,6 +796,18 @@ def add_arguments_linc_target(parser):
         type=int,
         default=1,
         help="Number of channels to combine during the phase calibration. 0 means combine all channels.",
+    )
+    parser.add_argument(
+        "--maxStddev",
+        type=float,
+        default=-1.0,
+        help="Maximum allowable standard deviation when outlier clipping is done. For phases, this value should be in radians, for amplitudes in log(amp). If None (or negative), a value of 0.1 rad is used for phases and 0.01 for amplitudes (default: ``-1.0``)",
+    )
+    parser.add_argument(
+        "--min_probability",
+        type=float,
+        default=0.5,
+        help="Minimal accepted threshold given by the probability criterion of the demix tuning for a patch to be selected for demixing (default: ``0.5``)",
     )
     parser.add_argument(
         "mspath",
