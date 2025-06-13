@@ -222,7 +222,6 @@ From: fedora:40
     # Install the normal Python environment.
     uv venv --seed --python=python3 $INSTALLDIR/pyenv-py3
     # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
-    printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
 
     uv pip install --upgrade pip wheel Cython "setuptools>=59.5.0,<71"
