@@ -43,12 +43,12 @@ emcee
 funcsigs
 future
 git+https://git.astron.nl/RD/LSMTool.git@v1.6
-git+https://github.com/LOFAR-VLBI/astroNNomy.git#egg=astroNNomy
+git+https://github.com/LOFAR-VLBI/astroNNomy.git
 git+https://github.com/jurjen93/lofar_helpers.git
 git+https://github.com/jurjen93/lofar_helpers@inference_script#subdirectory=neural_networks
 git+https://github.com/jurjen93/sidereal_visibility_avg
 git+https://github.com/ratt-ru/kittens.git
-git+https://github.com/sara-nl/cortExchange#egg=cortexchange
+git+https://github.com/sara-nl/cortExchange
 git+https://github.com/tikk3r/EveryStamp.git
 google-api-python-client
 google-auth
