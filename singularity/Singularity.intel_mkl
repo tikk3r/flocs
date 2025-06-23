@@ -534,20 +534,22 @@ EOF
     cd ..
     sed -i '5d' DDFacet/pyproject.toml
     ## Strip out version requirements.
-    sed -i 's/<=.*"/"/' DDFacet/pyproject.toml
+    sed -i 's/,.*<=.*"/"/' DDFacet/pyproject.toml
     # sed doesn't support negative lookahead, so we use perl here.
     grep -rl "np.bool" DDFacet | xargs perl -pi -e 's/np\.bool(?![0-9a-zA-Z])/np\.bool_/'
 
     sed -i "s/npzfile\.iteritems/npzfile\.items/" DDFacet/DDFacet/Imager/ClassFacetMachine.py
     sed -i "s/3\.11/3.13/g" DDFacet/pyproject.toml
     sed -i 's/DATA\["Weights"\]!=1/DATA\["Weights"\] is not 1/' DDFacet/DDFacet/Data/ClassVisServer.py
+    # Remove old_c_gridder to make things build
+    sed -i "100d" DDFacet/DDFacet/Gridder/CMakeLists.txt
 
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
 
-    find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -i -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
+    find DDFacet \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -i -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
 
     uv pip install --no-deps DDFacet/
 
@@ -558,7 +560,7 @@ EOF
     cd $INSTALLDIR
     git clone --single-branch -b v3.2.0 https://github.com/saopicc/killMS.git
     sed -i '5d' killMS/pyproject.toml
-    sed -i 's/<=.*"/"/' killMS/pyproject.toml
+    sed -i 's/,.*<=.*"/"/' killMS/pyproject.toml
     sed -i "s/3\.11/3.13/g" killMS/pyproject.toml
     find killMS/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
     find killMS/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
