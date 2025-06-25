@@ -21,19 +21,18 @@ From: fedora:40
     export PYTHON_VERSION=3.12
 
     # Settings relevant to the installed software.
-    export AOFLAGGER_VERSION=bdf03b28
-    export CASACORE_VERSION=v3.7.1
+    export AOFLAGGER_VERSION=ae522544
+    export CASACORE_VERSION=8e2648a
     export DDFPIPELINE_VERSION=df58808
-    export DP3_VERSION=c7fe69da
-    export EVERYBEAM_VERSION=v0.6.2
+    export DP3_VERSION=fa7b5df9
+    export EVERYBEAM_VERSION=c180e429
     export HDF5_VERSION=1.14.5
-    export IDG_VERSION=2af6f285
+    export IDG_VERSION=a5675159
     export LOSOTO_VERSION=e4ed09a
     export OPENBLAS_VERSION=v0.3.29
     export PYBDSF_VERSION=8471637
     export PYTHON_CASACORE_VERSION=3.6.1
-    export RMEXTRACT_VERSION=0.5.0
-    export WSCLEAN_VERSION=36818404
+    export WSCLEAN_VERSION=8c11e6cb
     export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
 
@@ -664,10 +663,9 @@ EOF
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
 
     # Store version information.
-    echo export FLOCS_VERSION=5.5.0 >> $INSTALLDIR/init.sh
+    echo export FLOCS_VERSION=5.7.0 >> $INSTALLDIR/init.sh
     echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
     echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
-    echo export RMEXTRACT_VERSION=$RMEXTRACT_VERSION >> $INSTALLDIR/init.sh
     echo export HDF5_USE_FILE_LOCKING=$HDF5_USE_FILE_LOCKING >> $INSTALLDIR/init.sh
 
     echo export MARCH=$MARCH >> $INSTALLDIR/init.sh
