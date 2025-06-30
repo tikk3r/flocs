@@ -56,9 +56,11 @@ From: fedora:40
     if [ $NOAVX512 = true ]; then
         export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -mno-avx512f"
         export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD} -mno-avx512f"
+        export FFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f"
     else
         export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE}"
         export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -std=${CPPSTD}"
+        export FFLAGS="-march=${MARCH} -mtune=${MTUNE}"
     fi
     if [ $DEBUG = true ]; then
         export CFLAGS="-g $CFLAGS"
