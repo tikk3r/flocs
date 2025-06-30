@@ -104,9 +104,6 @@ if [ ! -d $LINC_DATA_ROOT ]; then
     echo $LINC_DATA_ROOT does not exist and will be created. Cloning LINC...
     mkdir -p $LINC_DATA_ROOT
     git clone https://git.astron.nl/RD/LINC.git $LINC_DATA_ROOT
-    cd $LINC_DATA_ROOT
-    git checkout full_bandwidth_solve
-    cd -
 fi
 #
 # Check if FLoCs directory exists or is valid.
