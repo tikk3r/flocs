@@ -345,7 +345,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         "--demix_sources",
         type=str,
         nargs="*",
-        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
+        default=["VirA_Gaussian", "CygA_Gaussian", "CasA_Gaussian", "TauA_Gaussian"],
         help="Sources to demix.",
     )
     parser.add_argument(
@@ -702,7 +702,7 @@ def add_arguments_linc_target(parser):
         "--clip_sources",
         type=str,
         nargs="*",
-        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
+        default=["VirA_Gaussian", "CygA_Gaussian", "CasA_Gaussian", "TauA_Gaussian"],
         help="",
     )
     parser.add_argument("--clipAteam", type=eval_bool, default=True, help="")
