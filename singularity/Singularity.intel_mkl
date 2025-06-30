@@ -570,8 +570,6 @@ EOF
     sed -i "s/npzfile\.iteritems/npzfile\.items/" DDFacet/DDFacet/Imager/ClassFacetMachine.py
     sed -i "s/3\.11/3.13/g" DDFacet/pyproject.toml
     sed -i 's/DATA\["Weights"\]!=1/DATA\["Weights"\] is not 1/' DDFacet/DDFacet/Data/ClassVisServer.py
-    # Remove old_c_gridder to make things build
-    sed -i "100d" DDFacet/DDFacet/Gridder/CMakeLists.txt
 
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
     find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
