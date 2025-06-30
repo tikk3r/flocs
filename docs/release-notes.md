@@ -13,6 +13,23 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.7.0
+**Changes**
+* Switch to UV for Python management
+
+**Updates**
+* Add [Spinifiex](https://git.astron.nl/RD/spinifex)
+* Add [astroNNomy](github.com/LOFAR-VLBI/astroNNomy)
+* Update AOFlagger to ae522544
+* Update casacore to 8e2648a
+* Update DP3 to rap-1044-combine-flag-and-data-transfer
+* Update EveryBeam to c180e429
+* Update IDG to a5675159
+* Update WSClean to 8c11e6cb
+
+**Bugfixes**
+* Put VLBI-cwl bin path first in VLBI runners
+
 ## v5.6.0
 **Updates**
 * Add `scikit-fuzzy`
