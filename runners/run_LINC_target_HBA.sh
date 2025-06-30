@@ -104,6 +104,9 @@ if [ ! -d $LINC_DATA_ROOT ]; then
     echo $LINC_DATA_ROOT does not exist and will be created. Cloning LINC...
     mkdir -p $LINC_DATA_ROOT
     git clone https://git.astron.nl/RD/LINC.git $LINC_DATA_ROOT
+    cd $LINC_DATA_ROOT
+    git checkout full_bandwidth_solve
+    cd -
 fi
 #
 # Check if FLoCs directory exists or is valid.
@@ -199,6 +202,12 @@ else
     (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh 2>&1) |& tee $WORKDIR/job_output_linc-target.txt
     echo LINC ended
 fi
+
+if grep "is permanentFail" 'job_output_full.txt'; then
+    echo "Pipeline failed to finish successfully. Here's my best post-mortem:"
+    grep "permanentFail" 'job_output_full.txt'
+fi
+
 echo Cleaning up...
 echo == Deleting LINC tmpdir..
 rm -rf $WORKDIR/tmpdir_LINC_target

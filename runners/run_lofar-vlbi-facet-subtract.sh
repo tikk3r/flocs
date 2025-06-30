@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
 {
 echo "=============================="
-echo "=== LINC Calibrator Runner ==="
+echo "===    VLBI-cwl Runner     ==="
+echo "===    Facet  subtract     ==="
 echo "=== Author: Frits Sweijen  ==="
 echo "=============================="
 echo "If you think you've found a bug, report it at https://github.com/tikk3r/flocs/issues"
 echo
-HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-f <user-defined FLoCS>] [-r <running directory>] [-e<options for create_ms_list.py>] -d <data path>"
+HELP="$(basename $0) [-s <container path>] [-b <container bindpaths>] [-l <user-defined LINC>] [-f <user-defined FLoCS>] [-v <user-defined VLBI-cwl>] [-r <running directory>] [-e<options for create_ms_list.py>] -d <data path> -m <WSClean model images> -c <DD calibration h5parm>"
 if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage:"
     echo $HELP
     exit 0
 fi
 
-while getopts ":d:s:r:l:f:b:e:" opt; do
+while getopts ":d:s:r:l:f:b:e:m:c:v:" opt; do
     case $opt in
         d) DATADIR="$OPTARG"
         ;;
@@ -26,6 +27,12 @@ while getopts ":d:s:r:l:f:b:e:" opt; do
         l) LINC_DATA_ROOT="$OPTARG"
         ;;
         f) FLOCS_ROOT="$OPTARG"
+        ;;
+        m) MODEL_IMAGES="$OPTARG"
+        ;;
+        c) DD_SOLS="$OPTARG"
+        ;;
+        v) VLBI_DATA_ROOT="$OPTARG"
         ;;
         e) EXTRAOPTS="$OPTARG"
         ;;
@@ -51,6 +58,16 @@ if [[ ! -z "$SIMG" ]]; then
         echo "Container $SIMG does not exist or is not accessible!"
         exit 3
     fi
+fi
+
+if [[ ! -d $MODEL_IMAGES ]]; then
+    echo "Model image directory $MODEL_IMAGES does not exist or is not accessible!"
+    exit 4
+fi
+
+if [[ ! -f $DD_SOLS ]]; then
+    echo "$DD_SOLS does not exist or is not accessible!"
+    exit 5
 fi
 
 if [[ -z $RUNDIR ]]; then
@@ -83,18 +100,42 @@ if [[ -z "$LINC_DATA_ROOT" ]]; then
     export LINC_DATA_ROOT=$WORKDIR/LINC
 fi
 
+if [[ -z "$VLBI_DATA_ROOT" ]]; then
+    VLBI_DATA_ROOT=$WORKDIR/VLBI_cwl
+fi
+
 if [[ -z "$FLOCS_ROOT" ]]; then
     export FLOCS_ROOT=$WORKDIR/flocs
 fi
+
+LOFAR_HELPERS_ROOT=$WORKDIR/lofar_helpers
+FACETSELFCAL_ROOT=$WORKDIR/lofar_facet_selfcal
+git clone https://github.com/jurjen93/lofar_helpers.git $LOFAR_HELPERS_ROOT
+git clone https://github.com/rvweeren/lofar_facet_selfcal.git $FACETSELFCAL_ROOT
 
 # Check if LINC directory exists or is valid.
 if [ ! -d $LINC_DATA_ROOT ]; then
     echo $LINC_DATA_ROOT does not exist and will be created. Cloning LINC...
     mkdir -p $LINC_DATA_ROOT
     git clone https://git.astron.nl/RD/LINC.git $LINC_DATA_ROOT
-    cd $LINC_DATA_ROOT
-    git checkout 7a4283a6
-    cd -
+fi
+#
+# Check if VLBI directory exists or is valid.
+if [ ! -d $VLBI_DATA_ROOT ]; then
+    echo $VLBI_DATA_ROOT does not exist and will be created. Cloning VLBI-cwl...
+    mkdir -p $VLBI_DATA_ROOT
+    git clone https://git.astron.nl/RD/VLBI-cwl.git $VLBI_DATA_ROOT
+elif [ -d $VLBI_DATA_ROOT ] && [ ! -d $VLBI_DATA_ROOT/steps ]; then
+    echo $VLBI_DATA_ROOT exists, but is empty. Cloning VLBI-cwl...
+    git clone https://git.astron.nl/RD/VLBI-cwl.git $VLBI_DATA_ROOT
+fi
+
+# If the directory is not empty, check if it contains VLBI-cwl
+if [ -d $VLBI_DATA_ROOT ] && [ ! -d $VLBI_DATA_ROOT/steps ]; then
+    echo WARNING: $VLBI_DATA_ROOT is not empty, but required VLBI-cwl folders are not found.
+    exit 1
+elif [ -d $VLBI_DATA_ROOT ] && [ -d $VLBI_DATA_ROOT/steps ]; then
+    echo $VLBI_DATA_ROOT exists and seems to contain VLBI-cwl. Continueing...
 fi
 
 # Check if FLoCs directory exists or is valid.
@@ -119,6 +160,11 @@ export LINC_DATA_ROOT
 cd $LINC_DATA_ROOT
 export LINC_COMMIT=$(git rev-parse --short HEAD)
 cd -
+#
+# Obtain LOFAR-VLBI commit used
+cd $VLBI_DATA_ROOT
+export VLBI_COMMIT=$(git rev-parse --short HEAD)
+cd -
 
 if [ -d $FLOCS_ROOT ] && [ ! -d $FLOCS_ROOT/runners ]; then
     echo WARNING: $FLOCS_ROOT found, but required flocs folders are not found.
@@ -140,51 +186,70 @@ mkdir -p $TMPDIR
 cd $WORKDIR
 
 if [[ -z "$SIMG" ]]; then
-    echo "No container specified."
-    echo "Generating default pipeline configuration"
-    python $FLOCS_ROOT/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
-
-    echo LINC starting
-    echo export PATH=$LINC_DATA_ROOT/scripts:$PATH > jobrunner.sh
-    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH >> jobrunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist_LINC_calibrator.json' >> jobrunner.sh
-    (time bash jobrunner.sh 2>&1) | tee $WORKDIR/job_output_linc-calibrator.txt
-    echo LINC ended
+    echo "No container specified, this workflow requires a container."
+    exit 6
 else
     echo "Using container $SIMG"
     # Pass along necessary variables to the container.
     CONTAINERSTR=$(singularity --version)
     if [[ "$CONTAINERSTR" == *"apptainer"* ]]; then
+        export APPTAINER_CACHEDIR=/cosma/apps/do011/dc-swei1/containers/apptainer_cache
+        export APPTAINER_PULLDIR=$APPTAINER_CACHEDIR/pull
+        export APPTAINER_TMPDIR=$APPTAINER_CACHEDIR/tmp
         export APPTAINERENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
-        export APPTAINERENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
-        export APPTAINERENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
-        export APPTAINERENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
+        export APPTAINERENV_RESULTSDIR=$WORKDIR/results_facet_subtract/
+        export APPTAINERENV_LOGSDIR=$WORKDIR/logs_facet_subtract/
+        export APPTAINERENV_TMPDIR=$WORKDIR/tmpdir_facet_subtract/
         export APPTAINERENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
     else
+        export SINGULARITY_CACHEDIR=/cosma/apps/do011/dc-swei1/containers/apptainer_cache
+        export SINGULARITY_PULLDIR=$SINGULARITY_CACHEDIR/pull
+        export SINGULARITY_TMPDIR=$SINGULARITY_CACHEDIR/tmp
         export SINGULARITYENV_LINC_DATA_ROOT=$LINC_DATA_ROOT
-        export SINGULARITYENV_RESULTSDIR=$WORKDIR/results_LINC_calibrator/
-        export SINGULARITYENV_LOGSDIR=$WORKDIR/logs_LINC_calibrator/
-        export SINGULARITYENV_TMPDIR=$WORKDIR/tmpdir_LINC_calibrator/
+        export SINGULARITYENV_RESULTSDIR=$WORKDIR/results_facet_subtract/
+        export SINGULARITYENV_LOGSDIR=$WORKDIR/logs_facet_subtract/
+        export SINGULARITYENV_TMPDIR=$WORKDIR/tmpdir_facet_subtract/
         export SINGULARITYENV_PREPEND_PATH=$LINC_DATA_ROOT/scripts
     fi
 
     echo "Generating default pipeline configuration"
-    singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py LINC calibrator $EXTRAOPTS $DATADIR
-    echo LINC starting
-    echo export PYTHONPATH=\$LINC_DATA_ROOT/scripts:\$PYTHONPATH > jobrunner.sh
-    echo 'cwltool --parallel --preserve-entire-environment --no-container --tmpdir-prefix=$TMPDIR --outdir=$RESULTSDIR --log-dir=$LOGSDIR $LINC_DATA_ROOT/workflows/HBA_calibrator.cwl mslist_LINC_calibrator.json' >> jobrunner.sh
-    (time singularity exec -B $PWD,$BINDPATHS $SIMG bash jobrunner.sh 2>&1) |& tee $WORKDIR/job_output_linc-calibrator.txt
-    echo LINC ended
-fi
+    singularity exec -B $PWD,$BINDPATHS $SIMG python $FLOCS_ROOT/runners/create_ms_list.py VLBI facet-subtract --h5parm $DD_SOLS --model_image_folder $MODEL_IMAGES --scratch True --lofar_helpers=$LOFAR_HELPERS_ROOT --selfcal=$FACETSELFCAL_ROOT $EXTRAOPTS $DATADIR
 
-if grep "is permanentFail" 'job_output_full.txt'; then
-    echo "Pipeline failed to finish successfully. Here's my best post-mortem:"
-    grep "permanentFail" 'job_output_full.txt'
-fi
+    export TOIL_CHECK_ENV=True
+    mkdir -p $WORKDIR/coordination
+    export JOBSTORE=$WORKDIR/jobstore
+    export TOIL_SLURM_ARGS="--export=ALL -A do011 -p dine2 -t 24:00:00"
+    mkdir $LOGSDIR/slurmlogs
 
+    export CWL_SINGULARITY_CACHE=/cosma/apps/do011/dc-swei1/containers/apptainer_cache/
+
+    echo Facet subtract starting
+    toil-cwl-runner \ 
+    --no-read-only \ 
+    --retryCount 2 \ 
+    --singularity \ 
+    --disableCaching \ 
+    --writeLogsFromAllJobs True \ 
+    --logFile full_log.log \ 
+    --writeLogs $LOGSDIR \ 
+    --outdir $RESULTSDIR \ 
+    --tmp-outdir-prefix $TMPDIR/ \ 
+    --jobStore $JOBSTORE \ 
+    --workDir $WORKDIR \
+    --tmpdir-prefix ${TMPDIR}_interm/ \
+    --disableAutoDeployment True \
+    --bypass-file-store \
+    --preserve-entire-environment \
+    --batchSystem slurm \
+    --clean onSuccess \
+    --no-compute-checksum \
+    $VLBI_DATA_ROOT/workflows/facet_subtract.cwl \
+    mslist_VLBI_facet_subtract.json
+    echo Facet subtract ended
+fi
 echo Cleaning up...
-echo == Deleting LINC tmpdir..
-rm -rf $WORKDIR/tmpdir_LINC_calibrator
+echo == Deleting tmpdir..
+rm -rf $WORKDIR/tmpdir_facet_subtract
 
 echo == Moving results...
 FINALDIR=$(dirname $WORKDIR)
@@ -192,16 +257,12 @@ pattern="${DATADIR}/*.MS"
 files=( $pattern )
 ms="${files[0]}"  # printf is safer!
 obsid=$(echo $(basename $ms) | awk -F'_' '{print $1}')
-mv "$WORKDIR" "$FINALDIR/${obsid}_LINC_calibrator"
+mv "$WORKDIR" "$FINALDIR/${obsid}_facet_subtract"
 
 echo "==============================="
 echo "=== LINC Calibrator Summary ==="
 echo "==============================="
 echo FLoCs version:     $FLOCS_COMMIT
 echo LINC version:      $LINC_COMMIT
-echo Output:            "$FINALDIR/${obsid}_LINC_calibrator"
-echo Solutions:         "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/*h5"
-echo Inspection plots:  "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/inspection"
-echo Pipeline logs:     "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/logs"
-echo Pipeline summary:  "$FINALDIR/${obsid}_LINC_calibrator/results_LINC_calibrator/logs/*summary.log"
+echo Output:            "$FINALDIR/${obsid}_facet_subtract"
 } |& tee job_output_full.txt

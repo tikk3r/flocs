@@ -1,0 +1,44 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: pipeline parameters
+
+on:
+  schedule:
+      - cron: "0 0 * * 1"
+  push:
+    branches: [ fedora-py3 ]
+  pull_request:
+    branches: [ fedora-py3 ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.12
+    - name: Setup dependencies
+      run: |
+          sudo apt -y install git jq wget
+          wget https://github.com/mikefarah/yq/releases/download/v4.45.4/yq_linux_amd64 -O yq
+          chmod u+x yq
+          pip install uv
+          uv pip install --system numpy losoto python-casacore cwltool
+    - name: Generate templates
+      run: |
+          git clone https://git.astron.nl/RD/LINC.git
+          cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc.yml
+          ./yq --tojson template_linc.yml > template_linc.json
+          export LINC_DATA_ROOT=$PWD/LINC
+          python runners/create_ms_list.py LINC target .
+    - name: Check LINC options
+      run: |
+          jq -r 'keys[] as $k | "\($k)"' mslist_LINC_target.json > keys_flocs
+          jq -r 'keys[] as $k | "\($k)"' template_linc.json > keys_template
+          if [[ $(diff -q keys_template keys_flocs) ]]; then echo "Keys do not match LINC" && diff --side-by-side --suppress-common-lines keys_flocs keys_template && exit 1; fi
+

@@ -2,6 +2,7 @@ import argparse
 import glob
 import json
 import os
+import subprocess
 import sys
 
 import casacore.tables as ct
@@ -14,7 +15,13 @@ from typing import Union
 class LINCJSONConfig:
     """Class for generating JSON configuration files to be passed to the LINC pipeline."""
 
-    def __init__(self, mspath: str, ms_suffix: str = ".MS", prefac_h5parm={"path": ""}):
+    def __init__(
+        self,
+        mspath: str,
+        ms_suffix: str = ".MS",
+        prefac_h5parm={"path": ""},
+        update_version_file: bool = False,
+    ):
         self.configdict = {}
 
         filedir = os.path.join(mspath, f"*{ms_suffix}")
@@ -45,12 +52,35 @@ class LINCJSONConfig:
                 x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
                 final_mslist.append(x)
             self.configdict["msin"] = final_mslist
+        self.create_linc_versions_file(update_version_file)
 
     def add_entry(self, key: str, value: object):
         if "ATeam" in key:
             self.configdict["A-Team_skymodel"] = value
         else:
             self.configdict[key] = value
+
+    def create_linc_versions_file(self, overwrite=False):
+        if "LINC_DATA_ROOT" not in os.environ:
+            raise ValueError(
+                "WARNING: LINC_DATA_ROOT environment variable has not been set. Cannot generate $LINC_DATA_ROOT/.versions file."
+            )
+        linc_version = subprocess.check_output(
+            f"cd {os.environ["LINC_DATA_ROOT"]} && git describe --tags",
+            shell=True,
+            text=True,
+        )
+        pip_versions = subprocess.check_output(
+            "pip freeze | sed 's/==/: /g'", shell=True
+        )
+        linc_version_file = os.path.join(os.environ["LINC_DATA_ROOT"], ".versions")
+
+        if os.path.isfile(linc_version_file) and not overwrite:
+            print(f"Using existing {os.environ['LINC_DATA_ROOT']}/.versions")
+        if not os.path.isfile(linc_version_file) or overwrite:
+            with open(linc_version_file, "wb") as f:
+                f.write(f"LINC: {linc_version}".encode("utf-8"))
+                f.write(pip_versions)
 
     def save(self, fname: str):
         if not fname.endswith(".json"):
@@ -79,6 +109,7 @@ class VLBIJSONConfig(LINCJSONConfig):
         ddf_solsdir: Union[None, dict],
         ms_suffix: str = ".MS",
         workflow: str = "delay-calibration",
+        skip_setup: bool = False,
     ):
         self.configdict = {}
 
@@ -89,14 +120,23 @@ class VLBIJSONConfig(LINCJSONConfig):
 
         mslist = []
         if workflow == "delay-calibration":
-            if not prefac_h5parm:
-                raise ValueError("Invalid path to LINC solutions specified.")
-            prefac_freqs = get_prefactor_freqs(
-                solname=prefac_h5parm["path"], solset="target"
-            )
-            for dd in files:
-                if check_dd_freq(dd, prefac_freqs):
+            if skip_setup:
+                if prefac_h5parm:
+                    raise ValueError(
+                        "LINC solutions should not be specified if VLBI setup is skipped."
+                    )
+                self.configdict["solset"] = None
+                for dd in files:
                     mslist.append(dd)
+            else:
+                if not prefac_h5parm:
+                    raise ValueError("Invalid path to LINC solutions specified.")
+                prefac_freqs = get_prefactor_freqs(
+                    solname=prefac_h5parm["path"], solset="target"
+                )
+                for dd in files:
+                    if check_dd_freq(dd, prefac_freqs):
+                        mslist.append(dd)
         elif workflow == "split-directions":
             if (prefac_h5parm is None) or (not prefac_h5parm["path"]):
                 raise ValueError("No delay calibrator solutions specified!")
@@ -179,6 +219,16 @@ def eval_bool(s: str) -> Union[bool, None]:
 
 
 def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
+    parser.add_argument(
+        "--save-raw-solutions",
+        action="store_true",
+        help="Save the intermediate, raw solution tables for (bandpass, faraday, ion, polalign).",
+    )
+    parser.add_argument(
+        "--update-version-file",
+        action="store_true",
+        help="Overwrite the $LINC_DATA_ROOT/.versions file if it exists.",
+    )
     parser.add_argument(
         "--refant",
         type=str,
@@ -295,7 +345,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         "--demix_sources",
         type=str,
         nargs="*",
-        default=["CasA", "CygA"],
+        default=["VirA_Gaussian", "CygA_Gaussian", "CasA_Gaussian", "TauA_Gaussian"],
         help="Sources to demix.",
     )
     parser.add_argument(
@@ -309,6 +359,12 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         type=float,
         default=10,
         help="Frequency resolution used when demixing.",
+    )
+    parser.add_argument(
+        "--demix_maxiter",
+        type=int,
+        default=None,
+        help="Maximum amount of iterations to be used for demixing (default: ``null``, i.e. will be determined, typically 20)",
     )
     parser.add_argument(
         "--demix",
@@ -408,6 +464,18 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         help="Split the set into intervals with the given maximum size, and flag each interval independently. This lowers the amount of memory required.",
     )
     parser.add_argument(
+        "--maxStddev",
+        type=float,
+        default=-1.0,
+        help="Maximum allowable standard deviation when outlier clipping is done. For phases, this value should be in radians, for amplitudes in log(amp). If None (or negative), a value of 0.1 rad is used for phases and 0.01 for amplitudes (default: ``-1.0``)",
+    )
+    parser.add_argument(
+        "--min_probability",
+        type=float,
+        default=0.5,
+        help="Minimal accepted threshold given by the probability criterion of the demix tuning for a patch to be selected for demixing (default: ``0.5``)",
+    )
+    parser.add_argument(
         "mspath",
         type=str,
         default="",
@@ -422,6 +490,11 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
 
 
 def add_arguments_linc_target(parser):
+    parser.add_argument(
+        "--update-version-file",
+        action="store_true",
+        help="Overwrite the $LINC_DATA_ROOT/.versions file if it exists.",
+    )
     parser.add_argument(
         "--cal_solutions",
         type=cwl_file,
@@ -495,7 +568,7 @@ def add_arguments_linc_target(parser):
         "--demix_sources",
         type=str,
         nargs="*",
-        default=["CasA", "CygA"],
+        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
         help="Sources to demix.",
     )
     parser.add_argument(
@@ -509,6 +582,12 @@ def add_arguments_linc_target(parser):
         type=float,
         default=10,
         help="Frequency resolution used when demixing.",
+    )
+    parser.add_argument(
+        "--demix_maxiter",
+        type=int,
+        default=None,
+        help="Maximum amount of iterations to be used for demixing (default: ``null``, i.e. will be determined, typically 20)",
     )
     parser.add_argument(
         "--demix",
@@ -632,18 +711,10 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument("--reference_stationSB", type=int, default=None, help="")
     parser.add_argument(
-        "--ionex_server", type=str, default="ftp://gssc.esa.int/gnss/products/ionex/", help=""
-    )
-    parser.add_argument("--ionex_prefix", type=str, default="UQRG", help="")
-    parser.add_argument("--proxy_server", type=str, default=None, help="")
-    parser.add_argument("--proxy_port", type=int, default=None, help="")
-    parser.add_argument("--proxy_type", type=str, default=None, help="")
-    parser.add_argument("--proxy_pass", type=str, default=None, help="")
-    parser.add_argument(
         "--clip_sources",
         type=str,
         nargs="*",
-        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
+        default=["VirA_Gaussian", "CygA_Gaussian", "CasA_Gaussian", "TauA_Gaussian"],
         help="",
     )
     parser.add_argument("--clipAteam", type=eval_bool, default=True, help="")
@@ -703,10 +774,10 @@ def add_arguments_linc_target(parser):
         help="Self calibration strategy to follow.",
     )
     parser.add_argument(
-        "--selfcal_hba_uvlambdamin",
+        "--hba_uvlambdamin",
         type=float,
         default=200.0,
-        help="Specifies minimum uv-distance in units of wavelength to be used when performing selfcal with HBA.",
+        help="Specifies minimum uv-distance in units of wavelength to be used during calibration.",
     )
     parser.add_argument(
         "--selfcal_hba_imsize",
@@ -726,6 +797,35 @@ def add_arguments_linc_target(parser):
         type=float,
         default=None,
         help="Limits the input skymodel to sources that exceed the given flux density limit in Jy (default: None for HBA, i.e. all sources of the catalogue will be kept, and 1.0 for LBA).",
+    )
+    parser.add_argument(
+        "--output_fullres_data",
+        action="store_true",
+        help="Output the target data at full, unaveraged resolution. This is used, for example, for further VLBI-style processing.",
+    )
+    parser.add_argument(
+        "--calib_nchan",
+        type=int,
+        default=1,
+        help="Number of channels to combine during the phase calibration. 0 means combine all channels.",
+    )
+    parser.add_argument(
+        "--maxStddev",
+        type=float,
+        default=-1.0,
+        help="Maximum allowable standard deviation when outlier clipping is done. For phases, this value should be in radians, for amplitudes in log(amp). If None (or negative), a value of 0.1 rad is used for phases and 0.01 for amplitudes (default: ``-1.0``)",
+    )
+    parser.add_argument(
+        "--min_probability",
+        type=float,
+        default=0.5,
+        help="Minimal accepted threshold given by the probability criterion of the demix tuning for a patch to be selected for demixing (default: ``0.5``)",
+    )
+    parser.add_argument(
+        "--get_RM",
+        type=bool,
+        default=True,
+        help="Download and extract ionospheric Rotation Measure from `spinifex`.",
     )
     parser.add_argument(
         "mspath",
@@ -799,17 +899,22 @@ def add_arguments_vlbi_process_ddf(parser):
     parser.add_argument(
         "--h5merger",
         type=cwl_dir,
-        help="External LOFAR helper scripts for merging h5 files."
+        help="External LOFAR helper scripts for merging h5 files.",
     )
     parser.add_argument(
         "--do_subtraction",
         type=bool,
         default=False,
-        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data."
+        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data.",
     )
 
 
 def add_arguments_vlbi_delay_calibrator(parser):
+    parser.add_argument(
+        "--skip-setup",
+        action="store_true",
+        help="Use when LINC has been run in full resolution mode and the VLBI pipeline's setup steps (flagging, applying LINC solutions) should be skipped.",
+    )
     parser.add_argument(
         "--solset",
         type=cwl_file,
@@ -911,7 +1016,7 @@ def add_arguments_vlbi_delay_calibrator(parser):
         "--do_subtraction",
         type=bool,
         default=False,
-        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data."
+        help="When set to true, the LoTSS model will be subtracted from the DDF corrected data.",
     )
 
 
@@ -1207,6 +1312,53 @@ def add_arguments_vlbi_phaseup_concat(parser):
     )
 
 
+def add_arguments_vlbi_facet_subtract(parser):
+    parser.add_argument(
+        "--h5parm",
+        type=cwl_file,
+        help="Single h5parm with DD solutions from direction dependent calibration.",
+    )
+    parser.add_argument(
+        "--lofar_helpers",
+        type=cwl_dir,
+        help="Path to the lofar_helpers repository.",
+    )
+    parser.add_argument(
+        "--model_image_folder",
+        type=cwl_dir,
+        help="Folder containing the WSClean model images (including channel images) of the intermediate resolution image.",
+    )
+    parser.add_argument(
+        "--facetselfcal",
+        type=cwl_dir,
+        help="Path to the lofar_facet_selfcal repository.",
+    )
+    parser.add_argument(
+        "--scratch",
+        type=eval_bool,
+        default=False,
+        help="Use the node's local scratch disk.",
+    )
+    parser.add_argument(
+        "--concat",
+        type=eval_bool,
+        default=False,
+        help="Concatenate the subtracted MeasurementSets into a single one.",
+    )
+    parser.add_argument(
+        "mspath",
+        type=str,
+        default="",
+        help="Raw input data in MeasurementSet format.",
+    )
+    parser.add_argument(
+        "--ms_suffix",
+        type=str,
+        default=".ms",
+        help="Extension to look for when searching `mspath` for MeasurementSets",
+    )
+
+
 def cwl_file(entry: str) -> Union[str, None]:
     """Create a CWL-friendly file entry."""
     if entry is None:
@@ -1326,19 +1478,37 @@ def parse_arguments_linc(args: dict):
     if args["parser_LINC"] == "calibrator":
         args.pop("parser_LINC")
         print("Generating LINC Calibrator config")
-        config = LINCJSONConfig(args["mspath"], ms_suffix=args["ms_suffix"])
+        config = LINCJSONConfig(
+            args["mspath"],
+            ms_suffix=args["ms_suffix"],
+            update_version_file=args["update_version_file"],
+        )
         args.pop("mspath")
+        args.pop("ms_suffix")
+        args.pop("update_version_file")
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_LINC_calibrator.json")
     elif args["parser_LINC"] == "target":
         args.pop("parser_LINC")
         print("Generating LINC Target config")
+        if args["output_fullres_data"]:
+            print("Full-resolution data requested, updating defaults to:")
+            print(f"avg_timeresolution: {args['avg_timeresolution']} -> 1")
+            print(f"avg_freqresolution: {args['avg_freqresolution']} -> 12.21kHz")
+            print(f"filter_baselines: {args['filter_baselines']} -> *&")
+            args["avg_timeresolution"] = 1
+            args["avg_freqresolution"] = "12.21kHz"
+            args["filter_baselines"] = "*&"
         config = LINCJSONConfig(
             args["mspath"],
             prefac_h5parm=args["cal_solutions"],
             ms_suffix=args["ms_suffix"],
+            update_version_file=args["update_version_file"],
         )
+        args.pop("update_version_file")
+        args.pop("mspath")
+        args.pop("ms_suffix")
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_LINC_target.json")
@@ -1356,12 +1526,13 @@ def parse_arguments_vlbi(args):
                 ddf_solsdir=args["ddf_solsdir"],
                 workflow="delay-calibration",
                 ms_suffix=args["ms_suffix"],
+                skip_setup=args["skip_setup"],
             )
             args.pop("mspath")
         except ValueError as e:
             print("\nERROR: Failed to generate config file. Error was: " + str(e))
             sys.exit(-1)
-        if args["phasesol"] == "auto":
+        if (not args["skip_setup"]) and args["phasesol"] == "auto":
             try:
                 phasesol = get_linc_default_phases(args["solset"]["path"])
                 args["phasesol"] = phasesol
@@ -1370,6 +1541,7 @@ def parse_arguments_vlbi(args):
                     "phaseol is set to auto, but failed to automatically determine LINC target phase solutions."
                 )
                 sys.exit(-1)
+        args.pop("skip_setup")
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_delay_calibration.json")
@@ -1472,6 +1644,24 @@ def parse_arguments_vlbi(args):
         for key, val in args.items():
             config.add_entry(key, val)
         config.save("mslist_VLBI_process_ddf.json")
+    elif args["parser_VLBI"] == "facet-subtract":
+        args.pop("parser_VLBI")
+        print("Generating VLBI facet-subtract config")
+        try:
+            config = VLBIJSONConfig(
+                args["mspath"],
+                prefac_h5parm=None,
+                ddf_solsdir=None,
+                workflow="process_ddf",
+                ms_suffix=args["ms_suffix"],
+            )
+            args.pop("mspath")
+        except ValueError as e:
+            print("\nERROR: Failed to generate config file. Error was: " + str(e))
+            sys.exit(-1)
+        for key, val in args.items():
+            config.add_entry(key, val)
+        config.save("mslist_VLBI_facet_subtract.json")
 
 
 if __name__ == "__main__":
@@ -1549,6 +1739,11 @@ if __name__ == "__main__":
         help="Generate a configuration file for the process_ddf.cwl sub-workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+    modeparser_vlbi_facet_subtract = modeparser_vlbi.add_parser(
+        "facet-subtract",
+        help="Generate a configuration file for the facet_subtract.cwl sub-workflow.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
     add_arguments_linc_calibrator(modeparser_linc_calibrator)
     add_arguments_linc_target(modeparser_linc_target)
@@ -1559,6 +1754,7 @@ if __name__ == "__main__":
     add_arguments_vlbi_concatenate_flag(modeparser_vlbi_concatenate_flag)
     add_arguments_vlbi_phaseup_concat(modeparser_vlbi_phaseup_concat)
     add_arguments_vlbi_process_ddf(modeparser_vlbi_process_ddf)
+    add_arguments_vlbi_facet_subtract(modeparser_vlbi_facet_subtract)
 
     args = vars(parser.parse_args())
     if args["parser"] == "LINC":
