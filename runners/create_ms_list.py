@@ -345,7 +345,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         "--demix_sources",
         type=str,
         nargs="*",
-        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
+        default=["VirA_Gaussian", "CygA_Gaussian", "CasA_Gaussian", "TauA_Gaussian"],
         help="Sources to demix.",
     )
     parser.add_argument(
@@ -359,6 +359,12 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         type=float,
         default=10,
         help="Frequency resolution used when demixing.",
+    )
+    parser.add_argument(
+        "--demix_maxiter",
+        type=int,
+        default=None,
+        help="Maximum amount of iterations to be used for demixing (default: ``null``, i.e. will be determined, typically 20)",
     )
     parser.add_argument(
         "--demix",
@@ -456,6 +462,18 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         type=int,
         default=2000,
         help="Split the set into intervals with the given maximum size, and flag each interval independently. This lowers the amount of memory required.",
+    )
+    parser.add_argument(
+        "--maxStddev",
+        type=float,
+        default=-1.0,
+        help="Maximum allowable standard deviation when outlier clipping is done. For phases, this value should be in radians, for amplitudes in log(amp). If None (or negative), a value of 0.1 rad is used for phases and 0.01 for amplitudes (default: ``-1.0``)",
+    )
+    parser.add_argument(
+        "--min_probability",
+        type=float,
+        default=0.5,
+        help="Minimal accepted threshold given by the probability criterion of the demix tuning for a patch to be selected for demixing (default: ``0.5``)",
     )
     parser.add_argument(
         "mspath",
@@ -564,6 +582,12 @@ def add_arguments_linc_target(parser):
         type=float,
         default=10,
         help="Frequency resolution used when demixing.",
+    )
+    parser.add_argument(
+        "--demix_maxiter",
+        type=int,
+        default=None,
+        help="Maximum amount of iterations to be used for demixing (default: ``null``, i.e. will be determined, typically 20)",
     )
     parser.add_argument(
         "--demix",
@@ -687,21 +711,10 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument("--reference_stationSB", type=int, default=None, help="")
     parser.add_argument(
-        "--ionex_server",
-        type=str,
-        default="ftp://gssc.esa.int/gnss/products/ionex/",
-        help="",
-    )
-    parser.add_argument("--ionex_prefix", type=str, default="UQRG", help="")
-    parser.add_argument("--proxy_server", type=str, default=None, help="")
-    parser.add_argument("--proxy_port", type=int, default=None, help="")
-    parser.add_argument("--proxy_type", type=str, default=None, help="")
-    parser.add_argument("--proxy_pass", type=str, default=None, help="")
-    parser.add_argument(
         "--clip_sources",
         type=str,
         nargs="*",
-        default=["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
+        default=["VirA_Gaussian", "CygA_Gaussian", "CasA_Gaussian", "TauA_Gaussian"],
         help="",
     )
     parser.add_argument("--clipAteam", type=eval_bool, default=True, help="")
@@ -761,10 +774,10 @@ def add_arguments_linc_target(parser):
         help="Self calibration strategy to follow.",
     )
     parser.add_argument(
-        "--selfcal_hba_uvlambdamin",
+        "--hba_uvlambdamin",
         type=float,
         default=200.0,
-        help="Specifies minimum uv-distance in units of wavelength to be used when performing selfcal with HBA.",
+        help="Specifies minimum uv-distance in units of wavelength to be used during calibration.",
     )
     parser.add_argument(
         "--selfcal_hba_imsize",
@@ -795,6 +808,24 @@ def add_arguments_linc_target(parser):
         type=int,
         default=1,
         help="Number of channels to combine during the phase calibration. 0 means combine all channels.",
+    )
+    parser.add_argument(
+        "--maxStddev",
+        type=float,
+        default=-1.0,
+        help="Maximum allowable standard deviation when outlier clipping is done. For phases, this value should be in radians, for amplitudes in log(amp). If None (or negative), a value of 0.1 rad is used for phases and 0.01 for amplitudes (default: ``-1.0``)",
+    )
+    parser.add_argument(
+        "--min_probability",
+        type=float,
+        default=0.5,
+        help="Minimal accepted threshold given by the probability criterion of the demix tuning for a patch to be selected for demixing (default: ``0.5``)",
+    )
+    parser.add_argument(
+        "--get_RM",
+        type=bool,
+        default=True,
+        help="Download and extract ionospheric Rotation Measure from `spinifex`.",
     )
     parser.add_argument(
         "mspath",
