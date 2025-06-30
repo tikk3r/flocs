@@ -24,7 +24,7 @@ From: fedora:40
     export AOFLAGGER_VERSION=ae522544
     export CASACORE_VERSION=8e2648a
     export DDFPIPELINE_VERSION=df58808
-    export DP3_VERSION=fa7b5df9
+    export DP3_VERSION=rap-1044-combine-flag-and-data-transfer
     export EVERYBEAM_VERSION=c180e429
     export HDF5_VERSION=1.14.5
     export IDG_VERSION=a5675159
