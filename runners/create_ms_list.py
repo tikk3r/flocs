@@ -361,6 +361,12 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         help="Frequency resolution used when demixing.",
     )
     parser.add_argument(
+        "--demix_maxiter",
+        type=int,
+        default=None,
+        help="Maximum amount of iterations to be used for demixing (default: ``null``, i.e. will be determined, typically 20)",
+    )
+    parser.add_argument(
         "--demix",
         type=eval_bool,
         default=None,
@@ -576,6 +582,12 @@ def add_arguments_linc_target(parser):
         type=float,
         default=10,
         help="Frequency resolution used when demixing.",
+    )
+    parser.add_argument(
+        "--demix_maxiter",
+        type=int,
+        default=None,
+        help="Maximum amount of iterations to be used for demixing (default: ``null``, i.e. will be determined, typically 20)",
     )
     parser.add_argument(
         "--demix",
@@ -808,6 +820,12 @@ def add_arguments_linc_target(parser):
         type=float,
         default=0.5,
         help="Minimal accepted threshold given by the probability criterion of the demix tuning for a patch to be selected for demixing (default: ``0.5``)",
+    )
+    parser.add_argument(
+        "--get_RM",
+        type=bool,
+        default=True,
+        help="Download and extract ionospheric Rotation Measure from `spinifex`.",
     )
     parser.add_argument(
         "mspath",
