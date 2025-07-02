@@ -922,7 +922,7 @@ def add_arguments_vlbi_delay_calibrator(parser):
     )
     parser.add_argument(
         "--ddf_solsdir",
-        type=cwl_file,
+        type=cwl_dir,
         help="[Required if subtracting LoTSS] Path to the SOLSDIR directory of the DDF-pipeline run, where most of the calibration solutions are stored.",
     )
     parser.add_argument(
