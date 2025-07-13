@@ -129,10 +129,10 @@ def calibrator(
         Option(help="Enable solutions transfer for non-trusted calibrator sources."),
     ] = False,
     demix_sources: Annotated[List[str], Option(help="Sources to demix.")] = [
-        "VirA_4_patch",
-        "CygAGG",
-        "CasA_4_patch",
-        "TauAGG",
+        "VirA_Gaussian",
+        "CygA_Gaussian",
+        "CasA_Gaussian",
+        "TauA_Gaussian",
     ],
     demix_freqres: Annotated[
         str, Option(help="Frequency resolution used when demixing.")
