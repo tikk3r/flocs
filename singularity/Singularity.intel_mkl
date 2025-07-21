@@ -204,7 +204,7 @@ EOF
     # Install Casapy
     #
     if [ $INSTALL_CASA = true ]; then
-       dnf -y install https://na.edge.kernel.org/fedora/releases/39/Everything/x86_64/os/Packages/o/openssl1.1-1.1.1q-5.fc39.x86_64.rpm
+       dnf -y install https://archives.fedoraproject.org/pub/archive/fedora/linux/releases/39/Everything/x86_64/os/Packages/o/openssl1.1-1.1.1q-5.fc39.x86_64.rpm
        dnf -y install fuse fuse-libs
        dnf -y install https://dl.fedoraproject.org/pub/fedora/linux/updates/40/Everything/x86_64/Packages/g/git-lfs-3.6.1-1.fc40.x86_64.rpm
     
