@@ -11,7 +11,8 @@ if [[ $1 == "-h" || $1 == "--help" ]]; then
     exit 0
 fi
 
-echo "Rescaling Stokes I by a factor of 
+echo "Rescaling Stokes I by a factor of $2"
+echo "Overwriting spectral indices with [$3]"
 
 awk -F, -v OFS=',' -v factor=$2 -v new_si="[$3]" '
 NR == 1 {
@@ -22,4 +23,4 @@ NR == 1 {
     $6 = new_si
     print
 }
-' $1 > "$(basename $1).rescaled.txt"
+' $1 > "$(basename $1)_rescaled.txt"
