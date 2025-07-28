@@ -219,6 +219,7 @@ class LINCJSONConfig:
         scheduler: str = "slurm",
         workdir: str = os.getcwd(),
         container: str = "",
+        slurm_params: dict = {},
     ):
         self.setup_rundir(workdir)
         self.setup_apptainer_variables(self.rundir)
@@ -227,7 +228,6 @@ class LINCJSONConfig:
         )
 
         if runner == "cwltool":
-            print(os.environ['APPTAINERENV_LOGSDIR'])
             cmd = (
                 "cwltool "
                 + "--parallel "
@@ -241,13 +241,15 @@ class LINCJSONConfig:
             )
 
             if scheduler == "slurm":
-                wrapped_cmd = add_slurm_skeleton(contents=cmd)
+                wrapped_cmd = add_slurm_skeleton(
+                    contents=cmd, time="24:00:00", cores=32, job_name="LINC_Calibrator", *slurm_params
+                )
                 print(wrapped_cmd)
                 out = subprocess.check_output(["sbatch", wrapped_cmd]).decode("utf-8")
             elif scheduler == "singleMachine":
                 if container:
                     cmd = add_apptainer_skeleton(contents=cmd, container=container)
-                print(f"Running command:\n{cmd}")
+                logger.info(f"Running command:\n{cmd}")
                 out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
                 print(out)
         elif runner == "toil":
@@ -307,6 +309,11 @@ def add_slurm_skeleton(
         sbatch_line += f"-p {queue}"
     if account:
         sbatch_line += f"-A {account}"
+    wrapped = f"""#!/bin/bash
+{sbatch_line}
+{contents}
+"""
+    return wrapped
 
 
 def add_apptainer_skeleton(contents: str, container: str, bindpaths: str = ""):

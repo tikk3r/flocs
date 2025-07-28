@@ -232,28 +232,28 @@ def calibrator(
     ] = 2000,
     config_only: Annotated[
         bool,
-        Option(
-            help="Only generate the config file, do not run it."
-        ),
+        Option(help="Only generate the config file, do not run it."),
     ] = False,
     scheduler: Annotated[
         str,
-        Option(
-            help="System scheduler to use."
-        ),
+        Option(help="System scheduler to use."),
     ] = "singleMachine",
     runner: Annotated[
         str,
-        Option(
-            help="CWL runner to use."
-        ),
+        Option(help="CWL runner to use."),
     ] = "cwltool",
     rundir: Annotated[
         str,
-        Option(
-            help="Directory to run in."
-        ),
+        Option(help="Directory to run in."),
     ] = os.getcwd(),
+    slurm_queue: Annotated[
+        str,
+        Option(help="Slurm queue to run jobs on."),
+    ] = "",
+    slurm_account: Annotated[
+        str,
+        Option(help="Slurm account to use."),
+    ] = "",
 ):
     args = locals()
     logger.info("Generating LINC Calibrator config")
@@ -268,7 +268,14 @@ def calibrator(
         config.add_entry(key, val)
     config.save("mslist_LINC_calibrator.json")
     if not args["config_only"]:
-        config.run_workflow(runner=args["runner"], scheduler=args["scheduler"])
+        config.run_workflow(
+            runner=args["runner"],
+            scheduler=args["scheduler"],
+            slurm_params={
+                "queue": args["slurm_queue"],
+                "account": args["slurm_account"],
+            },
+        )
 
 
 @app.command()
