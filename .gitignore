@@ -5,3 +5,4 @@ test
 *.swp
 *.MS
 *.json
+*/__pycache__
