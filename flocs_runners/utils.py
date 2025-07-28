@@ -2,6 +2,8 @@ import glob
 import json
 import os
 import subprocess
+import sys
+import tempfile
 from typing import Optional, Union
 
 import casacore.tables as ct
@@ -200,3 +202,101 @@ class LINCJSONConfig:
         with open(fname, "w") as outfile:
             json.dump(self.configdict, outfile, indent=4)
         logger.info(f"Written configuration to {fname}")
+        self.configfile = fname
+
+    def setup_rundir(self, workdir):
+        if "calibrator" in self.configfile:
+            self.rundir = tempfile.mkdtemp(prefix="tmp.LINC_calibrator.", dir=workdir)
+        elif "target" in self.configfile:
+            self.rundir = tempfile.mkdtemp(prefix="tmp.LINC_target.", dir=workdir)
+        else:
+            logger.warning("Unknown config file passed; exiting.")
+            sys.exit(-1)
+
+    def run_workflow(
+        self, runner: str = "toil", scheduler: str = "slurm", workdir: str = os.getcwd()
+    ):
+        self.setup_rundir(workdir)
+        self.setup_apptainer_variables(workdir)
+        logger.info(
+            f"Running workflow with {runner} under {scheduler} in {self.rundir}"
+        )
+
+        if runner == "cwltool":
+            cmd = (
+                "cwltool "
+                + "--parallel "
+                + "--preserve-entire-environment "
+                + "--no-container "
+                + f"--tmpdir-prefix={os.environ['APPTAINERENV_TMPDIR']} "
+                + f"--outdir={os.environ['APPTAINERENV_RESULTSDIR']} "
+                + f"--log-dir={os.environ['APPTAINERENV_LOGSDIR']} "
+                + f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_calibrator.cwl "
+                + f"{self.configfile}"
+            )
+
+            if scheduler == "slurm":
+                wrapped_cmd = add_slurm_skeleton(contents=cmd)
+                print(wrapped_cmd)
+                out = subprocess.check_output(["sbatch", wrapped_cmd]).decode("utf-8")
+            elif scheduler == "singleMachine":
+                pass
+        elif runner == "toil":
+            cmd = ""
+            if scheduler == "slurm":
+                pass
+            elif scheduler == "singleMachine":
+                pass
+        # logger.info(out)
+
+    def setup_apptainer_variables(self, workdir):
+        out = (
+            subprocess.check_output(["singularity", "--version"])
+            .decode("utf-8")
+            .strip()
+        )
+        if "apptainer" in out:
+            os.environ["APPTAINERENV_LINC_DATA_ROOT"] = os.environ["LINC_DATA_ROOT"]
+            os.environ["APPTAINERENV_RESULTSDIR"] = (
+                f"{workdir}/results_LINC_calibrator/"
+            )
+            os.environ["APPTAINERENV_LOGSDIR"] = f"{workdir}/logs_LINC_calibrator/"
+            os.environ["APPTAINERENV_TMPDIR"] = f"{workdir}/tmpdir_LINC_calibrator/"
+            os.environ["APPTAINERENV_PREPEND_PATH"] = (
+                f"{os.environ['LINC_DATA_ROOT']}/scripts"
+            )
+        elif "singularity" in out:
+            os.environ["SINGULARITYENV_LINC_DATA_ROOT"] = os.environ["LINC_DATA_ROOT"]
+            os.environ["SINGULARITYENV_RESULTSDIR"] = (
+                f"{workdir}/results_LINC_calibrator/"
+            )
+            os.environ["SINGULARITYENV_LOGSDIR"] = f"{workdir}/logs_LINC_calibrator/"
+            os.environ["SINGULARITYENV_TMPDIR"] = f"{workdir}/tmpdir_LINC_calibrator/"
+            os.environ["SINGULARITYENV_PREPEND_PATH"] = (
+                f"{os.environ['LINC_DATA_ROOT']}/scripts"
+            )
+        os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+
+
+def add_slurm_skeleton(
+    contents: str, time=None, cores=None, job_name=None, queue=None, account=None
+):
+    sbatch_line = "#SBATCH "
+    if time:
+        sbatch_line += f"-t {time}"
+    if cores:
+        sbatch_line += f"-c {cores}"
+    if job_name:
+        sbatch_line += f"--job-name {job_name}"
+    if queue:
+        sbatch_line += f"-p {queue}"
+    if account:
+        sbatch_line += f"-A {account}"
+
+    wrapped = f"""#!/bin/bash
+{sbatch_line}
+sbatch <<<EOT
+{contents}
+EOT
+"""
+    return wrapped
