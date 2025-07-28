@@ -192,11 +192,11 @@ def calibrator(
         ),
     ] = None,
     avg_timeresolution: Annotated[
-        float,
+        int,
         Option(
             help="Intermediate time resolution of the data in seconds after averaging."
         ),
-    ] = 4.0,
+    ] = 4,
     avg_freqresolution: Annotated[
         str,
         Option(

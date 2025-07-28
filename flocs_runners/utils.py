@@ -214,15 +214,20 @@ class LINCJSONConfig:
             sys.exit(-1)
 
     def run_workflow(
-        self, runner: str = "toil", scheduler: str = "slurm", workdir: str = os.getcwd()
+        self,
+        runner: str = "toil",
+        scheduler: str = "slurm",
+        workdir: str = os.getcwd(),
+        container: str = "",
     ):
         self.setup_rundir(workdir)
-        self.setup_apptainer_variables(workdir)
+        self.setup_apptainer_variables(self.rundir)
         logger.info(
             f"Running workflow with {runner} under {scheduler} in {self.rundir}"
         )
 
         if runner == "cwltool":
+            print(os.environ['APPTAINERENV_LOGSDIR'])
             cmd = (
                 "cwltool "
                 + "--parallel "
@@ -240,7 +245,11 @@ class LINCJSONConfig:
                 print(wrapped_cmd)
                 out = subprocess.check_output(["sbatch", wrapped_cmd]).decode("utf-8")
             elif scheduler == "singleMachine":
-                pass
+                if container:
+                    cmd = add_apptainer_skeleton(contents=cmd, container=container)
+                print(f"Running command:\n{cmd}")
+                out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
+                print(out)
         elif runner == "toil":
             cmd = ""
             if scheduler == "slurm":
@@ -265,6 +274,9 @@ class LINCJSONConfig:
             os.environ["APPTAINERENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
+            os.mkdir(os.environ["APPTAINERENV_LOGSDIR"])
+            os.mkdir(os.environ["APPTAINERENV_TMPDIR"])
+            os.mkdir(os.environ["APPTAINERENV_RESULTSDIR"])
         elif "singularity" in out:
             os.environ["SINGULARITYENV_LINC_DATA_ROOT"] = os.environ["LINC_DATA_ROOT"]
             os.environ["SINGULARITYENV_RESULTSDIR"] = (
@@ -275,6 +287,9 @@ class LINCJSONConfig:
             os.environ["SINGULARITYENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
+            os.mkdir(os.environ["SINGULARITYENV_LOGSDIR"])
+            os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
+            os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
         os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
 
 
@@ -293,10 +308,7 @@ def add_slurm_skeleton(
     if account:
         sbatch_line += f"-A {account}"
 
-    wrapped = f"""#!/bin/bash
-{sbatch_line}
-sbatch <<<EOT
-{contents}
-EOT
-"""
+
+def add_apptainer_skeleton(contents: str, container: str, bindpaths: str = ""):
+    wrapped = f"""apptainer exec -B {bindpaths} {container} {contents}"""
     return wrapped
