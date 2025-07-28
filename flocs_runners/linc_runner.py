@@ -230,6 +230,30 @@ def calibrator(
             help="Split the set into intervals with the given maximum size, and flag each interval independently. This lowers the amount of memory required."
         ),
     ] = 2000,
+    config_only: Annotated[
+        bool,
+        Option(
+            help="Only generate the config file, do not run it."
+        ),
+    ] = False,
+    scheduler: Annotated[
+        str,
+        Option(
+            help="System scheduler to use."
+        ),
+    ] = "singleMachine",
+    runner: Annotated[
+        str,
+        Option(
+            help="CWL runner to use."
+        ),
+    ] = "cwltool",
+    rundir: Annotated[
+        str,
+        Option(
+            help="Directory to run in."
+        ),
+    ] = os.getcwd(),
 ):
     args = locals()
     logger.info("Generating LINC Calibrator config")
@@ -243,6 +267,8 @@ def calibrator(
     for key, val in args.items():
         config.add_entry(key, val)
     config.save("mslist_LINC_calibrator.json")
+    if not args["config_only"]:
+        config.run_workflow(runner=args["runner"], scheduler=args["scheduler"])
 
 
 @app.command()
