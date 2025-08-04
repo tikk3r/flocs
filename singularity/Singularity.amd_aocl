@@ -496,6 +496,7 @@ From: fedora:40
     cd $INSTALLDIR/losoto/build
     git clone https://github.com/revoltek/losoto.git src
     cd src
+    git checkout $LOSOTO_VERSION
     # Some fixes for certain LoSoTo versions until it is fixed upstream.
     find . -type f -name '*.py' -exec sed -i 's/np\.float16(weights)/weights.astype(float)/' {} \;
     find . -type f -name '*.py' -exec sed -i 's/np\.float16/float/g' {} \;
