@@ -270,7 +270,7 @@ def add_arguments_linc_calibrator(parser: argparse.ArgumentParser):
         "--rfistrategy",
         type=str,
         default=os.path.join(
-            os.environ["LINC_DATA_ROOT"], "rfistrategies", "lofar-default.lua"
+            os.environ["LINC_DATA_ROOT"], "rfistrategies", "lofar-hba-wideband.lua"
         ),
         help="Path to the RFI flagging strategy to use with AOFlagger.",
     )
@@ -536,7 +536,7 @@ def add_arguments_linc_target(parser):
         "--rfistrategy",
         type=str,
         default=os.path.join(
-            os.environ["LINC_DATA_ROOT"], "rfistrategies", "lofar-default.lua"
+            os.environ["LINC_DATA_ROOT"], "rfistrategies", "lofar-hba-wideband.lua"
         ),
         help="Path to the RFI flagging strategy to use with AOFlagger.",
     )
