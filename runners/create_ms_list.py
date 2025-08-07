@@ -823,7 +823,7 @@ def add_arguments_linc_target(parser):
     )
     parser.add_argument(
         "--get_RM",
-        type=bool,
+        type=eval_bool,
         default=True,
         help="Download and extract ionospheric Rotation Measure from `spinifex`.",
     )
