@@ -7,11 +7,8 @@ This page documents my [LOFAR containers], very creatively named "Frits' LoFAR C
 
 # Latest containers
 
-{: .warning}
-> Pipelines using the genericpipeline framework can _only_ be run with the 3.X container versions that still ship with Python 2. Container versions 4.X and up no longer support this.
-
-[Download v5.7.0 (Py3, Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[Download v5.7.0 (Py3, AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v5.7.1 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.1_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v5.7.1 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.1_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 [View recipes on GitHub][LOFAR containers]{: .btn .fs-5 .mb-4 .mb-md-0 }
 
@@ -21,6 +18,9 @@ This page documents my [LOFAR containers], very creatively named "Frits' LoFAR C
 
 {: .important}
 > Containers labeled `x86-64_generic` are built generically without compiler optimisations in an attempt to allow them to run on a wide variety of machines. The cost of that is that these containers run slower than containers optimised for the specific CPU architecture of your machine or cluster.
+
+[Download v5.7.0 (Py3, Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v5.7.0 (Py3, AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 [Download v5.6.0 (Py3, Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.6.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Download v5.6.0 (Py3, AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.6.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
@@ -80,6 +80,9 @@ This page documents my [LOFAR containers], very creatively named "Frits' LoFAR C
 [Download v4.0.1 (Py3, x86-64_generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/lofar_sksp_v4.0.1_x86-64_generic_noavx512_ddf.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 ## Version 3.X
+
+{: .warning}
+> Pipelines using the genericpipeline framework can _only_ be run with the 3.X container versions that still ship with Python 2. Container versions 4.X and up no longer support this.
 
 [Download v3.5 (Py2, x86-64_generic)](https://lofar-webdav.grid.sara.nl/software/shub_mirror/tikk3r/lofar-grid-hpccloud/lofar_sksp_v3.5_x86-64_generic_noavx512_ddf.sif?action=show){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 

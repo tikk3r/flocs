@@ -13,6 +13,14 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v5.7.1
+**Bugfixes**
+* Fixed LINC_DATA_ROOT string formatting in a few places.
+* Fix default RFI flagging strategy in LINC input generation
+* Fix `get_RM` boolean parsing
+* Fix `ddf_solsdir` argument type
+* Fix `LOSOTO_VERSION` not being used
+
 ## v5.7.0
 **Changes**
 * Switch to UV for Python management
