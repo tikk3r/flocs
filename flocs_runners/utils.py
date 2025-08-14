@@ -129,7 +129,11 @@ def get_reffreq(msfile: str) -> float:
 
 class LINCJSONConfig:
     """Class for generating JSON configuration files to be passed to the LINC pipeline."""
-    gg
+
+    class OBS_TYPE(Enum):
+        CALIBRATOR = 1
+        TARGET = 2
+
     def __init__(
         self,
         mspath: str,
@@ -225,9 +229,9 @@ class LINCJSONConfig:
         if self.configfile is None:
             raise RuntimeError("No config file has been created. Save it first.")
         elif "calibrator" in self.configfile:
-            self.mode = "calibrator"
+            self.mode = self.OBS_TYPE.CALIBRATOR
         elif "target" in self.configfile:
-            self.mode = "target"
+            self.mode = self.OBS_TYPE.TARGET
         elif ("calibrator" not in self.configfile) and (
             "target" not in self.configfile
         ):
@@ -251,9 +255,12 @@ class LINCJSONConfig:
                 + f"--tmpdir-prefix={os.environ['APPTAINERENV_TMPDIR']} "
                 + f"--outdir={os.environ['APPTAINERENV_RESULTSDIR']} "
                 + f"--log-dir={os.environ['APPTAINERENV_LOGSDIR']} "
-                + f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_calibrator.cwl "
-                + f"{self.configfile}"
             )
+            if self.mode is self.OBS_TYPE.CALIBRATOR:
+                cmd += f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_calibrator.cwl "
+            elif self.mode is self.OBS_TYPE.TARGET:
+                cmd += f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_target.cwl "
+            cmd += f"{self.configfile}"
 
             if scheduler == "slurm":
                 wrapped_cmd = add_slurm_skeleton(
@@ -272,7 +279,9 @@ class LINCJSONConfig:
                 out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
                 print(out)
         elif runner == "toil":
-            self.setup_toil_directories(workdir)
+            dir_jobstore, dir_coordination, dir_slurmlogs = self.setup_toil_directories(
+                workdir
+            )
             self.setup_toil_slurm(slurm_params)
             cmd = ["toil-cwl-runner"]
             if scheduler == "slurm":
@@ -299,14 +308,22 @@ class LINCJSONConfig:
             cmd += ["--batchSystem slurm"]
             cmd += [
                 "--batchLogsDir",
-                os.path.join(os.environ["APPTAINERENV_LOGSDIR"], "slurmlogs"),
+                os.path.join(os.environ["APPTAINERENV_LOGSDIR"], dir_slurmlogs),
             ]
             cmd += ["--no-compute-checksum"]
-            if mode == "calibrator":
-                pass
-            elif mode
+            if self.mode is self.OBS_TYPE.CALIBRATOR:
+                cmd += [
+                    os.path.join(
+                        os.environ["LINC_DATA_ROOT"], "workflows", "HBA_calibrator.cwl"
+                    )
+                ]
+            elif self.mode is self.OBS_TYPE.TARGET:
+                cmd += [
+                    os.path.join(
+                        os.environ["LINC_DATA_ROOT"], "workflows", "HBA_target.cwl"
+                    )
+                ]
             cmd += [self.configfile]
-
         # logger.info(out)
 
     def setup_apptainer_variables(self, workdir):
@@ -343,7 +360,7 @@ class LINCJSONConfig:
             os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
         os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
 
-    def setup_toil_directories(self, workdir: str):
+    def setup_toil_directories(self, workdir: str) -> tuple[str, str, str]:
         dir_jobstore = os.path.join(workdir, "jobstore")
         try:
             os.mkdir(dir_jobstore)
@@ -356,14 +373,16 @@ class LINCJSONConfig:
         except FileExistsError:
             print("Coordination directory already exists, not overwriting.")
 
-        dir_slurmlogs = os.path.join(workdir, "slurmlogs")
+        dir_slurmlogs = os.path.join(os.environ["APPTAINERENV_LOGSDIR"], "slurmlogs")
         try:
             os.mkdir(dir_slurmlogs)
         except FileExistsError:
             print("Slurm log directory already exists, not overwriting.")
 
+        return (dir_jobstore, dir_coordination, dir_slurmlogs)
+
     def setup_toil_slurm(self, slurm_params: dict):
-        """ Sets the TOIL_SLURM_ARGS environment variable with information for the Slurm scheduler.
+        """Sets the TOIL_SLURM_ARGS environment variable with information for the Slurm scheduler.
 
         It will always set to export all variables and adds SLURM details such as accounts and partitions if specified.
 
@@ -375,7 +394,6 @@ class LINCJSONConfig:
             os.environ["TOIL_SLURM_ARGS"] += f"-p {slurm_params["queue"]}"
         if "account" in slurm_params:
             os.environ["TOIL_SLURM_ARGS"] += f"-A {slurm_params["account"]}"
-
 
 
 def add_slurm_skeleton(
