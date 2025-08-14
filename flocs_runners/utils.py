@@ -221,6 +221,20 @@ class LINCJSONConfig:
         container: str = "",
         slurm_params: dict = {},
     ):
+        if self.configfile is None:
+            raise RuntimeError("No config file has been created. Save it first.")
+        elif "calibrator" in self.configfile:
+            self.mode = "calibrator"
+        elif "target" in self.configfile:
+            self.mode = "target"
+        elif ("calibrator" not in self.configfile) and (
+            "target" not in self.configfile
+        ):
+            raise RuntimeError(
+                "Cannot deduce LINC workflow to run from config file name. Ensure either `calibrator` or `target` is present in the file name."
+            )
+        else:
+            raise RuntimeError("Something unexpected went wrong with the config file.")
         self.setup_rundir(workdir)
         self.setup_apptainer_variables(self.rundir)
         logger.info(
@@ -263,6 +277,8 @@ class LINCJSONConfig:
                 cmd += ["--batchSystem", "slurm"]
             elif scheduler == "singleMachine":
                 cmd += ["--batchSystem", "singleMachine"]
+            else:
+                raise ValueError(f"Unsupported scheduler `{scheduler}` provided.")
             cmd += ["--no-read-only"]
             cmd += ["--retryCount 3"]
             cmd += ["--singularity"]
