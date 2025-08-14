@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 import tempfile
+from enum import Enum
 from typing import Optional, Union
 
 import casacore.tables as ct
@@ -128,7 +129,7 @@ def get_reffreq(msfile: str) -> float:
 
 class LINCJSONConfig:
     """Class for generating JSON configuration files to be passed to the LINC pipeline."""
-
+    gg
     def __init__(
         self,
         mspath: str,
@@ -271,7 +272,8 @@ class LINCJSONConfig:
                 out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
                 print(out)
         elif runner == "toil":
-            setup_toil_directories(workdir)
+            self.setup_toil_directories(workdir)
+            self.setup_toil_slurm(slurm_params)
             cmd = ["toil-cwl-runner"]
             if scheduler == "slurm":
                 cmd += ["--batchSystem", "slurm"]
@@ -300,6 +302,10 @@ class LINCJSONConfig:
                 os.path.join(os.environ["APPTAINERENV_LOGSDIR"], "slurmlogs"),
             ]
             cmd += ["--no-compute-checksum"]
+            if mode == "calibrator":
+                pass
+            elif mode
+            cmd += [self.configfile]
 
         # logger.info(out)
 
@@ -355,6 +361,21 @@ class LINCJSONConfig:
             os.mkdir(dir_slurmlogs)
         except FileExistsError:
             print("Slurm log directory already exists, not overwriting.")
+
+    def setup_toil_slurm(self, slurm_params: dict):
+        """ Sets the TOIL_SLURM_ARGS environment variable with information for the Slurm scheduler.
+
+        It will always set to export all variables and adds SLURM details such as accounts and partitions if specified.
+
+        Args:
+            slurm_params (dict[str]): dictionary with slurm options. Accepted keys are `account` and `queue`.
+        """
+        os.environ["TOIL_SLURM_ARGS"] = "--export=ALL "
+        if "queue" in slurm_params:
+            os.environ["TOIL_SLURM_ARGS"] += f"-p {slurm_params["queue"]}"
+        if "account" in slurm_params:
+            os.environ["TOIL_SLURM_ARGS"] += f"-A {slurm_params["account"]}"
+
 
 
 def add_slurm_skeleton(
