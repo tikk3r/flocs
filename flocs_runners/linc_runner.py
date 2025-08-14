@@ -254,6 +254,10 @@ def calibrator(
         str,
         Option(help="Slurm account to use."),
     ] = "",
+    slurm_time: Annotated[
+        str,
+        Option(help="Slurm time limit to use."),
+    ] = "",
 ):
     args = locals()
     logger.info("Generating LINC Calibrator config")
@@ -274,6 +278,7 @@ def calibrator(
             slurm_params={
                 "queue": args["slurm_queue"],
                 "account": args["slurm_account"],
+                "time": args["slurm_time"],
             },
         )
 

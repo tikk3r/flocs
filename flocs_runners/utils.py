@@ -387,13 +387,15 @@ class LINCJSONConfig:
         It will always set to export all variables and adds SLURM details such as accounts and partitions if specified.
 
         Args:
-            slurm_params (dict[str]): dictionary with slurm options. Accepted keys are `account` and `queue`.
+            slurm_params (dict[str]): dictionary with slurm options. Accepted keys are `account`, `queue` and `time`.
         """
         os.environ["TOIL_SLURM_ARGS"] = "--export=ALL "
         if "queue" in slurm_params:
             os.environ["TOIL_SLURM_ARGS"] += f"-p {slurm_params["queue"]}"
         if "account" in slurm_params:
             os.environ["TOIL_SLURM_ARGS"] += f"-A {slurm_params["account"]}"
+        if "time" in slurm_params:
+            os.environ["TOIL_SLURM_ARGS"] += f"-t {slurm_params["time"]}"
 
 
 def add_slurm_skeleton(
