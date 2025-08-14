@@ -242,7 +242,11 @@ class LINCJSONConfig:
 
             if scheduler == "slurm":
                 wrapped_cmd = add_slurm_skeleton(
-                    contents=cmd, time="24:00:00", cores=32, job_name="LINC_Calibrator", *slurm_params
+                    contents=cmd,
+                    time="24:00:00",
+                    cores=32,
+                    job_name="LINC_Calibrator",
+                    *slurm_params,
                 )
                 print(wrapped_cmd)
                 out = subprocess.check_output(["sbatch", wrapped_cmd]).decode("utf-8")
@@ -253,11 +257,34 @@ class LINCJSONConfig:
                 out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
                 print(out)
         elif runner == "toil":
-            cmd = ""
+            setup_toil_directories(workdir)
+            cmd = ["toil-cwl-runner"]
             if scheduler == "slurm":
-                pass
+                cmd += ["--batchSystem", "slurm"]
             elif scheduler == "singleMachine":
-                pass
+                cmd += ["--batchSystem", "singleMachine"]
+            cmd += ["--no-read-only"]
+            cmd += ["--retryCount 3"]
+            cmd += ["--singularity"]
+            cmd += ["--disableCaching"]
+            cmd += ["--writeLogsFromAllJobs True"]
+            cmd += ["--logFile full_log.log"]
+            cmd += ["--writeLogs ${LOGSDIR}"]
+            cmd += ["--outdir ${RESULTSDIR}"]
+            cmd += ["--tmp-outdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
+            cmd += ["--jobStore", dir_jobstore]
+            cmd += ["--workDir", workdir]
+            cmd += ["--coordinationDir", dir_coordination]
+            cmd += ["--tmpdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
+            cmd += ["--disableAutoDeployment", "True"]
+            cmd += ["--bypass-file-store"]
+            cmd += ["--batchSystem slurm"]
+            cmd += [
+                "--batchLogsDir",
+                os.path.join(os.environ["APPTAINERENV_LOGSDIR"], "slurmlogs"),
+            ]
+            cmd += ["--no-compute-checksum"]
+
         # logger.info(out)
 
     def setup_apptainer_variables(self, workdir):
@@ -293,6 +320,25 @@ class LINCJSONConfig:
             os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
             os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
         os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+
+    def setup_toil_directories(self, workdir: str):
+        dir_jobstore = os.path.join(workdir, "jobstore")
+        try:
+            os.mkdir(dir_jobstore)
+        except FileExistsError:
+            print("Jobstore directory already exists, not overwriting.")
+
+        dir_coordination = os.path.join(workdir, "coordination")
+        try:
+            os.mkdir(dir_coordination)
+        except FileExistsError:
+            print("Coordination directory already exists, not overwriting.")
+
+        dir_slurmlogs = os.path.join(workdir, "slurmlogs")
+        try:
+            os.mkdir(dir_slurmlogs)
+        except FileExistsError:
+            print("Slurm log directory already exists, not overwriting.")
 
 
 def add_slurm_skeleton(
