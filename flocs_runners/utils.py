@@ -263,6 +263,8 @@ class LINCJSONConfig:
             cmd += f"{self.configfile}"
 
             if scheduler == "slurm":
+                if container:
+                    cmd = add_apptainer_skeleton(contents=cmd, container=container)
                 wrapped_cmd = add_slurm_skeleton(
                     contents=cmd,
                     time="24:00:00",
