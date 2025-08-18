@@ -32,7 +32,7 @@ def cwl_dir(entry: str) -> Optional[str]:
     if entry.lower() == "null":
         return None
     else:
-        return json.loads(f'{{"class": "File", "path":"{os.path.abspath(entry)}"}}')
+        return json.loads(f'{{"class": "Directory", "path":"{os.path.abspath(entry)}"}}')
 
 
 def check_dd_freq(infile: str, freq_array: Union[list, np.ndarray]) -> bool:
