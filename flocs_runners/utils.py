@@ -272,8 +272,10 @@ class LINCJSONConfig:
                     job_name="LINC_Calibrator",
                     **slurm_params,
                 )
-                print(wrapped_cmd)
-                out = subprocess.check_output(["sbatch", wrapped_cmd]).decode("utf-8")
+                with open("temp_jobscript.sh", "w") as f:
+                    f.write(wrapped_cmd)
+                logger.info("Written temporary jobscript to temp_jobscript.sh")
+                out = subprocess.check_output(["sbatch", "temp_jobscript.sh"]).decode("utf-8")
             elif scheduler == "singleMachine":
                 if container:
                     cmd = add_apptainer_skeleton(contents=cmd, container=container)
