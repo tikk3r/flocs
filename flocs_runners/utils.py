@@ -287,6 +287,7 @@ class LINCJSONConfig:
                 out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
                 print(out)
         elif runner == "toil":
+            self.verify_slurm_environment_toil()
             dir_coordination, dir_slurmlogs = self.setup_toil_directories(self.rundir)
             self.setup_toil_slurm(slurm_params)
             cmd = ["toil-cwl-runner"]
@@ -395,6 +396,26 @@ class LINCJSONConfig:
             os.environ["TOIL_SLURM_ARGS"] += f"-A {slurm_params["account"]} "
         if "time" in slurm_params:
             os.environ["TOIL_SLURM_ARGS"] += f"-t {slurm_params["time"]} "
+
+    def verify_slurm_environment_toil(self):
+        failed = False
+        if "CWL_SINGULARITY_CACHE" not in os.environ:
+            logger.critical("CWL_SINGULARITY_CACHE not found in the environment. Ensure it is set to where you have stored `astronrd_linc_latest.sif`.")
+            failed = True
+        elif not os.path.isfile(os.path.join(os.environ["CWL_SINGULARITY_CACHE"], "astronrd_linc_latest.sif")):
+            raise FileNotFoundError("Cannot find astornrd_linc_latest.sif in CWL_SINGULARITY_CACHE.")
+        if "APPTAINERENV_PULLDIR" not in os.environ:
+            logger.critical("APPTAINERENV_PULLDIR not found in the environment. Ensure it is set to where you have stored `astronrd_linc_latest.sif`.")
+            failed = True
+        elif not os.path.isfile(os.path.join(os.environ["APPTAINERENV_PULLDIR"], "astronrd_linc_latest.sif")):
+            raise FileNotFoundError("Cannot find astornrd_linc_latest.sif in APPTAINERENV_PULLDIR.")
+        if "APPTAINERENV_CACHEDIR" not in os.environ:
+            logger.critical("APPTAINERENV_CACHEDIR not found in the environment. Ensure it is set to where you have stored `astronrd_linc_latest.sif`.")
+            failed = True
+        elif not os.path.isfile(os.path.join(os.environ["APPTAINERENV_CACHEDIR"], "astronrd_linc_latest.sif")):
+            raise FileNotFoundError("Cannot find astornrd_linc_latest.sif in APPTAINERENV_CACHEDIR.")
+        if failed:
+            raise RuntimeError("One or more critical environment variables were not set.")
 
 
 def add_slurm_skeleton(
