@@ -295,7 +295,7 @@ class LINCJSONConfig:
             else:
                 raise ValueError(f"Unsupported scheduler `{scheduler}` provided.")
             cmd += ["--no-read-only"]
-            cmd += ["--retryCount 3"]
+            cmd += ["--retryCount", "3"]
             cmd += ["--singularity"]
             cmd += ["--disableCaching"]
             cmd += ["--writeLogsFromAllJobs True"]
