@@ -268,7 +268,7 @@ class LINCJSONConfig:
                     time="24:00:00",
                     cores=32,
                     job_name="LINC_Calibrator",
-                    *slurm_params,
+                    **slurm_params,
                 )
                 print(wrapped_cmd)
                 out = subprocess.check_output(["sbatch", wrapped_cmd]).decode("utf-8")
