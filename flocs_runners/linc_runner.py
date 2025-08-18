@@ -280,6 +280,7 @@ def calibrator(
                 "account": args["slurm_account"],
                 "time": args["slurm_time"],
             },
+            workdir=args["rundir"],
         )
 
 
