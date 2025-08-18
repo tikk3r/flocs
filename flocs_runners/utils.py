@@ -300,7 +300,7 @@ class LINCJSONConfig:
             cmd += ["--disableCaching"]
             cmd += ["--writeLogsFromAllJobs", "True"]
             cmd += ["--logFile", "full_log.log"]
-            cmd += ["--writeLogs", os.environ["APPTAINERENV_LOGSDIR"]
+            cmd += ["--writeLogs", os.environ["APPTAINERENV_LOGSDIR"]]
             cmd += ["--outdir", os.environ["APPTAINERENV_RESULTSDIR"]]
             cmd += ["--tmp-outdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
             cmd += ["--jobStore", os.path.join(self.rundir, "jobstore")]
