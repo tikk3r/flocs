@@ -388,11 +388,11 @@ class LINCJSONConfig:
         """
         os.environ["TOIL_SLURM_ARGS"] = "--export=ALL "
         if "queue" in slurm_params:
-            os.environ["TOIL_SLURM_ARGS"] += f"-p {slurm_params["queue"]}"
+            os.environ["TOIL_SLURM_ARGS"] += f"-p {slurm_params["queue"]} "
         if "account" in slurm_params:
-            os.environ["TOIL_SLURM_ARGS"] += f"-A {slurm_params["account"]}"
+            os.environ["TOIL_SLURM_ARGS"] += f"-A {slurm_params["account"]} "
         if "time" in slurm_params:
-            os.environ["TOIL_SLURM_ARGS"] += f"-t {slurm_params["time"]}"
+            os.environ["TOIL_SLURM_ARGS"] += f"-t {slurm_params["time"]} "
 
 
 def add_slurm_skeleton(
