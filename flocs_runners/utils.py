@@ -403,15 +403,15 @@ def add_slurm_skeleton(
 ):
     sbatch_line = "#SBATCH "
     if time:
-        sbatch_line += f"-t {time}"
+        sbatch_line += f"-t {time} "
     if cores:
-        sbatch_line += f"-c {cores}"
+        sbatch_line += f"-c {cores} "
     if job_name:
-        sbatch_line += f"--job-name {job_name}"
+        sbatch_line += f"--job-name {job_name} "
     if queue:
-        sbatch_line += f"-p {queue}"
+        sbatch_line += f"-p {queue} "
     if account:
-        sbatch_line += f"-A {account}"
+        sbatch_line += f"-A {account} "
     wrapped = f"""#!/bin/bash
 {sbatch_line}
 {contents}
