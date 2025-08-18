@@ -284,7 +284,7 @@ class LINCJSONConfig:
                 print(out)
         elif runner == "toil":
             dir_jobstore, dir_coordination, dir_slurmlogs = self.setup_toil_directories(
-                workdir
+                self.rundir
             )
             self.setup_toil_slurm(slurm_params)
             cmd = ["toil-cwl-runner"]
