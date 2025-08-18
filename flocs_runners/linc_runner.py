@@ -266,9 +266,11 @@ def calibrator(
         ms_suffix=args["ms_suffix"],
         update_version_file=args["update_version_file"],
     )
-    args.pop("mspath")
-    args.pop("update_version_file")
-    for key, val in args.items():
+    unneeded_keys = ["mspath", "update_version_file", "config_only", "scheduler", "runner", "rundir", "slurm_queue", "slurm_account", "slurm_time"]
+    args_for_linc = args.copy()
+    for key in unneeded_keys:
+        args_for_linc.pop(key)
+    for key, val in args_for_linc.items():
         config.add_entry(key, val)
     config.save("mslist_LINC_calibrator.json")
     if not args["config_only"]:
