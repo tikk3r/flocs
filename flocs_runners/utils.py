@@ -32,7 +32,9 @@ def cwl_dir(entry: str) -> Optional[str]:
     if entry.lower() == "null":
         return None
     else:
-        return json.loads(f'{{"class": "Directory", "path":"{os.path.abspath(entry)}"}}')
+        return json.loads(
+            f'{{"class": "Directory", "path":"{os.path.abspath(entry)}"}}'
+        )
 
 
 def check_dd_freq(infile: str, freq_array: Union[list, np.ndarray]) -> bool:
@@ -275,7 +277,9 @@ class LINCJSONConfig:
                 with open("temp_jobscript.sh", "w") as f:
                     f.write(wrapped_cmd)
                 logger.info("Written temporary jobscript to temp_jobscript.sh")
-                out = subprocess.check_output(["sbatch", "temp_jobscript.sh"]).decode("utf-8")
+                out = subprocess.check_output(["sbatch", "temp_jobscript.sh"]).decode(
+                    "utf-8"
+                )
             elif scheduler == "singleMachine":
                 if container:
                     cmd = add_apptainer_skeleton(contents=cmd, container=container)
@@ -283,9 +287,7 @@ class LINCJSONConfig:
                 out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
                 print(out)
         elif runner == "toil":
-            dir_coordination, dir_slurmlogs = self.setup_toil_directories(
-                self.rundir
-            )
+            dir_coordination, dir_slurmlogs = self.setup_toil_directories(self.rundir)
             self.setup_toil_slurm(slurm_params)
             cmd = ["toil-cwl-runner"]
             if scheduler == "slurm":
@@ -363,7 +365,7 @@ class LINCJSONConfig:
             os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
         os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
 
-    def setup_toil_directories(self, workdir: str) -> tuple[str, str, str]:
+    def setup_toil_directories(self, workdir: str) -> tuple[str, str]:
         dir_coordination = os.path.join(workdir, "coordination")
         try:
             os.mkdir(dir_coordination)
@@ -417,5 +419,5 @@ def add_slurm_skeleton(
 
 
 def add_apptainer_skeleton(contents: str, container: str, bindpaths: str = ""):
-    wrapped = f"""apptainer exec -B {bindpaths} {container} {contents}"""
+    wrapped = f"apptainer exec -B {bindpaths} {container} {contents}"
     return wrapped
