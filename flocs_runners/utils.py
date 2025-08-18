@@ -283,7 +283,7 @@ class LINCJSONConfig:
                 out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
                 print(out)
         elif runner == "toil":
-            dir_jobstore, dir_coordination, dir_slurmlogs = self.setup_toil_directories(
+            dir_coordination, dir_slurmlogs = self.setup_toil_directories(
                 self.rundir
             )
             self.setup_toil_slurm(slurm_params)
@@ -303,7 +303,7 @@ class LINCJSONConfig:
             cmd += ["--writeLogs ${LOGSDIR}"]
             cmd += ["--outdir ${RESULTSDIR}"]
             cmd += ["--tmp-outdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
-            cmd += ["--jobStore", dir_jobstore]
+            cmd += ["--jobStore", os.path.join(self.rundir, "jobstore")]
             cmd += ["--workDir", workdir]
             cmd += ["--coordinationDir", dir_coordination]
             cmd += ["--tmpdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
@@ -365,12 +365,6 @@ class LINCJSONConfig:
         os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
 
     def setup_toil_directories(self, workdir: str) -> tuple[str, str, str]:
-        dir_jobstore = os.path.join(workdir, "jobstore")
-        try:
-            os.mkdir(dir_jobstore)
-        except FileExistsError:
-            print("Jobstore directory already exists, not overwriting.")
-
         dir_coordination = os.path.join(workdir, "coordination")
         try:
             os.mkdir(dir_coordination)
@@ -383,7 +377,7 @@ class LINCJSONConfig:
         except FileExistsError:
             print("Slurm log directory already exists, not overwriting.")
 
-        return (dir_jobstore, dir_coordination, dir_slurmlogs)
+        return (dir_coordination, dir_slurmlogs)
 
     def setup_toil_slurm(self, slurm_params: dict):
         """Sets the TOIL_SLURM_ARGS environment variable with information for the Slurm scheduler.
