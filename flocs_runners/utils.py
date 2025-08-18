@@ -309,7 +309,6 @@ class LINCJSONConfig:
             cmd += ["--tmpdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
             cmd += ["--disableAutoDeployment", "True"]
             cmd += ["--bypass-file-store"]
-            cmd += ["--batchSystem slurm"]
             cmd += [
                 "--batchLogsDir",
                 os.path.join(os.environ["APPTAINERENV_LOGSDIR"], dir_slurmlogs),
