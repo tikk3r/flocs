@@ -6,3 +6,4 @@ test
 *.MS
 *.json
 */__pycache__
+*.egg-info
