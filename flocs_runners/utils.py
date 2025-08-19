@@ -330,7 +330,7 @@ class LINCJSONConfig:
                     )
                 ]
             cmd += [self.configfile]
-        # logger.info(out)
+            out = subprocess.check_output(cmd)
 
     def setup_apptainer_variables(self, workdir):
         out = (
