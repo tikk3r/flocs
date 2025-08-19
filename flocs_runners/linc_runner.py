@@ -266,7 +266,17 @@ def calibrator(
         ms_suffix=args["ms_suffix"],
         update_version_file=args["update_version_file"],
     )
-    unneeded_keys = ["mspath", "update_version_file", "config_only", "scheduler", "runner", "rundir", "slurm_queue", "slurm_account", "slurm_time"]
+    unneeded_keys = [
+        "mspath",
+        "update_version_file",
+        "config_only",
+        "scheduler",
+        "runner",
+        "rundir",
+        "slurm_queue",
+        "slurm_account",
+        "slurm_time",
+    ]
     args_for_linc = args.copy()
     for key in unneeded_keys:
         args_for_linc.pop(key)
@@ -287,8 +297,244 @@ def calibrator(
 
 
 @app.command()
-def target():
-    pass
+def target(
+    mspath: Annotated[str, Argument(help="Directory where MSes are located.")],
+    cal_solutions: Annotated[
+        str, typer.Argument(parser=cwl_file, help="Calibration solutions file.")
+    ],
+    ms_suffix: Annotated[
+        str, Option(help="Extension to look for when searching `mspath` for MSes.")
+    ] = ".MS",
+    update_version_file: Annotated[
+        bool,
+        Option(help="Overwrite the $LINC_DATA_ROOT/.versions file if it exists."),
+    ] = False,
+    refant: Annotated[
+        Optional[str], typer.Option(help="Reference antenna.")
+    ] = "CS00.*",
+    flag_baselines: Annotated[
+        Optional[List[str]], typer.Option(help="Baselines to flag.")
+    ] = [],
+    process_baselines_target: Annotated[
+        Optional[str], typer.Option(help="Target baselines to process.")
+    ] = "[CR]S*&",
+    filter_baselines: Annotated[
+        Optional[str], typer.Option(help="Baselines to filter.")
+    ] = "[CR]S*&",
+    do_smooth: Annotated[
+        Optional[bool], typer.Option(help="Enable smoothing.")
+    ] = False,
+    rfistrategy: Annotated[
+        Optional[str], typer.Option(parser=cwl_file, help="RFI strategy file or name.")
+    ] = os.path.join(
+        f"{os.environ['LINC_DATA_ROOT']}", "rfistrategies", "lofar-hba-wideband.lua"
+    ),
+    min_unflagged_fraction: Annotated[
+        Optional[float], typer.Option(help="Minimum unflagged fraction.")
+    ] = 0.5,
+    compression_bitrate: Annotated[
+        Optional[int], typer.Option(help="Compression bitrate.")
+    ] = 16,
+    raw_data: Annotated[Optional[bool], typer.Option(help="Use raw data.")] = False,
+    propagatesolutions: Annotated[
+        Optional[bool], typer.Option(help="Propagate calibration solutions.")
+    ] = True,
+    maxStddev: Annotated[
+        Optional[float], typer.Option(help="Maximum standard deviation.")
+    ] = -1.0,
+    demix_sources: Annotated[
+        Optional[List[str]], typer.Option(help="Sources to demix.")
+    ] = ["VirA_Gaussian", "CygA_Gaussian", "CasA_Gaussian", "TauA_Gaussian"],
+    demix_timeres: Annotated[
+        Optional[float], typer.Option(help="Demix time resolution.")
+    ] = None,
+    demix_freqres: Annotated[
+        Optional[str], typer.Option(help="Demix frequency resolution.")
+    ] = None,
+    demix_maxiter: Annotated[
+        Optional[int], typer.Option(help="Maximum demix iterations.")
+    ] = None,
+    demix: Annotated[Optional[bool], typer.Option(help="Enable demixing.")] = None,
+    apply_tec: Annotated[
+        Optional[bool], typer.Option(help="Apply TEC correction.")
+    ] = False,
+    apply_clock: Annotated[
+        Optional[bool], typer.Option(help="Apply clock correction.")
+    ] = True,
+    apply_phase: Annotated[
+        Optional[bool], typer.Option(help="Apply phase correction.")
+    ] = False,
+    apply_RM: Annotated[
+        Optional[bool], typer.Option(help="Apply RM correction.")
+    ] = True,
+    get_RM: Annotated[Optional[bool], typer.Option(help="Estimate RM.")] = True,
+    apply_beam: Annotated[
+        Optional[bool], typer.Option(help="Apply beam correction.")
+    ] = True,
+    gsmcal_step: Annotated[
+        Optional[str], typer.Option(help="GSM calibration step.")
+    ] = "phase",
+    updateweights: Annotated[
+        Optional[bool], typer.Option(help="Update weights.")
+    ] = True,
+    max_dp3_threads: Annotated[
+        Optional[int], typer.Option(help="Maximum DP3 threads.")
+    ] = 10,
+    memoryperc: Annotated[Optional[int], typer.Option(help="Memory percentage.")] = 20,
+    min_separation: Annotated[
+        Optional[int], typer.Option(help="Minimum separation.")
+    ] = 30,
+    min_probability: Annotated[
+        Optional[float], typer.Option(help="Minimum probability.")
+    ] = 0.5,
+    A_Team_skymodel: Annotated[
+        Optional[str], typer.Option(parser=cwl_file, help="A-Team sky model.")
+    ] = None,
+    target_skymodel: Annotated[
+        Optional[str], typer.Option(parser=cwl_file, help="Target sky model.")
+    ] = None,
+    use_target: Annotated[
+        Optional[bool], typer.Option(help="Use target sky model.")
+    ] = True,
+    skymodel_source: Annotated[
+        Optional[str], typer.Option(help="Skymodel source.")
+    ] = "TGSS",
+    avg_timeresolution: Annotated[
+        Optional[int], typer.Option(help="Averaging time resolution.")
+    ] = 4,
+    avg_freqresolution: Annotated[
+        Optional[str], typer.Option(help="Averaging frequency resolution.")
+    ] = "48.82kHz",
+    avg_timeresolution_concat: Annotated[
+        Optional[int], typer.Option(help="Concat averaging time resolution.")
+    ] = 8,
+    avg_freqresolution_concat: Annotated[
+        Optional[str], typer.Option(help="Concat averaging frequency resolution.")
+    ] = "97.64kHz",
+    num_SBs_per_group: Annotated[
+        Optional[int], typer.Option(help="Number of SBs per group.")
+    ] = None,
+    calib_nchan: Annotated[
+        Optional[int], typer.Option(help="Calibration channels.")
+    ] = 1,
+    reference_stationSB: Annotated[
+        Optional[int], typer.Option(help="Reference station SB.")
+    ] = None,
+    clip_sources: Annotated[
+        Optional[List[str]], typer.Option(help="Sources to clip.")
+    ] = ["VirA_Gaussian", "CygA_Gaussian", "CasA_Gaussian", "TauA_Gaussian"],
+    clipAteam: Annotated[
+        Optional[bool], typer.Option(help="Clip A-Team sources.")
+    ] = True,
+    lbfgs_historysize: Annotated[
+        Optional[int], typer.Option(help="LBFGS history size.")
+    ] = None,
+    lbfgs_robustdof: Annotated[
+        Optional[float], typer.Option(help="LBFGS robust DOF.")
+    ] = None,
+    aoflag_reorder: Annotated[
+        Optional[bool], typer.Option(help="Reorder AOFlagger.")
+    ] = False,
+    aoflag_chunksize: Annotated[
+        Optional[int], typer.Option(help="AOFlagger chunk size.")
+    ] = 2000,
+    aoflag_freqconcat: Annotated[
+        Optional[bool], typer.Option(help="AOFlagger frequency concatenation.")
+    ] = True,
+    selfcal: Annotated[
+        Optional[bool], typer.Option(help="Enable self-calibration.")
+    ] = False,
+    selfcal_strategy: Annotated[
+        Optional[str], typer.Option(help="Self-calibration strategy.")
+    ] = "HBA",
+    selfcal_hba_imsize: Annotated[
+        Optional[List[int]], typer.Option(help="Selfcal HBA image size.")
+    ] = [20000, 20000],
+    hba_uvlambdamin: Annotated[
+        Optional[float], typer.Option(help="HBA uv lambda minimum.")
+    ] = 200.0,
+    selfcal_region: Annotated[
+        Optional[str], typer.Option(parser=cwl_file, help="Selfcal region file.")
+    ] = None,
+    chunkduration: Annotated[
+        Optional[float], typer.Option(help="Chunk duration.")
+    ] = 0.0,
+    wsclean_tmpdir: Annotated[
+        Optional[str], typer.Option(help="WSClean temporary directory.")
+    ] = None,
+    make_structure_plot: Annotated[
+        Optional[bool], typer.Option(help="Make structure plot.")
+    ] = True,
+    skymodel_fluxlimit: Annotated[
+        Optional[float], typer.Option(help="Skymodel flux limit.")
+    ] = None,
+    output_fullres_data: Annotated[
+        Optional[bool], typer.Option(help="Output full-resolution data.")
+    ] = False,
+    config_only: Annotated[
+        bool,
+        Option(help="Only generate the config file, do not run it."),
+    ] = False,
+    scheduler: Annotated[
+        str,
+        Option(help="System scheduler to use."),
+    ] = "singleMachine",
+    runner: Annotated[
+        str,
+        Option(help="CWL runner to use."),
+    ] = "cwltool",
+    rundir: Annotated[
+        str,
+        Option(help="Directory to run in."),
+    ] = os.getcwd(),
+    slurm_queue: Annotated[
+        str,
+        Option(help="Slurm queue to run jobs on."),
+    ] = "",
+    slurm_account: Annotated[
+        str,
+        Option(help="Slurm account to use."),
+    ] = "",
+    slurm_time: Annotated[
+        str,
+        Option(help="Slurm time limit to use."),
+    ] = "",
+):
+    args = locals()
+    logger.info("Generating LINC Target config")
+    config = LINCJSONConfig(
+        args["mspath"],
+        ms_suffix=args["ms_suffix"],
+        update_version_file=args["update_version_file"],
+    )
+    unneeded_keys = [
+        "mspath",
+        "update_version_file",
+        "config_only",
+        "scheduler",
+        "runner",
+        "rundir",
+        "slurm_queue",
+        "slurm_account",
+        "slurm_time",
+    ]
+    args_for_linc = args.copy()
+    for key in unneeded_keys:
+        args_for_linc.pop(key)
+    for key, val in args_for_linc.items():
+        config.add_entry(key, val)
+    config.save("mslist_LINC_target.json")
+    if not args["config_only"]:
+        config.run_workflow(
+            runner=args["runner"],
+            scheduler=args["scheduler"],
+            slurm_params={
+                "queue": args["slurm_queue"],
+                "account": args["slurm_account"],
+                "time": args["slurm_time"],
+            },
+            workdir=args["rundir"],
+        )
 
 
 if __name__ == "__main__":
