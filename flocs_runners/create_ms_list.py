@@ -1729,4 +1729,6 @@ def main():
         parse_arguments_vlbi(args)
 
 if __name__ == "__main__":
+    import warnings
+    warnings.warn("create_ms_list.py IS DEPRECATED, NO LONGER MAINTAINED AND WILL BE REMOVED IN THE NEXT MINOR RELEASE. SWITCH TO `flocs-run`.", DeprecationWarning)
     main()
