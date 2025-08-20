@@ -1,6 +1,10 @@
 import glob
 import json
 import os
+import subprocess
+import sys
+from packaging.version import Version
+from subprocess import CalledProcessError
 from typing import Optional, Union
 
 import casacore.tables as ct
@@ -140,6 +144,21 @@ def setup_toil_slurm(slurm_params: dict):
         os.environ["TOIL_SLURM_ARGS"] += f"-A {slurm_params["account"]} "
     if "time" in slurm_params:
         os.environ["TOIL_SLURM_ARGS"] += f"-t {slurm_params["time"]} "
+
+
+def verify_toil():
+    try:
+        toil_version = Version(
+            subprocess.check_output(["toil-cwl-runner", "--version"]).decode("utf-8")
+        )
+        if toil_version < Version("9.0.0"):
+            logger.critical(
+                f"Flocs requires Toil 9 or newer, but found {toil_version}."
+            )
+            sys.exit(-1)
+    except CalledProcessError:
+        logger.critical("Toil does not seem to be installed.")
+        sys.exit(-1)
 
 
 def verify_slurm_environment_toil():

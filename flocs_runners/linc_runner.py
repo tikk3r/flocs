@@ -7,6 +7,7 @@ from .utils import (
     get_prefactor_freqs,
     setup_toil_slurm,
     verify_slurm_environment_toil,
+    verify_toil,
 )
 import glob
 import json
@@ -180,6 +181,7 @@ class LINCJSONConfig:
                 out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
                 print(out)
         elif runner == "toil":
+            verify_toil()
             verify_slurm_environment_toil()
             dir_coordination, dir_slurmlogs = self.setup_toil_directories(self.rundir)
             setup_toil_slurm(slurm_params)
