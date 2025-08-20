@@ -7,6 +7,7 @@ from .utils import (
     get_prefactor_freqs,
     setup_toil_slurm,
     verify_slurm_environment_toil,
+    verify_toil,
 )
 import glob
 import json
