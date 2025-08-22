@@ -582,6 +582,49 @@ def concatenate_flag(
 @app.command()
 def phaseup_concat(
     mspath: Annotated[str, Argument(help="Directory where MSes are located.")],
+    delay_calibrator: Annotated[
+        str,
+        typer.Option(
+            parser=cwl_file,
+            help="Catalogue file with information on in-field calibrator.",
+        ),
+    ],
+    configfile: Annotated[
+        str,
+        typer.Option(
+            parser=cwl_file, help="Settings for the delay calibration in delay_solve."
+        ),
+    ],
+    selfcal: Annotated[
+        str, typer.Option(parser=cwl_dir, help="Path of external calibration scripts.")
+    ],
+    linc: Annotated[
+        str,
+        typer.Option(
+            parser=cwl_dir,
+            help="The installation directory for the LOFAR INitial calibration pipeline.",
+        ),
+    ],
+    numbands: Annotated[
+        Optional[int],
+        typer.Option(help="The number of files that have to be grouped together."),
+    ] = -1,
+    firstSB: Annotated[
+        Optional[int],
+        typer.Option(
+            help="If set, reference the grouping of files to this station subband."
+        ),
+    ] = None,
+    max_dp3_threads: Annotated[
+        Optional[int],
+        typer.Option(help="The maximum number of threads DP3 should use per process."),
+    ] = 5,
+    number_cores: Annotated[
+        Optional[int],
+        typer.Option(
+            help="Number of cores to use per job for tasks with high I/O or memory."
+        ),
+    ] = 12,
 ):
     pass
 
