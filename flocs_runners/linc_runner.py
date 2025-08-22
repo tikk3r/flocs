@@ -260,6 +260,9 @@ class LINCJSONConfig:
             os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
             os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
         os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+        os.environ["PATH"] = (
+            os.environ["APPTAINERENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
+        )
 
     def setup_toil_directories(self, workdir: str) -> tuple[str, str]:
         dir_coordination = os.path.join(workdir, "coordination")
@@ -542,6 +545,7 @@ def calibrator(
     )
     unneeded_keys = [
         "mspath",
+        "ms_suffix",
         "update_version_file",
         "config_only",
         "scheduler",
