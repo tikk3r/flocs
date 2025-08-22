@@ -37,6 +37,11 @@ class LINCJSONConfig:
         prefac_h5parm={"path": ""},
         update_version_file: bool = False,
     ):
+        if "LINC_DATA_ROOT" not in os.environ:
+            raise ValueError(
+                "WARNING: LINC_DATA_ROOT environment variable has not been set. Cannot generate $LINC_DATA_ROOT/.versions file."
+            )
+            sys.exit(-1)
         self.configdict = {}
 
         filedir = os.path.join(mspath, f"*{ms_suffix}")
