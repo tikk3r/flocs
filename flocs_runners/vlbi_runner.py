@@ -405,7 +405,43 @@ def delay_calibration(
         ),
     ] = False,
 ):
-    pass
+    args = locals()
+    logger.info("Generating VLBI delay-calibration config")
+    config = VLBIJSONConfig(
+        args["mspath"],
+        ms_suffix=args["ms_suffix"],
+        update_version_file=args["update_version_file"],
+    )
+    unneeded_keys = [
+        "mspath",
+        "update_version_file",
+        "config_only",
+        "scheduler",
+        "runner",
+        "rundir",
+        "slurm_queue",
+        "slurm_account",
+        "slurm_time",
+        "container",
+    ]
+    args_for_linc = args.copy()
+    for key in unneeded_keys:
+        args_for_linc.pop(key)
+    for key, val in args_for_linc.items():
+        config.add_entry(key, val)
+    config.save("mslist_VLBI_delay-calibration.json")
+    if not args["config_only"]:
+        config.run_workflow(
+            runner=args["runner"],
+            scheduler=args["scheduler"],
+            slurm_params={
+                "queue": args["slurm_queue"],
+                "account": args["slurm_account"],
+                "time": args["slurm_time"],
+            },
+            workdir=args["rundir"],
+            container=args["container"],
+        )
 
 
 @app.command()
@@ -477,7 +513,43 @@ def split_direction(
         ),
     ] = 0.0,
 ):
-    pass
+    args = locals()
+    logger.info("Generating VLBI split-directions config")
+    config = VLBIJSONConfig(
+        args["mspath"],
+        ms_suffix=args["ms_suffix"],
+        update_version_file=args["update_version_file"],
+    )
+    unneeded_keys = [
+        "mspath",
+        "update_version_file",
+        "config_only",
+        "scheduler",
+        "runner",
+        "rundir",
+        "slurm_queue",
+        "slurm_account",
+        "slurm_time",
+        "container",
+    ]
+    args_for_linc = args.copy()
+    for key in unneeded_keys:
+        args_for_linc.pop(key)
+    for key, val in args_for_linc.items():
+        config.add_entry(key, val)
+    config.save("mslist_VLBI_split-directions.json")
+    if not args["config_only"]:
+        config.run_workflow(
+            runner=args["runner"],
+            scheduler=args["scheduler"],
+            slurm_params={
+                "queue": args["slurm_queue"],
+                "account": args["slurm_account"],
+                "time": args["slurm_time"],
+            },
+            workdir=args["rundir"],
+            container=args["container"],
+        )
 
 
 @app.command()
@@ -538,7 +610,43 @@ def setup(
         ),
     ] = ["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
 ):
-    pass
+    args = locals()
+    logger.info("Generating VLBI setup config")
+    config = VLBIJSONConfig(
+        args["mspath"],
+        ms_suffix=args["ms_suffix"],
+        update_version_file=args["update_version_file"],
+    )
+    unneeded_keys = [
+        "mspath",
+        "update_version_file",
+        "config_only",
+        "scheduler",
+        "runner",
+        "rundir",
+        "slurm_queue",
+        "slurm_account",
+        "slurm_time",
+        "container",
+    ]
+    args_for_linc = args.copy()
+    for key in unneeded_keys:
+        args_for_linc.pop(key)
+    for key, val in args_for_linc.items():
+        config.add_entry(key, val)
+    config.save("mslist_VLBI_setup.json")
+    if not args["config_only"]:
+        config.run_workflow(
+            runner=args["runner"],
+            scheduler=args["scheduler"],
+            slurm_params={
+                "queue": args["slurm_queue"],
+                "account": args["slurm_account"],
+                "time": args["slurm_time"],
+            },
+            workdir=args["rundir"],
+            container=args["container"],
+        )
 
 
 @app.command()
@@ -576,7 +684,43 @@ def concatenate_flag(
         ),
     ] = 15,
 ):
-    pass
+    args = locals()
+    logger.info("Generating VLBI concatenate-flag config")
+    config = VLBIJSONConfig(
+        args["mspath"],
+        ms_suffix=args["ms_suffix"],
+        update_version_file=args["update_version_file"],
+    )
+    unneeded_keys = [
+        "mspath",
+        "update_version_file",
+        "config_only",
+        "scheduler",
+        "runner",
+        "rundir",
+        "slurm_queue",
+        "slurm_account",
+        "slurm_time",
+        "container",
+    ]
+    args_for_linc = args.copy()
+    for key in unneeded_keys:
+        args_for_linc.pop(key)
+    for key, val in args_for_linc.items():
+        config.add_entry(key, val)
+    config.save("mslist_VLBI_concatenate-flag.json")
+    if not args["config_only"]:
+        config.run_workflow(
+            runner=args["runner"],
+            scheduler=args["scheduler"],
+            slurm_params={
+                "queue": args["slurm_queue"],
+                "account": args["slurm_account"],
+                "time": args["slurm_time"],
+            },
+            workdir=args["rundir"],
+            container=args["container"],
+        )
 
 
 @app.command()
@@ -626,7 +770,43 @@ def phaseup_concat(
         ),
     ] = 12,
 ):
-    pass
+    args = locals()
+    logger.info("Generating VLBI phaseup-concat config")
+    config = VLBIJSONConfig(
+        args["mspath"],
+        ms_suffix=args["ms_suffix"],
+        update_version_file=args["update_version_file"],
+    )
+    unneeded_keys = [
+        "mspath",
+        "update_version_file",
+        "config_only",
+        "scheduler",
+        "runner",
+        "rundir",
+        "slurm_queue",
+        "slurm_account",
+        "slurm_time",
+        "container",
+    ]
+    args_for_linc = args.copy()
+    for key in unneeded_keys:
+        args_for_linc.pop(key)
+    for key, val in args_for_linc.items():
+        config.add_entry(key, val)
+    config.save("mslist_VLBI_phaseup-concat.json")
+    if not args["config_only"]:
+        config.run_workflow(
+            runner=args["runner"],
+            scheduler=args["scheduler"],
+            slurm_params={
+                "queue": args["slurm_queue"],
+                "account": args["slurm_account"],
+                "time": args["slurm_time"],
+            },
+            workdir=args["rundir"],
+            container=args["container"],
+        )
 
 
 if __name__ == "__main__":
