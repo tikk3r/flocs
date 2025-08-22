@@ -544,6 +544,37 @@ def setup(
 @app.command()
 def concatenate_flag(
     mspath: Annotated[str, Argument(help="Directory where MSes are located.")],
+    linc: Annotated[
+        str,
+        typer.Option(
+            parser=cwl_dir,
+            help="The installation directory for the LOFAR INitial Calibration pipeline.",
+        ),
+    ],
+    numbands: Annotated[
+        Optional[int],
+        typer.Option(
+            help="The number of files that have to be grouped together in frequency."
+        ),
+    ] = 10,
+    firstSB: Annotated[
+        Optional[int],
+        typer.Option(
+            help="If set, reference the grouping of files to this station subband."
+        ),
+    ] = None,
+    max_dp3_threads: Annotated[
+        Optional[int],
+        typer.Option(
+            help="The maximum number of threads that DP3 should use per process."
+        ),
+    ] = 5,
+    aoflagger_memory_fraction: Annotated[
+        Optional[int],
+        typer.Option(
+            help="The fraction of the node's memory that will be used by AOFlagger (and should be available before an AOFlagger job can start)."
+        ),
+    ] = 15,
 ):
     pass
 
