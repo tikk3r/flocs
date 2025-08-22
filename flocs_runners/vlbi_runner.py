@@ -453,6 +453,9 @@ def split_direction(
     selfcal: Annotated[
         str, typer.Option(parser=cwl_dir, help="The selfcal directory.")
     ],
+    ms_suffix: Annotated[
+        str, Option(help="Extension to look for when searching `mspath` for MSes.")
+    ] = ".MS",
     image_cat: Annotated[
         str,
         typer.Option(
@@ -569,6 +572,9 @@ def setup(
             help="The installation directory for the LOFAR INitial calibration pipeline.",
         ),
     ],
+    ms_suffix: Annotated[
+        str, Option(help="Extension to look for when searching `mspath` for MSes.")
+    ] = ".MS",
     filter_baselines: Annotated[
         Optional[str],
         typer.Option(
@@ -659,6 +665,9 @@ def concatenate_flag(
             help="The installation directory for the LOFAR INitial Calibration pipeline.",
         ),
     ],
+    ms_suffix: Annotated[
+        str, Option(help="Extension to look for when searching `mspath` for MSes.")
+    ] = ".MS",
     numbands: Annotated[
         Optional[int],
         typer.Option(
@@ -749,6 +758,9 @@ def phaseup_concat(
             help="The installation directory for the LOFAR INitial calibration pipeline.",
         ),
     ],
+    ms_suffix: Annotated[
+        str, Option(help="Extension to look for when searching `mspath` for MSes.")
+    ] = ".MS",
     numbands: Annotated[
         Optional[int],
         typer.Option(help="The number of files that have to be grouped together."),
