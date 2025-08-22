@@ -29,6 +29,9 @@ class VLBIJSONConfig:
     class OBS_TYPE(Enum):
         DELAY = "delay-calibration"
         SPLIT_DIRECTIONS = "split-directions"
+        SETUP = "setup"
+        CONCATENATE_FLAG = "concatenate-flag"
+        PHASEUP_CONCAT = "phaseup-concat"
 
     def __init__(
         self,
@@ -114,11 +117,21 @@ class VLBIJSONConfig:
     def setup_rundir(self, workdir):
         if "delay" in self.configfile:
             self.rundir = tempfile.mkdtemp(
-                prefix="tmp.VLBI_delay_calibration.", dir=workdir
+                prefix="tmp.VLBI_delay-calibration.", dir=workdir
             )
         elif "split" in self.configfile:
             self.rundir = tempfile.mkdtemp(
-                prefix="tmp.VLBI_split_directions.", dir=workdir
+                prefix="tmp.VLBI_split-directions.", dir=workdir
+            )
+        elif "setup" in self.configfile:
+            self.rundir = tempfile.mkdtemp(prefix="tmp.VLBI_setup.", dir=workdir)
+        elif "concatenate-flag" in self.configfile:
+            self.rundir = tempfile.mkdtemp(
+                prefix="tmp.VLBI_concatenate-flag.", dir=workdir
+            )
+        elif "phaseup-concat" in self.configfile:
+            self.rundir = tempfile.mkdtemp(
+                prefix="tmp.VLBI_phaseup-concat.", dir=workdir
             )
         else:
             logger.warning("Unknown config file passed; exiting.")
@@ -131,6 +144,12 @@ class VLBIJSONConfig:
             self.mode = self.OBS_TYPE.DELAY
         elif "split" in self.configfile:
             self.mode = self.OBS_TYPE.SPLIT_DIRECTIONS
+        elif "setup" in self.configfile:
+            self.mode = self.OBS_TYPE.SETUP
+        elif "concatenate-flag" in self.configfile:
+            self.mode = self.OBS_TYPE.CONCATENATE_FLAG
+        elif "phaseup-concat" in self.configfile:
+            self.mode = self.OBS_TYPE.PHASEUP_CONCAT
         elif ("delay" not in self.configfile) and ("split" not in self.configfile):
             raise RuntimeError(
                 "Cannot deduce VLBI workflow to run from config file name. Ensure either `delay` or `split` is present in the file name."
@@ -271,6 +290,10 @@ class VLBIJSONConfig:
             os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
         os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
         os.environ["PYTHONPATH"] = "$VLBI_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+        os.environ["PATH"] = (
+            os.environ["APPTAINERENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
+        )
+        print(os.environ["PATH"])
 
     def setup_toil_directories(self, workdir: str) -> tuple[str, str]:
         dir_coordination = os.path.join(workdir, "coordination")
@@ -404,17 +427,48 @@ def delay_calibration(
             help="When set to true, the LoTSS model will be subtracted from the DDF corrected data."
         ),
     ] = False,
+    config_only: Annotated[
+        bool,
+        Option(help="Only generate the config file, do not run it."),
+    ] = False,
+    scheduler: Annotated[
+        str,
+        Option(help="System scheduler to use."),
+    ] = "singleMachine",
+    runner: Annotated[
+        str,
+        Option(help="CWL runner to use."),
+    ] = "cwltool",
+    rundir: Annotated[
+        str,
+        Option(help="Directory to run in."),
+    ] = os.getcwd(),
+    slurm_queue: Annotated[
+        str,
+        Option(help="Slurm queue to run jobs on."),
+    ] = "",
+    slurm_account: Annotated[
+        str,
+        Option(help="Slurm account to use."),
+    ] = "",
+    slurm_time: Annotated[
+        str,
+        Option(help="Slurm time limit to use."),
+    ] = "",
+    container: Annotated[
+        str,
+        Option(help="Apptainer container to use for cwltool runs."),
+    ] = "",
 ):
     args = locals()
     logger.info("Generating VLBI delay-calibration config")
     config = VLBIJSONConfig(
         args["mspath"],
         ms_suffix=args["ms_suffix"],
-        update_version_file=args["update_version_file"],
     )
     unneeded_keys = [
         "mspath",
-        "update_version_file",
+        "ms_suffix",
         "config_only",
         "scheduler",
         "runner",
@@ -515,17 +569,47 @@ def split_direction(
             help="Peak flux (Jy/beam) cut to pre-select sources from catalogue. Default at 0.0 is no peak flux selection."
         ),
     ] = 0.0,
+    config_only: Annotated[
+        bool,
+        Option(help="Only generate the config file, do not run it."),
+    ] = False,
+    scheduler: Annotated[
+        str,
+        Option(help="System scheduler to use."),
+    ] = "singleMachine",
+    runner: Annotated[
+        str,
+        Option(help="CWL runner to use."),
+    ] = "cwltool",
+    rundir: Annotated[
+        str,
+        Option(help="Directory to run in."),
+    ] = os.getcwd(),
+    slurm_queue: Annotated[
+        str,
+        Option(help="Slurm queue to run jobs on."),
+    ] = "",
+    slurm_account: Annotated[
+        str,
+        Option(help="Slurm account to use."),
+    ] = "",
+    slurm_time: Annotated[
+        str,
+        Option(help="Slurm time limit to use."),
+    ] = "",
+    container: Annotated[
+        str,
+        Option(help="Apptainer container to use for cwltool runs."),
+    ] = "",
 ):
     args = locals()
     logger.info("Generating VLBI split-directions config")
     config = VLBIJSONConfig(
         args["mspath"],
         ms_suffix=args["ms_suffix"],
-        update_version_file=args["update_version_file"],
     )
     unneeded_keys = [
         "mspath",
-        "update_version_file",
         "config_only",
         "scheduler",
         "runner",
@@ -615,17 +699,47 @@ def setup(
             help="The patches of sources that should be flagged. These should be present in the LINC skymodel."
         ),
     ] = ["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
+    config_only: Annotated[
+        bool,
+        Option(help="Only generate the config file, do not run it."),
+    ] = False,
+    scheduler: Annotated[
+        str,
+        Option(help="System scheduler to use."),
+    ] = "singleMachine",
+    runner: Annotated[
+        str,
+        Option(help="CWL runner to use."),
+    ] = "cwltool",
+    rundir: Annotated[
+        str,
+        Option(help="Directory to run in."),
+    ] = os.getcwd(),
+    slurm_queue: Annotated[
+        str,
+        Option(help="Slurm queue to run jobs on."),
+    ] = "",
+    slurm_account: Annotated[
+        str,
+        Option(help="Slurm account to use."),
+    ] = "",
+    slurm_time: Annotated[
+        str,
+        Option(help="Slurm time limit to use."),
+    ] = "",
+    container: Annotated[
+        str,
+        Option(help="Apptainer container to use for cwltool runs."),
+    ] = "",
 ):
     args = locals()
     logger.info("Generating VLBI setup config")
     config = VLBIJSONConfig(
         args["mspath"],
         ms_suffix=args["ms_suffix"],
-        update_version_file=args["update_version_file"],
     )
     unneeded_keys = [
         "mspath",
-        "update_version_file",
         "config_only",
         "scheduler",
         "runner",
@@ -692,17 +806,47 @@ def concatenate_flag(
             help="The fraction of the node's memory that will be used by AOFlagger (and should be available before an AOFlagger job can start)."
         ),
     ] = 15,
+    config_only: Annotated[
+        bool,
+        Option(help="Only generate the config file, do not run it."),
+    ] = False,
+    scheduler: Annotated[
+        str,
+        Option(help="System scheduler to use."),
+    ] = "singleMachine",
+    runner: Annotated[
+        str,
+        Option(help="CWL runner to use."),
+    ] = "cwltool",
+    rundir: Annotated[
+        str,
+        Option(help="Directory to run in."),
+    ] = os.getcwd(),
+    slurm_queue: Annotated[
+        str,
+        Option(help="Slurm queue to run jobs on."),
+    ] = "",
+    slurm_account: Annotated[
+        str,
+        Option(help="Slurm account to use."),
+    ] = "",
+    slurm_time: Annotated[
+        str,
+        Option(help="Slurm time limit to use."),
+    ] = "",
+    container: Annotated[
+        str,
+        Option(help="Apptainer container to use for cwltool runs."),
+    ] = "",
 ):
     args = locals()
     logger.info("Generating VLBI concatenate-flag config")
     config = VLBIJSONConfig(
         args["mspath"],
         ms_suffix=args["ms_suffix"],
-        update_version_file=args["update_version_file"],
     )
     unneeded_keys = [
         "mspath",
-        "update_version_file",
         "config_only",
         "scheduler",
         "runner",
@@ -781,17 +925,47 @@ def phaseup_concat(
             help="Number of cores to use per job for tasks with high I/O or memory."
         ),
     ] = 12,
+    config_only: Annotated[
+        bool,
+        Option(help="Only generate the config file, do not run it."),
+    ] = False,
+    scheduler: Annotated[
+        str,
+        Option(help="System scheduler to use."),
+    ] = "singleMachine",
+    runner: Annotated[
+        str,
+        Option(help="CWL runner to use."),
+    ] = "cwltool",
+    rundir: Annotated[
+        str,
+        Option(help="Directory to run in."),
+    ] = os.getcwd(),
+    slurm_queue: Annotated[
+        str,
+        Option(help="Slurm queue to run jobs on."),
+    ] = "",
+    slurm_account: Annotated[
+        str,
+        Option(help="Slurm account to use."),
+    ] = "",
+    slurm_time: Annotated[
+        str,
+        Option(help="Slurm time limit to use."),
+    ] = "",
+    container: Annotated[
+        str,
+        Option(help="Apptainer container to use for cwltool runs."),
+    ] = "",
 ):
     args = locals()
     logger.info("Generating VLBI phaseup-concat config")
     config = VLBIJSONConfig(
         args["mspath"],
         ms_suffix=args["ms_suffix"],
-        update_version_file=args["update_version_file"],
     )
     unneeded_keys = [
         "mspath",
-        "update_version_file",
         "config_only",
         "scheduler",
         "runner",
