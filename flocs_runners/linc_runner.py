@@ -27,8 +27,8 @@ class LINCJSONConfig:
     """Class for generating JSON configuration files to be passed to the LINC pipeline."""
 
     class OBS_TYPE(Enum):
-        CALIBRATOR = 1
-        TARGET = 2
+        CALIBRATOR = "calibrator"
+        TARGET = "target"
 
     def __init__(
         self,
@@ -157,10 +157,7 @@ class LINCJSONConfig:
                 + f"--outdir={os.environ['APPTAINERENV_RESULTSDIR']} "
                 + f"--log-dir={os.environ['APPTAINERENV_LOGSDIR']} "
             )
-            if self.mode is self.OBS_TYPE.CALIBRATOR:
-                cmd += f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_calibrator.cwl "
-            elif self.mode is self.OBS_TYPE.TARGET:
-                cmd += f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_target.cwl "
+            cmd += f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_{self.mode}.cwl "
             cmd += f"{self.configfile}"
 
             if scheduler == "slurm":
@@ -179,12 +176,20 @@ class LINCJSONConfig:
                 out = subprocess.check_output(["sbatch", "temp_jobscript.sh"]).decode(
                     "utf-8"
                 )
+                print(out)
             elif scheduler == "singleMachine":
                 if container:
                     cmd = add_apptainer_skeleton(contents=cmd, container=container)
                 logger.info(f"Running command:\n{cmd}")
-                out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
-                print(out)
+                try:
+                    out = subprocess.check_output(cmd.split(" "))
+                    with open(f"log_LINC_{self.mode}.txt", "wb") as f:
+                        f.write(out)
+                except subprocess.CalledProcessError as e:
+                    with open(f"log_LINC_{self.mode}.txt", "wb") as f:
+                        f.write(e.stdout)
+                    with open(f"log_LINC_{self.mode}_err.txt", "wb") as f:
+                        f.write(e.stderr)
         elif runner == "toil":
             verify_toil()
             verify_slurm_environment_toil()
@@ -217,20 +222,21 @@ class LINCJSONConfig:
                 os.path.join(os.environ["APPTAINERENV_LOGSDIR"], dir_slurmlogs),
             ]
             cmd += ["--no-compute-checksum"]
-            if self.mode is self.OBS_TYPE.CALIBRATOR:
-                cmd += [
-                    os.path.join(
-                        os.environ["LINC_DATA_ROOT"], "workflows", "HBA_calibrator.cwl"
-                    )
-                ]
-            elif self.mode is self.OBS_TYPE.TARGET:
-                cmd += [
-                    os.path.join(
-                        os.environ["LINC_DATA_ROOT"], "workflows", "HBA_target.cwl"
-                    )
-                ]
+            cmd += [
+                os.path.join(
+                    os.environ["LINC_DATA_ROOT"], "workflows", f"HBA_{self.mode}.cwl"
+                )
+            ]
             cmd += [self.configfile]
-            out = subprocess.check_output(cmd)
+            try:
+                out = subprocess.check_output(cmd)
+                with open(f"log_LINC_{self.mode}.txt", "wb") as f:
+                    f.write(out)
+            except subprocess.CalledProcessError as e:
+                with open(f"log_LINC_{self.mode}.txt", "wb") as f:
+                    f.write(e.stdout)
+                with open(f"log_LINC_{self.mode}_err.txt", "wb") as f:
+                    f.write(e.stderr)
 
     def setup_apptainer_variables(self, workdir):
         out = (
