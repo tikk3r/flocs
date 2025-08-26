@@ -16,6 +16,7 @@ import sys
 import structlog
 import subprocess
 import tempfile
+from time import gmtime, strftime
 import typer
 from enum import Enum
 from typer import Argument, Option
@@ -119,6 +120,10 @@ class LINCJSONConfig:
             logger.warning("Unknown config file passed; exiting.")
             sys.exit(-1)
 
+    def move_results_from_rundir(self):
+        date = strftime("%Y_%m_%d-%H_%M_%S", gmtime())
+        subprocess.check_output(["mv", self.rundir, f"LINC_{self.mode}_{date}"])
+
     def run_workflow(
         self,
         runner: str = "toil",
@@ -167,7 +172,7 @@ class LINCJSONConfig:
                     contents=cmd,
                     time="24:00:00",
                     cores=32,
-                    job_name="LINC_Calibrator",
+                    job_name=f"LINC_{self.mode}",
                     **slurm_params,
                 )
                 with open("temp_jobscript.sh", "w") as f:
