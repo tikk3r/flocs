@@ -1,9 +1,10 @@
 from .utils import (
-    cwl_file,
-    cwl_dir,
     add_apptainer_skeleton,
     add_slurm_skeleton,
     check_dd_freq,
+    cwl_file,
+    cwl_dir,
+    extract_obsid_from_ms,
     get_prefactor_freqs,
     setup_toil_slurm,
     verify_slurm_environment_toil,
@@ -77,6 +78,7 @@ class VLBIJSONConfig:
                 x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
                 final_mslist.append(x)
             self.configdict["msin"] = final_mslist
+        self.obsid = extract_obsid_from_ms(self.configdict["msin"][0]["path"])
         self.create_linc_versions_file(update_version_file)
 
     def add_entry(self, key: str, value: object):
@@ -160,7 +162,7 @@ class VLBIJSONConfig:
 
     def move_results_from_rundir(self):
         date = strftime("%Y_%m_%d-%H_%M_%S", gmtime())
-        subprocess.check_output(["mv", self.rundir, f"LINC_{self.mode}_{date}"])
+        subprocess.check_output(["mv", self.rundir, f"LOFAR-VLBI_{self.mode}_{self.obsid}_{date}"])
 
     def run_workflow(
         self,
