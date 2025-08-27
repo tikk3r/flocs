@@ -14,6 +14,11 @@ from losoto.h5parm import h5parm
 
 logger = structlog.getLogger()
 
+def extract_obsid_from_ms(ms: str) -> str:
+    inms = os.path.abspath(ms.rstrip())
+    obsid = ct.taql(f'select LOFAR_OBSERVATION_ID from {inms}::OBSERVATION').getcol("LOFAR_OBSERVATION_ID")[0]
+    return obsid
+
 
 def cwl_file(entry: str) -> Optional[str]:
     """Create a CWL-friendly file entry."""
@@ -37,16 +42,16 @@ def cwl_dir(entry: str) -> Optional[str]:
         )
 
 
-def check_dd_freq(infile: str, freq_array: Union[list, np.ndarray]) -> bool:
+def check_dd_freq(msin: str, freq_array: Union[list, np.ndarray]) -> bool:
     """Check frequency coverage overlap between a Measurment Set and a given array of frequencies.
 
     Args:
-        infile: input Measurement Set to check
+        msin: input Measurement Set to check
         freq_array: array of frequencies to check against
     Returns:
         True if input frequencies are covered, False if input has frequencies that fall outside freq_array.
     """
-    msfreqs = ct.table(("{:s}::SPECTRAL_WINDOW").format(infile))
+    msfreqs = ct.table(f"{msin.rstrip("/")}::SPECTRAL_WINDOW")
     ref_freq = msfreqs.getcol("REF_FREQUENCY")[0]
     msfreqs.close()
     c = 0
