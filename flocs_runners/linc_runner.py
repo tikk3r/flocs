@@ -124,7 +124,7 @@ class LINCJSONConfig:
 
     def move_results_from_rundir(self):
         date = strftime("%Y_%m_%d-%H_%M_%S", gmtime())
-        subprocess.check_output(["mv", self.rundir, f"LINC_{self.mode}_{self.obsid}_{date}"])
+        subprocess.check_output(["mv", self.rundir, f"LINC_{self.mode.value}_L{self.obsid}_{date}"])
 
     def run_workflow(
         self,
@@ -164,7 +164,7 @@ class LINCJSONConfig:
                 + f"--outdir={os.environ['APPTAINERENV_RESULTSDIR']} "
                 + f"--log-dir={os.environ['APPTAINERENV_LOGSDIR']} "
             )
-            cmd += f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_{self.mode}.cwl "
+            cmd += f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_{self.mode.value}.cwl "
             cmd += f"{self.configfile}"
 
             if scheduler == "slurm":
@@ -174,7 +174,7 @@ class LINCJSONConfig:
                     contents=cmd,
                     time="24:00:00",
                     cores=32,
-                    job_name=f"LINC_{self.mode}",
+                    job_name=f"LINC_{self.mode.value}",
                     **slurm_params,
                 )
                 with open("temp_jobscript.sh", "w") as f:
@@ -190,13 +190,15 @@ class LINCJSONConfig:
                 logger.info(f"Running command:\n{cmd}")
                 try:
                     out = subprocess.check_output(cmd.split(" "))
-                    with open(f"log_LINC_{self.mode}.txt", "wb") as f:
+                    with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                         f.write(out)
                 except subprocess.CalledProcessError as e:
-                    with open(f"log_LINC_{self.mode}.txt", "wb") as f:
+                    self.move_results_from_rundir()
+                    with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                         f.write(e.stdout)
-                    with open(f"log_LINC_{self.mode}_err.txt", "wb") as f:
-                        f.write(e.stderr)
+                    if e.stderr:
+                        with open(f"log_LINC_{self.mode.value}_err.txt", "wb") as f:
+                            f.write(e.stderr)
         elif runner == "toil":
             verify_toil()
             verify_slurm_environment_toil()
@@ -231,19 +233,21 @@ class LINCJSONConfig:
             cmd += ["--no-compute-checksum"]
             cmd += [
                 os.path.join(
-                    os.environ["LINC_DATA_ROOT"], "workflows", f"HBA_{self.mode}.cwl"
+                    os.environ["LINC_DATA_ROOT"], "workflows", f"HBA_{self.mode.value}.cwl"
                 )
             ]
             cmd += [self.configfile]
             try:
                 out = subprocess.check_output(cmd)
-                with open(f"log_LINC_{self.mode}.txt", "wb") as f:
+                with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                     f.write(out)
             except subprocess.CalledProcessError as e:
-                with open(f"log_LINC_{self.mode}.txt", "wb") as f:
+                self.move_results_from_rundir()
+                with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                     f.write(e.stdout)
-                with open(f"log_LINC_{self.mode}_err.txt", "wb") as f:
-                    f.write(e.stderr)
+                if e.stderr:
+                    with open(f"log_LINC_{self.mode.value}_err.txt", "wb") as f:
+                        f.write(e.stderr)
 
     def setup_apptainer_variables(self, workdir):
         out = (
