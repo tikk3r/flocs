@@ -162,7 +162,7 @@ class VLBIJSONConfig:
 
     def move_results_from_rundir(self):
         date = strftime("%Y_%m_%d-%H_%M_%S", gmtime())
-        subprocess.check_output(["mv", self.rundir, f"LOFAR-VLBI_{self.mode}_{self.obsid}_{date}"])
+        subprocess.check_output(["mv", self.rundir, f"LOFAR-VLBI_{self.mode.value}_L{self.obsid}_{date}"])
 
     def run_workflow(
         self,
