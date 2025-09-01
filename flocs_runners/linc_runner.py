@@ -124,7 +124,9 @@ class LINCJSONConfig:
 
     def move_results_from_rundir(self):
         date = strftime("%Y_%m_%d-%H_%M_%S", gmtime())
-        subprocess.check_output(["mv", self.rundir, f"LINC_{self.mode.value}_L{self.obsid}_{date}"])
+        subprocess.check_output(
+            ["mv", self.rundir, f"LINC_{self.mode.value}_L{self.obsid}_{date}"]
+        )
 
     def run_workflow(
         self,
@@ -164,7 +166,9 @@ class LINCJSONConfig:
                 + f"--outdir={os.environ['APPTAINERENV_RESULTSDIR']} "
                 + f"--log-dir={os.environ['APPTAINERENV_LOGSDIR']} "
             )
-            cmd += f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_{self.mode.value}.cwl "
+            cmd += (
+                f"{os.environ['LINC_DATA_ROOT']}/workflows/HBA_{self.mode.value}.cwl "
+            )
             cmd += f"{self.configfile}"
 
             if scheduler == "slurm":
@@ -172,8 +176,6 @@ class LINCJSONConfig:
                     cmd = add_apptainer_skeleton(contents=cmd, container=container)
                 wrapped_cmd = add_slurm_skeleton(
                     contents=cmd,
-                    time="24:00:00",
-                    cores=32,
                     job_name=f"LINC_{self.mode.value}",
                     **slurm_params,
                 )
@@ -233,7 +235,9 @@ class LINCJSONConfig:
             cmd += ["--no-compute-checksum"]
             cmd += [
                 os.path.join(
-                    os.environ["LINC_DATA_ROOT"], "workflows", f"HBA_{self.mode.value}.cwl"
+                    os.environ["LINC_DATA_ROOT"],
+                    "workflows",
+                    f"HBA_{self.mode.value}.cwl",
                 )
             ]
             cmd += [self.configfile]
@@ -799,7 +803,7 @@ def target(
     slurm_time: Annotated[
         str,
         Option(help="Slurm time limit to use."),
-    ] = "",
+    ] = "24:00:00",
     container: Annotated[
         str,
         Option(help="Apptainer container to use for cwltool runs."),

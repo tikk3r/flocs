@@ -162,7 +162,9 @@ class VLBIJSONConfig:
 
     def move_results_from_rundir(self):
         date = strftime("%Y_%m_%d-%H_%M_%S", gmtime())
-        subprocess.check_output(["mv", self.rundir, f"LOFAR-VLBI_{self.mode.value}_L{self.obsid}_{date}"])
+        subprocess.check_output(
+            ["mv", self.rundir, f"LOFAR-VLBI_{self.mode.value}_L{self.obsid}_{date}"]
+        )
 
     def run_workflow(
         self,
@@ -197,8 +199,6 @@ class VLBIJSONConfig:
                     cmd = add_apptainer_skeleton(contents=cmd, container=container)
                 wrapped_cmd = add_slurm_skeleton(
                     contents=cmd,
-                    time="24:00:00",
-                    cores=32,
                     job_name=f"VLBI_{self.mode.value}",
                     **slurm_params,
                 )
@@ -461,7 +461,7 @@ def delay_calibration(
     slurm_time: Annotated[
         str,
         Option(help="Slurm time limit to use."),
-    ] = "",
+    ] = "72:00:00",
     container: Annotated[
         str,
         Option(help="Apptainer container to use for cwltool runs."),
