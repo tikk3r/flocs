@@ -299,7 +299,7 @@ From: fedora:40
     mkdir -p $INSTALLDIR/difmap
     cd $INSTALLDIR/difmap
     #wget --progress=bar:force:noscroll ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
-    wget --progress=bar:force:noscroll https://github.com/tikk3r/ulocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
+    wget --progress=bar:force:noscroll https://github.com/tikk3r/flocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
     tar xf difmap2.5e.tar.gz
     cd uvf_difmap
     wget --progress=bar:force:noscroll https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
