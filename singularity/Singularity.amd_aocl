@@ -340,6 +340,7 @@ From: fedora:40
         -DUSE_OPENMP=True \
         -DUSE_HDF5=True \
         -DBUILD_DYSCO=ON \
+        -DBUILD_SISCO=ON \
         -DBLAS_LIBRARIES="${AOCL_ROOT}/lib/libblis.so" \
         -DFFTW3_LIBRARY="${AOCL_ROOT}/lib/libfftw3.so" \
         -DFFTW3_THREADS_LIBRARY="${AOCL_ROOT}/lib/libfftw3_threads.so" \

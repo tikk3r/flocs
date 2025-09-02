@@ -313,6 +313,7 @@ EOF
             -DUSE_OPENMP=True \
             -DUSE_HDF5=True \
             -DBUILD_DYSCO=ON \
+            -DBUILD_SISCO=ON \
             -DBLA_VENDOR=Intel10_64lp \
             ../src
     else
@@ -322,6 +323,7 @@ EOF
             -DUSE_OPENMP=True \
             -DUSE_HDF5=True \
             -DBUILD_DYSCO=ON \
+            -DBUILD_SISCO=ON \
             -DBLAS_LIBRARIES=/opt/OpenBLAS/lib64/libopenblas.so \
             ../src
     fi
