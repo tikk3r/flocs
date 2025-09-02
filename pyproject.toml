@@ -10,7 +10,6 @@ requires-python = ">3.9"
 dependencies = ["numpy","structlog", "typer", "packaging"]
 
 [project.scripts]
-flocs-create-ms-list = "flocs_runners.create_ms_list:main"
 flocs-run = "flocs_runners.flocs_run:main"
 
 [tool.setuptools]
