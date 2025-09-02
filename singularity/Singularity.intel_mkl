@@ -227,6 +227,9 @@ EOF
     uv pip install "numpy<2"
     uv pip install --no-binary pandas pandas
     uv pip install --no-binary h5py h5py
+
+    cd /opt/lofar
+    git clone https://github.com/tikk3r/flocs.git
     uv pip install -r $INSTALLDIR/flocs/requirements.txt
     # Install facetselfcal this way to make sure data gets installed.
     cd /opt/lofar
@@ -236,7 +239,7 @@ EOF
     # Install this separately since it keeps forcefully downgrading numpy.
     #pip install --no-deps lofarSun
     uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-    uv pip install git+https://github.com/tikk3r/flocs.git
+    uv pip install ./flocs
 
 
     #
