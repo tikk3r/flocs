@@ -23,9 +23,9 @@ From: fedora:40
 
     # Settings relevant to the installed software.
     export AOFLAGGER_VERSION=ae522544
-    export CASACORE_VERSION=8e2648a
+    export CASACORE_VERSION=450a568
     export DDFPIPELINE_VERSION=df58808
-    export DP3_VERSION=c54aa8c2
+    export DP3_VERSION=d630dddf
     export EVERYBEAM_VERSION=452a3974
     export HDF5_VERSION=1.14.5
     export IDG_VERSION=a5675159
@@ -33,7 +33,7 @@ From: fedora:40
     export OPENBLAS_VERSION=v0.3.29
     export PYBDSF_VERSION=8471637
     export PYTHON_CASACORE_VERSION=3.6.1
-    export WSCLEAN_VERSION=af07d53a
+    export WSCLEAN_VERSION=8bb992d8
     export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
 
