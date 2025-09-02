@@ -46,11 +46,76 @@ apptainer exec <container> DP3 msin=input.ms msout=output.ms msout.storagemanage
 ```
 It is not restricted to individual commands. Pipelines or bash scripts that execute multiple commands can also be run this way.
 
-## Pipeline use
-Since FLoCs is geared towards running pipelines, runner scripts are available for [LINC](https://git.astron.nl/RD/LINC) and [VLBI-cwl](https://git.astron.nl/RD/VLBI-cwl). These CWL pipelines take a JSON configuration file as their input. This is generated via [`runners/create_ms_list.py`](https://github.com/tikk3r/flocs/blob/fedora-py3/runners/create_ms_list.py), which the runners will call automatically. This script generates the JSON configuration file with all the pipeline related settings initialised to their respective default settings. See the respecitve pipelines or `python create_ms_list.py -h` for available options. Running LINC or VLBI-cwl is then covered by calling the runner with `bash` _outside_ any container environment.
+## Installing flocs
+Flocs provides pipeline runners that can be installed via package managers. For example:
 
+```bash
+uv pip install git+https://github.com/tikk3r/flocs.git
+```
+
+This should provide you with `flocs-run`; the main entry point to generating configuration files and running pipelines.
+
+# Running pipelines
+Since FLoCs is in principle built for running pipelines with, pipeline runners are provided for [LINC](https://git.astron.nl/RD/LINC) and [VLBI-cwl](https://git.astron.nl/RD/VLBI-cwl). These CWL pipelines take a JSON configuration file as their input. Running pipelines is abstracted away behind the `flocs-run` executable, so users should not have to interact with JSON or CWL files directly. First install flocs as explained above. Secondly, ensure `LINC_DATA_ROOT` is defined in your environment. As LINC is the most basic pipeline, flocs demands that this variable is defined. To see what options are available, use `--help` for the main command or each sub command.
+
+## Generating JSON configurations only.
+Previously `create_ms_list.py` was used to generate configuration files for either LINC or VLBI-cwl, in JSON format. This has been deprecated. Instead, use the `--config-only` option of the respective pipeline. With this option, `flocs-run` stops after generating the configuration file and will not execute a pipeline. Otherwise options are indentical to what is described below.
+
+## Running pipelines
 ### LINC
-The LINC pipeline consists of two parts: LINC calibrator and LINC target. The calibrator pipeline processes the flux density calibrator scans while target processes the target field. These respective pipelines can be run with [`runners/run_LINC_calibrator_HBA.sh`](https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_calibrator_HBA.sh) and [`runners/run_LINC_target_HBA.sh`](https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_LINC_target_HBA.sh). A user sets the container to use, where the data to process resides and for LINC target where the calibrator solutions can be found.
+The flocs LINC runner can be used to run the **HBA** calibrator or target pipelines. LBA is not supported. In its most basic form, the calibrator pipeline can be executed within a container as follows:
 
-### VLBI-cwl
-The VLBI-cwl pipeline consists of two parts: Delay-Calibration and Split-Directions. The former finds a suitable in-beam calibrator sources and performs direction independent calibration for the ILT's international stations. The latter, using the solutions from delay calibration, allows users to split out a number of directions of interest. Currently Delay-Calibration has a runner available under [`runners/run_lofar-vlbi-delay-calibration.sh`](https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_lofar-vlbi-delay-calibration.sh) and Split-Directions under [`runners/run_lofar-vlbi-spit-directions.sh`](https://github.com/tikk3r/flocs/blob/fedora-py3/runners/run_lofar-vlbi-split-directions.sh). A user sets the container to use, where the data to process resides and where the h5parm output by LINC *target* can be found.
+```bash
+flocs-run linc calibrator --container /path/to/container.sif </folder/with/mses/>
+```
+
+and the target pipeline as
+
+```bash
+flocs-run linc target --container /path/to/container.sif --cal_solutions </path/to/calibrator/cal_solutions.h5> </folder/with/mses/>
+```
+
+This will execute the pipeline in the given container, using `cwltool` as the CWL runner. For VLBI data reduction, you will almost always want to use the `--output-fullres-data` option (this may become default later).
+
+### VLBI
+To run VLBI delay calibration after LINC, for example, use
+
+```bash
+flocs-run vlbi delay-calibration --container /path/to/container.sif --ms_suffix dp3concat </folder/with/mses/>
+```
+This assumes you ran LINC target with the `--output-fullres-data` option.
+
+## Using containers/Toil/Slurm/all of the above
+`flocs-run` intends to make it easy for the user to switch between `cwltool`, `toil-cwl-runner`, running on a local machine, or running on a Slurm cluster. These are controlled by a set of options common to all the pipelines.
+
+### Switching CWL runners
+Two CWL runners are supported currently: `cwltool` and `toil-cwl-runner`. The runner of choice can be selected via the `--runner` option. It defaults to `cwltool`, but choosing `toil` will run the workflow with `toil-cwl-runner`. Note that for full compatability with all LINC and VLBI-cwl pipelines, Toil 9 or newer is required.
+
+### Switching between Slurm and a local machine
+The `--scheduler` option changes whether the pipeline is executed on the machine that executes `flocs-run`, or whether it interacts with the Slurm scheduler. Choosing `singleMachine` will execute it on the local machine (default). Choosing `slurm` will use a Slurm queue. Users must realise that this means something *different* between cwltool and toil: if the runner is `cwltool`, a jobscript is created and submitted to the queue via `sbatch`. If the runner is `toil`, it will setup Toil's Slurm-related settings and variables and execute `toil-cwl-runner` in Slurm mode *on the calling machine*.
+
+### Using an Apptainer container
+If a container is passed via the `--container` argument, a `cwltool` call will be executed within this container. Directories that need to be bound should currently be defined via `APPTAINER_BINDPATH` environment variable. This currently has no effect on workflows executed with Toil.
+
+Setting up a container to use with Toil is still slightly more involved. Firstly, containers have to adhere to a specific name. For LINC it **must** be named `astronrd_linc_latest.sif` and for VLBI-cwl it **must** be named `vlbi-cwl_latest.sif`. The easiest way to swap out containers is to make symlinks with these names that point to your desired container, in the directories that will be described next. You have to define three environment variables:
+
+* `APPTAINER_CACHEDIR`: this is where cached containers live. Consider this semi-permanent.
+* `APPTAINER_PULLDIR`: set this to `$APPTAINER_CACHEDIR/pull`. If a container with one of the above names is found here for LINC or VLBI-cwl, it will not try to pull it. Otherwise it will try to pull it from DockerHub (which will fail for VLBI-cwl).
+* `CWL_SINGULARITY_CACHE`: set this to `$APPTAINER_CACHEDIR`
+
+Once those are defined, a pipeline run using toil and Slurm will look something like this:
+
+```bash
+flocs-run vlbi delay-calibration --runner toil --scheduler slurm --time 24:00:00 --queue myqueue --account myaccount --ms_suffix dp3concat </folder/with/mses/>
+```
+
+A pipeline run using cwltool and Slurm will look something like this:
+
+```bash
+flocs-run vlbi delay-calibration --container /my/container.sif --runner cwltool --scheduler slurm --time 24:00:00 --queue myqueue --account myaccount --ms_suffix dp3concat </folder/with/mses/>
+```
+
+this will wrap a cwltool call in the appropriate `apptainer exec` and submit the whole thing as a job to the slurm queue with the given parameters.
+
+
+If you find a bug or have requests for functionality, please report it on the GitHub issue tracker.
