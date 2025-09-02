@@ -5,3 +5,6 @@ test
 *.swp
 *.MS
 *.json
+*/__pycache__
+*/*.egg-info
+**/build

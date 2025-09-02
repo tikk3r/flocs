@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flocs-runners"
+version = "6.0.0"
+description = ""
+requires-python = ">3.9"
+dependencies = ["numpy","structlog", "typer", "packaging"]
+
+[project.scripts]
+flocs-run = "flocs_runners.flocs_run:main"
+
+[tool.setuptools]
+packages = ["flocs_runners"]
