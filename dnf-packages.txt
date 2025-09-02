@@ -14,8 +14,6 @@ bzip2-devel
 cfitsio
 cfitsio-devel
 cmake3
-deflate
-deflate-devel
 dnf-plugins-core
 f2py
 fftw-devel
@@ -38,6 +36,8 @@ ImageMagick*
 lapack-devel
 libaio
 libaio-devel
+libdeflate
+libdeflate-devel
 libicu-devel
 libnsl
 libnsl2-devel
