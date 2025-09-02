@@ -12,7 +12,7 @@ From: fedora:40
         NOAVX512=false
         DEBUG=false
         OPENBLASTARGET=ZEN
-        INSTALL_CASA=true
+        INSTALL_CASA=false
 
 %post
     # General environment settings.
