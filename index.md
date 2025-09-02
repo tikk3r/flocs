@@ -7,17 +7,21 @@ This page documents my [LOFAR containers], very creatively named "Frits' LoFAR C
 
 # Latest containers
 
-[Download v5.7.1 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.1_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[Download v5.7.1 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.1_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v6.0.0 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.0.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v6.0.0 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.0.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 [View recipes on GitHub][LOFAR containers]{: .btn .fs-5 .mb-4 .mb-md-0 }
 
 # Previous containers
 
+## Version 6.X
+
 ## Version 5.X
 
 {: .important}
 > Containers labeled `x86-64_generic` are built generically without compiler optimisations in an attempt to allow them to run on a wide variety of machines. The cost of that is that these containers run slower than containers optimised for the specific CPU architecture of your machine or cluster.
+[Download v5.7.1 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.1_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v5.7.1 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.1_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 [Download v5.7.0 (Py3, Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Download v5.7.0 (Py3, AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v5.7.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }

@@ -13,6 +13,24 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v6.0.0
+Massively overhauls the runners for a better user experience. Overgrown Bash scripts moved to an installable Python package `flocs_runners` for more power and flexibility. Toil 9 or later is required if you want to run pipelines with Toil.
+
+**Updates**
+- Runner functionality is now obtained by installing the repository via pip
+- Running pipelines, including config generation, is now handled solely by `flocs-run`
+- Both cwltool and Toil are supported as CWL runners. Specify through `--runner [cwl|toil]`
+- Pipelines can run locally or use a Slurm scheduler. Specify through `--scheduler [singleMachine|slurm]`
+- `flocs-run` will handle job submission for Slurm. For cwltool this means the whole run is submitted as a job. For Toil, it will start Toil in "Slurm mode" on the node you launch from.
+- casacore, DP3 and WSClean are updated to support the new SISCO storage manager for model data compression.
+- Update casacore to 450a568
+- Update DP3 to d630dddf
+- Update EveryBeam to 452a3974
+- Update WSClean to 8bb992d8
+
+**Deprecations**
+- `create_ms_list.py` is now deprecated and will be removed in the next minor release. Use the `--config-only` options of `flocs-run` to generate only a JSON file and not run the pipeline.
+
 ## v5.7.1
 **Bugfixes**
 * Fixed LINC_DATA_ROOT string formatting in a few places.
