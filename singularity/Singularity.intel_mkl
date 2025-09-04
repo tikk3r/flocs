@@ -235,7 +235,6 @@ EOF
     cd /opt/lofar
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
     uv pip install ./lofar_facet_selfcal
-    rm -rf lofar_facet_selfcal
     # Install this separately since it keeps forcefully downgrading numpy.
     #pip install --no-deps lofarSun
     uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
@@ -464,7 +463,7 @@ EOF
     rm -rf $INSTALLDIR/DP3/build
     rm -rf $INSTALLDIR/DP3/src
     mkdir $INSTALLDIR/DP3/usermodules
-    wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DP3/usermodules/polconv.py
+    cp $INSTALLDIR/lofar_facet_selfcal/submods/polconv.py -O $INSTALLDIR/DP3/usermodules/polconv.py
 
     #
     # Install LoSiTo
@@ -673,6 +672,7 @@ EOF
     #
     # Finaly cleanup of unnecessary stuff
     # 
+    rm -rf lofar_facet_selfcal
     rm -rf /var/cache/dnf/*
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*
