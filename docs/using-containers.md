@@ -86,7 +86,7 @@ flocs-run vlbi delay-calibration --container /path/to/container.sif --ms_suffix 
 This assumes you ran LINC target with the `--output-fullres-data` option.
 
 ## Using containers/Toil/Slurm/all of the above
-`flocs-run` intends to make it easy for the user to switch between `cwltool`, `toil-cwl-runner`, running on a local machine, or running on a Slurm cluster. These are controlled by a set of options common to all the pipelines.
+`flocs-run` intends to make it easy for the user to switch between `cwltool`, `toil-cwl-runner`, running on a local machine, or running on a Slurm cluster. These are controlled by a set of options common to all the pipelines. The recommended way to use the runners is to install it in your own environment and pass a container to run a pipeline, and not use it from within a container.
 
 ### Switching CWL runners
 Two CWL runners are supported currently: `cwltool` and `toil-cwl-runner`. The runner of choice can be selected via the `--runner` option. It defaults to `cwltool`, but choosing `toil` will run the workflow with `toil-cwl-runner`. Note that for full compatability with all LINC and VLBI-cwl pipelines, Toil 9 or newer is required.
