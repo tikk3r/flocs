@@ -78,7 +78,7 @@ class LINCJSONConfig:
         self.create_linc_versions_file(update_version_file)
 
     def add_entry(self, key: str, value: object):
-        if "ATeam" in key:
+        if "A_Team" in key:
             self.configdict["A-Team_skymodel"] = value
         else:
             self.configdict[key] = value
