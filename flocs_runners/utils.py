@@ -179,27 +179,27 @@ def verify_slurm_environment_toil():
         raise FileNotFoundError(
             "Cannot find astornrd_linc_latest.sif in CWL_SINGULARITY_CACHE."
         )
-    if "APPTAINERENV_PULLDIR" not in os.environ:
+    if "APPTAINER_PULLDIR" not in os.environ:
         logger.critical(
-            "APPTAINERENV_PULLDIR not found in the environment. Ensure it is set to where you have stored `astronrd_linc_latest.sif`."
+            "APPTAINER_PULLDIR not found in the environment. Ensure it is set to where you have stored `astronrd_linc_latest.sif`."
         )
         failed = True
     elif not os.path.isfile(
-        os.path.join(os.environ["APPTAINERENV_PULLDIR"], "astronrd_linc_latest.sif")
+        os.path.join(os.environ["APPTAINER_PULLDIR"], "astronrd_linc_latest.sif")
     ):
         raise FileNotFoundError(
-            "Cannot find astornrd_linc_latest.sif in APPTAINERENV_PULLDIR."
+            "Cannot find astornrd_linc_latest.sif in APPTAINER_PULLDIR."
         )
-    if "APPTAINERENV_CACHEDIR" not in os.environ:
+    if "APPTAINER_CACHEDIR" not in os.environ:
         logger.critical(
-            "APPTAINERENV_CACHEDIR not found in the environment. Ensure it is set to where you have stored `astronrd_linc_latest.sif`."
+            "APPTAINER_CACHEDIR not found in the environment. Ensure it is set to where you have stored `astronrd_linc_latest.sif`."
         )
         failed = True
     elif not os.path.isfile(
-        os.path.join(os.environ["APPTAINERENV_CACHEDIR"], "astronrd_linc_latest.sif")
+        os.path.join(os.environ["APPTAINER_CACHEDIR"], "astronrd_linc_latest.sif")
     ):
         raise FileNotFoundError(
-            "Cannot find astornrd_linc_latest.sif in APPTAINERENV_CACHEDIR."
+            "Cannot find astornrd_linc_latest.sif in APPTAINER_CACHEDIR."
         )
     if failed:
         raise RuntimeError("One or more critical environment variables were not set.")
