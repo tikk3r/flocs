@@ -482,7 +482,7 @@ From: fedora:40
     rm -rf $INSTALLDIR/DP3/build
     rm -rf $INSTALLDIR/DP3/src
     mkdir $INSTALLDIR/DP3/usermodules
-    cp $INSTALLDIR/lofar_facet_selfcal/submods/polconv.py -O $INSTALLDIR/DP3/usermodules/polconv.py
+    cp $INSTALLDIR/lofar_facet_selfcal/submods/polconv.py $INSTALLDIR/DP3/usermodules/polconv.py
 
     #
     # Install LoSiTo
