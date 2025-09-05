@@ -246,12 +246,12 @@ class LINCJSONConfig:
                 with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                     f.write(out)
             except subprocess.CalledProcessError as e:
-                self.move_results_from_rundir()
                 with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                     f.write(e.stdout)
                 if e.stderr:
                     with open(f"log_LINC_{self.mode.value}_err.txt", "wb") as f:
                         f.write(e.stderr)
+            self.move_results_from_rundir()
 
     def setup_apptainer_variables(self, workdir):
         out = (
@@ -370,7 +370,7 @@ def calibrator(
     rfistrategy: Annotated[
         str, Option(help="Path to the RFI flagging strategy to use with AOFlagger.")
     ] = os.path.join(
-        os.environ["LINC_DATA_ROOT"], "rfistrategies", "lofar-default.lua"
+        os.environ["LINC_DATA_ROOT"], "rfistrategies", "lofar-hba-wideband.lua"
     ),
     max2interpolate: Annotated[
         int,
