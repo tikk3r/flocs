@@ -161,8 +161,8 @@ class LINCJSONConfig:
                 "cwltool "
                 + "--parallel "
                 + "--timestamps "
-                + "--preserve-environmnet PYTHONPATH "
-                + "--no-container "
+                + "--disable-pull "
+                + "--singularity "
                 + f"--tmpdir-prefix={os.environ['APPTAINERENV_TMPDIR']} "
                 + f"--outdir={os.environ['APPTAINERENV_RESULTSDIR']} "
                 + f"--log-dir={os.environ['APPTAINERENV_LOGSDIR']} "
@@ -173,8 +173,6 @@ class LINCJSONConfig:
             cmd += f"{self.configfile}"
 
             if scheduler == "slurm":
-                if container:
-                    cmd = add_apptainer_skeleton(contents=cmd, container=container)
                 wrapped_cmd = add_slurm_skeleton(
                     contents=cmd,
                     job_name=f"LINC_{self.mode.value}",
@@ -270,8 +268,6 @@ class LINCJSONConfig:
             os.environ["APPTAINERENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
-            # Note that cwltool for some reason does not inherit this,
-            # so we also set PYTHONPATH and inherit that.
             os.environ["APPTAINERENV_PYTHONPATH"] = f"{os.environ['LINC_DATA_ROOT']}/scripts:$PYTHONPATH"
             os.mkdir(os.environ["APPTAINERENV_LOGSDIR"])
             os.mkdir(os.environ["APPTAINERENV_TMPDIR"])
