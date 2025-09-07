@@ -160,7 +160,8 @@ class LINCJSONConfig:
             cmd = (
                 "cwltool "
                 + "--parallel "
-                + "--preserve-entire-environment "
+                + "--timestamps "
+                + "--preserve-environmnet PYTHONPATH "
                 + "--no-container "
                 + f"--tmpdir-prefix={os.environ['APPTAINERENV_TMPDIR']} "
                 + f"--outdir={os.environ['APPTAINERENV_RESULTSDIR']} "
@@ -269,9 +270,15 @@ class LINCJSONConfig:
             os.environ["APPTAINERENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
+            # Note that cwltool for some reason does not inherit this,
+            # so we also set PYTHONPATH and inherit that.
+            os.environ["APPTAINERENV_PYTHONPATH"] = f"{os.environ['LINC_DATA_ROOT']}/scripts:$PYTHONPATH"
             os.mkdir(os.environ["APPTAINERENV_LOGSDIR"])
             os.mkdir(os.environ["APPTAINERENV_TMPDIR"])
             os.mkdir(os.environ["APPTAINERENV_RESULTSDIR"])
+            os.environ["PATH"] = (
+                os.environ["APPTAINERENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
+            )
         elif "singularity" in out:
             os.environ["SINGULARITYENV_LINC_DATA_ROOT"] = os.environ["LINC_DATA_ROOT"]
             os.environ["SINGULARITYENV_RESULTSDIR"] = (
@@ -282,13 +289,15 @@ class LINCJSONConfig:
             os.environ["SINGULARITYENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
+            # Note that cwltool for some reason does not inherit this.
+            os.environ["SINGULARITYENV_PYTHONPATH"] = f"{os.environ['LINC_DATA_ROOT']}/scripts:$PYTHONPATH"
             os.mkdir(os.environ["SINGULARITYENV_LOGSDIR"])
             os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
             os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
+            os.environ["PATH"] = (
+                os.environ["SINGULARITYENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
+            )
         os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
-        os.environ["PATH"] = (
-            os.environ["APPTAINERENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
-        )
 
     def setup_toil_directories(self, workdir: str) -> tuple[str, str]:
         dir_coordination = os.path.join(workdir, "coordination")
