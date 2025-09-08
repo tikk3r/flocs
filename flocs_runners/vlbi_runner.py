@@ -83,7 +83,7 @@ class VLBIJSONConfig:
 
     def add_entry(self, key: str, value: object):
         if "ATeam" in key:
-            self.configdict["A-Team_skymodel"] = value
+            self.configdict["Ateam_skymodel"] = value
         else:
             self.configdict[key] = value
 
