@@ -76,21 +76,6 @@ class LINCJSONConfig:
             self.configdict["msin"] = final_mslist
         self.obsid = extract_obsid_from_ms(self.configdict["msin"][0]["path"])
         self.create_linc_versions_file(update_version_file)
-        if self.configdict["output_fullres_data"]:
-            logger.info("Full-resolution data requested, updating defaults to:")
-            logger.info(
-                f"avg_timeresolution: {self.configdict['avg_timeresolution']} -> 1"
-            )
-            logger.info(
-                f"avg_freqresolution: {self.configdict['avg_freqresolution']} -> 12.21kHz"
-            )
-            logger.info(
-                f"filter_baselines: {self.configdict['filter_baselines']} -> *&"
-            )
-
-            self.configdict["avg_timeresolution"] = 1
-            self.configdict["avg_freqresolution"] = "12.21kHz"
-            self.configdict["filter_baselines"] = "*&"
 
     def add_entry(self, key: str, value: object):
         if "A_Team" in key:
@@ -606,6 +591,21 @@ def calibrator(
         "slurm_time",
     ]
     args_for_linc = args.copy()
+    if args_for_linc["output_fullres_data"]:
+        logger.info("Full-resolution data requested, updating defaults to:")
+        logger.info(
+            f"avg_timeresolution: {args_for_linc['avg_timeresolution']} -> 1"
+        )
+        logger.info(
+            f"avg_freqresolution: {args_for_linc['avg_freqresolution']} -> 12.21kHz"
+        )
+        logger.info(
+            f"filter_baselines: {args_for_linc['filter_baselines']} -> *&"
+        )
+
+        args_for_linc["avg_timeresolution"] = 1
+        args_for_linc["avg_freqresolution"] = "12.21kHz"
+        args_for_linc["filter_baselines"] = "*&"
     for key in unneeded_keys:
         args_for_linc.pop(key)
     for key, val in args_for_linc.items():
