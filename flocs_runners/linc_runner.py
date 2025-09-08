@@ -124,6 +124,17 @@ class LINCJSONConfig:
 
     def move_results_from_rundir(self):
         date = strftime("%Y_%m_%d-%H_%M_%S", gmtime())
+        try:
+            logger.info("Tarring log directory to reduce files")
+            tarjob = subprocess.check_output(
+                ["tar", "cf", os.path.join(self.rundir, "logs_LINC_calibrator.tar"), os.path.join(self.rundir, "logs_LINC_calibrator")]
+            )
+            logger.info("Removing log directory")
+            subprocess.check_output(
+                ["rm", "-r", os.path.join(self.rundir, "logs_LINC_calibrator")]
+            )
+        except subprocess.CalledProcessError:
+            logger.warning("Failed to tar logs.")
         subprocess.check_output(
             ["mv", self.rundir, f"LINC_{self.mode.value}_L{self.obsid}_{date}"]
         )

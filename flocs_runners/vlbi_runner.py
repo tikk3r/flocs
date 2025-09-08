@@ -162,6 +162,17 @@ class VLBIJSONConfig:
 
     def move_results_from_rundir(self):
         date = strftime("%Y_%m_%d-%H_%M_%S", gmtime())
+        try:
+            logger.info("Tarring log directory to reduce files")
+            tarjob = subprocess.check_output(
+                ["tar", "cf", os.path.join(self.rundir, f"logs_VLBI_{self.mode.value}.tar"), os.path.join(self.rundir, f"logs_VLBI_{self.mode.value}")]
+            )
+            logger.info("Removing log directory")
+            subprocess.check_output(
+                ["rm", "-r", os.path.join(self.rundir, f"logs_VLBI_{self.mode.value}")]
+            )
+        except subprocess.CalledProcessError:
+            logger.warning("Failed to tar logs.")
         subprocess.check_output(
             ["mv", self.rundir, f"LOFAR-VLBI_{self.mode.value}_L{self.obsid}_{date}"]
         )
