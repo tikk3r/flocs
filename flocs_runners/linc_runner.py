@@ -193,7 +193,6 @@ class LINCJSONConfig:
                     out = subprocess.check_output(cmd.split(" "))
                     with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                         f.write(out)
-                    self.move_results_from_rundir()
                 except subprocess.CalledProcessError as e:
                     self.move_results_from_rundir()
                     with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
@@ -563,10 +562,6 @@ def calibrator(
         str,
         Option(help="Slurm time limit to use."),
     ] = "",
-    slurm_cores: Annotated[
-        int,
-        Option(help="Cores to reserve for monolithic Slurm job."),
-    ] = 32,
     container: Annotated[
         str,
         Option(help="Apptainer container to use for cwltool runs."),
@@ -605,7 +600,6 @@ def calibrator(
                 "queue": args["slurm_queue"],
                 "account": args["slurm_account"],
                 "time": args["slurm_time"],
-                "cores": args["slurm_cores"],
             },
             workdir=args["rundir"],
             container=args["container"],
