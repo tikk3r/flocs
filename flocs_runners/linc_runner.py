@@ -591,21 +591,6 @@ def calibrator(
         "slurm_time",
     ]
     args_for_linc = args.copy()
-    if args_for_linc["output_fullres_data"]:
-        logger.info("Full-resolution data requested, updating defaults to:")
-        logger.info(
-            f"avg_timeresolution: {args_for_linc['avg_timeresolution']} -> 1"
-        )
-        logger.info(
-            f"avg_freqresolution: {args_for_linc['avg_freqresolution']} -> 12.21kHz"
-        )
-        logger.info(
-            f"filter_baselines: {args_for_linc['filter_baselines']} -> *&"
-        )
-
-        args_for_linc["avg_timeresolution"] = 1
-        args_for_linc["avg_freqresolution"] = "12.21kHz"
-        args_for_linc["filter_baselines"] = "*&"
     for key in unneeded_keys:
         args_for_linc.pop(key)
     for key, val in args_for_linc.items():
@@ -853,6 +838,17 @@ def target(
         "container",
     ]
     args_for_linc = args.copy()
+    if args_for_linc["output_fullres_data"]:
+        logger.info("Full-resolution data requested, updating defaults to:")
+        logger.info(f"avg_timeresolution: {args_for_linc['avg_timeresolution']} -> 1")
+        logger.info(
+            f"avg_freqresolution: {args_for_linc['avg_freqresolution']} -> 12.21kHz"
+        )
+        logger.info(f"filter_baselines: {args_for_linc['filter_baselines']} -> *&")
+
+        args_for_linc["avg_timeresolution"] = 1
+        args_for_linc["avg_freqresolution"] = "12.21kHz"
+        args_for_linc["filter_baselines"] = "*&"
     for key in unneeded_keys:
         args_for_linc.pop(key)
     for key, val in args_for_linc.items():
