@@ -76,6 +76,21 @@ class LINCJSONConfig:
             self.configdict["msin"] = final_mslist
         self.obsid = extract_obsid_from_ms(self.configdict["msin"][0]["path"])
         self.create_linc_versions_file(update_version_file)
+        if self.configdict["output_fullres_data"]:
+            logger.info("Full-resolution data requested, updating defaults to:")
+            logger.info(
+                f"avg_timeresolution: {self.configdict['avg_timeresolution']} -> 1"
+            )
+            logger.info(
+                f"avg_freqresolution: {self.configdict['avg_freqresolution']} -> 12.21kHz"
+            )
+            logger.info(
+                f"filter_baselines: {self.configdict['filter_baselines']} -> *&"
+            )
+
+            self.configdict["avg_timeresolution"] = 1
+            self.configdict["avg_freqresolution"] = "12.21kHz"
+            self.configdict["filter_baselines"] = "*&"
 
     def add_entry(self, key: str, value: object):
         if "A_Team" in key:
@@ -268,7 +283,9 @@ class LINCJSONConfig:
             os.environ["APPTAINERENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
-            os.environ["APPTAINERENV_PYTHONPATH"] = f"{os.environ['LINC_DATA_ROOT']}/scripts:$PYTHONPATH"
+            os.environ["APPTAINERENV_PYTHONPATH"] = (
+                f"{os.environ['LINC_DATA_ROOT']}/scripts:$PYTHONPATH"
+            )
             os.mkdir(os.environ["APPTAINERENV_LOGSDIR"])
             os.mkdir(os.environ["APPTAINERENV_TMPDIR"])
             os.mkdir(os.environ["APPTAINERENV_RESULTSDIR"])
@@ -286,7 +303,9 @@ class LINCJSONConfig:
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
             # Note that cwltool for some reason does not inherit this.
-            os.environ["SINGULARITYENV_PYTHONPATH"] = f"{os.environ['LINC_DATA_ROOT']}/scripts:$PYTHONPATH"
+            os.environ["SINGULARITYENV_PYTHONPATH"] = (
+                f"{os.environ['LINC_DATA_ROOT']}/scripts:$PYTHONPATH"
+            )
             os.mkdir(os.environ["SINGULARITYENV_LOGSDIR"])
             os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
             os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
