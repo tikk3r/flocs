@@ -390,7 +390,11 @@ def calibrator(
         bool, Option(help="Enable or disable baseline-based smoothing.")
     ] = False,
     rfistrategy: Annotated[
-        str, Option(parser=cwl_file, help="Path to the RFI flagging strategy to use with AOFlagger.")
+        str,
+        Option(
+            parser=cwl_file,
+            help="Path to the RFI flagging strategy to use with AOFlagger.",
+        ),
     ] = os.path.join(
         os.environ["LINC_DATA_ROOT"], "rfistrategies", "lofar-hba-wideband.lua"
     ),
