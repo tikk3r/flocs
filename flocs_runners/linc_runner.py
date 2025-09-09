@@ -606,6 +606,7 @@ def calibrator(
         "slurm_queue",
         "slurm_account",
         "slurm_time",
+        "slurm_cores",
     ]
     args_for_linc = args.copy()
     for key in unneeded_keys:
