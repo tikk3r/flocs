@@ -126,7 +126,12 @@ class LINCJSONConfig:
         try:
             logger.info("Tarring log directory to reduce files")
             tarjob = subprocess.check_output(
-                ["tar", "cf", os.path.join(self.rundir, "logs_LINC_calibrator.tar"), os.path.join(self.rundir, "logs_LINC_calibrator")]
+                [
+                    "tar",
+                    "cf",
+                    os.path.join(self.rundir, "logs_LINC_calibrator.tar"),
+                    os.path.join(self.rundir, "logs_LINC_calibrator"),
+                ]
             )
             logger.info("Removing log directory")
             subprocess.check_output(
@@ -499,14 +504,14 @@ def calibrator(
             help="Directory where calibrator skymodels are located.",
         ),
     ] = os.path.join(os.environ["LINC_DATA_ROOT"], "skymodels"),
-    ATeam_skymodel: Annotated[
+    A_Team_skymodel: Annotated[
         Optional[str],
         Option(
             parser=cwl_file,
             metavar="SKYMODEL",
             help="File path to the A-Team skymodel.",
         ),
-    ] = None,
+    ] = os.path.join(os.environ["LINC_DATA_ROOT"], "A-Team.skymodel"),
     avg_timeresolution: Annotated[
         int,
         Option(
@@ -715,8 +720,13 @@ def target(
         Optional[float], typer.Option(help="Minimum probability.")
     ] = 0.5,
     A_Team_skymodel: Annotated[
-        Optional[str], typer.Option(parser=cwl_file, help="A-Team sky model.")
-    ] = None,
+        Optional[str],
+        Option(
+            parser=cwl_file,
+            metavar="SKYMODEL",
+            help="File path to the A-Team skymodel.",
+        ),
+    ] = os.path.join(os.environ["LINC_DATA_ROOT"], "A-Team.skymodel"),
     target_skymodel: Annotated[
         Optional[str], typer.Option(parser=cwl_file, help="Target sky model.")
     ] = None,
