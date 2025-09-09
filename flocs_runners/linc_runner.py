@@ -212,7 +212,7 @@ class LINCJSONConfig:
                     if e.stderr:
                         with open(f"log_LINC_{self.mode.value}_err.txt", "wb") as f:
                             f.write(e.stderr)
-            self.move_results_from_rundir()
+                self.move_results_from_rundir()
         elif runner == "toil":
             verify_toil()
             verify_slurm_environment_toil()
@@ -607,6 +607,7 @@ def calibrator(
         "slurm_account",
         "slurm_time",
         "slurm_cores",
+        "container",
     ]
     args_for_linc = args.copy()
     for key in unneeded_keys:
