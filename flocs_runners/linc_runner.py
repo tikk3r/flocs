@@ -574,6 +574,10 @@ def calibrator(
         str,
         Option(help="Slurm time limit to use."),
     ] = "",
+    slurm_cores: Annotated[
+        int,
+        Option(help="Number of cores to reserve for a monolithic pipeline run."),
+    ] = 32,
     container: Annotated[
         str,
         Option(help="Apptainer container to use for cwltool runs."),
@@ -612,6 +616,7 @@ def calibrator(
                 "queue": args["slurm_queue"],
                 "account": args["slurm_account"],
                 "time": args["slurm_time"],
+                "cores": args["slurm_cores"],
             },
             workdir=args["rundir"],
             container=args["container"],
@@ -870,6 +875,7 @@ def target(
                 "queue": args["slurm_queue"],
                 "account": args["slurm_account"],
                 "time": args["slurm_time"],
+                "cores": args["slurm_cores"],
             },
             workdir=args["rundir"],
             container=args["container"],
