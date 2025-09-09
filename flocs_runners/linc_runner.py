@@ -1,5 +1,4 @@
 from .utils import (
-    add_apptainer_skeleton,
     add_slurm_skeleton,
     check_dd_freq,
     cwl_file,
@@ -197,8 +196,6 @@ class LINCJSONConfig:
                 )
                 print(out)
             elif scheduler == "singleMachine":
-                if container:
-                    cmd = add_apptainer_skeleton(contents=cmd, container=container)
                 logger.info(f"Running command:\n{cmd}")
                 try:
                     out = subprocess.check_output(cmd.split(" "))

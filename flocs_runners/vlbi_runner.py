@@ -1,5 +1,4 @@
 from .utils import (
-    add_apptainer_skeleton,
     add_slurm_skeleton,
     check_dd_freq,
     cwl_file,
@@ -165,7 +164,12 @@ class VLBIJSONConfig:
         try:
             logger.info("Tarring log directory to reduce files")
             tarjob = subprocess.check_output(
-                ["tar", "cf", os.path.join(self.rundir, f"logs_VLBI_{self.mode.value}.tar"), os.path.join(self.rundir, f"logs_VLBI_{self.mode.value}")]
+                [
+                    "tar",
+                    "cf",
+                    os.path.join(self.rundir, f"logs_VLBI_{self.mode.value}.tar"),
+                    os.path.join(self.rundir, f"logs_VLBI_{self.mode.value}"),
+                ]
             )
             logger.info("Removing log directory")
             subprocess.check_output(
@@ -206,8 +210,6 @@ class VLBIJSONConfig:
             cmd += f"{self.configfile}"
 
             if scheduler == "slurm":
-                if container:
-                    cmd = add_apptainer_skeleton(contents=cmd, container=container)
                 wrapped_cmd = add_slurm_skeleton(
                     contents=cmd,
                     job_name=f"VLBI_{self.mode.value}",
@@ -220,8 +222,6 @@ class VLBIJSONConfig:
                     "utf-8"
                 )
             elif scheduler == "singleMachine":
-                if container:
-                    cmd = add_apptainer_skeleton(contents=cmd, container=container)
                 logger.info(f"Running command:\n{cmd}")
                 out = subprocess.check_output(cmd.split(" ")).decode("utf-8")
                 print(out)
@@ -363,7 +363,9 @@ def delay_calibration(
             metavar="RFISTRATEGY",
             help="File path to the strategy file for AOFlagger.",
         ),
-    ] = os.path.join(os.environ["LINC_DATA_ROOT"], "rfistrategies/lofar-hba-wideband.lua"),
+    ] = os.path.join(
+        os.environ["LINC_DATA_ROOT"], "rfistrategies/lofar-hba-wideband.lua"
+    ),
     configfile: Annotated[
         str,
         typer.Option(
