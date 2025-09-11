@@ -7,7 +7,7 @@ name = "flocs-runners"
 version = "6.0.0"
 description = ""
 requires-python = ">3.9"
-dependencies = ["numpy","structlog", "typer", "packaging", "python-casacore", "losoto"]
+dependencies = ["numpy","structlog", "typer", "packaging", "python-casacore", "losoto", "toil[cwl]>=9"]
 
 [project.scripts]
 flocs-run = "flocs_runners.flocs_run:main"
