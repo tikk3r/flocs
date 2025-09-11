@@ -103,7 +103,7 @@ Firstly, containers have to adhere to a specific name. For LINC it **must** be n
 * `APPTAINER_PULLDIR`: set this to `$APPTAINER_CACHEDIR/pull`. If a container with one of the above names is found here for LINC or VLBI-cwl, it will not try to pull it. Otherwise it will try to pull it from DockerHub (which will fail for VLBI-cwl).
 * `CWL_SINGULARITY_CACHE`: set this to `$APPTAINER_CACHEDIR`
 
-Once those are defined, a pipeline run using toil and Slurm will look something like this:
+Once those are defined, put the containers (or a symlink to them) under `$APPTAINER_CACHEDIR` and `$APPTAINER_PULLDIR`. A pipeline run using toil and Slurm will look something like this:
 
 ```bash
 flocs-run vlbi delay-calibration --runner toil --scheduler slurm --time 24:00:00 --queue myqueue --account myaccount --ms_suffix dp3concat </folder/with/mses/>
