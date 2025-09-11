@@ -66,13 +66,13 @@ Previously `create_ms_list.py` was used to generate configuration files for eith
 The flocs LINC runner can be used to run the **HBA** calibrator or target pipelines. LBA is not supported. In its most basic form, the calibrator pipeline can be executed within a container as follows:
 
 ```bash
-flocs-run linc calibrator --container /path/to/container.sif </folder/with/mses/>
+flocs-run linc calibrator /path/to/container.sif </folder/with/mses/>
 ```
 
 and the target pipeline as
 
 ```bash
-flocs-run linc target --container /path/to/container.sif --cal_solutions </path/to/calibrator/cal_solutions.h5> </folder/with/mses/>
+flocs-run linc target /path/to/container.sif --cal_solutions </path/to/calibrator/cal_solutions.h5> </folder/with/mses/>
 ```
 
 This will execute the pipeline in the given container, using `cwltool` as the CWL runner. For VLBI data reduction, you will almost always want to use the `--output-fullres-data` option (this may become default later).
@@ -81,7 +81,7 @@ This will execute the pipeline in the given container, using `cwltool` as the CW
 To run VLBI delay calibration after LINC, for example, use
 
 ```bash
-flocs-run vlbi delay-calibration --container /path/to/container.sif --ms_suffix dp3concat </folder/with/mses/>
+flocs-run vlbi delay-calibration /path/to/container.sif --ms_suffix dp3concat </folder/with/mses/>
 ```
 This assumes you ran LINC target with the `--output-fullres-data` option.
 
