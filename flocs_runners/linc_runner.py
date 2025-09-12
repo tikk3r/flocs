@@ -129,18 +129,18 @@ class LINCJSONConfig:
                 [
                     "tar",
                     "cf",
-                    os.path.join(self.rundir, "logs_LINC_calibrator.tar"),
-                    os.path.join(self.rundir, "logs_LINC_calibrator"),
+                    os.path.join(self.rundir, f"logs_LINC_{self.mode.value}.tar"),
+                    os.path.join(self.rundir, f"logs_LINC_{self.mode.value}"),
                 ]
             )
             logger.info("Removing log directory")
             subprocess.check_output(
-                ["rm", "-r", os.path.join(self.rundir, "logs_LINC_calibrator")]
+                ["rm", "-r", os.path.join(self.rundir, f"logs_LINC_{self.mode.value}")]
             )
         except subprocess.CalledProcessError:
             logger.warning("Failed to tar logs.")
         subprocess.check_output(
-            ["mv", self.rundir, f"LINC_{self.mode.value}_L{self.obsid}_{date}"]
+            ["rsync", "-avP", self.rundir, f"LINC_{self.mode.value}_L{self.obsid}_{date}"]
         )
 
     def run_workflow(
