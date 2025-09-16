@@ -807,7 +807,7 @@ def target(
     ] = None,
     make_structure_plot: Annotated[
         Optional[bool], typer.Option(help="Make structure plot.")
-    ] = True,
+    ] = False,
     skymodel_fluxlimit: Annotated[
         Optional[float], typer.Option(help="Skymodel flux limit.")
     ] = None,
