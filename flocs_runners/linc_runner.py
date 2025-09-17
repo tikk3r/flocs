@@ -88,7 +88,7 @@ class LINCJSONConfig:
                 "WARNING: LINC_DATA_ROOT environment variable has not been set. Cannot generate $LINC_DATA_ROOT/.versions file."
             )
         linc_version = subprocess.check_output(
-            f"cd {os.environ["LINC_DATA_ROOT"]} && git describe --tags",
+            f"cd {os.environ['LINC_DATA_ROOT']} && git describe --tags",
             shell=True,
             text=True,
         )
