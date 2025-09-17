@@ -233,11 +233,11 @@ class LINCJSONConfig:
             cmd += ["--logFile", "full_log.log"]
             cmd += ["--writeLogs", os.environ["APPTAINERENV_LOGSDIR"]]
             cmd += ["--outdir", os.environ["APPTAINERENV_RESULTSDIR"]]
-            cmd += ["--tmp-outdir-prefix", os.environ["APPTAINERENV_TMPDIR"], "/"]
+            cmd += ["--tmp-outdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
             cmd += ["--jobStore", os.path.join(self.rundir, "jobstore")]
             cmd += ["--workDir", workdir]
             cmd += ["--coordinationDir", dir_coordination]
-            cmd += ["--tmpdir-prefix", os.environ["APPTAINERENV_TMPDIR"], "/"]
+            cmd += ["--tmpdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
             cmd += ["--disableAutoDeployment", "True"]
             cmd += ["--bypass-file-store"]
             cmd += [
