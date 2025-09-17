@@ -217,6 +217,7 @@ class LINCJSONConfig:
             verify_toil()
             verify_slurm_environment_toil()
             dir_coordination, dir_slurmlogs = self.setup_toil_directories(self.rundir)
+            is_ceph = "ceph" in subprocess.check_output(["df", self.rundir]).lower().decode("utf-8")
             setup_toil_slurm(slurm_params)
             cmd = ["toil-cwl-runner"]
             if scheduler == "slurm":
@@ -236,7 +237,10 @@ class LINCJSONConfig:
             cmd += ["--tmp-outdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
             cmd += ["--jobStore", os.path.join(self.rundir, "jobstore")]
             cmd += ["--workDir", workdir]
-            cmd += ["--coordinationDir", dir_coordination]
+            if is_ceph:
+                logger.info("Detected CEPH file system, not setting coordinationDir.")
+            else:
+                cmd += ["--coordinationDir", dir_coordination]
             cmd += ["--tmpdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
             cmd += ["--disableAutoDeployment", "True"]
             cmd += ["--bypass-file-store"]
