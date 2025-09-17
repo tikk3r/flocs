@@ -519,7 +519,7 @@ def calibrator(
             metavar="SKYMODEL",
             help="File path to the A-Team skymodel.",
         ),
-    ] = os.path.join(os.environ["LINC_DATA_ROOT"], "A-Team.skymodel"),
+    ] = os.path.join(os.environ["LINC_DATA_ROOT"], "skymodels", "A-Team.skymodel"),
     avg_timeresolution: Annotated[
         int,
         Option(
@@ -736,7 +736,7 @@ def target(
             metavar="SKYMODEL",
             help="File path to the A-Team skymodel.",
         ),
-    ] = os.path.join(os.environ["LINC_DATA_ROOT"], "A-Team.skymodel"),
+    ] = os.path.join(os.environ["LINC_DATA_ROOT"], "skymodels", "A-Team.skymodel"),
     target_skymodel: Annotated[
         Optional[str], typer.Option(parser=cwl_file, help="Target sky model.")
     ] = None,
