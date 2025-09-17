@@ -51,7 +51,7 @@ def check_dd_freq(msin: str, freq_array: Union[list, np.ndarray]) -> bool:
     Returns:
         True if input frequencies are covered, False if input has frequencies that fall outside freq_array.
     """
-    msfreqs = ct.table(f"{msin.rstrip("/")}::SPECTRAL_WINDOW")
+    msfreqs = ct.table(f"{msin.rstrip('/')}::SPECTRAL_WINDOW")
     ref_freq = msfreqs.getcol("REF_FREQUENCY")[0]
     msfreqs.close()
     c = 0
@@ -144,11 +144,11 @@ def setup_toil_slurm(slurm_params: dict):
     """
     os.environ["TOIL_SLURM_ARGS"] = "--export=ALL "
     if "queue" in slurm_params:
-        os.environ["TOIL_SLURM_ARGS"] += f"-p {slurm_params["queue"]} "
+        os.environ["TOIL_SLURM_ARGS"] += f"-p {slurm_params['queue']} "
     if "account" in slurm_params:
-        os.environ["TOIL_SLURM_ARGS"] += f"-A {slurm_params["account"]} "
+        os.environ["TOIL_SLURM_ARGS"] += f"-A {slurm_params['account']} "
     if "time" in slurm_params:
-        os.environ["TOIL_SLURM_ARGS"] += f"-t {slurm_params["time"]} "
+        os.environ["TOIL_SLURM_ARGS"] += f"-t {slurm_params['time']} "
 
 
 def verify_toil():
