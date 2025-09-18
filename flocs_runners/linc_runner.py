@@ -559,6 +559,9 @@ def calibrator(
             help="Split the set into intervals with the given maximum size, and flag each interval independently. This lowers the amount of memory required."
         ),
     ] = 2000,
+    solveralgorithm: Annotated[
+        str, Option(help="Solver algorithm for DP3 to use.")
+    ] = "directioniterative",
     config_only: Annotated[
         bool,
         Option(help="Only generate the config file, do not run it."),
@@ -818,6 +821,9 @@ def target(
     output_fullres_data: Annotated[
         Optional[bool], typer.Option(help="Output full-resolution data.")
     ] = False,
+    solveralgorithm: Annotated[
+        str, Option(help="Solver algorithm for DP3 to use.")
+    ] = "directioniterative",
     config_only: Annotated[
         bool,
         Option(help="Only generate the config file, do not run it."),
