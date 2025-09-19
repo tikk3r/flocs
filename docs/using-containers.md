@@ -56,6 +56,10 @@ uv pip install git+https://github.com/tikk3r/flocs.git
 This should provide you with `flocs-run`; the main entry point to generating configuration files and running pipelines.
 
 # Running pipelines
+{: .important}
+> Currently `cwltool` adds `--no-eval` to Apptainer calls. This prevents environment variables from being expanded, making modifications like `APPTAINER_PYTHONPATH=/something/new:\$PYTHONPATH` not possible. At the moment, my suggested workaroud is to simply edit your installation by opening `/path/to/your/packages/cwltool/singularity.py` and remove the two lines that add this (currently 495-495). To find where you installation lives, you can run e.g. `python -c "import cwltool; print(cwltool.__file__)"`.
+
+
 Since FLoCs is in principle built for running pipelines with, pipeline runners are provided for [LINC](https://git.astron.nl/RD/LINC) and [VLBI-cwl](https://git.astron.nl/RD/VLBI-cwl). These CWL pipelines take a JSON configuration file as their input. Running pipelines is abstracted away behind the `flocs-run` executable, so users should not have to interact with JSON or CWL files directly. First install flocs as explained above. Secondly, ensure `LINC_DATA_ROOT` is defined in your environment. As LINC is the most basic pipeline, flocs demands that this variable is defined. To see what options are available, use `--help` for the main command or each sub command.
 
 ## Generating JSON configurations only.
