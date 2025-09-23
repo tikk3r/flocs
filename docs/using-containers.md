@@ -56,6 +56,7 @@ uv pip install git+https://github.com/tikk3r/flocs.git
 This should provide you with `flocs-run`; the main entry point to generating configuration files and running pipelines.
 
 # Running pipelines
+
 {: .important}
 > Currently `cwltool` adds `--no-eval` to Apptainer calls. This prevents environment variables from being expanded, making modifications like `APPTAINER_PYTHONPATH=/something/new:\$PYTHONPATH` not possible. At the moment, my suggested workaroud is to simply edit your installation by opening `/path/to/your/packages/cwltool/singularity.py` and remove the two lines that add this (currently 495-495). To find where you installation lives, you can run e.g. `python -c "import cwltool; print(cwltool.__file__)"`.
 
