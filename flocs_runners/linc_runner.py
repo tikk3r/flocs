@@ -852,6 +852,10 @@ def target(
         str,
         Option(help="Slurm time limit to use."),
     ] = "24:00:00",
+    slurm_cores: Annotated[
+        int,
+        Option(help="Number of cores to reserve for a monolithic pipeline run."),
+    ] = 32,
     container: Annotated[
         str,
         Option(help="Apptainer container to use for cwltool runs."),
@@ -874,6 +878,7 @@ def target(
         "slurm_queue",
         "slurm_account",
         "slurm_time",
+        "slurm_cores",
         "container",
     ]
     args_for_linc = args.copy()
