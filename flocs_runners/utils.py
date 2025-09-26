@@ -4,19 +4,26 @@ import os
 import subprocess
 import sys
 from packaging.version import Version
+from pathlib import Path
 from subprocess import CalledProcessError
 from typing import Optional, Union
 
 import casacore.tables as ct
 import numpy as np
+import spinifex
+from spinifex import h5parm_tools
+from spinifex.vis_tools import ms_tools
 import structlog
 from losoto.h5parm import h5parm
 
 logger = structlog.getLogger()
 
+
 def extract_obsid_from_ms(ms: str) -> str:
     inms = os.path.abspath(ms.rstrip())
-    obsid = ct.taql(f'select LOFAR_OBSERVATION_ID from {inms}::OBSERVATION').getcol("LOFAR_OBSERVATION_ID")[0]
+    obsid = ct.taql(f"select LOFAR_OBSERVATION_ID from {inms}::OBSERVATION").getcol(
+        "LOFAR_OBSERVATION_ID"
+    )[0]
     return obsid
 
 
@@ -229,3 +236,26 @@ def add_slurm_skeleton(
 def add_apptainer_skeleton(contents: str, container: str, bindpaths: str = ""):
     wrapped = f"apptainer exec -B {bindpaths} {container} {contents}"
     return wrapped
+
+
+def obtain_spinifex(ms: str, h5parm: str, backup: bool = True):
+    if backup:
+        os.system(f"cp {h5parm} {h5parm.replace('.h5', '_spinifex.h5')}")
+        h5parm = h5parm.replace(".h5", "_spinifex.h5")
+        logger.info(f"Working on copy {h5parm}")
+    ms_metadata = ms_tools.get_metadata_from_ms(Path(ms))
+    rm = ms_tools.get_rm_from_ms(Path(ms), use_stations=ms_metadata.station_names)
+    h5parm_tools.write_rm_to_h5parm(rms=rm, h5parm_name=h5parm)
+
+
+def download_skymodel(
+    ms: str, survey: str = "TGSS", output_dir: str = os.getcwd()
+) -> str:
+    tab = ct.table(f"{ms}::POINTING")
+    name = tab.getcol("NAME")[0]
+    filename = f"skymodel_LINC_{name}.txt"
+    subprocess.run(
+        f"download_skymodel_target.py --Radius 5 --Source {survey} --targetname {name} {os.path.abspath(ms)} {os.path.join(output_dir, filename)}",
+        shell=True,
+    )
+    return filename

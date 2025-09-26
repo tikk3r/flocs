@@ -3,8 +3,10 @@ from .utils import (
     check_dd_freq,
     cwl_file,
     cwl_dir,
+    download_skymodel,
     extract_obsid_from_ms,
     get_prefactor_freqs,
+    obtain_spinifex,
     setup_toil_slurm,
     verify_slurm_environment_toil,
     verify_toil,
@@ -860,6 +862,10 @@ def target(
         str,
         Option(help="Apptainer container to use for cwltool runs."),
     ] = "",
+    offline_workers: Annotated[
+        bool,
+        Option(help="Indicates that the worker nodes do not have internet access."),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating LINC Target config")
@@ -880,6 +886,7 @@ def target(
         "slurm_time",
         "slurm_cores",
         "container",
+        "offline-workers",
     ]
     args_for_linc = args.copy()
     if args_for_linc["output_fullres_data"]:
@@ -899,6 +906,13 @@ def target(
         config.add_entry(key, val)
     config.save("mslist_LINC_target.json")
     if not args["config_only"]:
+        if args["offline_workers"]:
+            logger.info("Offline-worker mode requested")
+            logger.info("Downloading spinifex corrections")
+            obtain_spinifex(config.configdict["msin"][0]["path"], args["cal_solutions"])
+            if not args["target_skymodel"]:
+                logger.info("Downloading strating skymodel")
+                download_skymodel(config.configdict["msin"][0]["path"], output_dir=args["rundir"])
         config.run_workflow(
             runner=args["runner"],
             scheduler=args["scheduler"],
