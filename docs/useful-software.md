@@ -1,7 +1,7 @@
 ---
 title: Useful software
 layout: default
-nav_order: 3
+nav_order: 4
 ---
 
 # Potentially useful software packages
