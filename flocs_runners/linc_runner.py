@@ -914,6 +914,7 @@ def target(
             logger.info("Downloading spinifex corrections")
             new_h5 = obtain_spinifex(config.configdict["msin"][0]["path"], args["cal_solutions"])
             args["cal_solutions"]["path"] = new_h5
+            args["get_RM"] = False
             if not args["target_skymodel"]:
                 logger.info("Downloading strating skymodel")
                 model = download_skymodel(config.configdict["msin"][0]["path"], output_dir=args["rundir"])
