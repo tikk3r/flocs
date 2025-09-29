@@ -912,10 +912,12 @@ def target(
         if args["offline_workers"]:
             logger.info("Offline-worker mode requested")
             logger.info("Downloading spinifex corrections")
-            obtain_spinifex(config.configdict["msin"][0]["path"], args["cal_solutions"])
+            new_h5 = obtain_spinifex(config.configdict["msin"][0]["path"], args["cal_solutions"])
+            args["cal_solutions"]["path"] = new_h5
             if not args["target_skymodel"]:
                 logger.info("Downloading strating skymodel")
-                download_skymodel(config.configdict["msin"][0]["path"], output_dir=args["rundir"])
+                model = download_skymodel(config.configdict["msin"][0]["path"], output_dir=args["rundir"])
+                args["target_skymodel"]["path"] = model
         config.run_workflow(
             runner=args["runner"],
             scheduler=args["scheduler"],
