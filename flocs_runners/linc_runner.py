@@ -316,7 +316,10 @@ class LINCJSONConfig:
             os.environ["PATH"] = (
                 os.environ["SINGULARITYENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
             )
-        os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+        if "PYTHONPATH" in os.environ:
+            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+        else:
+            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts"
 
     def setup_toil_directories(self, workdir: str) -> tuple[str, str]:
         dir_coordination = os.path.join(workdir, "coordination")
