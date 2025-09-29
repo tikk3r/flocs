@@ -889,7 +889,7 @@ def target(
         "slurm_time",
         "slurm_cores",
         "container",
-        "offline-workers",
+        "offline_workers",
     ]
     args_for_linc = args.copy()
     if args_for_linc["output_fullres_data"]:
