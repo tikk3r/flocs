@@ -42,7 +42,6 @@ decorator
 emcee
 funcsigs
 future
-git+https://git.astron.nl/RD/LSMTool.git@v1.6
 git+https://github.com/LOFAR-VLBI/astroNNomy.git
 git+https://github.com/jurjen93/lofar_helpers.git
 git+https://github.com/jurjen93/lofar_helpers@inference_script#subdirectory=neural_networks
@@ -68,6 +67,7 @@ legacystamps
 linecache2
 loess
 lofar-h5plot
+lsmtool
 markupsafe
 matplotlib>3.9.0
 mimeparse
