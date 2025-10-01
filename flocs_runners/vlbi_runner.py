@@ -539,7 +539,7 @@ def delay_calibration(
 
 
 @app.command()
-def split_direction(
+def split_directions(
     mspath: Annotated[str, Argument(help="Directory where MSes are located.")],
     h5merger: Annotated[
         str, typer.Option(parser=cwl_dir, help="The h5merger directory.")
