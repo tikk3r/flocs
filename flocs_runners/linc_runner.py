@@ -876,6 +876,7 @@ def target(
         args["mspath"],
         ms_suffix=args["ms_suffix"],
         update_version_file=args["update_version_file"],
+        prefac_h5parm=cal_solutions,
     )
     unneeded_keys = [
         "mspath",
