@@ -52,7 +52,13 @@ class LINCJSONConfig:
         files = sorted(glob.glob(filedir))
         logger.info(f"Found {len(files)} files")
 
-        if not prefac_h5parm["path"].endswith("h5") and not prefac_h5parm[
+        if not prefac_h5parm["path"]:
+            mslist = []
+            for ms in files:
+                x = json.loads(f'{{"class": "Directory", "path":"{ms}"}}')
+                mslist.append(x)
+            self.configdict["msin"] = mslist
+        elif not prefac_h5parm["path"].endswith("h5") and not prefac_h5parm[
             "path"
         ].endswith("h5parm"):
             mslist = []
