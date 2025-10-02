@@ -142,7 +142,12 @@ class LINCJSONConfig:
         except subprocess.CalledProcessError:
             logger.warning("Failed to tar logs.")
         subprocess.check_output(
-            ["rsync", "-avP", self.rundir, f"LINC_{self.mode.value}_L{self.obsid}_{date}"]
+            [
+                "rsync",
+                "-avP",
+                self.rundir,
+                f"LINC_{self.mode.value}_L{self.obsid}_{date}",
+            ]
         )
 
     def run_workflow(
@@ -219,7 +224,9 @@ class LINCJSONConfig:
             verify_toil()
             verify_slurm_environment_toil()
             dir_coordination, dir_slurmlogs = self.setup_toil_directories(self.rundir)
-            is_ceph = "ceph" in subprocess.check_output(["df", self.rundir]).lower().decode("utf-8")
+            is_ceph = "ceph" in subprocess.check_output(
+                ["df", self.rundir]
+            ).lower().decode("utf-8")
             setup_toil_slurm(slurm_params)
             cmd = ["toil-cwl-runner"]
             if scheduler == "slurm":
@@ -317,7 +324,9 @@ class LINCJSONConfig:
                 os.environ["SINGULARITYENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
             )
         if "PYTHONPATH" in os.environ:
-            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+            os.environ["PYTHONPATH"] = (
+                "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+            )
         else:
             os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts"
 
@@ -913,12 +922,16 @@ def target(
         if args["offline_workers"]:
             logger.info("Offline-worker mode requested")
             logger.info("Downloading spinifex corrections")
-            new_h5 = obtain_spinifex(config.configdict["msin"][0]["path"], args["cal_solutions"])
+            new_h5 = obtain_spinifex(
+                config.configdict["msin"][0]["path"], args["cal_solutions"]
+            )
             args["cal_solutions"]["path"] = new_h5
             args["get_RM"] = False
             if not args["target_skymodel"]:
                 logger.info("Downloading strating skymodel")
-                model = download_skymodel(config.configdict["msin"][0]["path"], output_dir=args["rundir"])
+                model = download_skymodel(
+                    config.configdict["msin"][0]["path"], output_dir=args["rundir"]
+                )
                 args["target_skymodel"]["path"] = model
         config.run_workflow(
             runner=args["runner"],
