@@ -293,10 +293,10 @@ class LINCJSONConfig:
         if "apptainer" in out:
             os.environ["APPTAINERENV_LINC_DATA_ROOT"] = os.environ["LINC_DATA_ROOT"]
             os.environ["APPTAINERENV_RESULTSDIR"] = (
-                f"{workdir}/results_LINC_calibrator/"
+                f"{workdir}/results_LINC_{self.mode.value}/"
             )
-            os.environ["APPTAINERENV_LOGSDIR"] = f"{workdir}/logs_LINC_calibrator/"
-            os.environ["APPTAINERENV_TMPDIR"] = f"{workdir}/tmpdir_LINC_calibrator/"
+            os.environ["APPTAINERENV_LOGSDIR"] = f"{workdir}/logs_LINC_{self.mode.value}/"
+            os.environ["APPTAINERENV_TMPDIR"] = f"{workdir}/tmpdir_LINC_{self.mode.value}/"
             os.environ["APPTAINERENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
@@ -312,10 +312,10 @@ class LINCJSONConfig:
         elif "singularity" in out:
             os.environ["SINGULARITYENV_LINC_DATA_ROOT"] = os.environ["LINC_DATA_ROOT"]
             os.environ["SINGULARITYENV_RESULTSDIR"] = (
-                f"{workdir}/results_LINC_calibrator/"
+                f"{workdir}/results_LINC_{self.mode.value}/"
             )
-            os.environ["SINGULARITYENV_LOGSDIR"] = f"{workdir}/logs_LINC_calibrator/"
-            os.environ["SINGULARITYENV_TMPDIR"] = f"{workdir}/tmpdir_LINC_calibrator/"
+            os.environ["SINGULARITYENV_LOGSDIR"] = f"{workdir}/logs_LINC_{self.mode.value}/"
+            os.environ["SINGULARITYENV_TMPDIR"] = f"{workdir}/tmpdir_LINC_{self.mode.value}/"
             os.environ["SINGULARITYENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
