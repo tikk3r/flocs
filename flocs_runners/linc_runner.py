@@ -219,13 +219,13 @@ class LINCJSONConfig:
                     out = subprocess.check_output(cmd.split(" "))
                     with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                         f.write(out)
+                    self.move_results_from_rundir()
                 except subprocess.CalledProcessError as e:
                     with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                         f.write(e.stdout)
                     if e.stderr:
                         with open(f"log_LINC_{self.mode.value}_err.txt", "wb") as f:
                             f.write(e.stderr)
-                self.move_results_from_rundir()
         elif runner == "toil":
             verify_toil()
             verify_slurm_environment_toil()
