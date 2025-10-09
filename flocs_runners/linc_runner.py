@@ -276,13 +276,13 @@ class LINCJSONConfig:
                 out = subprocess.check_output(cmd)
                 with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                     f.write(out)
+                self.move_results_from_rundir()
             except subprocess.CalledProcessError as e:
                 with open(f"log_LINC_{self.mode.value}.txt", "wb") as f:
                     f.write(e.stdout)
                 if e.stderr:
                     with open(f"log_LINC_{self.mode.value}_err.txt", "wb") as f:
                         f.write(e.stderr)
-            self.move_results_from_rundir()
 
     def setup_apptainer_variables(self, workdir):
         out = (
