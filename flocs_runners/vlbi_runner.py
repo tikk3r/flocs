@@ -534,6 +534,7 @@ def delay_calibration(
             },
             workdir=args["rundir"],
             container=args["container"],
+            restart=args["restart"],
         )
 
 
@@ -680,6 +681,7 @@ def dd_calibration(
             },
             workdir=args["rundir"],
             container=args["container"],
+            restart=args["restart"],
         )
 
 
@@ -825,6 +827,7 @@ def split_directions(
             },
             workdir=args["rundir"],
             container=args["container"],
+            restart=args["restart"],
         )
 
 
@@ -959,6 +962,7 @@ def setup(
             },
             workdir=args["rundir"],
             container=args["container"],
+            restart=args["restart"],
         )
 
 
@@ -1070,6 +1074,7 @@ def concatenate_flag(
             },
             workdir=args["rundir"],
             container=args["container"],
+            restart=args["restart"],
         )
 
 
@@ -1193,6 +1198,7 @@ def phaseup_concat(
             },
             workdir=args["rundir"],
             container=args["container"],
+            restart=args["restart"],
         )
 
 
