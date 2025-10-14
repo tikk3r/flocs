@@ -629,7 +629,7 @@ def dd_calibration(
     ] = "",
 ):
     args = locals()
-    logger.info("Generating VLBI split-directions config")
+    logger.info("Generating VLBI dd-calibration config")
     config = VLBIJSONConfig(
         args["mspath"],
         ms_suffix=args["ms_suffix"],
@@ -650,7 +650,7 @@ def dd_calibration(
         args_for_linc.pop(key)
     for key, val in args_for_linc.items():
         config.add_entry(key, val)
-    config.save("mslist_VLBI_split-directions.json")
+    config.save("mslist_VLBI_dd-calibration.json")
     if not args["config_only"]:
         config.run_workflow(
             runner=args["runner"],
