@@ -123,6 +123,7 @@ shapely
 sharedarray
 six
 sshtunnel
+spherical-geometry
 spinifex
 statsmodels
 subprocess32
