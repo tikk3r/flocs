@@ -250,6 +250,8 @@ class LINCJSONConfig:
                 raise ValueError(f"Unsupported scheduler `{scheduler}` provided.")
             if self.restarting:
                 cmd += ["--restart"]
+            if "TOIL_SLURM_ARGS" in os.environ.keys():
+                cmd += ["--slurmArgs", "'" + os.environ["TOIL_SLURM_ARGS"] + "'"]
             cmd += ["--no-read-only"]
             cmd += ["--retryCount", "3"]
             cmd += ["--singularity"]
