@@ -163,6 +163,7 @@ class LINCJSONConfig:
         workdir: str = os.getcwd(),
         container: str = "",
         slurm_params: dict = {},
+        restart: bool = False,
     ):
         if self.configfile is None:
             raise RuntimeError("No config file has been created. Save it first.")
@@ -178,7 +179,13 @@ class LINCJSONConfig:
             )
         else:
             raise RuntimeError("Something unexpected went wrong with the config file.")
-        self.setup_rundir(workdir)
+        if not restart:
+            self.setup_rundir(workdir)
+            self.restarting = False
+        else:
+            self.rundir = workdir
+            self.restarting = True
+            logger.info(f"Attempting to restart existing workflow from {self.rundir}.")
         self.setup_apptainer_variables(self.rundir)
         logger.info(
             f"Running workflow with {runner} under {scheduler} in {self.rundir}"
@@ -241,6 +248,8 @@ class LINCJSONConfig:
                 cmd += ["--batchSystem", "singleMachine"]
             else:
                 raise ValueError(f"Unsupported scheduler `{scheduler}` provided.")
+            if self.restarting:
+                cmd += ["--restart"]
             cmd += ["--no-read-only"]
             cmd += ["--retryCount", "3"]
             cmd += ["--singularity"]
@@ -295,17 +304,22 @@ class LINCJSONConfig:
             os.environ["APPTAINERENV_RESULTSDIR"] = (
                 f"{workdir}/results_LINC_{self.mode.value}/"
             )
-            os.environ["APPTAINERENV_LOGSDIR"] = f"{workdir}/logs_LINC_{self.mode.value}/"
-            os.environ["APPTAINERENV_TMPDIR"] = f"{workdir}/tmpdir_LINC_{self.mode.value}/"
+            os.environ["APPTAINERENV_LOGSDIR"] = (
+                f"{workdir}/logs_LINC_{self.mode.value}/"
+            )
+            os.environ["APPTAINERENV_TMPDIR"] = (
+                f"{workdir}/tmpdir_LINC_{self.mode.value}/"
+            )
             os.environ["APPTAINERENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
             os.environ["APPTAINERENV_PYTHONPATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts:$PYTHONPATH"
             )
-            os.mkdir(os.environ["APPTAINERENV_LOGSDIR"])
-            os.mkdir(os.environ["APPTAINERENV_TMPDIR"])
-            os.mkdir(os.environ["APPTAINERENV_RESULTSDIR"])
+            if not self.restarting:
+                os.mkdir(os.environ["APPTAINERENV_LOGSDIR"])
+                os.mkdir(os.environ["APPTAINERENV_TMPDIR"])
+                os.mkdir(os.environ["APPTAINERENV_RESULTSDIR"])
             os.environ["PATH"] = (
                 os.environ["APPTAINERENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
             )
@@ -314,8 +328,12 @@ class LINCJSONConfig:
             os.environ["SINGULARITYENV_RESULTSDIR"] = (
                 f"{workdir}/results_LINC_{self.mode.value}/"
             )
-            os.environ["SINGULARITYENV_LOGSDIR"] = f"{workdir}/logs_LINC_{self.mode.value}/"
-            os.environ["SINGULARITYENV_TMPDIR"] = f"{workdir}/tmpdir_LINC_{self.mode.value}/"
+            os.environ["SINGULARITYENV_LOGSDIR"] = (
+                f"{workdir}/logs_LINC_{self.mode.value}/"
+            )
+            os.environ["SINGULARITYENV_TMPDIR"] = (
+                f"{workdir}/tmpdir_LINC_{self.mode.value}/"
+            )
             os.environ["SINGULARITYENV_PREPEND_PATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts"
             )
@@ -323,9 +341,10 @@ class LINCJSONConfig:
             os.environ["SINGULARITYENV_PYTHONPATH"] = (
                 f"{os.environ['LINC_DATA_ROOT']}/scripts:$PYTHONPATH"
             )
-            os.mkdir(os.environ["SINGULARITYENV_LOGSDIR"])
-            os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
-            os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
+            if not self.restarting:
+                os.mkdir(os.environ["SINGULARITYENV_LOGSDIR"])
+                os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
+                os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
             os.environ["PATH"] = (
                 os.environ["SINGULARITYENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
             )
@@ -639,6 +658,7 @@ def calibrator(
         "slurm_time",
         "slurm_cores",
         "container",
+        "restart",
     ]
     args_for_linc = args.copy()
     for key in unneeded_keys:
@@ -658,6 +678,7 @@ def calibrator(
             },
             workdir=args["rundir"],
             container=args["container"],
+            restart=args["restart"],
         )
 
 
@@ -884,6 +905,10 @@ def target(
         bool,
         Option(help="Indicates that the worker nodes do not have internet access."),
     ] = False,
+    restart: Annotated[
+        bool,
+        Option(help="Restart a Toil workflow from the given rundir."),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating LINC Target config")
@@ -906,6 +931,7 @@ def target(
         "slurm_cores",
         "container",
         "offline_workers",
+        "restart",
     ]
     args_for_linc = args.copy()
     if args_for_linc["output_fullres_data"]:
@@ -950,6 +976,7 @@ def target(
             },
             workdir=args["rundir"],
             container=args["container"],
+            restart=args["restart"],
         )
 
 

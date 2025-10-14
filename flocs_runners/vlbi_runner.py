@@ -171,9 +171,16 @@ class VLBIJSONConfig:
         workdir: str = os.getcwd(),
         container: str = "",
         slurm_params: dict = {},
+        restart: bool = False,
     ):
         self.deduce_pipeline_mode()
-        self.setup_rundir(workdir)
+        if not restart:
+            self.restarting = False
+            self.setup_rundir(workdir)
+        else:
+            self.restarting = True
+            self.rundir = workdir
+            logger.info(f"Attempting to restart existing workflow from {self.rundir}.")
         self.setup_apptainer_variables(self.rundir)
         logger.info(
             f"Running workflow with {runner} under {scheduler} in {self.rundir}"
@@ -222,6 +229,8 @@ class VLBIJSONConfig:
                 cmd += ["--batchSystem", "singleMachine"]
             else:
                 raise ValueError(f"Unsupported scheduler `{scheduler}` provided.")
+            if self.restarting:
+                cmd += ["--restart"]
             cmd += ["--no-read-only"]
             cmd += ["--retryCount", "3"]
             cmd += ["--singularity"]
@@ -274,9 +283,10 @@ class VLBIJSONConfig:
             os.environ["APPTAINERENV_PREPEND_PATH"] = (
                 f"{os.environ['VLBI_DATA_ROOT']}/scripts:{os.environ['LINC_DATA_ROOT']}/scripts"
             )
-            os.mkdir(os.environ["APPTAINERENV_LOGSDIR"])
-            os.mkdir(os.environ["APPTAINERENV_TMPDIR"])
-            os.mkdir(os.environ["APPTAINERENV_RESULTSDIR"])
+            if not self.restarting:
+                os.mkdir(os.environ["APPTAINERENV_LOGSDIR"])
+                os.mkdir(os.environ["APPTAINERENV_TMPDIR"])
+                os.mkdir(os.environ["APPTAINERENV_RESULTSDIR"])
         elif "singularity" in out:
             os.environ["SINGULARITYENV_VLBI_DATA_ROOT"] = os.environ["VLBI_DATA_ROOT"]
             os.environ["SINGULARITYENV_LINC_DATA_ROOT"] = os.environ["LINC_DATA_ROOT"]
@@ -292,15 +302,15 @@ class VLBIJSONConfig:
             os.environ["SINGULARITYENV_PREPEND_PATH"] = (
                 f"{os.environ['VLBI_DATA_ROOT']}/scripts:{os.environ['LINC_DATA_ROOT']}/scripts"
             )
-            os.mkdir(os.environ["SINGULARITYENV_LOGSDIR"])
-            os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
-            os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
+            if not self.restarting:
+                os.mkdir(os.environ["SINGULARITYENV_LOGSDIR"])
+                os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
+                os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
         os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
         os.environ["PYTHONPATH"] = "$VLBI_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
         os.environ["PATH"] = (
             os.environ["APPTAINERENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
         )
-        print(os.environ["PATH"])
 
     def setup_toil_directories(self, workdir: str) -> tuple[str, str]:
         dir_coordination = os.path.join(workdir, "coordination")
@@ -484,6 +494,10 @@ def delay_calibration(
         str,
         Option(help="Apptainer container to use for cwltool runs."),
     ] = "",
+    restart: Annotated[
+        bool,
+        Option(help="Restart a toil workflow."),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating VLBI delay-calibration config")
@@ -627,6 +641,10 @@ def dd_calibration(
         str,
         Option(help="Apptainer container to use for cwltool runs."),
     ] = "",
+    restart: Annotated[
+        bool,
+        Option(help="Restart a toil workflow."),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating VLBI dd-calibration config")
@@ -768,6 +786,10 @@ def split_directions(
         str,
         Option(help="Apptainer container to use for cwltool runs."),
     ] = "",
+    restart: Annotated[
+        bool,
+        Option(help="Restart a toil workflow."),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating VLBI split-directions config")
@@ -898,6 +920,10 @@ def setup(
         str,
         Option(help="Apptainer container to use for cwltool runs."),
     ] = "",
+    restart: Annotated[
+        bool,
+        Option(help="Restart a toil workflow."),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating VLBI setup config")
@@ -1005,6 +1031,10 @@ def concatenate_flag(
         str,
         Option(help="Apptainer container to use for cwltool runs."),
     ] = "",
+    restart: Annotated[
+        bool,
+        Option(help="Restart a toil workflow."),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating VLBI concatenate-flag config")
@@ -1124,6 +1154,10 @@ def phaseup_concat(
         str,
         Option(help="Apptainer container to use for cwltool runs."),
     ] = "",
+    restart: Annotated[
+        bool,
+        Option(help="Restart a toil workflow."),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating VLBI phaseup-concat config")
