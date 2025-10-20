@@ -462,7 +462,7 @@ def calibrator(
     raw_data: Annotated[
         bool, Option(help="Use autoweight. Set to True in case you are using raw data.")
     ] = False,
-    propagatesolutoins: Annotated[
+    propagatesolutions: Annotated[
         bool,
         Option(
             help="Use already derived solutions as initial guess for the upcoming timeslot."
