@@ -122,9 +122,13 @@ class LINCJSONConfig:
 
     def setup_rundir(self, workdir):
         if "calibrator" in self.configfile:
-            self.rundir = tempfile.mkdtemp(prefix=f"tmp.LINC_calibrator_{self.obsid}.", dir=workdir)
+            self.rundir = tempfile.mkdtemp(
+                prefix=f"tmp.LINC_calibrator_{self.obsid}.", dir=workdir
+            )
         elif "target" in self.configfile:
-            self.rundir = tempfile.mkdtemp(prefix=f"tmp.LINC_target_{self.obsid}.", dir=workdir)
+            self.rundir = tempfile.mkdtemp(
+                prefix=f"tmp.LINC_target_{self.obsid}.", dir=workdir
+            )
         else:
             logger.warning("Unknown config file passed; exiting.")
             sys.exit(-1)
@@ -151,9 +155,7 @@ class LINCJSONConfig:
             logger.info("Removing leftover tmpdirs")
             tempdirs = glob.glob(os.path.join(self.rundir, "*"))
             for td in tempdirs:
-                subprocess.check_output(
-                    ["rm", "-r", td]
-                )
+                subprocess.check_output(["rm", "-r", td])
         except subprocess.CalledProcessError:
             logger.warning("Failed to remove leftover tmpdirs.")
 
@@ -276,6 +278,7 @@ class LINCJSONConfig:
             cmd += ["--workDir", workdir]
             if is_ceph:
                 logger.info("Detected CEPH file system, not setting coordinationDir.")
+                subprocess.check_output(["rm", "-r", dir_coordination])
             else:
                 cmd += ["--coordinationDir", dir_coordination]
             cmd += ["--tmpdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
