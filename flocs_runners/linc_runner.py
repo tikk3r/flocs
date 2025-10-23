@@ -639,6 +639,10 @@ def calibrator(
         str,
         Option(help="Apptainer container to use for cwltool runs."),
     ] = "",
+    restart: Annotated[
+        bool,
+        Option(help="Restart a Toil workflow from the given rundir."),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating LINC Calibrator config")
