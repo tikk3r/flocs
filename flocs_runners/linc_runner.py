@@ -147,11 +147,22 @@ class LINCJSONConfig:
             )
         except subprocess.CalledProcessError:
             logger.warning("Failed to tar logs.")
+        try:
+            logger.info("Removing leftover tmpdirs")
+            tempdirs = glob.glob(os.path.join(self.rundir, "*"))
+            for td in tempdirs:
+                subprocess.check_output(
+                    ["rm", "-r", td]
+                )
+        except subprocess.CalledProcessError:
+            logger.warning("Failed to remove leftover tmpdirs.")
+
+        logger.info("Copying results")
         subprocess.check_output(
             [
                 "rsync",
                 "-avP",
-                self.rundir,
+                os.path.join(self.rundir, "*"),
                 f"LINC_{self.mode.value}_L{self.obsid}_{date}",
             ]
         )
