@@ -122,9 +122,9 @@ class LINCJSONConfig:
 
     def setup_rundir(self, workdir):
         if "calibrator" in self.configfile:
-            self.rundir = tempfile.mkdtemp(prefix="tmp.LINC_calibrator.", dir=workdir)
+            self.rundir = tempfile.mkdtemp(prefix=f"tmp.LINC_calibrator_{self.obsid}.", dir=workdir)
         elif "target" in self.configfile:
-            self.rundir = tempfile.mkdtemp(prefix="tmp.LINC_target.", dir=workdir)
+            self.rundir = tempfile.mkdtemp(prefix=f"tmp.LINC_target_{self.obsid}.", dir=workdir)
         else:
             logger.warning("Unknown config file passed; exiting.")
             sys.exit(-1)
