@@ -160,14 +160,17 @@ class LINCJSONConfig:
             logger.warning("Failed to remove leftover tmpdirs.")
 
         logger.info("Copying results")
-        subprocess.check_output(
-            [
-                "rsync",
-                "-avP",
-                os.path.join(self.rundir, "*"),
-                f"LINC_{self.mode.value}_L{self.obsid}_{date}",
-            ]
-        )
+        os.mkdir(f"LINC_{self.mode.value}_L{self.obsid}_{date}")
+        globs = glob.glob(os.path.join(self.rundir, "*"))
+        for f in globs:
+            subprocess.check_output(
+                [
+                    "rsync",
+                    "-avP",
+                    f,
+                    f"LINC_{self.mode.value}_L{self.obsid}_{date}",
+                ]
+            )
 
     def run_workflow(
         self,
