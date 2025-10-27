@@ -226,6 +226,8 @@ class VLBIJSONConfig:
             cmd = ["toil-cwl-runner"]
             if scheduler == "slurm":
                 cmd += ["--batchSystem", "slurm"]
+                cmd += ["--slurmTime", slurm_params["time"]]
+                cmd += ["--slurmPartition", slurm_params["queue"]]
             elif scheduler == "singleMachine":
                 cmd += ["--batchSystem", "singleMachine"]
             else:
