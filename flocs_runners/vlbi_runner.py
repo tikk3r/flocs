@@ -21,7 +21,7 @@ import typer
 from enum import Enum
 from typer import Argument, Option
 from typing import List, Optional, Tuple
-from typing_extensions import Annotated
+from typing_extensions import Annotated, Literal
 
 
 class VLBIJSONConfig:
@@ -464,6 +464,45 @@ def delay_calibration(
             help="When set to true, the LoTSS model will be subtracted from the DDF corrected data."
         ),
     ] = False,
+    do_validation: Annotated[
+        Optional[bool],
+        typer.Option(help="Validate DI calibration."),
+    ] = True,
+    apply_delay_solutions: Annotated[
+        Optional[bool],
+        typer.Option(help="Appy the delay calibration solutions to the full MS."),
+    ] = False,
+    model_image: Annotated[
+        Optional[str],
+        typer.Option(
+            parser=cwl_file,
+            help="Image to generate an initial delay calibration model from.",
+        ),
+    ] = None,
+    rm_correction: Annotated[
+        Optional[Literal["spinifex", "RMextract"]],
+        typer.Option(
+            parser=cwl_file,
+            help="Name of the rotation measure solution table.",
+        ),
+    ] = None,
+    do_auto_delay_selection: Annotated[
+        Optional[bool],
+        typer.Option(
+            help="Automatically select the best candidate delay calibrator(s) based on phasediff scores."
+        ),
+    ] = False,
+    select_best_n_delay_calibrators: Annotated[
+        Optional[int],
+        typer.Option(help="Select these N best scoring delay calibrators."),
+    ] = 1,
+    starting_skymodel: Annotated[
+        Optional[str | list[str]],
+        typer.Option(
+            parser=cwl_file,
+            help="Optional starting models in BBS-compatible text format for starting delay calibration.",
+        ),
+    ] = 1,
     config_only: Annotated[
         bool,
         Option(help="Only generate the config file, do not run it."),
