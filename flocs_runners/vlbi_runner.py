@@ -172,6 +172,7 @@ class VLBIJSONConfig:
         container: str = "",
         slurm_params: dict = {},
         restart: bool = False,
+        record_stats: bool = False,
     ):
         self.deduce_pipeline_mode()
         if not restart:
@@ -233,6 +234,8 @@ class VLBIJSONConfig:
                 cmd += ["--restart"]
             if "TOIL_SLURM_ARGS" in os.environ.keys():
                 cmd += ["--slurmArgs", "'" + os.environ["TOIL_SLURM_ARGS"] + "'"]
+            if record_stats:
+                cmd += ["--stats"]
             cmd += ["--no-read-only"]
             cmd += ["--retryCount", "3"]
             cmd += ["--singularity"]
@@ -539,6 +542,12 @@ def delay_calibration(
         bool,
         Option(help="Restart a toil workflow."),
     ] = False,
+    record_toil_stats: Annotated[
+        bool,
+        Option(
+            help="Use Toil's stats flag to record statistics. N.B. this disables cleanup of successful steps; make sure there is enough disk space until the end of the run."
+        ),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating VLBI delay-calibration config")
@@ -557,6 +566,8 @@ def delay_calibration(
         "slurm_account",
         "slurm_time",
         "container",
+        "restart",
+        "stats",
     ]
     args_for_linc = args.copy()
     for key in unneeded_keys:
@@ -576,6 +587,7 @@ def delay_calibration(
             workdir=args["rundir"],
             container=args["container"],
             restart=args["restart"],
+            record_stats=args["record_toil_stats"],
         )
 
 
