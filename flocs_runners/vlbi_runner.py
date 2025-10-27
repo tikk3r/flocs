@@ -567,7 +567,7 @@ def delay_calibration(
         "slurm_time",
         "container",
         "restart",
-        "stats",
+        "record_toil_stats",
     ]
     args_for_linc = args.copy()
     for key in unneeded_keys:

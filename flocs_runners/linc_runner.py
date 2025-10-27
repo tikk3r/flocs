@@ -180,6 +180,7 @@ class LINCJSONConfig:
         container: str = "",
         slurm_params: dict = {},
         restart: bool = False,
+        record_stats: bool = False,
     ):
         if self.configfile is None:
             raise RuntimeError("No config file has been created. Save it first.")
@@ -268,6 +269,8 @@ class LINCJSONConfig:
                 cmd += ["--restart"]
             if "TOIL_SLURM_ARGS" in os.environ.keys():
                 cmd += ["--slurmArgs", "'" + os.environ["TOIL_SLURM_ARGS"] + "'"]
+            if record_stats:
+                cmd += ["--stats"]
             cmd += ["--no-read-only"]
             cmd += ["--retryCount", "3"]
             cmd += ["--singularity"]
@@ -660,6 +663,12 @@ def calibrator(
         bool,
         Option(help="Restart a Toil workflow from the given rundir."),
     ] = False,
+    record_toil_stats: Annotated[
+        bool,
+        Option(
+            help="Use Toil's stats flag to record statistics. N.B. this disables cleanup of successful steps; make sure there is enough disk space until the end of the run."
+        ),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating LINC Calibrator config")
@@ -682,6 +691,7 @@ def calibrator(
         "slurm_cores",
         "container",
         "restart",
+        "record_toil_stats",
     ]
     args_for_linc = args.copy()
     for key in unneeded_keys:
@@ -702,6 +712,7 @@ def calibrator(
             workdir=args["rundir"],
             container=args["container"],
             restart=args["restart"],
+            record_stats=args["record_toil_stats"],
         )
 
 
@@ -932,6 +943,12 @@ def target(
         bool,
         Option(help="Restart a Toil workflow from the given rundir."),
     ] = False,
+    record_toil_stats: Annotated[
+        bool,
+        Option(
+            help="Use Toil's stats flag to record statistics. N.B. this disables cleanup of successful steps; make sure there is enough disk space until the end of the run."
+        ),
+    ] = False,
 ):
     args = locals()
     logger.info("Generating LINC Target config")
@@ -955,6 +972,7 @@ def target(
         "container",
         "offline_workers",
         "restart",
+        "record_toil_stats",
     ]
     args_for_linc = args.copy()
     if args_for_linc["output_fullres_data"]:
@@ -1000,6 +1018,7 @@ def target(
             workdir=args["rundir"],
             container=args["container"],
             restart=args["restart"],
+            record_stats=args["record_toil_stats"],
         )
 
 
