@@ -500,7 +500,7 @@ def delay_calibration(
         typer.Option(help="Select these N best scoring delay calibrators."),
     ] = 1,
     starting_skymodel: Annotated[
-        Optional[str | list[str]],
+        Optional[list[str]],
         typer.Option(
             parser=cwl_file,
             help="Optional starting models in BBS-compatible text format for starting delay calibration.",
