@@ -153,7 +153,7 @@ class LINCJSONConfig:
             logger.warning("Failed to tar logs.")
         try:
             logger.info("Removing leftover tmpdirs")
-            tempdirs = glob.glob(os.path.join(self.rundir, "*"))
+            tempdirs = glob.glob(os.path.join(self.rundir, "tmpdir*"))
             for td in tempdirs:
                 subprocess.check_output(["rm", "-rf", td])
         except subprocess.CalledProcessError:
