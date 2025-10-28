@@ -11,6 +11,7 @@ dependencies = ["numpy","structlog", "typer", "packaging", "python-casacore", "l
 
 [project.scripts]
 flocs-run = "flocs_runners.flocs_run:main"
+flocs-download = "flocs_runners.flocs_download:main"
 
 [tool.setuptools]
 packages = ["flocs_runners"]
