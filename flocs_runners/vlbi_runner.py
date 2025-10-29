@@ -945,7 +945,22 @@ def setup(
         typer.Option(
             help="The patches of sources that should be flagged. These should be present in the LINC skymodel."
         ),
-    ] = ["VirA_4_patch", "CygAGG", "CasA_4_patch", "TauAGG"],
+    ] = ["VirA_Gaussian", "CygA_Gaussian", "CasA_Gaussian", "TauA_Gaussian"],
+    ATeam_skymodel: Annotated[
+        Optional[str],
+        Option(
+            parser=cwl_file,
+            metavar="SKYMODEL",
+            help="File path to the A-Team skymodel.",
+        ),
+    ] = os.path.join(os.environ["LINC_DATA_ROOT"], "skymodels/A-Team.skymodel"),
+    rm_correction: Annotated[
+        Optional[Literal["spinifex", "RMextract"]],
+        typer.Option(
+            parser=cwl_file,
+            help="Name of the rotation measure solution table.",
+        ),
+    ] = None,
     config_only: Annotated[
         bool,
         Option(help="Only generate the config file, do not run it."),
