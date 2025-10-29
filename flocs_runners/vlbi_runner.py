@@ -313,8 +313,12 @@ class VLBIJSONConfig:
                 os.mkdir(os.environ["SINGULARITYENV_LOGSDIR"])
                 os.mkdir(os.environ["SINGULARITYENV_TMPDIR"])
                 os.mkdir(os.environ["SINGULARITYENV_RESULTSDIR"])
-        os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
-        os.environ["PYTHONPATH"] = "$VLBI_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+        if "PYTHONPATH" in os.environ:
+            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+            os.environ["PYTHONPATH"] = "$VLBI_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+        else:
+            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts"
+            os.environ["PYTHONPATH"] = "$VLBI_DATA_ROOT/scripts"
         os.environ["PATH"] = (
             os.environ["APPTAINERENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
         )
