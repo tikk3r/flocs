@@ -110,3 +110,17 @@ Bright ~1 Jy point-like source in LockmanC. A reasonably simple field and calm i
 **Solution:** run LINC Target with `num_SB_per_group=-1` and `calib_nchan=1` such that the smoothness constraint can do its work.
 
 ![delay solutions oil stains]({{ site.baseurl }}/docs/assets/images/ILTJ110224.07+574725.2_scalarphase1.png)
+
+
+### Oversmoothing of phase solutions
+
+**Problems**
+
+* Strange patterins en FR606,SE607
+
+**Causes**
+
+* Smoothness constraint was set too high w.r.t. the speed of phase wrapping. Solving with 0 smoothness reveals that the ionosphere is not suddenly calmer, but that phases wrap quickly.
+
+![delay solutions oil stains]({{ site.baseurl }}/docs/assets/images/scalarphase1_selfcalcycle000dir\[MODEL_DATA\]_oversmoothed.png)
+![delay solutions oil stains]({{ site.baseurl }}/docs/assets/images/scalarphase1_selfcalcycle000dir\[MODEL_DATA\].png)
