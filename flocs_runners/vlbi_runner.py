@@ -1014,6 +1014,7 @@ def setup(
         "slurm_account",
         "slurm_time",
         "container",
+        "restart",
     ]
     args_for_linc = args.copy()
     for key in unneeded_keys:
