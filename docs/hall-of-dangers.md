@@ -122,5 +122,5 @@ Bright ~1 Jy point-like source in LockmanC. A reasonably simple field and calm i
 
 * Smoothness constraint was set too high w.r.t. the speed of phase wrapping. Solving with 0 smoothness reveals that the ionosphere is not suddenly calmer, but that phases wrap quickly.
 
-![delay solutions oversmoothed]({{ site.baseurl }}/docs/assets/images/scalarphase1_selfcalcycle000dir\[MODEL_DATA\]_oversmoothed.png)
-![delay solutions no smoothness]({{ site.baseurl }}/docs/assets/images/scalarphase1_selfcalcycle000dir\[MODEL_DATA\].png)
+![delay solutions oversmoothed]({{ site.baseurl }}/docs/assets/images/scalarphase1_selfcalcycle000dir_oversmoothed.png)
+![delay solutions no smoothness]({{ site.baseurl }}/docs/assets/images/scalarphase1_selfcalcycle000dir.png)
