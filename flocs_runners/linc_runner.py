@@ -349,9 +349,9 @@ class LINCJSONConfig:
             )
             # Make sure LINC will not try to run the VLBI summary script.
             if "APPTAINER_BINDPATH" not in os.environ:
-                os.environ["APPTAINER_BINDPATH"] = "$LINC_DATA_ROOT/scripts:/opt/lofar/VLBI-cwl"
+                os.environ["APPTAINER_BINDPATH"] = f"{os.environ['LINC_DATA_ROOT']}/scripts:/opt/lofar/VLBI-cwl"
             if "APPTAINER_BINDPATH" not in os.environ:
-                os.environ["APPTAINER_BINDPATH"] = "$LINC_DATA_ROOT/scripts:/opt/lofar/VLBI-cwl," + os.environ["APPTAINER_BINDPATH"]
+                os.environ["APPTAINER_BINDPATH"] = f"{os.environ['LINC_DATA_ROOT']}/scripts:/opt/lofar/VLBI-cwl," + os.environ["APPTAINER_BINDPATH"]
         elif "singularity" in out:
             os.environ["SINGULARITYENV_LINC_DATA_ROOT"] = os.environ["LINC_DATA_ROOT"]
             os.environ["SINGULARITYENV_RESULTSDIR"] = (
