@@ -317,8 +317,8 @@ class VLBIJSONConfig:
             os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
             os.environ["PYTHONPATH"] = "$VLBI_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
         else:
-            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts"
-            os.environ["PYTHONPATH"] = "$VLBI_DATA_ROOT/scripts"
+            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
+            os.environ["PYTHONPATH"] = "$VLBI_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
         os.environ["PATH"] = (
             os.environ["APPTAINERENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
         )
