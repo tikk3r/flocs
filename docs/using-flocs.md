@@ -100,4 +100,12 @@ flocs-run linc target --runner toil --scheduler slurm --slurm-time 24:00:00 --sl
 flocs-run vlbi delay-calibration --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount --ms_suffix dp3concat </path/to/target/results/>
 ```
 
+When a LINC run finishes a final copy named e.g. `LINC_calibrator_<date>` should be created in the directory where the run was started.
+
 If you find a bug or have requests for functionality, please report it on the GitHub issue tracker.
+
+## Extracting profiling information with Toil
+
+The Toil cwl runner has the option to record statistics like RAM usage and core hours used via its `--stats` option. If using `--runner toil`, passing the `--record-toil-stats` option will enable this flag and leave the jobstore behind. N.B. that Toil disables cleanup of succesful steps when doing this, meaning a (potentially large) amount of disk space is temporarily in use (flocs should still cleanup after a successful run, so this is mainly important to consider _during_ the run or running many jobs collecting statistics at once).
+
+Gathering the recorded statistics can then be done via the `toil stats` command. For example, dumping these as a JSON file can be done like `toil stats --raw /path/to/jobstore > stats.json`. If you used `flocs-run` the jobstore will be inside the finished copy (for LINC only at the moment) or the corresponding temporary directory.
