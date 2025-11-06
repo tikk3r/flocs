@@ -29,6 +29,7 @@ breizorro
 cachetools
 certifi
 chardet
+cmcrameri
 codex-africanus[dask]
 configparser
 corner
