@@ -24,7 +24,7 @@ def extract_obsid_from_ms(ms: str) -> str:
     obsid = ct.taql(f"select LOFAR_OBSERVATION_ID from {inms}::OBSERVATION").getcol(
         "LOFAR_OBSERVATION_ID"
     )[0]
-    return obsid
+    return str(int(obsid) + 2).zfill(len(obsid))
 
 
 def cwl_file(entry: str) -> Optional[str]:
