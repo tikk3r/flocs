@@ -243,7 +243,7 @@ class VLBIJSONConfig:
             cmd += ["--singularity"]
             cmd += ["--disableCaching"]
             cmd += ["--writeLogsFromAllJobs", "True"]
-            cmd += ["--logFile", "full_log.log"]
+            cmd += ["--logFile", os.path.join(self.rundir, f"full_log_{self.mode.value}_{self.obsid}.log")]
             cmd += ["--writeLogs", os.environ["APPTAINERENV_LOGSDIR"]]
             cmd += ["--outdir", os.environ["APPTAINERENV_RESULTSDIR"]]
             cmd += ["--tmp-outdir-prefix", os.environ["APPTAINERENV_TMPDIR"]]
