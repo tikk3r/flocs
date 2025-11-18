@@ -8,6 +8,9 @@ Python versions that are end-of-life are not officially supported. See e.g. [thi
 
 These containers, very creatively named “Frits’ LoFAR Containers” or FLoCs, package a collection of common LOFAR software that is used for imaging science with both Dutch and international array.
 
+## Installation
+FLOCS's setup is done on the assumption that you are using [uv](https://docs.astral.sh/uv/) as your package manager. If you do not have this, first `pip install uv` and then proceed to install flocs as `uv pip install .`.
+
 ## CPU optimisations
 
 The containers can be build to leverage specific CPU optimisations, by specifying the desired CPU architecture. It is highly recommended to avoid generic builds and build for `native` whenever possible, or at least the lowest common denominator architecture if you have a heterogenous environment. Furthermore, experiments with vendor-developed math libraries have shown promise in the past, therefore these containers optimise further in two additional ways:
