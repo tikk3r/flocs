@@ -1,0 +1,3 @@
+[submodule "flocs-runners"]
+	path = flocs-runners
+	url = https://github.com/FLOCSoft/flocs-runners.git
