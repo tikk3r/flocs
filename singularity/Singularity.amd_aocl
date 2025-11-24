@@ -21,7 +21,7 @@ From: fedora:40
     export PYTHON_VERSION=3.12
 
     # Settings relevant to the installed software.
-    export AOFLAGGER_VERSION=05e7a0df
+    export AOFLAGGER_VERSION=72af2187
     export CASACORE_VERSION=18673cd
     export DDFPIPELINE_VERSION=df58808
     export DP3_VERSION=cb9ef604
