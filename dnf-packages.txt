@@ -29,7 +29,7 @@ gettext
 git
 gsl
 gsl-devel
-gtkmm30-devel
+gtkmm4.0-devel
 hostname
 htop
 ImageMagick*
