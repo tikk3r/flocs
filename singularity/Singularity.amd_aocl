@@ -22,7 +22,7 @@ From: fedora:40
 
     # Settings relevant to the installed software.
     export AOFLAGGER_VERSION=05e7a0df
-    export CASACORE_VERSION=83ef98a
+    export CASACORE_VERSION=18673cd
     export DDFPIPELINE_VERSION=df58808
     export DP3_VERSION=cb9ef604
     export EVERYBEAM_VERSION=8384f294
