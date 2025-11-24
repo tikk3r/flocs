@@ -128,7 +128,7 @@ statsmodels
 subprocess32
 sunpy
 tables
-toil[cwl]==6.0.0
+toil[cwl]>=9
 tqdm
 traceback2
 unittest-xml-reporting
