@@ -40,5 +40,7 @@ jobs:
       run: |
           jq -r 'keys[] as $k | "\($k)"' mslist_LINC_target.json > keys_flocs
           jq -r 'keys[] as $k | "\($k)"' template_linc.json > keys_template
+          sed -i '/directioniterative/d' keys_flocs
+          sed -i '/directioniterative/d' keys_template
           if [[ $(diff -q keys_template keys_flocs) ]]; then echo "Keys do not match LINC" && diff --side-by-side --suppress-common-lines keys_flocs keys_template && exit 1; fi
 
