@@ -39,6 +39,7 @@ jobs:
         cd ..
         rm -rf datashape-0.5.2/
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+        pip install -e "git+https://github.com/sara-nl/cortExchange#egg=cortexchange"
         if [ -f requirements.txt ]; then uv pip install --system -r requirements.txt; fi
     - name: Check library imports
       run: |
