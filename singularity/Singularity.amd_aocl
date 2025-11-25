@@ -213,13 +213,13 @@ From: fedora:40
     #
     # Setup the Python environment.
     #
-    sudo dnf -y install python3-cx-oracle
+    sudo dnf -y install python3-cx-oracle python3.11 python3.11-devel
     pip install uv
 
     uv tool install shadems
 
     # Install the normal Python environment.
-    uv venv --seed --python=python3 $INSTALLDIR/pyenv-py3
+    uv venv --seed --python=python3.11 $INSTALLDIR/pyenv-py3
     # Without this the environment doesn't load.
     sed -i "29,41d" $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
@@ -266,7 +266,6 @@ From: fedora:40
     uv pip install ./lofar_facet_selfcal
     # Install this separately since it keeps forcefully downgrading numpy.
     #pip install --no-deps lofarSun
-    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
     uv pip install ./flocs/
 
 
