@@ -1,0 +1,12 @@
+--- setup.py	2025-11-25 16:42:34.501745034 +0000
++++ setup.py.modified	2025-11-25 16:43:05.522446033 +0000
+@@ -36,7 +36,8 @@
+ 
+         os.chdir(sourceDir)
+         cc=setuptools._distutils.ccompiler.new_compiler(setuptools._distutils.ccompiler.get_default_compiler())
+-        cc.compiler_so=sysconfig.get_config_var('CC').split()+sysconfig.get_config_var('CFLAGS').split()+sysconfig.get_config_var('CFLAGSFORSHARED').split()
++        print(sysconfig.get_config_var("CC"))
++        cc.compiler_so=[os.environ["CC"]]+sysconfig.get_config_var('CFLAGS').split()+sysconfig.get_config_var('CFLAGSFORSHARED').split()
+         if '-fPIC' not in cc.compiler_so:
+             cc.compiler_so.append('-fPIC') # Needed by Ilifu but not picked automatically
+ 
