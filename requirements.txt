@@ -4,7 +4,6 @@ Kittens
 Mastodon.py
 Polygon3
 RM-Tools
-RMextract[lofar-utils]==0.5.0
 SQLAlchemy
 SciencePlots
 altair
