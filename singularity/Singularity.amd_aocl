@@ -251,6 +251,8 @@ From: fedora:40
        #echo export PYTHONPATH=\$INSTALLDIR/DP3/bin:\$PYTHONPATH  >> $INSTALLDIR/init.sh
     fi    
 
+    uv pip install torch torchvision torchaudio
+    uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
     uv pip install --upgrade pip wheel Cython "setuptools>=59.5.0,<71"
     uv pip install "numpy<2"
     uv pip install --no-binary pandas pandas
