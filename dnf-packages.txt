@@ -5,10 +5,6 @@ autoconf
 automake
 bc
 bison
-boost
-boost-devel
-boost-python3
-boost-python3-devel
 bzip2
 bzip2-devel
 cfitsio
