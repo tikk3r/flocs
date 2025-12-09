@@ -67,10 +67,10 @@ From: fedora:42
     else
         export CMAKE_ADD_OPTION="-Wno-dev"
     fi
-    export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/14:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
-    export CPATH="/usr/include/python${PYTHON_VERSION}:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
+    export CPLUS_INCLUDE_PATH="/usr/local/include/boost:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/14:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
+    export CPATH="/usr/local/include/boost:/usr/include/python${PYTHON_VERSION}:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
     export CMAKE_PREFIX_PATH="/opt/hdf5:/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/idg:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
-    export LD_LIBRARY_PATH="/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/usr/local/lib:/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
 
     export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
@@ -223,6 +223,19 @@ From: fedora:42
     # Without this the environment doesn't load.
     sed -i "29,41d" $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
+
+    # Install Boost
+    cd $INSTALLDIR
+    wget https://archives.boost.io/release/1.89.0/source/boost_1_89_0.tar.gz
+    tar -xzf boost_1_89_0.tar.gz
+    cd boost_1_89_0
+
+    # Build Boost with Python 3.12
+    ./bootstrap.sh --with-libraries=python
+    # https://www.boost.org/doc/libs/1_89_0/tools/build/doc/html/index.html
+    sudo ./b2 -j $J --without-test python=3.12 threading=multi cflags="`python3.12-config --cflags`" cxxflags="`python3.12-config --includes`" linkflags="`python3.12-config --libs`" install
+    rm -rf boost_1_89_0.tar.gz boost_1_89_0
+    cd $INSTALLDIR
 
     #
     # Install Casapy

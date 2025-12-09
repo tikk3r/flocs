@@ -29,8 +29,8 @@ jobs:
         sudo apt -y install postgresql wget
         python -m pip install --upgrade pip "setuptools>=59.5.0" uv
         uv pip install --system torch torchvision torchaudio xformers
-        uv pip install --system --no-build-isolation -e "git+https://github.com/sara-nl/cortExchange#egg=cortexchange"
-        python -m pip install flake8 "numpy<2" pytest wheel uv
+        pip install --no-build-isolation -e "git+https://github.com/sara-nl/cortExchange#egg=cortexchange"
+        python -m pip install flake8 "numpy<2" pytest wheel
         wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
         tar -xzvf 0.5.2.tar.gz
         rm 0.5.2.tar.gz
