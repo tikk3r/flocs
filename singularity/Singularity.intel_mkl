@@ -25,13 +25,13 @@ From: fedora:42
     export AOFLAGGER_VERSION=72af2187
     export CASACORE_VERSION=18673cd
     export DDFPIPELINE_VERSION=df58808
-    export DP3_VERSION=gec-219-support-boost-1.89
+    export DP3_VERSION=f09808e7
     export EVERYBEAM_VERSION=8384f294
     export HDF5_VERSION=1.14.5
     export IDG_VERSION=3757c591
     export LOSOTO_VERSION=e4ed09a
     export OPENBLAS_VERSION=v0.3.29
-    export PYBDSF_VERSION=8471637
+    export PYBDSF_VERSION=8b33037
     export PYTHON_CASACORE_VERSION=3.6.1
     export WSCLEAN_VERSION=gec-219-support-boost-1.89
     export HDF5_USE_FILE_LOCKING=FALSE
