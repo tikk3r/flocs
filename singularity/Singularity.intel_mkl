@@ -305,12 +305,7 @@ EOF
     #
     # Install PyBDSF
     #
-    mkdir -p ${INSTALLDIR}/pybdsf
-    cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION} && echo export PYBDSF_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ${INSTALLDIR}/pybdsf/pybdsf
-    uv pip install .
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/pybdsf/pybdsf
+    uv pip install bdsf
 
     #
     # Install CASAcore
