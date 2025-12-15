@@ -36,6 +36,7 @@ jobs:
           cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc.yml
           ./yq --tojson template_linc.yml > template_linc.json
           export LINC_DATA_ROOT=$PWD/LINC
+          export VLBI_DATA_ROOT=$PWD/LINC
           flocs-run linc target .
     - name: Check LINC options
       run: |
