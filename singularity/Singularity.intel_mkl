@@ -220,7 +220,7 @@ EOF
        pip install casadata==2025.3.17
     fi    
 
-    git clone https://github.com/tikk3r/flocs.git
+    git clone --recurse-submodules https://github.com/tikk3r/flocs.git
     git clone https://github.com/mattyowl/astLib.git
     export CC=`which gcc-14`
     patch astLib/setup.py flocs/patches/astlib.patch
