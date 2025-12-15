@@ -29,13 +29,14 @@ jobs:
           chmod u+x yq
           pip install uv
           uv pip install --system numpy losoto python-casacore cwltool
+          uv pip install --system git+https://github.com/tikk3r/flocs.git
     - name: Generate templates
       run: |
           git clone https://git.astron.nl/RD/LINC.git
           cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc.yml
           ./yq --tojson template_linc.yml > template_linc.json
           export LINC_DATA_ROOT=$PWD/LINC
-          python runners/create_ms_list.py LINC target .
+          flocs-run linc target .
     - name: Check LINC options
       run: |
           jq -r 'keys[] as $k | "\($k)"' mslist_LINC_target.json > keys_flocs
