@@ -34,10 +34,10 @@ jobs:
       run: |
           git clone https://git.astron.nl/RD/LINC.git
           cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc.yml
-          ./yq --tojson template_linc.yml > template_linc.json
+          ./yq -o=json template_linc.yml > template_linc.json
           export LINC_DATA_ROOT=$PWD/LINC
           export VLBI_DATA_ROOT=$PWD/LINC
-          flocs-run linc target .
+          flocs-run linc target --config-only . template_linc.json
     - name: Check LINC options
       run: |
           jq -r 'keys[] as $k | "\($k)"' mslist_LINC_target.json > keys_flocs
