@@ -619,7 +619,8 @@ From: fedora:42
     find DDFacet \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -i -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
 
     uv pip install --no-deps DDFacet/
-
+    echo '__version__ = "dev"' > /opt/lofar/pyenv-py3/lib64/python3.12/site-packages/DDFacet/__init__.py
+    truncate -s 0 /opt/lofar/pyenv-py3/lib64/python3.12/site-packages/DDFacet/cbuild/__init__.py
 
     #
     # Install killMS
@@ -646,8 +647,7 @@ From: fedora:42
     find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -i -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
 
     uv pip install --no-deps killMS/
-
-
+    echo '__version__ = "dev"' > /opt/lofar/pyenv-py3/lib64/python3.12/site-packages/killMS/__init__.py
 
     #   
     # Install DynSpecMS
