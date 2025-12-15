@@ -18,6 +18,7 @@ fftw-libs
 flex
 fpack
 gcc
+gcc-14
 gcc-c++
 gcc-gfortran
 gdal
