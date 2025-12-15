@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:40
+From: fedora:42
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -24,15 +24,15 @@ From: fedora:40
     export AOFLAGGER_VERSION=72af2187
     export CASACORE_VERSION=18673cd
     export DDFPIPELINE_VERSION=df58808
-    export DP3_VERSION=cb9ef604
+    export DP3_VERSION=f09808e7
     export EVERYBEAM_VERSION=8384f294
     export HDF5_VERSION=1.14.5
     export IDG_VERSION=3757c591
     export LOSOTO_VERSION=e4ed09a
     export OPENBLAS_VERSION=v0.3.29
-    export PYBDSF_VERSION=8471637
+    export PYBDSF_VERSION=8b33037
     export PYTHON_CASACORE_VERSION=3.6.1
-    export WSCLEAN_VERSION=f51f8c0f
+    export WSCLEAN_VERSION=eb97ba84
     export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
 
@@ -67,10 +67,10 @@ From: fedora:40
     else
         export CMAKE_ADD_OPTION="-Wno-dev"
     fi
-    export CPLUS_INCLUDE_PATH="/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/14:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
-    export CPATH="/usr/include/python${PYTHON_VERSION}:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
+    export CPLUS_INCLUDE_PATH="/usr/local/include/boost:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/14:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/boost:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
+    export CPATH="/usr/local/include/boost:/usr/include/python${PYTHON_VERSION}:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
     export CMAKE_PREFIX_PATH="/opt/hdf5:/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/idg:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
-    export LD_LIBRARY_PATH="/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/usr/local/lib:/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
     export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
 
     export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
@@ -116,6 +116,8 @@ From: fedora:40
     source /opt/aocl/5.1.0/aocc/amd-libs.cfg
     export CPLUS_INCLUDE_PATH=/opt/aocl/5.1/include:$CPLUS_INCLUDE_PATH
     export CPATH=/opt/aocl/5.1.0/include:$CPATH
+    # Added with Fedora 42 update, otherwise EveryBeam crashes on import.
+    find /opt/aocl/5.1.0/aocc/ -name "libamdlibm*.so" -exec execstack -c {} \;
 
     # Get libflang.so, libpgmath.so
     mkdir -p /opt/flang
@@ -187,9 +189,9 @@ From: fedora:40
         #
         # Install CUDA 12.6
         #
-        sudo dnf -y config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
+        sudo dnf -y config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/fedora42/x86_64/cuda-fedora42.repo
         sudo dnf -y clean all
-        sudo dnf -y install cuda-12-6
+        sudo dnf -y install cuda-13-0
         export CUDA_HOME=/usr/local/cuda
         export PATH=$CUDA_HOME/bin:$PATH
     fi
@@ -213,13 +215,13 @@ From: fedora:40
     #
     # Setup the Python environment.
     #
-    sudo dnf -y install python3-cx-oracle python3.11 python3.11-devel
+    sudo dnf -y install python3-cx-oracle python3.12 python3.12-devel
     pip install uv
 
     uv tool install shadems
 
     # Install the normal Python environment.
-    uv venv --seed --python=python3.11 $INSTALLDIR/pyenv-py3
+    uv venv --seed --python=python3.12 $INSTALLDIR/pyenv-py3
     # Without this the environment doesn't load.
     sed -i "29,41d" $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
@@ -228,9 +230,7 @@ From: fedora:40
     # Install Casapy
     #
     if [ $INSTALL_CASA = true ]; then
-       dnf -y install https://archives.fedoraproject.org/pub/archive/fedora/linux/releases/39/Everything/x86_64/os/Packages/o/openssl1.1-1.1.1q-5.fc39.x86_64.rpm
-       dnf -y install fuse fuse-libs
-       dnf -y install https://local.strw.leidenuniv.nl/~rvweeren/git-lfs-3.6.1-1.fc40.x86_64.rpm
+       dnf -y install fuse fuse-libs git-lfs
     
        mkdir -p /opt/casa
        cd /opt/casa
@@ -240,15 +240,10 @@ From: fedora:40
        rm -f casa-6.7.0-31-py3.12.el8.tar
        echo export PATH=/opt/casa/casa-6.7.0-31-py3.12.el8/bin/:\$PATH  >> $INSTALLDIR/init.sh
        
-       #virtualenv $INSTALLDIR/pyenv-casatasks --python=python3
-       # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
-       #printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-casatasks/bin/activate
-       #source $INSTALLDIR/pyenv-casatasks/bin/activate    
        pip install casaconfig==1.3.1
        pip install casatasks==6.7.0.31
        pip install casatestutils==6.7.0.31
        pip install casadata==2025.3.17
-       #echo export PYTHONPATH=\$INSTALLDIR/DP3/bin:\$PYTHONPATH  >> $INSTALLDIR/init.sh
     fi    
 
     git clone https://github.com/tikk3r/flocs.git
@@ -260,12 +255,12 @@ From: fedora:40
     export CC=`which gcc`
     uv pip install torch torchvision torchaudio
     uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
+    uv pip install scikit_build_core setuptools_scm
     uv pip install --upgrade pip wheel Cython "setuptools>=59.5.0,<71"
     uv pip install "numpy<2"
     uv pip install --no-binary pandas pandas
     uv pip install --no-binary h5py h5py
-    cd /opt/lofar
-    uv pip install -r $INSTALLDIR/flocs/requirements.txt
+    cat $INSTALLDIR/flocs/requirements.txt | xargs -n 1 uv pip install --no-build-isolation
     # Install facetselfcal this way to make sure data gets installed.
     cd /opt/lofar
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
@@ -274,6 +269,18 @@ From: fedora:40
     #pip install --no-deps lofarSun
     uv pip install ./flocs/
 
+    # Install Boost here to ensure Boost Numpy is built.
+    cd $INSTALLDIR
+    wget https://archives.boost.io/release/1.89.0/source/boost_1_89_0.tar.gz
+    tar -xzf boost_1_89_0.tar.gz
+    cd boost_1_89_0
+
+    # Build Boost with Python 3.12
+    ./bootstrap.sh --with-libraries=python
+    # https://www.boost.org/doc/libs/1_89_0/tools/build/doc/html/index.html
+    sudo ./b2 -j $J --without-test python=3.12 threading=multi cflags="`python3.12-config --cflags`" cxxflags="`python3.12-config --includes`" linkflags="`python3.12-config --libs`" install
+    rm -rf boost_1_89_0.tar.gz boost_1_89_0
+    cd $INSTALLDIR
 
     #
     # Install LTA client
@@ -302,23 +309,23 @@ From: fedora:40
     #
     # Install difmap
     #
-    mkdir -p $INSTALLDIR/difmap
-    cd $INSTALLDIR/difmap
-    #wget --progress=bar:force:noscroll ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
-    wget --progress=bar:force:noscroll https://github.com/tikk3r/flocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
-    tar xf difmap2.5e.tar.gz
-    cd uvf_difmap
-    wget --progress=bar:force:noscroll https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
+    #mkdir -p $INSTALLDIR/difmap
+    #cd $INSTALLDIR/difmap
+    ##wget --progress=bar:force:noscroll ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
+    #wget --progress=bar:force:noscroll https://github.com/tikk3r/flocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
+    #tar xf difmap2.5e.tar.gz
+    #cd uvf_difmap
+    #wget --progress=bar:force:noscroll https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
 
-    sed -i.bak -e '97d' configure
-    sed -i.bak -e '97 i PGPLOT_LIB=/usr/lib64/libpgplot.so.5' configure
-    ./configure linux-i486-gcc
-    export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
-    export OLD_CFLAGS=$CFLAGS
-    export CFLAGS="-L/usr/lib64/libpgplot.so.5"
-    CC=`which gcc` ./makeall
-    rm -rf $INSTALLDIR/difmap/*.tar.gz
-    export CFLAGS=$OLD_CFLAGS
+    #sed -i.bak -e '97d' configure
+    #sed -i.bak -e '97 i PGPLOT_LIB=/usr/lib64/libpgplot.so.5' configure
+    #./configure linux-i486-gcc
+    #export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
+    #export OLD_CFLAGS=$CFLAGS
+    #export CFLAGS="-L/usr/lib64/libpgplot.so.5"
+    #CC=`which gcc` ./makeall
+    #rm -rf $INSTALLDIR/difmap/*.tar.gz
+    #export CFLAGS=$OLD_CFLAGS
 
     #
     # Install PyBDSF
@@ -553,7 +560,7 @@ From: fedora:40
     #
     mkdir -p $INSTALLDIR/ds9/bin
     cd $INSTALLDIR/ds9
-    wget --progress=bar:force:noscroll https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.6.tar.gz
+    wget --progress=bar:force:noscroll https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.7b1.tar.gz
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
@@ -670,8 +677,6 @@ From: fedora:40
     #wget --progress=bar:force:noscroll https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
     wget --progress=bar:force:noscroll http://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
     cd $INSTALLDIR
-    rm /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
-    ln -s `which sub-sources-outside-region` /opt/lofar/ddf-pipeline/scripts/sub-sources-outside-region.py
 
     sed -i 's/SafeConfigParser/ConfigParser/g' /opt/lofar/ddf-pipeline/utils/options.py
 
@@ -746,6 +751,7 @@ From: fedora:40
     echo export PATH=\$INSTALLDIR/MultiNest/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=/opt/flang/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
+    echo export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DP3/lib:\$INSTALLDIR/EveryBeam/lib:/opt/hdf5/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/opt/OpenBLAS/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh

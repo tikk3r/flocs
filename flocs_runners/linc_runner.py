@@ -347,6 +347,11 @@ class LINCJSONConfig:
             os.environ["PATH"] = (
                 os.environ["APPTAINERENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
             )
+            # Make sure LINC will not try to run the VLBI summary script.
+            if "APPTAINER_BINDPATH" not in os.environ:
+                os.environ["APPTAINER_BINDPATH"] = f"{os.environ['LINC_DATA_ROOT']}/scripts:/opt/lofar/VLBI-cwl"
+            if "APPTAINER_BINDPATH" not in os.environ:
+                os.environ["APPTAINER_BINDPATH"] = f"{os.environ['LINC_DATA_ROOT']}/scripts:/opt/lofar/VLBI-cwl," + os.environ["APPTAINER_BINDPATH"]
         elif "singularity" in out:
             os.environ["SINGULARITYENV_LINC_DATA_ROOT"] = os.environ["LINC_DATA_ROOT"]
             os.environ["SINGULARITYENV_RESULTSDIR"] = (
@@ -373,11 +378,9 @@ class LINCJSONConfig:
                 os.environ["SINGULARITYENV_PREPEND_PATH"] + ":" + os.environ["PATH"]
             )
         if "PYTHONPATH" in os.environ:
-            os.environ["PYTHONPATH"] = (
-                "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
-            )
+            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
         else:
-            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts"
+            os.environ["PYTHONPATH"] = "$LINC_DATA_ROOT/scripts:" + os.environ["PYTHONPATH"]
 
     def setup_toil_directories(self, workdir: str) -> tuple[str, str]:
         dir_coordination = os.path.join(workdir, "coordination")

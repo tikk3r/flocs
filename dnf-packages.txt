@@ -11,6 +11,7 @@ cfitsio
 cfitsio-devel
 cmake3
 dnf-plugins-core
+execstack
 f2py
 fftw-devel
 fftw-libs

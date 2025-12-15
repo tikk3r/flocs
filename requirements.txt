@@ -29,7 +29,7 @@ cachetools
 certifi
 chardet
 cmcrameri
-codex-africanus[dask]
+codex-africanus[dask]<0.4
 configparser
 corner
 cwl_utils
