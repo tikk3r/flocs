@@ -86,7 +86,7 @@ From: fedora:42
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
     dnf -y install $(<$INSTALLDIR/dnf-packages.txt)
 
-    sudo alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140 \
+    sudo alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
     sudo alternatives --set gcc /usr/bin/gcc-14
 
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
