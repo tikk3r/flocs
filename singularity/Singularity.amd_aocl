@@ -255,12 +255,12 @@ From: fedora:42
     export CC=`which gcc`
     uv pip install torch torchvision torchaudio
     uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
+    uv pip install scikit_build_core setuptools_scm
     uv pip install --upgrade pip wheel Cython "setuptools>=59.5.0,<71"
     uv pip install "numpy<2"
     uv pip install --no-binary pandas pandas
     uv pip install --no-binary h5py h5py
-    cd /opt/lofar
-    uv pip install -r $INSTALLDIR/flocs/requirements.txt
+    cat $INSTALLDIR/flocs/requirements.txt | xargs -n 1 uv pip install --no-build-isolation
     # Install facetselfcal this way to make sure data gets installed.
     cd /opt/lofar
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
