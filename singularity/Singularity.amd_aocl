@@ -32,7 +32,7 @@ From: fedora:42
     export OPENBLAS_VERSION=v0.3.29
     export PYBDSF_VERSION=8b33037
     export PYTHON_CASACORE_VERSION=3.6.1
-    export WSCLEAN_VERSION=gec-219-support-boost-1.89
+    export WSCLEAN_VERSION=eb97ba84
     export HDF5_USE_FILE_LOCKING=FALSE
     export OMPI_ALLOW_RUN_AS_ROOT=1
 
