@@ -215,13 +215,13 @@ From: fedora:42
     #
     # Setup the Python environment.
     #
-    sudo dnf -y install python3-cx-oracle python3.11 python3.11-devel
+    sudo dnf -y install python3-cx-oracle python3.12 python3.12-devel
     pip install uv
 
     uv tool install shadems
 
     # Install the normal Python environment.
-    uv venv --seed --python=python3.11 $INSTALLDIR/pyenv-py3
+    uv venv --seed --python=python3.12 $INSTALLDIR/pyenv-py3
     # Without this the environment doesn't load.
     sed -i "29,41d" $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
