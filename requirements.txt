@@ -65,6 +65,7 @@ legacystamps
 linecache2
 loess
 lofar-h5plot
+lofar-vlbi-plot
 lsmtool
 markupsafe
 matplotlib>3.9.0
