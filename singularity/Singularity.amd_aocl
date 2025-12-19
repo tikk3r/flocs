@@ -249,6 +249,7 @@ From: fedora:42
        pip install casatasks==6.7.0.31
        pip install casatestutils==6.7.0.31
        pip install casadata==2025.3.17
+       cd $INSTALLDIR
     fi    
 
     git clone --recurse-submodules https://github.com/tikk3r/flocs.git
