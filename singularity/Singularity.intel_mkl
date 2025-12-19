@@ -193,6 +193,7 @@ EOF
     pip install uv
 
     uv tool install shadems
+    uv tool install lofar-vlbi-plot
 
     # Install the normal Python environment.
     uv venv --seed --python=python3.12 $INSTALLDIR/pyenv-py3
