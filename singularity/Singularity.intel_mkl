@@ -634,7 +634,7 @@ EOF
 
     # Install VLBI-cwl
     cd $INSTALLDIR
-    git clone https://git.astron.nl/RD/VLBI-cwl.git
+    git clone https://git.astron.nl/RD/pilot.git
 
     cd $INSTALLDIR
     mv flocs/utility .
