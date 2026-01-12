@@ -50,6 +50,7 @@ lzma
 make
 mariadb
 mariadb-devel
+mesa-libGLES
 nano
 ncurses
 ncurses-devel
