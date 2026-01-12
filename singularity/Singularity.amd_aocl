@@ -526,7 +526,7 @@ From: fedora:42
     # Install WSClean
     #
     mkdir $INSTALLDIR/wsclean
-    cd ${INSTALLDIR}/wsclean && git clone https://gitlab.com/aroffringa/wsclean.git && cd wsclean && git checkout $WSCLEAN_VERSION && echo export WSCLEAN_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd ${INSTALLDIR}/wsclean && git clone https://gitlab.com/aroffringa/wsclean.git && cd wsclean && git checkout $WSCLEAN_VERSION && echo $WSCLEAN_VERSION >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/wsclean/wsclean
     mkdir build && cd build
     # Switch to mpicc for a minute
