@@ -655,7 +655,7 @@ From: fedora:42
     cd $INSTALLDIR
     git clone https://git.astron.nl/RD/LINC.git
 
-    # Install VLBI-cwl
+    # Install pilot
     cd $INSTALLDIR
     git clone https://git.astron.nl/RD/pilot.git
 
@@ -693,7 +693,7 @@ From: fedora:42
     echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
     echo source \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
     echo source /opt/aocl/5.1.0/aocc/amd-libs.cfg >> $INSTALLDIR/init.sh
-    echo export PYTHONPATH=\$INSTALLDIR/VLBI-cwl/scripts:\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
+    echo export PYTHONPATH=\$INSTALLDIR/pilot/scripts:\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
     echo export PYTHONPATH=\$INSTALLDIR/aoflagger/lib:\$PYTHONPATH >> $INSTALLDIR/init.sh
     # echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=/root/.local/bin/:\$PATH  >> $INSTALLDIR/init.sh
@@ -706,7 +706,7 @@ From: fedora:42
     echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/LINC/scripts:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/VLBI-cwl/scripts:\$PATH >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/pilot/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/MultiNest/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=/opt/flang/bin:\$PATH >> $INSTALLDIR/init.sh
