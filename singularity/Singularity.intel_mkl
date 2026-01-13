@@ -799,4 +799,4 @@ EOF
     To enter a shell within the image, use
         apptainer shell -B <paths,that,need,to,be,accessible> <path to image>
 
-    The container base is Fedora 40.
+    The container base is Fedora 42.
