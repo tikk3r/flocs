@@ -493,7 +493,6 @@ From: fedora:42
         -DPython3_FIND_VIRTUALENV=ONLY \
         ../src
     fi
-    # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/DP3/build
