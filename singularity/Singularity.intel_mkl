@@ -29,7 +29,7 @@ From: fedora:42
     export EVERYBEAM_VERSION=3ebf4f50
     export HDF5_VERSION=1.14.5
     export IDG_VERSION=9c9236d3
-    export LOSOTO_VERSION=e4ed09a
+    export LOSOTO_VERSION=3335b05
     export OPENBLAS_VERSION=v0.3.29
     export PYBDSF_VERSION=8b33037
     export PYTHON_CASACORE_VERSION=3.6.1
