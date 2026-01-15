@@ -1,5 +1,3 @@
-armadillo
-armadillo-devel
 arpack-devel
 autoconf
 automake
