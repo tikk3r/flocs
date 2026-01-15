@@ -33,8 +33,6 @@ From: fedora:42
     export PYBDSF_VERSION=8b33037
     export PYTHON_CASACORE_VERSION=3.6.1
     export WSCLEAN_VERSION=c061681e
-    export HDF5_USE_FILE_LOCKING=FALSE
-    export OMPI_ALLOW_RUN_AS_ROOT=1
 
     export HAS_CUDA={{ HAS_CUDA }}
     export MARCH={{ MARCH }}
@@ -49,6 +47,8 @@ From: fedora:42
     export OPENBLAS_NUM_THREADS=1
     export BLIS_NUM_THREADS=$OPENBLAS_NUM_THREADS
     export NUM_THREADS=256
+    export HDF5_USE_FILE_LOCKING=FALSE
+    export OMPI_ALLOW_RUN_AS_ROOT=1
     export OPENBLAS_TARGET={{ OPENBLASTARGET }}
 
     if [ $NOAVX512 = true ]; then
