@@ -786,7 +786,7 @@ EOF
     * IDG: $INSTALLDIR/idg
     * WSClean: $INSTALLDIR/wsclean
 
-    Python packages such as losoto, lsmtool and RMextract are available in the environment /opt/lofar/pyenv-py3. By default this Python 3 environment is already active.
+    Python packages such as losoto, lsmtool and Spinifex are available in the environment /opt/lofar/pyenv-py3. By default this Python 3 environment is already active.
 
     To execute a command directly, use
         apptainer exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
