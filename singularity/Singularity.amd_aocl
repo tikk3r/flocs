@@ -23,7 +23,6 @@ From: fedora:42
     export DEBUG={{ DEBUG }}
     export INSTALL_CASA={{ INSTALL_CASA }}
     export INSTALLDIR={{ INSTALLDIR }}
-
     export OPENBLAS_TARGET={{ OPENBLASTARGET }}
 
     mkdir -p $INSTALLDIR
