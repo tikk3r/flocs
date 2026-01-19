@@ -428,6 +428,7 @@ EOF
     make install
     cd $INSTALLDIR/
     rm -rf $INSTALLDIR/EveryBeam/src/
+    rm -rf $INSTALLDIR/EveryBeam/build/
 
     #   
     # Install Image Domain Gridder (IDG)
