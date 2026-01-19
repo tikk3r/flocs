@@ -6,13 +6,14 @@ From: fedora:40
     . $INSTALLDIR/init.sh
 
 %arguments
-        HAS_CUDA=false
-        HAS_MKL=false
-        MARCH=sandybridge
-        MTUNE=sandybridge
-        NOAVX512=true
-        DEBUG=false
-        OPENBLASTARGET=SANDYBRIDGE
+    HAS_CUDA=false
+    HAS_MKL=false
+    MARCH=sandybridge
+    MTUNE=sandybridge
+    NOAVX512=true
+    DEBUG=false
+    OPENBLASTARGET=SANDYBRIDGE
+    INSTALLDIR=/opt/lofar
 
 %post
     export HAS_CUDA={{ HAS_CUDA }}
@@ -22,6 +23,7 @@ From: fedora:40
     export NOAVX512={{ NOAVX512 }}
     export DEBUG={{ DEBUG }}
     export OPENBLAS_TARGET={{ OPENBLASTARGET }}
+    export INSTALLDIR={{ INSTALLDIR }}
 
     mkdir -p $INSTALLDIR
 
