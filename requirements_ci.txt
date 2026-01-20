@@ -29,7 +29,6 @@ deap
 decorator
 emcee
 funcsigs
-future
 git+https://git.astron.nl/RD/LSMTool.git@v1.6
 git+https://github.com/jurjen93/lofar_helpers.git
 google-api-python-client
@@ -104,7 +103,6 @@ scipy
 seaborn
 shapely
 sharedarray
-six
 SQLAlchemy
 sshtunnel
 statsmodels
