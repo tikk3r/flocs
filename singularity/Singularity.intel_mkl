@@ -14,7 +14,7 @@ From: fedora:42
     DEBUG=false
     OPENBLASTARGET=SANDYBRIDGE
     INSTALL_CASA=false
-    INSTALLDIR/opt/lofar
+    INSTALLDIR=/opt/lofar
 
 %post
     export HAS_CUDA={{ HAS_CUDA }}
@@ -24,6 +24,7 @@ From: fedora:42
     export NOAVX512={{ NOAVX512 }}
     export DEBUG={{ DEBUG }}
     export INSTALL_CASA={{ INSTALL_CASA }}
+    export INSTALLDIR={{ INSTALLDIR }}
     export OPENBLAS_TARGET={{ OPENBLASTARGET }}
 
     mkdir -p $INSTALLDIR
