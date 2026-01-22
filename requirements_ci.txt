@@ -12,7 +12,6 @@ backports.ssl-match-hostname
 bces
 bilby
 blurhash
-boost
 breizorro
 cachetools
 certifi
