@@ -70,8 +70,8 @@ From: fedora:42
     cd aocl-linux-aocc-5.1.0
     ./install.sh -t /opt/aocl -i lp64
     source /opt/aocl/5.1.0/aocc/amd-libs.cfg
-    export CPLUS_INCLUDE_PATH=/opt/aocl/5.1/include:$CPLUS_INCLUDE_PATH
-    export CPATH=/opt/aocl/5.1.0/include:$CPATH
+    export CPLUS_INCLUDE_PATH=/opt/aocl/5.1/aocc/include:$CPLUS_INCLUDE_PATH
+    export CPATH=/opt/aocl/5.1.0/aocc/include:$CPATH
     # Added with Fedora 42 update, otherwise EveryBeam crashes on import.
     find /opt/aocl/5.1.0/aocc/ -name "libamdlibm*.so" -exec execstack -c {} \;
 
