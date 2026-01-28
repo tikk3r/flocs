@@ -18,7 +18,7 @@ This page describes basic usage of the pipeline runners available through `flocs
 Flocs provides pipeline runners that can be installed via package managers. For example:
 
 ```bash
-uv pip install git+https://github.com/tikk3r/flocs.git
+uv pip install git+https://github.com/FLOCSoft/flocs-runners.git
 ```
 
 This should provide you with `flocs-run`; the main entry point to generating configuration files and running pipelines.
