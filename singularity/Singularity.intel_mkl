@@ -297,8 +297,7 @@ EOF
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/casacore/build
-    rm -rf $INSTALLDIR/casacore/src
+    rm -rf $INSTALLDIR/casacore/{build,src}
 
     #
     # Install Python-CASAcore
@@ -326,8 +325,7 @@ EOF
     fi
     make -j $j
     make install
-    rm -rf $INSTALLDIR/sagecal/build
-    rm -rf $INSTALLDIR/sagecal/src
+    rm -rf $INSTALLDIR/sagecal/{build,src}
 
     #
     # Install AOFlagger
@@ -350,9 +348,7 @@ EOF
     cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
     cd ${INSTALLDIR}/aoflagger/build && make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/aoflagger/aoflagger
-    rm -rf $INSTALLDIR/aoflagger/build
-    rm -rf $INSTALLDIR/aoflagger/src
+    rm -rf $INSTALLDIR/aoflagger/{aoflagger,build,src}
 
     #
     # Install LofarStMan
@@ -382,8 +378,7 @@ EOF
     make -j $J
     make install
     cd $INSTALLDIR/
-    rm -rf $INSTALLDIR/EveryBeam/src/
-    rm -rf $INSTALLDIR/EveryBeam/build/
+    rm -rf $INSTALLDIR/EveryBeam/{buid,src}
 
     #   
     # Install Image Domain Gridder (IDG)
@@ -425,8 +420,7 @@ EOF
     fi
     make -s -j $J && make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/DP3/build
-    rm -rf $INSTALLDIR/DP3/src
+    rm -rf $INSTALLDIR/DP3/{build,src}
     mkdir $INSTALLDIR/DP3/usermodules
     cp $INSTALLDIR/lofar_facet_selfcal/submods/polconv.py $INSTALLDIR/DP3/usermodules/polconv.py
 
@@ -517,8 +511,7 @@ EOF
     make -j $J
     make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/LOFARBeam/build
-    rm -rf $INSTALLDIR/LOFARBeam/src
+    rm -rf $INSTALLDIR/LOFARBeam/{build,src}
 
     #
     # Install DDFacet

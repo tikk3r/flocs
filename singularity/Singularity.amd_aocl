@@ -98,8 +98,7 @@ From: fedora:42
     make -j $J
     make install
     cd $INSTALLDIR
-    rm -rf /opt/fftw
-    rm -rf /opt/aocl/aocl-linux-aocc-5.1.0
+    rm -rf /opt/{fftw,aocl/aocl-linux-aocc-5.1.0}
     ls /opt/aocl/5.1.0/aocc/lib/
     #
     # End AMD installs
@@ -322,8 +321,7 @@ From: fedora:42
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/casacore/build
-    rm -rf $INSTALLDIR/casacore/src
+    rm -rf $INSTALLDIR/casacore/{build,src}
 
     #
     # Install Python-CASAcore
@@ -344,8 +342,7 @@ From: fedora:42
         ../src
     make -j $j
     make install
-    rm -rf $INSTALLDIR/sagecal/build
-    rm -rf $INSTALLDIR/sagecal/src
+    rm -rf $INSTALLDIR/sagecal/{build,src}
 
     #
     # Install AOFlagger
@@ -360,9 +357,7 @@ From: fedora:42
     cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
     cd ${INSTALLDIR}/aoflagger/build && make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/aoflagger/aoflagger
-    rm -rf $INSTALLDIR/aoflagger/build
-    rm -rf $INSTALLDIR/aoflagger/src
+    rm -rf $INSTALLDIR/aoflagger/{aoflagger,build,src}
 
     #
     # Install LofarStMan
@@ -400,8 +395,7 @@ From: fedora:42
     make -j $J
     make install
     cd $INSTALLDIR/
-    rm -rf $INSTALLDIR/EveryBeam/src/
-    rm -rf $INSTALLDIR/EveryBeam/build/
+    rm -rf $INSTALLDIR/EveryBeam/{build,src}
 
     #   
     # Install Image Domain Gridder (IDG)
@@ -448,8 +442,7 @@ From: fedora:42
     fi
     make -s -j $J && make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/DP3/build
-    rm -rf $INSTALLDIR/DP3/src
+    rm -rf $INSTALLDIR/DP3/{build,src}
     mkdir $INSTALLDIR/DP3/usermodules
     cp $INSTALLDIR/lofar_facet_selfcal/submods/polconv.py $INSTALLDIR/DP3/usermodules/polconv.py
 
@@ -544,8 +537,7 @@ From: fedora:42
     make -j $J
     make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/LOFARBeam/build
-    rm -rf $INSTALLDIR/LOFARBeam/src
+    rm -rf $INSTALLDIR/LOFARBeam/{build,src}
 
     #
     # Install DDFacet
