@@ -674,7 +674,6 @@ EOF
     echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/LINC/scripts:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/MultiNest/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/VLBI-cwl/scripts:\$PATH >> $INSTALLDIR/init.sh
