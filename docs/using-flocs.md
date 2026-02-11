@@ -45,7 +45,7 @@ flocs-run linc calibrator </folder/with/mses/>
 and the target pipeline as
 
 ```bash
-flocs-run linc target </folder/with/mses/> </path/to/calibrator/cal_solutions.h5>
+flocs-run linc target --cal-solutions </path/to/calibrator/cal_solutions.h5> </folder/with/mses/>
 ```
 
 This will execute the pipeline in the given container, using `cwltool` as the CWL runner. For VLBI data reduction, you will almost always want to use the `--output-fullres-data` option (this may become default later).
