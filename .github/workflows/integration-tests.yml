@@ -40,6 +40,7 @@ jobs:
         pip install .
         cd ..
         rm -rf datashape-0.5.2/
+        uv pip install --system pkg_resources
         if [ -f requirements.txt ]; then uv pip install --system -r requirements.txt; fi
     - name: Check library imports
       run: |
