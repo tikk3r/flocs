@@ -16,6 +16,8 @@ nav_order: 99
 ## I have found a problem or have a suggestion
 First, read through the sections below in case it might be covered there. If it is not covered then open an issue on GitHub or contact me through email, Slack etc.
 
+When reporting issues, seeking advice etc. avoid general "it doesn't work" statements. Try to provide at least the error message or traceback and how you are running or installing things. That provides valuable context to be able to figure out what the problem actually is. In case of bugs, a minimum working example (MWE) is extremely valuable.
+
 ## I see warnings about a build mismatch when starting a container.
 If you see the following message when entering a container (bar specific values)
 
