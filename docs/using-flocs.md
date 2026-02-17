@@ -76,7 +76,12 @@ Firstly, containers have to adhere to a specific name. For LINC it **must** be n
 * `APPTAINER_PULLDIR`: set this to `$APPTAINER_CACHEDIR/pull`. If a container with one of the above names is found here for LINC or VLBI-cwl, it will not try to pull it. Otherwise it will try to pull it from DockerHub (which will fail for VLBI-cwl).
 * `CWL_SINGULARITY_CACHE`: set this to `$APPTAINER_CACHEDIR`
 
-Once those are defined, put the containers (or a symlink to them) under `$APPTAINER_CACHEDIR` and `$APPTAINER_PULLDIR`. A pipeline run using toil and Slurm will look something like this:
+Once those are defined, put the containers (or a symlink to them) under `$APPTAINER_CACHEDIR` and `$APPTAINER_PULLDIR`. To run pipelines you also need to clone LINC and PILOT, and define the following environment variables that point to them:
+
+* `LINC_DATA_ROOT`: set this to the full path to your LINC clone.
+* `VLBI_DATA_ROOT`: set this to the full path to your PILOT clone.
+
+A pipeline run using toil and Slurm will look something like this:
 
 ```bash
 flocs-run vlbi delay-calibration --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount --ms_suffix dp3concat </folder/with/mses/>
@@ -88,7 +93,7 @@ A pipeline run using cwltool and Slurm will look something like this:
 flocs-run vlbi delay-calibration --runner cwltool --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount --ms_suffix dp3concat </folder/with/mses/>
 ```
 
-this will wrap a cwltool call in the appropriate Slurm script and submit the whole thing as a job to the slurm queue via `sbatch`.
+this will wrap a cwltool call in the appropriate Slurm script and submit the whole thing as a job to the slurm queue via `sbatch`. See the data reduction pages for more detailed information and examples.
 
 
 ### Example back to back runs
