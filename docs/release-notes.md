@@ -14,7 +14,7 @@ nav_order: 5
 {:toc}
 
 ## v6.1.0
-**Updates*
+**Updates**
 - Latest facetselfcal to address the scalarphasediff issue.
 - Update EveryBeam to f2a27530
 - Update WSClean to v3.7
