@@ -13,6 +13,51 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v6.1.0
+**Updates*
+- Latest facetselfcal to address the scalarphasediff issue.
+- Update EveryBeam to f2a27530
+- Update WSClean to v3.7
+
+## v6.1.0-rc2
+**Updates**
+- Add katbeam
+- Add lofar-vlbi-plot
+- Can run ddf-pipeline again
+- Consolidate versioning into a single file
+- Update AOFlagger to 9a47b8c8
+- Update casacore to 5b671c5
+- Update DP3 to e2be55be
+- Update EveryBeam to 3ebf4f50
+- Update IDG to 9c9236d3
+- Update facetselfcal for sisco compatibility
+- Update WSClean to 2934da1e
+
+## v6.1.0-rc1
+Base container is now Fedora 42. This ships with Python 3.13, but a venv with 3.12 is created to not be too disruptive and breaking yet.
+
+**Updates**
+- Add `cmcrameri`
+- Add `spherical-geometry`
+- Install PyBDSF from PyPI
+- Remove deprecated `create_ms_list.py` in favour of `flocs-run`
+- Remove difmap
+- Remove RMextract in favour of Spinifex
+- Update to Fedora 42
+- Update AOCL to 5.1.0
+- Update AOFlager to 72af2187
+- Update Boost to 1.89.0
+- Update casacore to 18673cd
+- Update CUDA to 13
+- Update DP3 to f09808e7
+- Update EveryBeam to 8384f294
+- Update WSClean to eb97ba84
+- Manually install Boost to maintain Python 3.12 compatibility.
+- Runners are moved to their own repository at https://github.com/FLOCSoft/flocs-runners and are now included as a git submodule.
+
+**Bugfixes**
+- Fix polconv module being grabbed from lofar_helpers instead of facetselfcal
+
 ## v6.0.0
 Massively overhauls the runners for a better user experience. Overgrown Bash scripts moved to an installable Python package `flocs_runners` for more power and flexibility. Toil 9 or later is required if you want to run pipelines with Toil.
 

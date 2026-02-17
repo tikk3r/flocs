@@ -7,14 +7,16 @@ This page documents my [LOFAR containers], very creatively named "Frits' LoFAR C
 
 # Latest containers
 
-[Download v6.0.0 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.0.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[Download v6.0.0 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.0.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v6.1.0 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.1.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v6.1.0 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.1.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 [View recipes on GitHub][LOFAR containers]{: .btn .fs-5 .mb-4 .mb-md-0 }
 
 # Previous containers
 
 ## Version 6.X
+[Download v6.0.0 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.0.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v6.0.0 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.0.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 ## Version 5.X
 
