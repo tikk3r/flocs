@@ -640,7 +640,7 @@ EOF
     rm -rf /var/cache/dnf/*
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*
-    rm -rf /root/.cache/uv/*
+    uv cache clean
     dnf -y clean all
     
     #
