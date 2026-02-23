@@ -665,6 +665,7 @@ From: fedora:42
     rm -rf /var/cache/dnf/*
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*
+    uv cache clean
     dnf -y clean all
     
     #
