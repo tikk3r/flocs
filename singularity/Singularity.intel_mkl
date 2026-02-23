@@ -640,6 +640,7 @@ EOF
     rm -rf /var/cache/dnf/*
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*
+    rm -rf /opt/intel/oneapi/compiler/latest/bin/*
     uv cache clean
     dnf -y clean all
     
