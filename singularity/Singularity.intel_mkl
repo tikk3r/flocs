@@ -143,6 +143,7 @@ EOF
     #
     sudo dnf -y install python3-cx-oracle python3.12 python3.12-devel
     pip install uv
+    export PATH="/root/.local/bin:$PATH"
 
     uv tool install shadems
     uv tool install lofar-vlbi-plot
