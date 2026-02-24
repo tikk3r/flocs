@@ -633,6 +633,10 @@ EOF
     cd $INSTALLDIR
     git clone https://git.astron.nl/RD/VLBI-cwl.git
 
+    cd $INSTALLDIR
+    mv flocs/utility .
+    rm -rf flocs
+
     #
     # Finaly cleanup of unnecessary stuff
     # 
