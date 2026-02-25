@@ -27,21 +27,12 @@ jobs:
     - name: Check dependency installation
       run: |
         sudo apt -y install postgresql wget
-        python -m pip install --upgrade pip "setuptools>=59.5.0" uv
+        python -m pip install --upgrade pip "setuptools>=59.5.0,<82" uv
         uv pip install --system torch torchvision torchaudio xformers
         pip install --no-build-isolation -e "git+https://github.com/sara-nl/cortExchange#egg=cortexchange"
         python -m pip install flake8 "numpy<2" pytest wheel
-        wget https://github.com/blaze/datashape/archive/refs/tags/0.5.2.tar.gz
-        tar -xzvf 0.5.2.tar.gz
-        rm 0.5.2.tar.gz
-        cd datashape-0.5.2/
-        sed -i 's/SafeConfigParser/ConfigParser/g' versioneer.py
-        sed -i 's/readfp/read_file/g' versioneer.py
-        pip install .
-        cd ..
-        rm -rf datashape-0.5.2/
         uv pip install --system pkg_resources
-        if [ -f requirements.txt ]; then uv pip install --system -r requirements.txt; fi
+        if [ -f requirements.txt ]; then cat requirements.txt | xargs -n 1 uv pip install --no-build-isolation --system; fi
     - name: Check library imports
       run: |
         python tests/test_all_imports.py
