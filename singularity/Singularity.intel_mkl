@@ -647,7 +647,8 @@ EOF
     rm -rf /var/log/*
     uv cache clean
     dnf -y clean all
-    
+    rm -f /opt/intel/oneapi/mkl/latest/lib/libmkl_sycl.a
+
     #
     # init-lofar
     #
