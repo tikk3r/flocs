@@ -297,7 +297,7 @@ From: fedora:42
     mkdir -p ${INSTALLDIR}/casacore/build
     mkdir -p ${INSTALLDIR}/casacore/data
     cd $INSTALLDIR/casacore
-    git clone --single-branch --branch master https://github.com/casacore/casacore.git src
+    git clone --single-branch --filter=blob:none --branch master https://github.com/casacore/casacore.git src
     cd ${INSTALLDIR}/casacore/src && git checkout ${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/casacore/data
     wget -nv https://www.astron.nl/iers/WSRT_Measures.ztar
