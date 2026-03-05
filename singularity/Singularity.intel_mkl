@@ -104,6 +104,10 @@ gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.
 EOF
         sudo mv /tmp/oneAPI.repo /etc/yum.repos.d/
         dnf -y install intel-oneapi-mkl intel-oneapi-mkl-devel
+        # We don't compile with the Intel toolchain
+        rm -rf /opt/intel/oneapi/compiler
+        # We don't statically link
+        find /opt/intel/oneapi -type f -name "*.a" -delete
         source /opt/intel/oneapi/mkl/latest/env/vars.sh
     fi
 
