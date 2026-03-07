@@ -54,7 +54,7 @@ From: fedora:42
     git clone https://github.com/xianyi/OpenBLAS.git src
     cd src && git checkout $OPENBLAS_VERSION
     mkdir build && cd build
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=$NUM_THREADS -DNUM_CORES=$NUM_THREADS  -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DBUILD_TESTING=OFF -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=$NUM_THREADS -DNUM_CORES=$NUM_THREADS  -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
     make -j$J
     make install
     rm -rf /opt/OpenBLAS/src
@@ -203,7 +203,7 @@ From: fedora:42
        pip install casatestutils==6.7.0.31
        pip install casadata==2025.3.17
        cd $INSTALLDIR
-    fi    
+    fi
 
     git clone --recurse-submodules https://github.com/tikk3r/flocs.git
     git clone https://github.com/mattyowl/astLib.git
@@ -319,6 +319,7 @@ From: fedora:42
         -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
         -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
         -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lblis -lm -O3 -Ofast" \
+        -DBUILD_TESTING=OFF \
         ../src/ 
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
     cd ${INSTALLDIR}/casacore/build && make install
