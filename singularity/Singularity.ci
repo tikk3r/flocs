@@ -497,8 +497,6 @@ EOF
 
     To execute a command directly, use
         apptainer exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
-    for example, to run a genericpipeline parset, the following command can be used:
-        apptainer exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
     To enter a shell within the image, use
         apptainer shell -B <paths,that,need,to,be,accessible> <path to image>
 

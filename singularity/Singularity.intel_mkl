@@ -56,7 +56,7 @@ From: fedora:42
     git clone https://github.com/xianyi/OpenBLAS.git src
     cd src && git checkout $OPENBLAS_VERSION
     mkdir build && cd build
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=$NUM_THREADS -DNUM_CORES=$NUM_THREADS -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DBUILD_TESTING=OFF -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=$NUM_THREADS -DNUM_CORES=$NUM_THREADS -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
     make -j$J
     make install
     rm -rf /opt/OpenBLAS/src
@@ -104,6 +104,11 @@ gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.
 EOF
         sudo mv /tmp/oneAPI.repo /etc/yum.repos.d/
         dnf -y install intel-oneapi-mkl intel-oneapi-mkl-devel
+        # We don't compile with the Intel toolchain
+        mv /opt/intel/oneapi/compiler/latest/lib/libiomp5.so /opt/intel/oneapi/mkl/latest/lib/
+        rm -rf /opt/intel/oneapi/compiler
+        # We don't statically link
+        find /opt/intel/oneapi -type f -name "*.a" -delete
         source /opt/intel/oneapi/mkl/latest/env/vars.sh
     fi
 
@@ -143,6 +148,7 @@ EOF
     #
     sudo dnf -y install python3-cx-oracle python3.12 python3.12-devel
     pip install uv
+    export PATH="/root/.local/bin:$PATH"
 
     uv tool install shadems
     uv tool install lofar-vlbi-plot
@@ -267,7 +273,7 @@ EOF
     mkdir -p ${INSTALLDIR}/casacore/build
     mkdir -p ${INSTALLDIR}/casacore/data
     cd $INSTALLDIR/casacore
-    git clone --single-branch --branch master https://github.com/casacore/casacore.git src
+    git clone --single-branch --filter=blob:none --branch master https://github.com/casacore/casacore.git src
     cd ${INSTALLDIR}/casacore/src && git checkout ${CASACORE_VERSION} && echo export CASACORE_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd ${INSTALLDIR}/casacore/data
     wget -nv https://www.astron.nl/iers/WSRT_Measures.ztar
@@ -282,6 +288,7 @@ EOF
             -DBUILD_DYSCO=ON \
             -DBUILD_SISCO=ON \
             -DBLA_VENDOR=Intel10_64lp \
+            -DBUILD_TESTING=OFF \
             ../src
     else
         cmake $CMAKE_ADD_OPTION \
@@ -292,6 +299,7 @@ EOF
             -DBUILD_DYSCO=ON \
             -DBUILD_SISCO=ON \
             -DBLAS_LIBRARIES=/opt/OpenBLAS/lib64/libopenblas.so \
+            -DBUILD_TESTING=OFF \
             ../src
     fi
     cd ${INSTALLDIR}/casacore/build && make -s -j ${J}
@@ -633,6 +641,10 @@ EOF
     cd $INSTALLDIR
     git clone https://git.astron.nl/RD/VLBI-cwl.git
 
+    cd $INSTALLDIR
+    mv flocs/utility .
+    rm -rf flocs
+
     #
     # Finaly cleanup of unnecessary stuff
     # 
@@ -640,6 +652,7 @@ EOF
     rm -rf /var/cache/dnf/*
     rm -rf /var/cache/yum/*
     rm -rf /var/log/*
+    uv cache clean
     dnf -y clean all
     
     #
@@ -668,9 +681,8 @@ EOF
     echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/DP3/bin:\$PATH  >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
+    # echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=/opt/hdf5/bin:\$PATH  >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/sagecal/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/LINC/scripts:\$PATH >> $INSTALLDIR/init.sh
@@ -735,7 +747,6 @@ EOF
 
     * AOFlagger: $INSTALLDIR/aoflagger
     * Casacore: $INSTALLDIR/casacore
-    * Difmap: $INSTALLDIR/difmap
     * DP3: $INSTALLDIR/DP3
     * DS9: $INSTALLDIR/ds9
     * EveryBeam: $INSTALLDIR/EveryBeam
@@ -746,8 +757,6 @@ EOF
 
     To execute a command directly, use
         apptainer exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
-    for example, to run a genericpipeline parset, the following command can be used:
-        apptainer exec lofar.simg genericpipeline.py -d -c pipeline.cfg pipeline.parset
     To enter a shell within the image, use
         apptainer shell -B <paths,that,need,to,be,accessible> <path to image>
 
