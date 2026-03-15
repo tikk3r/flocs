@@ -41,8 +41,6 @@ From: fedora:42
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
-    # Necessary for nomacs
-    sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/build_environment_variables.sh -O $INSTALLDIR/build_environment_variables.sh
     source $INSTALLDIR/build_environment_variables.sh
@@ -133,8 +131,9 @@ EOF
 
     # MultiNest
     cd $INSTALLDIR
-    git clone https://github.com/JohannesBuchner/MultiNest
-    cd MultiNest/build
+    mkdir MultiNest
+    git clone https://github.com/JohannesBuchner/MultiNest MultiNest-src
+    cd MultiNest-src/build
     if [ $HAS_MKL = true ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest -DBLA_VENDOR=Intel10_64lp ..
     else
@@ -142,6 +141,7 @@ EOF
     fi
     make
     cd $INSTALLDIR
+    rm -rf MultiNest-src
 
     #
     # Setup the Python environment.
@@ -343,16 +343,16 @@ EOF
     mkdir -p ${INSTALLDIR}/aoflagger/build
     cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export AOFLAGGER_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ] && [ $HAS_MKL = true ]; then
-        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
+        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
             -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
     elif [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ] && [ $HAS_MKL = false ]; then
-        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
+        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
             -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
     elif [ $HAS_MKL = true ]; then
-        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
+        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
             -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False ../src
     else
-        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
+        cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
             -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False ../src
     fi
     cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
@@ -519,8 +519,7 @@ EOF
     make -j $J
     make install
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/LOFARBeam/build
-    rm -rf $INSTALLDIR/LOFARBeam/src
+    rm -rf $INSTALLDIR/LOFARBeam
 
     #
     # Install DDFacet

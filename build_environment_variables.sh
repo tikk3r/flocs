@@ -28,7 +28,7 @@ export OPENBLAS_NUM_THREADS=1
 export BLIS_NUM_THREADS=$OPENBLAS_NUM_THREADS
 export NUM_THREADS=256
 
-if [ $NOAVX512 = true ]; then
+if [ $NOAVX512=true ]; then
     export FFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f"
     export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe -mno-avx512f"
     export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe -std=${CPPSTD} -mno-avx512f"
@@ -37,7 +37,7 @@ else
     export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe -std=${CPPSTD}"
     export FFLAGS="-march=${MARCH} -mtune=${MTUNE}"
 fi
-if [ $DEBUG = true ]; then
+if [ $DEBUG=true ]; then
     export CFLAGS="-g $CFLAGS"
     export CXXFLAGS="-g $CXXFLAGS"
     export CMAKE_ADD_OPTION="-LA"
