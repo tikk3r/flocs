@@ -630,7 +630,7 @@ EOF
     #
     cd $INSTALLDIR
     git clone https://git.astron.nl/RD/LINC.git
-
+    rm -rf LINC/.git/objects/pack/
 
     # Install VLBI-cwl
     cd $INSTALLDIR
