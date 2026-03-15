@@ -133,8 +133,9 @@ EOF
 
     # MultiNest
     cd $INSTALLDIR
-    git clone https://github.com/JohannesBuchner/MultiNest
-    cd MultiNest/build
+    mkdir MultiNest
+    git clone https://github.com/JohannesBuchner/MultiNest MultiNest-src
+    cd MultiNest-src/build
     if [ $HAS_MKL = true ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest -DBLA_VENDOR=Intel10_64lp ..
     else
@@ -142,6 +143,7 @@ EOF
     fi
     make
     cd $INSTALLDIR
+    rm -rf MultiNest-src
 
     #
     # Setup the Python environment.
