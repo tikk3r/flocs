@@ -47,17 +47,20 @@ From: fedora:42
 
     export CC=`which gcc`
     export CXX=`which g++`
-    
-    # Install OpenBLAS
-    mkdir -p /opt/OpenBLAS
-    cd /opt/OpenBLAS
-    git clone https://github.com/xianyi/OpenBLAS.git src
-    cd src && git checkout $OPENBLAS_VERSION
-    mkdir build && cd build
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DBUILD_TESTING=OFF -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=$NUM_THREADS -DNUM_CORES=$NUM_THREADS -DBUILD_SHARED_LIBS=ON -DNO_AVX512=$NOAVX512 ..
-    make -j$J
-    make install
-    rm -rf /opt/OpenBLAS/src
+
+    if [ $HAS_MKL = false ]; then
+        # Install OpenBLAS
+        mkdir -p /opt/OpenBLAS
+        cd /opt/OpenBLAS
+        git clone https://github.com/xianyi/OpenBLAS.git src
+        cd src && git checkout $OPENBLAS_VERSION
+        mkdir build && cd build
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DBUILD_TESTING=OFF -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=$NUM_THREADS -DNUM_CORES=$NUM_THREADS -DBUILD_SHARED_LIBS=ON \
+            -DNO_AVX512=$NOAVX512 ..
+        make -j$J
+        make install
+        rm -rf /opt/OpenBLAS/src
+    fi
 
     if [ $DEBUG = true ]; then
         dnf -y install gdb valgrind mc
@@ -121,12 +124,14 @@ EOF
         export PATH=$CUDA_HOME/bin:$PATH
     fi
 
-    flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
-    flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
-    export FLEXIBLAS=OPENBLAS
-    export FLEXIBLAS64=OPENBLAS
-    if [ $DEBUG = true ]; then
-        flexiblas print
+    if [ $HAS_MKL = false ]; then
+        flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
+        flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
+        export FLEXIBLAS=OPENBLAS
+        export FLEXIBLAS64=OPENBLAS
+        if [ $DEBUG = true ]; then
+            flexiblas print
+        fi
     fi
 
     # MultiNest
@@ -687,7 +692,9 @@ EOF
     echo export PATH=\$INSTALLDIR/VLBI-cwl/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DP3/lib:\$INSTALLDIR/EveryBeam/lib:/opt/hdf5/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=/opt/OpenBLAS/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    if [ $HAS_MKL = false ]; then
+        echo export LD_LIBRARY_PATH=/opt/OpenBLAS/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
+    fi
     echo export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/sagecal/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$INSTALLDIR/lofarstman/lib64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
@@ -705,10 +712,12 @@ EOF
         echo export LD_LIBRARY_PATH=\$CUDA_HOME/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     fi
     echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
-    echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
-    echo flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
-    echo export FLEXIBLAS=OPENBLAS >> $INSTALLDIR/init.sh
-    echo export FLEXIBLAS64=OPENBLAS >> $INSTALLDIR/init.sh
+    if [ $HAS_MKL = false ]; then
+        echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
+        echo flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
+        echo export FLEXIBLAS=OPENBLAS >> $INSTALLDIR/init.sh
+        echo export FLEXIBLAS64=OPENBLAS >> $INSTALLDIR/init.sh
+    fi
     # Needed for shadems
     echo export NUMBA_CACHE_DIR=/tmp >> $INSTALLDIR/init.sh
 
