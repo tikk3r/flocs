@@ -9,7 +9,7 @@ export IDG_VERSION=9c9236d3
 export LOSOTO_VERSION=3335b05
 export OPENBLAS_VERSION=v0.3.29
 export PYBDSF_VERSION=8b33037
-export PYTHON_CASACORE_VERSION=3.6.1
+export PYTHON_CASACORE_VERSION=3.7.1
 export WSCLEAN_VERSION=v3.7
 
 # Expert settings below. Generally these won't have to be touched.
