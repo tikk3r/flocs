@@ -55,14 +55,14 @@ The MS passed to lofar-vlbi-plot does not matter much, as long as it has the pha
 Inspect the resulting images and calibration solutions carefully. Anything majorly wrong here is generally not fixable from this point on. Inspect the final images for remaining artefacts (e.g. spoke or ring patterns), make sure the noise level is nominal (below 100 uJy/b for a typical 8-hour observation) and make sure the solutions look good and not exhibit strange patterns or lots of noise.
 
 ## VLBI direction-dependent calibration: single science target
-Upon successful delay calibration the results should contain an h5parm along the lines of `merged*linearfulljones*.h5`. This is used to run the direction-dependent calibration, or if you let the pipeline apply the solutions (default behaviour) the results should contain calibrated MSes again. Next you can create a CSV file called e.g. `target.csv`. This will need at least the columns `Source_id,RA,DEC,Total_flux` and should contain the sources you want to calibrate. You also need to download the neural network that is used for image validation (put it somewhere permanent and you only have to do this once). A dd-calibration for a single target then looks something like the following:
+Upon successful delay calibration the results should contain an h5parm along the lines of `merged*linearfulljones*.h5`. This is used to run the direction-dependent calibration. If you let the pipeline apply the solutions via `--apply-delay-solutions`, the results should contain calibrated MSes again. Flocs disables this by default so you have an opportunity to check the delay calibration solutions before committing to them being applied to data. Next you can create a CSV file called e.g. `target.csv`. This will need at least the columns `Source_id,RA,DEC,Total_flux` and should contain the sources you want to calibrate. You also need to download the neural network that is used for image validation (put it somewhere permanent and you only have to do this once). A dd-calibration for a single target then looks something like the following:
 
 ```bash
 download_NN --cache_directory /path/to/nn_cache
-flocs-run vlbi dd-calibration --peak-flux-cut 0.0 --phasediff-score 10.0 --model-cache /path/to/nn_cache --source-catalogue target.csv --delay-calibrator delay_calibrators.csv --ms-suffix dp3concat VLBI_delay-calibration*/results_VLBI_delay-calibration/results
+flocs-run vlbi dd-calibration --peak-flux-cut 0.0 --phasediff-score 10.0 --model-cache /path/to/nn_cache --source-catalogue target.csv --delay-calibrator delay_calibrators.csv --delay-slset /path/to/merged*linearfulljones*.h5 --ms-suffix dp3concat LINC_target*/results_LINC_target/results
 ```
 
-Here we disable any pre selection on peak intensity or ``phasediff score'' (a proxy for calibratability). If you want the pipeline to reject sources based on this remove them and leave them at the default. If you disabled automatic application of the delay solutions, pass the same MSes from LINC target as you did to the delay calibration and add `--delay-solset /path/to/merged*linearfulljones*.h5`.
+Here we disable any pre selection on peak intensity or ``phasediff score'' (a proxy for calibratability). If you want the pipeline to reject sources based on this remove them and leave them at the default. If you enabled automatic application of the delay solutions, pass the MSes from the delay calibration instead.
 
 ## Example runs
 An example of reducing data from on a Slurm managed cluster will look something like this:
