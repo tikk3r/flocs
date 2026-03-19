@@ -1,20 +1,20 @@
-export FLOCS_VERSION="6.1.0-rc2"
-export AOFLAGGER_VERSION=9a47b8c8
+export FLOCS_VERSION="6.2.0"
+export AOFLAGGER_VERSION=c8681861
 export CASACORE_VERSION=5b671c5
 export DDFPIPELINE_VERSION=df58808
-export DP3_VERSION=e2be55be
-export EVERYBEAM_VERSION=f2a27530
+export DP3_VERSION=e762f121
+export EVERYBEAM_VERSION=f9315d33
 export HDF5_VERSION=1.14.5
-export IDG_VERSION=9c9236d3
-export LOSOTO_VERSION=3335b05
+export IDG_VERSION=216e7443
+export LOSOTO_VERSION=a7ab176
 export OPENBLAS_VERSION=v0.3.29
 export PYBDSF_VERSION=8b33037
 export PYTHON_CASACORE_VERSION=3.7.1
-export WSCLEAN_VERSION=v3.7
+export WSCLEAN_VERSION=2b1a430c
 
 # Expert settings below. Generally these won't have to be touched.
 # General environment settings.
-export J=`nproc`
+export J=$(nproc)
 export INSTALLDIR=/opt/lofar
 export PYTHON_VERSION=3.12
 export HDF5_USE_FILE_LOCKING=FALSE
@@ -28,7 +28,7 @@ export OPENBLAS_NUM_THREADS=1
 export BLIS_NUM_THREADS=$OPENBLAS_NUM_THREADS
 export NUM_THREADS=256
 
-if [ $NOAVX512=true ]; then
+if [ "$NOAVX512" = "true" ]; then
     export FFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f"
     export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe -mno-avx512f"
     export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe -std=${CPPSTD} -mno-avx512f"
@@ -37,7 +37,7 @@ else
     export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe -std=${CPPSTD}"
     export FFLAGS="-march=${MARCH} -mtune=${MTUNE}"
 fi
-if [ $DEBUG=true ]; then
+if [ "$DEBUG" = "true" ]; then
     export CFLAGS="-g $CFLAGS"
     export CXXFLAGS="-g $CXXFLAGS"
     export CMAKE_ADD_OPTION="-LA"
