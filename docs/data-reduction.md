@@ -40,7 +40,29 @@ For VLBI data reduction, you want to use the `--output-fullres-data` option (thi
 
 These plots show the phase solutions for XX and YY, and the difference between the two. Good solutions behave well as function of both time and frequence. A rule of thumb is whether you can follow them by eye. Core stations should be quite flat as function of frequency and not show wrapping behaviour. If you see core stations with completely horizontal, quickly wrapping phases then LINC failed to identify this as a bad station and it should be flagged. Remote stations shoudl show smooth phase variations in the frequency direction.
 
-The `poldiff` plot shows XX-YY, which can more easily show adverse effects at play. Look out for starnge patters or noisy solutions in these.
+The `poldiff` plot shows XX-YY, which can more easily show adverse effects at play. Look out for strange patterns or noisy solutions in these.
+
+## VLBI delay calibration
+A succseful run with flocs will have left a `LINC_target_*` folder where the * will be the SAS ID processed, date and time of the run. Assuming you ran LINC Target with `--output-fullres-data`, the delay calibration can be run as follows:
+
+```bash
+lofar-vlbi-plot --MS <folder/with/target/mses/*SB005_uv.MS>
+flocs-run vlbi delay-calibration --image-catalogue lotss_catalogue.csv --delay-calibrator delay_calibrators.csv --ms-suffix dp3concat LINC_target*/results_LINC_target/results
+```
+
+The MS passed to lofar-vlbi-plot does not matter much, as long as it has the phase centre of your observation. It will generate a catalogue with bright (S > 10 mJy) LoTSS sources as `image_catalogue.csv` and delay calibrator candidates as `delay_calibrators.csv`. If your field is not covered by LBCS you will have to manually make and provide a `delay_calibrators.csv` with your sources of choice. The pipleine will then phaseshift to the first delay calibrator candidate and perform the initial calibration of the international stations.
+
+Inspect the resulting images and calibration solutions carefully. Anything majorly wrong here is generally not fixable from this point on. Inspect the final images for remaining artefacts (e.g. spoke or ring patterns), make sure the noise level is nominal (below 100 uJy/b for a typical 8-hour observation) and make sure the solutions look good and not exhibit strange patterns or lots of noise.
+
+## VLBI direction-dependent calibration: single science target
+Upon successful delay calibration the results should contain an h5parm along the lines of `merged*linearfulljones*.h5`. This is used to run the direction-dependent calibration, or if you let the pipeline apply the solutions (default behaviour) the results should contain calibrated MSes again. Next you can create a CSV file called e.g. `target.csv`. This will need at least the columns `Source_id,RA,DEC,Total_flux` and should contain the sources you want to calibrate. You also need to download the neural network that is used for image validation (put it somewhere permanent and you only have to do this once). A dd-calibration for a single target then looks something like the following:
+
+```bash
+download_NN --cache_directory /path/to/nn_cache
+flocs-run vlbi dd-calibration --peak-flux-cut 0.0 --phasediff-score 10.0 --model-cache /path/to/nn_cache --source-catalogue target.csv --delay-calibrator delay_calibrators.csv --ms-suffix dp3concat VLBI_delay-calibration*/results_VLBI_delay-calibration/results
+```
+
+Here we disable any pre selection on peak intensity or ``phasediff score'' (a proxy for calibratability). If you want the pipeline to reject sources based on this remove them and leave them at the default. If you disabled automatic application of the delay solutions, pass the same MSes from LINC target as you did to the delay calibration and add `--delay-solset /path/to/merged*linearfulljones*.h5`.
 
 ## Example runs
 An example of reducing data from on a Slurm managed cluster will look something like this:
@@ -51,3 +73,4 @@ flocs-run linc target --runner toil --scheduler slurm --slurm-time 24:00:00 --sl
 ```
 
 When a LINC run finishes a final copy named e.g. `LINC_calibrator_<date>` should be created in the directory where the run was started, or in the specified `--outdir`.
+
