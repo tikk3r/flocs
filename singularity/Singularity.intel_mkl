@@ -119,6 +119,7 @@ EOF
         sudo dnf -y install cuda-13-0
         export CUDA_HOME=/usr/local/cuda
         export PATH=$CUDA_HOME/bin:$PATH
+        rm -rf /opt/nvidia/
     fi
 
     flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
