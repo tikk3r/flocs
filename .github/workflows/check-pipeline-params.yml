@@ -33,16 +33,21 @@ jobs:
     - name: Generate templates
       run: |
           git clone https://git.astron.nl/RD/LINC.git
-          cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc.yml
+          cwltool --make-template LINC/workflows/HBA_calibrator.cwl > template_linc_calibrator.yml
+          cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc_calibrator.yml
           ./yq -o=json template_linc.yml > template_linc.json
           export LINC_DATA_ROOT=$PWD/LINC
           export VLBI_DATA_ROOT=$PWD/LINC
+          flocs-run linc calibrator --config-only --cal-solutions /dev/null . 
           flocs-run linc target --config-only --cal-solutions /dev/null . 
     - name: Check LINC options
       run: |
-          jq -r 'keys[] as $k | "\($k)"' mslist_LINC_target.json > keys_flocs
-          jq -r 'keys[] as $k | "\($k)"' template_linc.json > keys_template
-          sed -i '/solveralgorithm/d' keys_flocs
-          sed -i '/solveralgorithm/d' keys_template
-          if [[ $(diff -q keys_template keys_flocs) ]]; then echo "Keys do not match LINC" && diff --side-by-side --suppress-common-lines keys_flocs keys_template && exit 1; fi
+          jq -r 'keys[] as $k | "\($k)"' mslist_LINC_calibrator.json > keys_flocs_calibrator
+          jq -r 'keys[] as $k | "\($k)"' mslist_LINC_target.json > keys_flocs_target
+          jq -r 'keys[] as $k | "\($k)"' template_linc_calibrator.json > keys_template_calibrator
+          jq -r 'keys[] as $k | "\($k)"' template_linc_target.json > keys_template_target
+          sed -i '/solveralgorithm/d' keys_flocs*
+          sed -i '/solveralgorithm/d' keys_template*
+          if [[ $(diff -q keys_template_calibrator keys_flocs_calibrator) ]]; then echo "Keys do not match LINC calibrator" && diff --side-by-side --suppress-common-lines keys_flocs keys_template && exit 1; fi
+          if [[ $(diff -q keys_template_target keys_flocs_target) ]]; then echo "Keys do not match LINC target" && diff --side-by-side --suppress-common-lines keys_flocs keys_template && exit 1; fi
 
