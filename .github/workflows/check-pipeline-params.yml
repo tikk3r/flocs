@@ -49,6 +49,6 @@ jobs:
           jq -r 'keys[] as $k | "\($k)"' template_linc_target.json > keys_template_target
           sed -i '/solveralgorithm/d' keys_flocs*
           sed -i '/solveralgorithm/d' keys_template*
-          if [[ $(diff -q keys_template_calibrator keys_flocs_calibrator) ]]; then echo "Keys do not match LINC calibrator" && diff --side-by-side --suppress-common-lines keys_flocs keys_template && exit 1; fi
-          if [[ $(diff -q keys_template_target keys_flocs_target) ]]; then echo "Keys do not match LINC target" && diff --side-by-side --suppress-common-lines keys_flocs keys_template && exit 1; fi
+          if [[ $(diff -q keys_template_calibrator keys_flocs_calibrator) ]]; then echo "Keys do not match LINC calibrator" && diff --side-by-side --suppress-common-lines keys_flocs_calibrator keys_template_calibrator && exit 1; fi
+          if [[ $(diff -q keys_template_target keys_flocs_target) ]]; then echo "Keys do not match LINC target" && diff --side-by-side --suppress-common-lines keys_flocs_target keys_template_target && exit 1; fi
 
