@@ -43,8 +43,8 @@ jobs:
           flocs-run linc target --config-only --cal-solutions /dev/null /dev/null
     - name: Check LINC options
       run: |
-          jq -r 'keys[] as $k | "\($k)"' mslist_LINC_calibrator.json > keys_flocs_calibrator
-          jq -r 'keys[] as $k | "\($k)"' mslist_LINC_target.json > keys_flocs_target
+          jq -r 'keys[] as $k | "\($k)"' mslist_unknown_LINC_calibrator.json > keys_flocs_calibrator
+          jq -r 'keys[] as $k | "\($k)"' mslist_unknown_LINC_target.json > keys_flocs_target
           jq -r 'keys[] as $k | "\($k)"' template_linc_calibrator.json > keys_template_calibrator
           jq -r 'keys[] as $k | "\($k)"' template_linc_target.json > keys_template_target
           sed -i '/solveralgorithm/d' keys_flocs*
