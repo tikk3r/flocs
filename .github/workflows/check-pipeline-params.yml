@@ -39,8 +39,8 @@ jobs:
           ./yq -o=json template_linc_target.yml > template_linc_target.json
           export LINC_DATA_ROOT=$PWD/LINC
           export VLBI_DATA_ROOT=$PWD/LINC
-          flocs-run linc calibrator --config-only --cal-solutions /dev/null . 
-          flocs-run linc target --config-only --cal-solutions /dev/null . 
+          flocs-run linc calibrator --config-only /dev/null
+          flocs-run linc target --config-only --cal-solutions /dev/null /dev/null
     - name: Check LINC options
       run: |
           jq -r 'keys[] as $k | "\($k)"' mslist_LINC_calibrator.json > keys_flocs_calibrator
