@@ -469,33 +469,6 @@ EOF
         echo export LD_LIBRARY_PATH=\$MKLROOT/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     fi
 
-
-    echo "# DDF environment settings" >> $INSTALLDIR/init.sh
-    echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
-    echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
-    echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/killMS/killMS:\$PATH >> $INSTALLDIR/init.sh
-    echo export PYTHONPATH=\$INSTALLDIR/lotss-hba-survey:\$INSTALLDIR/lotss-query:\$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/DDFacet:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
-    echo export PATH=$INSTALLDIR/DDFacet/SkyModel:\$INSTALLDIR/DynSpecMS/:\$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
-    echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
-
 %help
-    This Apptainer (formerly Singularity) image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
+    This is a minimal flocs container for CI purposes.
 
-    * AOFlagger: $INSTALLDIR/aoflagger
-    * Casacore: $INSTALLDIR/casacore
-    * Difmap: $INSTALLDIR/difmap
-    * DP3: $INSTALLDIR/DP3
-    * DS9: $INSTALLDIR/ds9
-    * EveryBeam: $INSTALLDIR/EveryBeam
-    * IDG: $INSTALLDIR/idg
-    * WSClean: $INSTALLDIR/wsclean
-
-    Python packages such as losoto, lsmtool and RMextract are available in the environment /opt/lofar/pyenv-py3. By default this Python 3 environment is already active.
-
-    To execute a command directly, use
-        apptainer exec -B <paths,that,need,to,be,accessible> <path to image> <command> <arguments>
-    To enter a shell within the image, use
-        apptainer shell -B <paths,that,need,to,be,accessible> <path to image>
-
-    The container base is Fedora 40.

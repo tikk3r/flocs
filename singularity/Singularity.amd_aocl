@@ -552,58 +552,15 @@ From: fedora:42
     # Install DDFacet
     #
     cd $INSTALLDIR
-    git clone https://github.com/saopicc/DDFacet.git
-    cd DDFacet
-    git checkout 5cec4db8 
-    patch -u DDFacet/Other/AsyncProcessPool.py -i $INSTALLDIR/flocs/patches/DDFacet_cpus.patch
-    cd ..
-    sed -i '5d' DDFacet/pyproject.toml
-    ## Strip out version requirements.
-    sed -i 's/[,.]*<=.*"/"/' DDFacet/pyproject.toml
-    # sed doesn't support negative lookahead, so we use perl here.
-    grep -rl "np.bool" DDFacet | xargs perl -pi -e 's/np\.bool(?![0-9a-zA-Z])/np\.bool_/'
-
-    sed -i "s/npzfile\.iteritems/npzfile\.items/" DDFacet/DDFacet/Imager/ClassFacetMachine.py
-    sed -i "s/3\.11/3.13/g" DDFacet/pyproject.toml
-    sed -i 's/DATA\["Weights"\]!=1/DATA\["Weights"\] is not 1/' DDFacet/DDFacet/Data/ClassVisServer.py
-
-    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
-    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
-    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
-    find DDFacet/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
-
-    find DDFacet \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -i -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
-
+    git clone --single-branch -b v0.9.1 https://github.com/saopicc/DDFacet.git
     uv pip install --no-deps DDFacet/
-    echo '__version__ = "dev"' > /opt/lofar/pyenv-py3/lib64/python3.12/site-packages/DDFacet/__init__.py
-    truncate -s 0 /opt/lofar/pyenv-py3/lib64/python3.12/site-packages/DDFacet/cbuild/__init__.py
 
     #
     # Install killMS
     #
     cd $INSTALLDIR
-    git clone --single-branch -b v3.2.0 https://github.com/saopicc/killMS.git
-    sed -i '5d' killMS/pyproject.toml
-    sed -i 's/[,.]*<=.*"/"/' killMS/pyproject.toml
-    sed -i "s/3\.11/3.13/g" killMS/pyproject.toml
-    find killMS/ -name "*.c" -exec sed -i "s/PyArray_FLOAT64/NPY_FLOAT64/g" {} \;
-    find killMS/ -name "*.c" -exec sed -i "s/PyArray_COMPLEX64/NPY_COMPLEX64/g" {} \;
-    find killMS/ -name "*.c" -exec sed -i "s/PyArray_INT32/NPY_INT32/g" {} \;
-    find killMS/ -name "*.c" -exec sed -i "s/PyArray_FLOAT32/NPY_FLOAT32/g" {} \;
-
-    grep -rl "np.float" killMS | xargs perl -pi -e 's/np\.float(?![0-9a-zA-Z])/np\.float_/g'
-    grep -rl "np.int" killMS | xargs perl -pi -e 's/np\.int(?![0-9a-zA-Z])/np\.int_/g'
-
-    sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Predict/Makefile
-    sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Array/Dot/Makefile
-    sed -i "s/gcc/gcc -march=${MARCH} -mtune=${MTUNE}/" killMS/killMS/Gridder/Makefile
-    
-    sed -i '261s/np\.complex/np\.complex128/' killMS/killMS/Data/ClassMS.py
-
-    find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -i -E "s/cmake_minimum_required\(VERSION 2\.[68]/cmake_minimum_required\(VERSION 3.5/gm" {} \;
-
+    git clone --single-branch -b v3.3.0 https://github.com/saopicc/killMS.git
     uv pip install --no-deps killMS/
-    echo '__version__ = "dev"' > /opt/lofar/pyenv-py3/lib64/python3.12/site-packages/killMS/__init__.py
 
     #   
     # Install DynSpecMS
