@@ -105,7 +105,7 @@ EOF
         # We don't compile with the Intel toolchain
         mv /opt/intel/oneapi/compiler/latest/lib/libiomp5.so /opt/intel/oneapi/mkl/latest/lib/
         rm -rf /opt/intel/oneapi/compiler
-        # We don't statically link nor using SYCL
+        # We don't statically link nor use SYCL
         find /opt/intel/oneapi \( -type f -o -type l \) \( -name "*.a" -o -name "libmkl_sycl*" \) -delete
         source /opt/intel/oneapi/mkl/latest/env/vars.sh
     fi
