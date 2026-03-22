@@ -34,8 +34,9 @@ jobs:
       run: |
           git clone https://git.astron.nl/RD/LINC.git
           cwltool --make-template LINC/workflows/HBA_calibrator.cwl > template_linc_calibrator.yml
-          cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc_calibrator.yml
-          ./yq -o=json template_linc.yml > template_linc.json
+          cwltool --make-template LINC/workflows/HBA_target.cwl > template_linc_target.yml
+          ./yq -o=json template_linc_calibrator.yml > template_linc_calibrator.json
+          ./yq -o=json template_linc_target.yml > template_linc_target.json
           export LINC_DATA_ROOT=$PWD/LINC
           export VLBI_DATA_ROOT=$PWD/LINC
           flocs-run linc calibrator --config-only --cal-solutions /dev/null . 
