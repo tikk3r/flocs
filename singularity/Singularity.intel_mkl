@@ -126,9 +126,7 @@ EOF
 
     if [ $HAS_MKL = false ]; then
         flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
-        flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
         export FLEXIBLAS=OPENBLAS
-        export FLEXIBLAS64=OPENBLAS
         if [ $DEBUG = true ]; then
             flexiblas print
         fi
@@ -663,9 +661,7 @@ EOF
     echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
     if [ $HAS_MKL = false ]; then
         echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
-        echo flexiblas64 add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
         echo export FLEXIBLAS=OPENBLAS >> $INSTALLDIR/init.sh
-        echo export FLEXIBLAS64=OPENBLAS >> $INSTALLDIR/init.sh
     fi
     # Needed for shadems
     echo export NUMBA_CACHE_DIR=/tmp >> $INSTALLDIR/init.sh
