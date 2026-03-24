@@ -500,7 +500,6 @@ From: fedora:42
         -DFFTW3_INCLUDE_DIR="${AOCL_ROOT}/include" \
         -DLAPACK_LIBRARIES="${AOCL_ROOT}/lib/libflame.so" \
         -DCMAKE_CXX_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
-        -DCMAKE_C_FLAGS="-march=${MARCH} -L${AOCL_ROOT}/lib -lamdlibm -lm -O3 -Ofast" \
         -DBLA_VENDOR=AOCL_mt \
         ..
     fi
