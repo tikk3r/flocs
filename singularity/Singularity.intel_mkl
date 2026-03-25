@@ -193,7 +193,7 @@ EOF
     uv pip install ./astLib
     rm -rf ./astLib
     export CC=`which gcc`
-    uv pip install torch torchvision torchaudio
+    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
     uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
     uv pip install scikit_build_core setuptools_scm
     uv pip install "numpy<2"
@@ -206,7 +206,6 @@ EOF
     uv pip install ./lofar_facet_selfcal
     # Install this separately since it keeps forcefully downgrading numpy.
     #pip install --no-deps lofarSun
-    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
     uv pip install ./flocs
 
     # Install Boost here to ensure Boost Numpy is built

@@ -211,7 +211,7 @@ From: fedora:42
     uv pip install ./astLib
     rm -rf ./astLib
     export CC=`which gcc`
-    uv pip install torch torchvision torchaudio
+    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
     uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
     uv pip install scikit_build_core setuptools_scm
     uv pip install "numpy<2"
