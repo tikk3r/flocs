@@ -160,14 +160,9 @@ From: fedora:42
 
     # MultiNest
     cd $INSTALLDIR
-    mkdir MultiNest
-    git clone https://github.com/JohannesBuchner/MultiNest MultiNest-src
-    cd MultiNest-src/build
-    if [ $HAS_MKL = true ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest -DBLA_VENDOR=Intel10_64lp ..
-    else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest ..
-    fi
+    git clone https://github.com/JohannesBuchner/MultiNest
+    cd MultiNest/build
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest -DBLA_VENDOR=AOCL_mt ..
     make
     cd $INSTALLDIR
     rm -rf MultiNest-src
