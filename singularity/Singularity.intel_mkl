@@ -612,7 +612,9 @@ EOF
     # Store version information.
     echo export FLOCS_VERSION=$FLOCS_VERSION >> $INSTALLDIR/init.sh
     echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
-    echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
+    if [ $HAS_MKL = false ]; then
+        echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
+    fi
     echo export HDF5_USE_FILE_LOCKING=$HDF5_USE_FILE_LOCKING >> $INSTALLDIR/init.sh
 
     echo export MARCH=$MARCH >> $INSTALLDIR/init.sh
