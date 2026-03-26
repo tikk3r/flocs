@@ -157,8 +157,9 @@ From: fedora:42
 
     # MultiNest
     cd $INSTALLDIR
-    git clone https://github.com/JohannesBuchner/MultiNest
-    cd MultiNest/build
+    mkdir MultiNest
+    git clone https://github.com/JohannesBuchner/MultiNest MultiNest-src
+    cd  MultiNest-src/build
     cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest -DBLA_VENDOR=AOCL_mt ..
     make
     cd $INSTALLDIR
