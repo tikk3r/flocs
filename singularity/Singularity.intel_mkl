@@ -122,7 +122,9 @@ EOF
         sudo dnf -y install cuda-13-0
         export CUDA_HOME=/usr/local/cuda
         export PATH=$CUDA_HOME/bin:$PATH
-        rm -rf /opt/nvidia/
+        if [ $DEBUG = false ]; then
+            rm -rf /opt/nvidia/
+        fi
     fi
 
     if [ $HAS_MKL = false ]; then
