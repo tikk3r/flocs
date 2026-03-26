@@ -49,3 +49,7 @@ export CPATH="/usr/local/include/boost:/usr/include/python${PYTHON_VERSION}:/opt
 export CMAKE_PREFIX_PATH="/opt/hdf5:/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/idg:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
 export LD_LIBRARY_PATH="/usr/local/lib:/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
 export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
+
+export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
+export CXXFLAGS="$CXXFLAGS -Wno-error=incompatible-pointer-types"
+
