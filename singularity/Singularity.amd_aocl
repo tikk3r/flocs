@@ -71,6 +71,7 @@ From: fedora:42
     export CPATH=/opt/aocl/5.1.0/aocc/include:$CPATH
     # Added with Fedora 42 update, otherwise EveryBeam crashes on import.
     find /opt/aocl/5.1.0/aocc/ -name "libamdlibm*.so" -exec execstack -c {} \;
+    rm -rf /opt/aocl/5.1.0/aocc/lib_ILP64/
 
     # Get libflang.so, libpgmath.so
     mkdir -p /opt/flang
