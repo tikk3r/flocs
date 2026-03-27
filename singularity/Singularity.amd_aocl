@@ -150,7 +150,8 @@ From: fedora:42
     fi
 
     flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
-    export FLEXIBLAS=OPENBLAS
+    flexiblas add AOCL ${AOCL_ROOT}/lib/libblis.so
+    flexiblas default AOCL
     if [ $DEBUG = true ]; then
         flexiblas print
     fi
@@ -681,8 +682,6 @@ From: fedora:42
         echo export PATH=\$CUDA_HOME/bin:\$PATH >> $INSTALLDIR/init.sh
         echo export LD_LIBRARY_PATH=\$CUDA_HOME/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     fi
-    echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
-    echo export FLEXIBLAS=OPENBLAS >> $INSTALLDIR/init.sh
     # Needed for shadems
     echo export NUMBA_CACHE_DIR=/tmp >> $INSTALLDIR/init.sh
 
