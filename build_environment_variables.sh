@@ -44,12 +44,76 @@ if [ "$DEBUG" = "true" ]; then
 else
     export CMAKE_ADD_OPTION="-Wno-dev"
 fi
-export CPLUS_INCLUDE_PATH="/usr/local/include/boost:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/15:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
-export CPATH="/usr/local/include/boost:/usr/include/python${PYTHON_VERSION}:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
-export CMAKE_PREFIX_PATH="/opt/hdf5:/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/idg:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
-export LD_LIBRARY_PATH="/usr/local/lib:/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
-export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
+
+
+CPLUS_INCLUDE_PATH_TAB=(
+    $INSTALLDIR/casacore/include
+    $INSTALLDIR/EveryBeam/include
+    $INSTALLDIR/idg/include
+    /opt/hdf5/include
+    /opt/OpenBLAS/include
+    /usr/include/c++/15
+    /usr/include/cfitsio
+    /usr/include/freetype2/freetype
+    /usr/include/freetype2/freetype/config
+    /usr/include/openmpi-x86_64
+    /usr/include/python${PYTHON_VERSION}
+    /usr/include/wcslib
+    /usr/local/include/boost
+)
+
+CPATH_TAB=(
+    ${INSTALLDIR}/casacore/include
+    $INSTALLDIR/aoflagger/include
+    $INSTALLDIR/EveryBeam/include
+    $INSTALLDIR/idg/include
+    /opt/hdf5/include
+    /opt/OpenBLAS/include
+    /usr/include/freetype2/freetype/config
+    /usr/include/openmpi-x86_64
+    /usr/include/python${PYTHON_VERSION}
+    /usr/include/wcslib
+    /usr/local/cuda/include
+    /usr/local/include/boost
+)
+
+CMAKE_PREFIX_PATH_TAB=(
+    $INSTALLDIR/aoflagger
+    $INSTALLDIR/casacore
+    $INSTALLDIR/EveryBeam
+    $INSTALLDIR/idg
+    $INSTALLDIR/lofar
+    /opt/hdf5
+    /opt/OpenBLAS
+    /usr/lib64/openmpi
+)
+
+LD_LIBRARY_PATH_TAB=(
+    $INSTALLDIR/aoflagger/lib
+    $INSTALLDIR/casacore/lib
+    $INSTALLDIR/EveryBeam/lib
+    $INSTALLDIR/idg/lib
+    $INSTALLDIR/lofarstman/lib64
+    $INSTALLDIR/sagecal/lib
+    /opt/hdf5/lib
+    /opt/OpenBLAS/lib64
+    /usr/lib64/openmpi/lib
+    /usr/local/lib
+    ${LD_LIBRARY_PATH}
+)
+
+PATH_TAB=(
+    /opt/hdf5/bin
+    /usr/lib64/openmpi/bin
+    ${PATH}
+)
+
+export CPLUS_INCLUDE_PATH=$(IFS=:; echo "${CPLUS_INCLUDE_PATH_TAB[*]}")
+export CPATH=$(IFS=:; echo "${CPATH_TAB[*]}")
+export CMAKE_PREFIX_PATH=$(IFS=:; echo "${CMAKE_PREFIX_PATH_TAB[*]}")
+export LD_LIBRARY_PATH=$(IFS=:; echo "${LD_LIBRARY_PATH_TAB[*]}")
+export PATH=$(IFS=:; echo "${PATH_TAB[*]}")
+
 
 export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
 export CXXFLAGS="$CXXFLAGS -Wno-error=incompatible-pointer-types"
-
