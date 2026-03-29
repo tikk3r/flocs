@@ -142,7 +142,7 @@ EOF
     else
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest ..
     fi
-    make
+    make install
     cd $INSTALLDIR
     rm -rf MultiNest-src
 
