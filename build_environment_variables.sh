@@ -63,7 +63,7 @@ CPLUS_INCLUDE_PATH_TAB=(
 )
 
 CPATH_TAB=(
-    ${INSTALLDIR}/casacore/include
+    $INSTALLDIR/casacore/include
     $INSTALLDIR/aoflagger/include
     $INSTALLDIR/EveryBeam/include
     $INSTALLDIR/idg/include
