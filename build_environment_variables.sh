@@ -108,11 +108,12 @@ PATH_TAB=(
     ${PATH}
 )
 
-export CPLUS_INCLUDE_PATH=$(IFS=:; echo "${CPLUS_INCLUDE_PATH_TAB[*]}")
-export CPATH=$(IFS=:; echo "${CPATH_TAB[*]}")
-export CMAKE_PREFIX_PATH=$(IFS=:; echo "${CMAKE_PREFIX_PATH_TAB[*]}")
-export LD_LIBRARY_PATH=$(IFS=:; echo "${LD_LIBRARY_PATH_TAB[*]}")
-export PATH=$(IFS=:; echo "${PATH_TAB[*]}")
+export \
+   CPLUS_INCLUDE_PATH=$(IFS=:; echo "${CPLUS_INCLUDE_PATH_TAB[*]}") \
+   CPATH=$(IFS=:; echo "${CPATH_TAB[*]}") \
+   CMAKE_PREFIX_PATH=$(IFS=:; echo "${CMAKE_PREFIX_PATH_TAB[*]}") \
+   LD_LIBRARY_PATH=$(IFS=:; echo "${LD_LIBRARY_PATH_TAB[*]}") \
+   PATH=$(IFS=:; echo "${PATH_TAB[*]}")
 
 
 export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
