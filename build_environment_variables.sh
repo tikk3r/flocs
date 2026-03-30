@@ -45,7 +45,7 @@ else
     export CMAKE_ADD_OPTION="-Wno-dev"
 fi
 
-
+# Paths
 CPLUS_INCLUDE_PATH_TAB=(
     $INSTALLDIR/casacore/include
     $INSTALLDIR/EveryBeam/include
