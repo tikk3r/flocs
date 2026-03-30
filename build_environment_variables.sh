@@ -45,6 +45,10 @@ else
     export CMAKE_ADD_OPTION="-Wno-dev"
 fi
 
+export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
+export CXXFLAGS="$CXXFLAGS -Wno-error=incompatible-pointer-types"
+
+
 # Paths
 CPLUS_INCLUDE_PATH_TAB=(
     $INSTALLDIR/casacore/include
@@ -114,7 +118,3 @@ export \
    CMAKE_PREFIX_PATH=$(IFS=:; echo "${CMAKE_PREFIX_PATH_TAB[*]}") \
    LD_LIBRARY_PATH=$(IFS=:; echo "${LD_LIBRARY_PATH_TAB[*]}") \
    PATH=$(IFS=:; echo "${PATH_TAB[*]}")
-
-
-export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
-export CXXFLAGS="$CXXFLAGS -Wno-error=incompatible-pointer-types"
