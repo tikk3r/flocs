@@ -103,7 +103,7 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
 EOF
-        sudo mv /tmp/oneAPI.repo /etc/yum.repos.d/
+        mv /tmp/oneAPI.repo /etc/yum.repos.d/
         dnf -y install intel-oneapi-mkl intel-oneapi-mkl-devel
         # We don't compile with the Intel toolchain
         mv /opt/intel/oneapi/compiler/latest/lib/libiomp5.so /opt/intel/oneapi/mkl/latest/lib/
@@ -117,9 +117,9 @@ EOF
         #
         # Install CUDA 13.0
         #
-        sudo dnf -y config-manager addrepo --from-repofile=https://developer.download.nvidia.com/compute/cuda/repos/fedora42/x86_64/cuda-fedora42.repo
-        sudo dnf -y clean all
-        sudo dnf -y install cuda-13-0
+        dnf -y config-manager addrepo --from-repofile=https://developer.download.nvidia.com/compute/cuda/repos/fedora42/x86_64/cuda-fedora42.repo
+        dnf -y clean all
+        dnf -y install cuda-13-0
         export CUDA_HOME=/usr/local/cuda
         export PATH=$CUDA_HOME/bin:$PATH
     fi
@@ -149,7 +149,7 @@ EOF
     #
     # Setup the Python environment.
     #
-    sudo dnf -y install python3-cx-oracle python3.12 python3.12-devel
+    dnf -y install python3-cx-oracle python3.12 python3.12-devel
     pip install uv
     export PATH="/root/.local/bin:$PATH"
 
@@ -215,7 +215,7 @@ EOF
     # Build Boost with Python 3.12
     ./bootstrap.sh --with-libraries=python
     # https://www.boost.org/doc/libs/1_89_0/tools/build/doc/html/index.html
-    sudo ./b2 -j $J --without-test python=3.12 threading=multi cflags="`python3.12-config --cflags`" cxxflags="`python3.12-config --includes`" linkflags="`python3.12-config --libs`" install
+    ./b2 -j $J --without-test python=3.12 threading=multi cflags="`python3.12-config --cflags`" cxxflags="`python3.12-config --includes`" linkflags="`python3.12-config --libs`" install
     cd $INSTALLDIR
     rm -rf boost_1_89_0.tar.gz boost_1_89_0
 
