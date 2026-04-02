@@ -600,7 +600,11 @@ EOF
     rm -rf /var/log/*
     uv cache clean
     dnf -y clean all
-    
+    find /opt/lofar/pyenv-py3/lib64/python${PYTHON_VERSION}/site-packages \
+        -type d \( -name "tests" -o -name "test" \) -exec rm -rf {} +
+    find /usr/lib*/python3.*/site-packages \
+        -type d \( -name "tests" -o -name "test" \) -exec rm -rf {} +
+
     #
     # init-lofar
     #
