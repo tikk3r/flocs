@@ -341,7 +341,7 @@ From: fedora:42
         -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/sagecal \
         -DLIB_ONLY=True \
         ../src
-    make -j $j
+    make -j $J
     make install
     rm -rf $INSTALLDIR/sagecal/build
     rm -rf $INSTALLDIR/sagecal/src

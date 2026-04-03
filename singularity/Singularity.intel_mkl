@@ -334,7 +334,7 @@ EOF
             -DLIB_ONLY=True \
             ../src
     fi
-    make -j $j
+    make -j $J
     make install
     rm -rf $INSTALLDIR/sagecal/build
     rm -rf $INSTALLDIR/sagecal/src
