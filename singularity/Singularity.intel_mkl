@@ -126,10 +126,13 @@ EOF
 
     if [ $HAS_MKL = false ]; then
         flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
-        export FLEXIBLAS=OPENBLAS
-        if [ $DEBUG = true ]; then
-            flexiblas print
-        fi
+        flexiblas default OPENBLAS
+    else
+        flexiblas add MKL $MKLROOT/lib/intel64/libmkl_rt.so
+        flexiblas default MKL
+    fi
+    if [ $DEBUG = true ]; then
+        flexiblas print
     fi
 
     # MultiNest
@@ -672,10 +675,6 @@ EOF
         echo export LD_LIBRARY_PATH=\$CUDA_HOME/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
     fi
     echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
-    if [ $HAS_MKL = false ]; then
-        echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
-        echo export FLEXIBLAS=OPENBLAS >> $INSTALLDIR/init.sh
-    fi
     # Needed for shadems
     echo export NUMBA_CACHE_DIR=/tmp >> $INSTALLDIR/init.sh
 
