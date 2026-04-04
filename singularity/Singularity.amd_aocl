@@ -513,6 +513,14 @@ From: fedora:42
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
 
+    #
+    # Install STILTS
+    #
+    mkdir -p $INSTALLDIR/stilts
+    cd $INSTALLDIR/stilts
+    wget https://www.star.bris.ac.uk/~mbt/stilts/stilts.jar
+    wget https://www.star.bris.ac.uk/~mbt/stilts/stilts
+
     echo "Installation directory contents:"
     ls ${INSTALLDIR}
     
@@ -658,6 +666,7 @@ From: fedora:42
     echo export PATH=\$INSTALLDIR/VLBI-cwl/scripts:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/MultiNest/bin:\$PATH >> $INSTALLDIR/init.sh
+    echo export PATH=\$INSTALLDIR/stilts:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=/opt/flang/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
