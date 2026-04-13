@@ -6,15 +6,18 @@ nav_order: 1
 This page documents my [LOFAR containers], very creatively named "Frits' LoFAR Containers" or FLoCs. These containers package a collection of common LOFAR software that is used for imaging science with both Dutch and international array. Pre-built containers are publicly available through a webdav hosted on [SURF]. For instructions on running a pipeline, for example, see [Using the containers](https://tikk3r.github.io/flocs/docs/using-containers.html#pipeline-use). These containers form a basis for the larger [FLOCSoft](https://github.com/FLOCSoft) software ecosystem.
 
 # Latest containers
+[Download v6.1.1 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.1.1_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v6.1.1 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.1.1_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
-[Download v6.1.0 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.1.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[Download v6.1.0 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.1.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 [View recipes on GitHub][LOFAR containers]{: .btn .fs-5 .mb-4 .mb-md-0 }
 
 # Previous containers
 
 ## Version 6.X
+[Download v6.1.0 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.1.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v6.1.0 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.1.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+
 [Download v6.0.0 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.0.0_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Download v6.0.0 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.0.0_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 

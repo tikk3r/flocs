@@ -13,6 +13,12 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v6.1.1
+**Updates**
+- Update facetselfcal to address more model issues
+- Clean UV cache to try and reclaim some space
+- Other miscellaneous cleanup
+
 ## v6.1.0
 **Updates**
 - Latest facetselfcal to address the scalarphasediff issue.
