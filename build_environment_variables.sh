@@ -1,16 +1,16 @@
 export FLOCS_VERSION="6.2.0"
 export AOFLAGGER_VERSION=c8681861
-export CASACORE_VERSION=5b671c5
+export CASACORE_VERSION=60923a9
 export DDFPIPELINE_VERSION=df58808
-export DP3_VERSION=2e6ea216
-export EVERYBEAM_VERSION=f9315d33
+export DP3_VERSION=76126fb7
+export EVERYBEAM_VERSION=ef6f1ece
 export HDF5_VERSION=1.14.5
-export IDG_VERSION=216e7443
+export IDG_VERSION=54464d64
 export LOSOTO_VERSION=50b1068
 export OPENBLAS_VERSION=v0.3.31
 export PYBDSF_VERSION=8b33037
 export PYTHON_CASACORE_VERSION=3.6.1
-export WSCLEAN_VERSION=1b4b8727
+export WSCLEAN_VERSION=37a75a83
 
 # Expert settings below. Generally these won't have to be touched.
 # General environment settings.
@@ -28,26 +28,30 @@ export OPENBLAS_NUM_THREADS=1
 export BLIS_NUM_THREADS=$OPENBLAS_NUM_THREADS
 export NUM_THREADS=256
 
+# MARCH and MTUNE are set apptainer arguments. These are assumed to be defined when this script is sourced.
 if [ "$NOAVX512" = "true" ]; then
     export FFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f"
     export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe -mno-avx512f"
     export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe -std=${CPPSTD} -mno-avx512f"
 else
-    export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe "
+    export CFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe"
     export CXXFLAGS="-w -march=${MARCH} -mtune=${MTUNE} -pipe -std=${CPPSTD}"
     export FFLAGS="-march=${MARCH} -mtune=${MTUNE}"
 fi
+
+# CMAKE_ADD_OPTION is a custom variable of flags that are added at build time when cmake is invoked.
 if [ "$DEBUG" = "true" ]; then
     export CFLAGS="-g $CFLAGS"
     export CXXFLAGS="-g $CXXFLAGS"
+    export FFLAGS="-g $FFLAGS"
     export CMAKE_ADD_OPTION="-LA"
 else
     export CMAKE_ADD_OPTION="-Wno-dev"
 fi
 export CPLUS_INCLUDE_PATH="/usr/local/include/boost:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/15:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
-export CPATH="/usr/local/include/boost:/usr/include/python${PYTHON_VERSION}:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64/:/usr/local/cuda/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
+export CPATH="/usr/local/include/boost:/usr/include/python${PYTHON_VERSION}:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/local/cuda/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
 export CMAKE_PREFIX_PATH="/opt/hdf5:/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/idg:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
-export LD_LIBRARY_PATH="/usr/local/lib:/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib/:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/local/lib:/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
 export PATH="/opt/hdf5/bin:/usr/lib64/openmpi/bin:$PATH"
 
 export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
