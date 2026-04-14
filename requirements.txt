@@ -78,7 +78,7 @@ nmmn
 nose
 numdifftools
 numexpr
-numpy<2
+numpy
 oauthlib
 pluggy
 polars
