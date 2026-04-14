@@ -36,14 +36,14 @@ echo export BLIS_NUM_THREADS=\$OPENBLAS_NUM_THREADS >> $INSTALLDIR/init.sh
 # Vendor math libraries and CUDA
 #
 echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
-if [ $HAS_CUDA = true ]; then
+if [ "$HAS_CUDA" = true ]; then
     echo export CUDA_HOME=/usr/local/cuda >> $INSTALLDIR/init.sh
     echo export PATH=\$CUDA_HOME/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export LD_LIBRARY_PATH=\$CUDA_HOME/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
 fi
 
 echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
-if [ $HAS_MKL = false ]; then
+if [ "$HAS_MKL" = false ]; then
     echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
     echo export FLEXIBLAS=OPENBLAS >> $INSTALLDIR/init.sh
 
@@ -99,8 +99,8 @@ echo export PYTHONPATH="\$INSTALLDIR/VLBI-cwl/scripts:\
 \$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\
 \$INSTALLDIR/lotss-hba-survey:\
 \$INSTALLDIR/lotss-query:\
-\$INSTALLDIR/ddf-pipeline/scripts:
-\$INSTALLDIR/ddf-pipeline/utils:
+\$INSTALLDIR/ddf-pipeline/scripts:\
+\$INSTALLDIR/ddf-pipeline/utils:\
 \$INSTALLDIR/DDFacet/DDFacet:\
 \$INSTALLDIR/DynSpecMS:\
 \$PYTHONPATH" >> $INSTALLDIR/init.sh
