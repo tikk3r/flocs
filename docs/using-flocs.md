@@ -50,6 +50,16 @@ flocs-run linc target --cal-solutions </path/to/calibrator/cal_solutions.h5> </f
 
 This will execute the pipeline in the given container, using `cwltool` as the CWL runner. For VLBI data reduction, you will almost always want to use the `--output-fullres-data` option (this may become default later).
 
+### DDF-pipeline
+The DDF-pipeline is the de facto pipeline for LoTSS. To run this with flocs, a container capable of running it has to be present at `$CWL_SINGULARITY_CACHE/ddf-pipeline.sif`. Once that is set up, run it like
+
+
+```bash
+flocs-run ddf-pipelline --config-file </path/to/ddfpipeline.cfg> /path/to/LINC_target*/results_LINC_target/
+```
+
+There it will search for the `*pre-cal.ms` MSes and start the pipeline. It will automatically do a DP3-copy to disable antenna and uvwcompression to avoid crashes that happen because of that at the moment.
+
 ### VLBI
 To run VLBI delay calibration after LINC, for example, use
 
