@@ -45,3 +45,15 @@ Another potential cause is that Python packages in your home directory can inter
 
 ## Pipelines fail to run JSHint mentioning "not a valid bind option" for e.g. /opt/lofar/LINC or similar
 NodeJS is assumed to be installed. If not, it will download a container for it. This wil crash, because flocs-runners tries to automatically bind the pipelines to their respective directories in the container, which will only work for flocs containers. The solution is to install NodeJS. This is straighforward and requires no special permissions: https://nodejs.org/en/download.
+
+## NodeJSEngine requires Node.js engine
+Simiar to the previous one, NodeJS is assumed to be installed. If not, it will download a container for it. If you see an error like
+
+```
+The error was: NodeJSEngine requires Node.js engine to evaluate and validate Javascript expressions, but couldn't find it.  Tried nodejs, node, singularity run node:alpine
+```
+
+then it has somehow failed to find your NodeJS installation or failed to download the `node:alpine` container. The latter will faile because of the question right above this one. The simple solution is to install NodeJS. This is straighforward and requires no special permissions: https://nodejs.org/en/download.
+
+## DDF-pipeline crashes with errors about e.g the ANTENNA column or weights
+DP3 by default now compresses metadata via compression of the ANTENNA table, the UVW coordinates and writing only scalar flags. This is not compatible with the DDF-pipeline as included in flocs. The solution is to make a copy of your input data with DP3 using the options `msout.antennacompression=False msout.uvwcompression=False msout.scalarflags=False`. The DDF-pipeline runner will do this automatically.
