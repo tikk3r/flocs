@@ -76,13 +76,13 @@ flocs-run vlbi dd-calibration --peak-flux-cut 0.0 --phasediff-score 10.0 --model
 
 Here we disable any pre selection on peak intensity or ``phasediff score'' (a proxy for calibratability). If you want the pipeline to reject sources based on this remove them and leave them at the default. If you enabled automatic application of the delay solutions, pass the MSes from the delay calibration instead.
 
-## Example runs
+# Example runs
 An example of reducing data from on a Slurm managed cluster will look something like this:
 
 ```bash
 flocs-run linc calibrator --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount </folder/with/calibrator_mses/>
 flocs-run linc target --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount --cal_solutions </path/to/calibrator/cal_solutions.h5> </folder/with/target_mses/>
+flocs-run ddf-pipeline --scheduler slurm --slurm-time 72:00:00 --slurm-queue myqueue --slurm-account myaccount --config-file </path/to/ddf/config.cfg> </folder/with/linc/target/results/>
 ```
 
-When a LINC run finishes a final copy named e.g. `LINC_calibrator_<date>` should be created in the directory where the run was started, or in the specified `--outdir`.
-
+When a LINC run finishes a final copy named e.g. `LINC_calibrator_<date>` should be created in the directory where the run was started, or in the specified `--outdir`. This holds for all pipelines.
