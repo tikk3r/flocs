@@ -89,4 +89,4 @@ Enabling compiler optimisations can result is a substantial performance increase
 2. Setting `NOAVX512=false` if your CPU supports AVX512 instructions.
 3. Setting `HAS_MKL=true` if you have an Intel CPU or if you have an AMD CPU using the AMD-specific recipe that uses the suite of AMD Optimised CPU Libraries (AOCL).
 
-You can find the recommended march, mtune and AVX512 settings by running [`obtain_march_mtune.sh`](https://github.com/tikk3r/lofar-grid-hpccloud/blob/fedora-py3/obtain_march_mtune.sh). It is important to use a recent GCC such that it can recognise your CPU properly.
+You can find the recommended march, mtune and AVX512 settings by running [`obtain_march_mtune.sh`](https://github.com/tikk3r/lofar-grid-hpccloud/blob/fedora-py3/utility/obtain_march_mtune.sh). It is important to use a recent GCC such that it can recognise your CPU properly.
