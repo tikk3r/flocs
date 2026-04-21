@@ -1,8 +1,8 @@
 export FLOCS_VERSION="6.2.0"
 export AOFLAGGER_VERSION=c8681861
-export CASACORE_VERSION=60923a9
+export CASACORE_VERSION=ad3cfa1
 export DDFPIPELINE_VERSION=df58808
-export DP3_VERSION=76126fb7
+export DP3_VERSION=2a51b71c
 export EVERYBEAM_VERSION=ef6f1ece
 export HDF5_VERSION=1.14.5
 export IDG_VERSION=54464d64
@@ -10,7 +10,7 @@ export LOSOTO_VERSION=2.7.0
 export OPENBLAS_VERSION=v0.3.31
 export PYBDSF_VERSION=8b33037
 export PYTHON_CASACORE_VERSION=3.6.1
-export WSCLEAN_VERSION=37a75a83
+export WSCLEAN_VERSION=3d4bc86b
 
 # Expert settings below. Generally these won't have to be touched.
 # General environment settings.
