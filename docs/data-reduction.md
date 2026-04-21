@@ -42,6 +42,7 @@ These plots show the phase solutions for XX and YY, and the difference between t
 
 The `poldiff` plot shows XX-YY, which can more easily show adverse effects at play. Look out for strange patterns or noisy solutions in these.
 
+# Direction-dependent calibration
 ## Dutch array DD calibration with DDF-pipeline
 
 The DDF-pipeline is the pipeline used for LoTSS. Flocs does nothing special when running this pipeline apart from just wrapping it in the ecosystem. This makes it a little bit easier to submit it to e.g. a Slurm queue. Call it on the averaged NL-baseline-only output of LINC target (`*pre-cal.ms`):
@@ -52,6 +53,7 @@ flocs-run ddf-pipeline --config-file <ddf config> /path/to/LINC_target*/results_
 
 The usual Slurm arguments are supported. You can find example configuration files in the DDF-pipeline repository: https://github.com/mhardcastle/ddf-pipeline/tree/master/examples
 
+# Long baseline calibration
 ## VLBI delay calibration
 A succseful run with flocs will have left a `LINC_target_*` folder where the * will be the SAS ID processed, date and time of the run. Assuming you ran LINC Target with `--output-fullres-data`, the delay calibration can be run as follows:
 
