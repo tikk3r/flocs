@@ -15,9 +15,12 @@ This page describes basic usage of the pipeline runners available through `flocs
 {:toc}
 
 ## Installing flocs
-Flocs provides pipeline runners that can be installed via package managers. For example:
+Flocs provides pipeline runners that can be installed via package managers. It is highly recommended to use a virtual environment. I use UV. For example:
 
 ```bash
+python -m pip install uv
+uv venv /path/to/myvenv
+source /path/to/myvenv/bin/activate
 uv pip install git+https://github.com/FLOCSoft/flocs-runners.git
 ```
 
