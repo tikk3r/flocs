@@ -29,6 +29,9 @@ This should provide you with `flocs-run`; the main entry point to generating con
 ## Installing pipelines
 Two of the fiducial pipelines should be installed manually at the moment: LINC and Pilot. The DDF-pipeline is shipped with the container and does not require special setup.
 
+### Setting up NodeJS
+CWL workflows require NodeJS. If the `node` executable is already present, no further action is needed. If it is not, check if your system offers it, e.g. via `module load` or something similar, or install it yourself otherwise. It is straightforward to install: https://nodejs.org/en/download
+
 ### Setting up LINC
 The LINC pipeline needs to be cloned and its location defined by `$LINC_DATA_ROOT`. On clusters that enforce memory limits, a custom setup is required at the moment:
 
