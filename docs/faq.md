@@ -57,3 +57,6 @@ then it has somehow failed to find your NodeJS installation or failed to downloa
 
 ## DDF-pipeline crashes with errors about e.g the ANTENNA column or weights
 DP3 by default now compresses metadata via compression of the ANTENNA table, the UVW coordinates and writing only scalar flags. This is not compatible with the DDF-pipeline as included in flocs. The solution is to make a copy of your input data with DP3 using the options `msout.antennacompression=False msout.uvwcompression=False msout.scalarflags=False`. The DDF-pipeline runner will do this automatically.
+
+## Crashes with JSONDecodeError or strange "File exists" errors
+The crash will be something like reported in [LINC issue 100](https://git.astron.nl/RD/LINC/-/work_items/100). It might be a genuine bug, but I have found that this is generally caused by newer versions of Toil and cwltool. Especially if you see "File exists" errors where what should be temporary files are located in e.g. the results_LINC_target folder. The currently confirmed working combination of Toil and cwltool for the flocs runners is Toil 9.2.0 with cwltool 3.1.20251031082601. These are implemented in the dependencies as of 29/04/2026. Installing flocs runners should thus in principle give you the correct versions.
