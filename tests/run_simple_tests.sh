@@ -77,9 +77,6 @@ printf ${Green}"Running test 1 / 2 - software builds\n"${Color_Off}
 printf ${Cyan}"AOFlagger: "${Color_Off}
 singularity exec $SIMG aoflagger --version 2>&1 > /dev/null && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
-printf ${Cyan}"Difmap: "${Color_Off}
-singularity exec $SIMG which difmap > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
-
 printf ${Cyan}"DDFacet: "${Color_Off}
 singularity exec $SIMG DDF.py -h > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off}|| printf ${Red}"FAIL\n"${Color_Off}
 
@@ -124,5 +121,5 @@ singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import lofar.stationr
 printf ${Cyan}"LSMTool: "${Color_Off}
 singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import lsmtool" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
 
-printf ${Cyan}"RMextract: "${Color_Off}
-singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import RMextract" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
+printf ${Cyan}"Spinifex: "${Color_Off}
+singularity exec $SIMG /opt/lofar/pyenv-py3/bin/python -c "import spinifex" > /dev/null 2>&1 && printf ${Green}"OK\n"${Color_Off} || printf ${Red}"FAIL\n"${Color_Off}
