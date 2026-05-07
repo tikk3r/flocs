@@ -628,7 +628,6 @@ From: fedora:42
 
     cd $INSTALLDIR
     mv flocs/utility .
-    rm -rf flocs
 
     #
     # Finaly cleanup of unnecessary stuff
