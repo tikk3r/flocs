@@ -634,7 +634,7 @@ From: fedora:42
     # 
     rm -rf lofar_facet_selfcal
     rm -rf /var/cache/dnf/*
-    rm -rf /var/cache/yum/*
+    rm -rf /var/cache/libdnf5/*
     rm -rf /var/log/*
     uv cache clean
     dnf -y clean all
