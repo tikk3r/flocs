@@ -536,7 +536,7 @@ EOF
     #
     cd $INSTALLDIR
     git clone --single-branch -b v0.9.1 https://github.com/saopicc/DDFacet.git
-    sed '30d' DDFacet/DDFacet/Imager/ClassFrequencyMachine.py
+    sed -i '30d' DDFacet/DDFacet/Imager/ClassFrequencyMachine.py
     uv pip install --no-deps DDFacet/
 
     #
