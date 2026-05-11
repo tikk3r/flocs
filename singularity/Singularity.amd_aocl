@@ -172,7 +172,7 @@ From: fedora:42
     pip install uv
     export PATH="/root/.local/bin:$PATH"
 
-    uv tool install shadems
+    uv tool install shadems --with "pyarrow,dask<2025"
     uv tool install lofar-vlbi-plot
 
     # Install the normal Python environment.
