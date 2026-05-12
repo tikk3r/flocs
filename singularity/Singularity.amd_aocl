@@ -221,7 +221,6 @@ From: fedora:42
     cd /opt/lofar
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
     cd lofar_facet_selfcal
-    git checkout 1cc0135e9ba17b98f9c6dc2339ff5ff563d16037
     cd ..
     uv pip install ./lofar_facet_selfcal
     # Install this separately since it keeps forcefully downgrading numpy.
