@@ -71,7 +71,7 @@ Upon successful delay calibration the results should contain an h5parm along the
 
 ```bash
 download_NN --cache_directory /path/to/nn_cache
-flocs-run vlbi dd-calibration --peak-flux-cut 0.0 --phasediff-score 10.0 --model-cache /path/to/nn_cache --source-catalogue target.csv --delay-calibrator delay_calibrators.csv --delay-slset /path/to/merged*linearfulljones*.h5 --ms-suffix dp3concat LINC_target*/results_LINC_target/results
+flocs-run vlbi dd-calibration --peak-flux-cut 0.0 --phasediff-score 10.0 --model-cache /path/to/nn_cache --source-catalogue target.csv --delay-solset /path/to/merged*linearfulljones*.h5 --ms-suffix dp3concat LINC_target*/results_LINC_target/results
 ```
 
 Here we disable any pre selection on peak intensity or ``phasediff score'' (a proxy for calibratability). If you want the pipeline to reject sources based on this remove them and leave them at the default. If you enabled automatic application of the delay solutions, pass the MSes from the delay calibration instead.
