@@ -13,6 +13,26 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v6.2.0
+Facetselfcal has been updated where different calibration products (images, solution etc.) get their own sub-folders. This is a breaking change w.r.t. PILOT.
+
+**Updates**
+- Add STILTS
+- Cleanup recipes
+  - common functionality between init scripts has been consolidated
+- Miscellaneous cleanup and fixes
+- Update AOFlagger to 1ffcb9c8
+- Update casacore to aaf72eb
+- Update DDFacet to 0.9,1
+- Update DP3 to f89c81f4
+- Update EveryBeam to f72a0fb1
+- Update facetselfcal to 1cc0135e
+- Update IDG to faf26bc0
+- Update killMS to 0.3.3
+- Update LoSoTo to 2.7.1
+- Update OpenBLAS to 0.3.31
+- Update WSClean to e8711ef0
+
 ## v6.1.1
 **Updates**
 - Update facetselfcal to address more model issues
