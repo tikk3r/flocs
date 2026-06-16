@@ -13,6 +13,13 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v6.2.1
+
+Hotfix release to make DP3 functional again.
+
+**Bugfixes**
+* Fix DP3 crashing on output with numthreads > 1
+
 ## v6.2.0
 Facetselfcal has been updated where different calibration products (images, solution etc.) get their own sub-folders. This is a breaking change w.r.t. PILOT.
 
