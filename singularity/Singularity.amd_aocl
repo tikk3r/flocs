@@ -173,7 +173,7 @@ From: fedora:42
     export PATH="/root/.local/bin:$PATH"
 
     uv tool install shadems --with "pyarrow,dask<2025"
-    uv tool install lofar-vlbi-plot
+    uv tool install lofar-vlbi-plot --with "python-casacore"
 
     # Install the normal Python environment.
     uv venv --seed --python=python3.12 $INSTALLDIR/pyenv-py3
