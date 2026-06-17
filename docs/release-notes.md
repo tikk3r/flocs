@@ -13,6 +13,13 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v6.2.2
+
+Hotfix release to make WSClean functional again.
+
+**Bugfixes**
+* Downgrade WSClean to prevent crashing on not finding schaap libraries.
+
 ## v6.2.1
 
 Hotfix release to make DP3 functional again.
