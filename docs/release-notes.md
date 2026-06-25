@@ -13,6 +13,13 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v6.2.3
+
+**Bugfixes**
+* Facetselfcal sisco-related fixes.
+* Fix lofar-vlbi-plot dependency.
+
+
 ## v6.2.2
 
 Hotfix release to make WSClean functional again.
