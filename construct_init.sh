@@ -84,11 +84,11 @@ echo export PATH="/root/.local/bin/:\
 \$INSTALLDIR/DP3/bin:\
 \$INSTALLDIR/wsclean/bin:\
 \$INSTALLDIR/runners:\
-\$INSTALLDIR/LINC/scripts:\
+\$INSTALLDIR/VLBI-cwl/scripts:\
 \$INSTALLDIR/utility:\
 \$INSTALLDIR/MultiNest/bin:\
 \$INSTALLDIR/stilts:\
-\$INSTALLDIR/VLBI-cwl/scripts:\$PATH" >> $INSTALLDIR/init.sh
+\$INSTALLDIR/LINC/scripts:\$PATH" >> $INSTALLDIR/init.sh
 
 echo export PYTHONPATH="\$INSTALLDIR/VLBI-cwl/scripts:\
 \$INSTALLDIR/LINC/scripts:\
