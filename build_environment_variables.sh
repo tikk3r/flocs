@@ -10,7 +10,7 @@ export LOSOTO_VERSION=2.7.1
 export OPENBLAS_VERSION=v0.3.31
 export PYBDSF_VERSION=8b33037
 export PYTHON_CASACORE_VERSION=3.6.1
-export WSCLEAN_VERSION=5f5f451b
+export WSCLEAN_VERSION=26e407d2
 
 # Expert settings below. Generally these won't have to be touched.
 # General environment settings.
