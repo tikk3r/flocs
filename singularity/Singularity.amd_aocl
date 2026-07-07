@@ -147,6 +147,9 @@ From: fedora:42
         sudo dnf -y install cuda-13-0
         export CUDA_HOME=/usr/local/cuda
         export PATH=$CUDA_HOME/bin:$PATH
+        if [ $DEBUG = false ]; then
+            rm -rf /opt/nvidia/
+        fi
     fi
 
     flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
