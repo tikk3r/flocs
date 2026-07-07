@@ -27,3 +27,7 @@ The containers can be build to leverage specific CPU optimisations, by specifyin
 # Disclaimer
 
 Be aware that these containers are my own work, and are not officially associated with any of the LOFAR software included in them. On rare occasion software may be running outside officially supported specifications. They may also be frozen to specific versions for a variety of reasons.
+
+# Acknowledgements
+
+If you use flocs or parts of it like the runners for your data reduction, please consider acknowledging them via "This work made use of Flocs (https://github.com/FLOCSoft) for (part of) its data reduction."
