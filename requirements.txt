@@ -98,6 +98,7 @@ pylru
 pymultinest
 pymysql
 pyparsing
+pyproj
 pyregion
 pytest
 python-dateutil
