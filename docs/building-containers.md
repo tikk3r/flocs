@@ -20,12 +20,15 @@ The recipes offer customisation options through environment variables near the t
 
 | Variable | Values | Purpose |
 |----------|--------|---------|
+|`CPPSTD`|[C++ standard](https://gcc.gnu.org/projects/cxx-status.html)| Passed to GCC's `-std` option when building C++ code, specifying which C++ standard to use.|
+|`DEBUG`|true/false| Installs GDB and Valgrind, adds `-g` to GCC, and increases CMake verbosity.|
 |`HAS_CUDA`|true/false| Install Nvidia CUDA and link IDG to it if set to `true`. |
 |`HAS_MKL`| true/false| Install the Intel Math Kernel Library en link IDG to it if set to `true`.|
+|`INSTALL_CASA`| true/false| Installs CASA if enabled. Disabling this saves space. |
 |`MARCH`|[GCC compatible architecture](https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html)| Passed to GCC's `-march` option to generate code optimised for the specified CPU architecture.|
 |`MTUNE`|[GCC compatible architecture](https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html)| Passed to GCC's `-mtune` option to optimise code for the specified CPU architecture.|
 |`NOAVX512`|true/false| Disables the use of AVX512 instructions if set to `true`. Recommended when building for older or generic hardware on a modern machine, or when building AMD-specific containers on an Intel machine.|
-|`CPPSTD`|[C++ standard](https://gcc.gnu.org/projects/cxx-status.html)| Passed to GCC's `-std` option when building C++ code, specifying which C++ standard to use.|
+|`OPENBLASTARGET`|OpenBLAS arch names| Sets the target for which OpenBLAS will be built (only when not using MKL).|
 
 {: .warning}
 > In 2021 Singularity was renamed to Apptainer. There is little if any change in functionality, but if apptainer-related commands or environment variables mentioned below do not work for you, replace instances of `apptainer` with `singularity` and instances of `APPTAINER_` with `SINGULARITY_`. See [the official announcement](https://apptainer.org/news/community-announcement-20211130/) for more information.
@@ -87,6 +90,22 @@ Enabling compiler optimisations can result is a substantial performance increase
 
 1. Setting `MARCH` and `MTUNE` to values suitable for your CPU.
 2. Setting `NOAVX512=false` if your CPU supports AVX512 instructions.
-3. Setting `HAS_MKL=true` if you have an Intel CPU or if you have an AMD CPU using the AMD-specific recipe that uses the suite of AMD Optimised CPU Libraries (AOCL).
+3. Setting `HAS_MKL=true` if you have an Intel CPU.
 
-You can find the recommended march, mtune and AVX512 settings by running [`obtain_march_mtune.sh`](https://github.com/tikk3r/lofar-grid-hpccloud/blob/fedora-py3/utility/obtain_march_mtune.sh). It is important to use a recent GCC such that it can recognise your CPU properly.
+You can find the recommended march, mtune and AVX512 settings by running [`obtain_march_mtune.sh`](https://github.com/tikk3r/lofar-grid-hpccloud/blob/fedora-py3/utility/obtain_march_mtune.sh). This will run the following:
+
+```
+MARCH=$(gcc -march=native -Q --help=target | grep '\-march=  ' | awk -F" " '{print $2}')
+MTUNE=$(gcc -march=native -Q --help=target | grep '\-mtune=  ' | awk -F" " '{print $2}')
+
+echo Use \"-march=$MARCH -mtune=$MTUNE\" flags for native compilation.
+
+AVX512=$(gcc -march=$MARCH -mtune=$MTUNE -dM -E - < /dev/null | egrep "AVX512")
+if [[ $AVX512 == *"AVX512"* ]]; then
+    echo -march=$MARCH -mtune=$MTUNE supports AVX512
+else
+    echo -march=$MARCH -mtune=$MTUNE does _NOT_ support AVX512
+fi
+```
+
+It is important to use a recent GCC such that it can recognise your CPU properly.
