@@ -1,5 +1,5 @@
 ---
-title: Data reduction with flocs
+title: Quick start HBA data reduction
 layout: default
 nav_order: 4
 ---
@@ -9,6 +9,8 @@ nav_order: 4
 
 1. TOC
 {:toc}
+
+When a flocs pipeline run finishes a final copy named e.g. `<pipeline>_L<sasid>_<date>` will be created in the directory where the run was started, or in the specified `--outdir`. This holds for all pipelines in order to have an anchored output scheme throughout flocs.
 
 
 # Direction-independent calibration
@@ -77,12 +79,20 @@ flocs-run vlbi dd-calibration --peak-flux-cut 0.0 --phasediff-score 10.0 --model
 Here we disable any pre selection on peak intensity or ``phasediff score'' (a proxy for calibratability). If you want the pipeline to reject sources based on this remove them and leave them at the default. If you enabled automatic application of the delay solutions, pass the MSes from the delay calibration instead.
 
 # Example runs
-An example of reducing data from on a Slurm managed cluster will look something like this:
-
+## NL-resolution processing
 ```bash
 flocs-run linc calibrator --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount </folder/with/calibrator_mses/>
 flocs-run linc target --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount --cal_solutions </path/to/calibrator/cal_solutions.h5> </folder/with/target_mses/>
 flocs-run ddf-pipeline --scheduler slurm --slurm-time 72:00:00 --slurm-queue myqueue --slurm-account myaccount --config-file </path/to/ddf/config.cfg> </folder/with/linc/target/results/>
 ```
 
-When a LINC run finishes a final copy named e.g. `LINC_calibrator_<date>` should be created in the directory where the run was started, or in the specified `--outdir`. This holds for all pipelines.
+## ILT science target
+Assuming that the science target is bright and compact enough to self calibrate on, the order of running flocs will be something like below.
+
+```bash
+flocs-run linc calibrator --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount </folder/with/calibrator_mses/>
+flocs-run linc target --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount --cal_solutions </path/to/calibrator/cal_solutions.h5> --output-fullres-data </folder/with/target_mses/>
+flocs-run vlbi delay-calibration --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount --delay-calibrators <path/to/delay_calibrators.csv> --ms-suffix dp3concat </path/to/linc_target>/results_LINC_target
+flocs-run vlbi dd-calibration --runner toil --scheduler slurm --slurm-time 24:00:00 --slurm-queue myqueue --slurm-account myaccount --delay-solset </path/to/>/results_VLBI_delay-calibration/merged_*.h5 --source-catalogue /path/to/catalogue_with_target.csv --ms-suffix dp3concat </path/to/linc_target>/results_LINC_target
+```
+
