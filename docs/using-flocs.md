@@ -30,7 +30,7 @@ This should provide you with `flocs-run`; the main entry point to generating con
 Two of the fiducial pipelines should be installed manually at the moment: LINC and Pilot. The DDF-pipeline is shipped with the container and does not require special setup.
 
 ### Setting up NodeJS
-CWL workflows require NodeJS. If the `node` executable is already present, no further action is needed. If it is not, check if your system offers it, e.g. via `module load` or something similar, or install it yourself otherwise. It is straightforward to install: [https://nodejs.org/en/download](https://nodejs.org/en/download)
+CWL workflows require NodeJS. If the `node` executable is already present, no further action is needed. If it is not, check if your system offers it, e.g. via `module load` or something similar, or install it yourself otherwise. It is straightforward to install: [https://nodejs.org/en/download](https://nodejs.org/en/download). Having node installed locally will circumvent CWL trying to pull a container for it, simplifying things a little bit.
 
 ### Setting up LINC
 The LINC pipeline needs to be cloned and its location defined by `$LINC_DATA_ROOT`. On clusters that enforce memory limits, a custom setup is required at the moment:
@@ -50,10 +50,10 @@ The Pilot pipeline needs to be cloned and its location defined by `$VLBI_DATA_RO
 > Currently `cwltool` adds `--no-eval` to Apptainer calls. This prevents environment variables from being expanded, making modifications like `APPTAINER_PYTHONPATH=/something/new:\$PYTHONPATH` not possible. At the moment, my suggested workaroud is to simply edit your installation by opening `/path/to/your/packages/cwltool/singularity.py` and remove the two lines that add this (currently 495-495). To find where you installation lives, you can run e.g. `python -c "import cwltool; print(cwltool.__file__)"`.
 
 
-Since FLoCs is in principle built for running pipelines with, pipeline runners are provided for [LINC](https://git.astron.nl/RD/LINC) and [VLBI-cwl](https://git.astron.nl/RD/VLBI-cwl). These CWL pipelines take a JSON configuration file as their input. Running pipelines is abstracted away behind the `flocs-run` executable, so users should not have to interact with JSON or CWL files directly. First install flocs as explained above. Secondly, ensure `LINC_DATA_ROOT` and `VLBI_DATA_ROOT` are defined in your environment. As LINC is the most basic pipeline and contains skymodels of e.g. the A-Team, flocs demands that this variable is defined. If you are only running LINC, `VLBI_DATA_ROOT` has to be defined, but isn't used; set it to whatever. To see what options are available, use `--help` for the main command or each sub command.
+FLoCs' focus is running pipelines. A such, pipeline runners are provided for [LINC](https://git.astron.nl/RD/LINC), [PILOT](https://github.com/LOFAR-VLBI/pilot.git) and [ddf-pipeline](https://github.com/mhardcastle/ddf-pipeline.git). Running pipelines is abstracted away behind the `flocs-run` executable to try and provide a cohesive experience. This is done such that users do not have to bother generating pipeline configurations or interact with JSON or CWL files directly, which are cumbersome to deal with. It also does a few additional sanity checks on the inputs in an attempt to catch basic problems. First install flocs as explained above. Secondly, ensure `LINC_DATA_ROOT` and `VLBI_DATA_ROOT` are defined in your environment. As LINC is the most basic pipeline and contains skymodels of e.g. the A-Team, flocs demands that this variable is defined. If you are only running LINC, `VLBI_DATA_ROOT` has to be defined, but isn't used; set it to whatever. To see what options are available, use `--help` for the main command or each sub command.
 
-## Generating JSON configurations only.
-Previously `create_ms_list.py` was used to generate configuration files for either LINC or VLBI-cwl, in JSON format. This has been deprecated. Instead, use the `--config-only` option of the respective pipeline. With this option, `flocs-run` stops after generating the configuration file and will not execute a pipeline. Otherwise options are indentical to what is described below.
+## Generating JSON configurations only (CWL pipelines).
+If only settings are desired, the `--config-only` option can be used for CWL-based pipelines to only generate those. With this option, `flocs-run` will exit after generating the configuration file and will not execute a pipeline.
 
 ## Running pipelines
 ### LINC
@@ -81,13 +81,22 @@ flocs-run ddf-pipelline --config-file </path/to/ddfpipeline.cfg> /path/to/LINC_t
 
 There it will search for the `*pre-cal.ms` MSes and start the pipeline. It will automatically do a DP3-copy to disable antenna and uvwcompression to avoid crashes that happen because of that at the moment.
 
-### VLBI
-To run VLBI delay calibration after LINC, for example, use
+### PILOT
+Data reduction with PILOT is easiest after running LINC target with the `--output-fullres-data` option. The following main PILOT workflows are supported in flocs:
 
 ```bash
-flocs-run vlbi delay-calibration --ms_suffix dp3concat </folder/with/mses/>
+flocs-run vlbi delay-calibration <settings>
+flocs-run vlbi dd-calibration <settings>
+flocs-run vlbi process-ddf <settings>
 ```
-This assumes you ran LINC target with the `--output-fullres-data` option.
+other workflows that are supported are
+```
+flocs-run vlbi setup <settings>
+flocs-run vlbi concatenate-flag <settings>
+flocs-run vlbi phaseup-concat <settings>
+flocs-run vlbi split-directions <settings>
+```
+but these are more plumbing or legacy and you should not interact with these for general use.
 
 ## Using containers/Toil/Slurm/all of the above
 `flocs-run` intends to make it easy for the user to switch between `cwltool`, `toil-cwl-runner`, running on a local machine, or running on a Slurm cluster. These are controlled by a set of options common to all the pipelines. The recommended way to use the runners is to install it in your own environment and pass a container to run a pipeline, and not use it from within a container.
