@@ -13,7 +13,6 @@ bces
 bilby
 blurhash
 boost
-breizorro
 cachetools
 certifi
 chardet

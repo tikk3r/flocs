@@ -24,7 +24,6 @@ blurhash
 boost
 boto3
 botocore
-breizorro
 cachetools
 certifi
 chardet

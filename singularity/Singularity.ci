@@ -132,6 +132,8 @@ EOF
     pip --version
     pip install uv
 
+    uv tool install breizorro
+
     # Install the normal Python environment.
     uv venv --seed $INSTALLDIR/pyenv-py3 --python=python3
     # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
