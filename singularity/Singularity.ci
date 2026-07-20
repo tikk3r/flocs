@@ -38,8 +38,6 @@ From: fedora:40
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
-    # Necessary for nomacs
-    sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/build_environment_variables.sh -O $INSTALLDIR/build_environment_variables.sh
     source $INSTALLDIR/build_environment_variables.sh
@@ -99,7 +97,7 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
 EOF
-        sudo mv /tmp/oneAPI.repo /etc/yum.repos.d/
+        mv /tmp/oneAPI.repo /etc/yum.repos.d/
         dnf -y install intel-oneapi-mkl intel-oneapi-mkl-devel
         source /opt/intel/oneapi/mkl/latest/env/vars.sh
     fi
@@ -108,9 +106,9 @@ EOF
         #
         # Install CUDA 12.6
         #
-        sudo dnf -y config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
-        sudo dnf -y clean all
-        sudo dnf -y install cuda-12-6
+        dnf -y config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/fedora39/x86_64/cuda-fedora39.repo
+        dnf -y clean all
+        dnf -y install cuda-12-6
         export CUDA_HOME=/usr/local/cuda
         export PATH=$CUDA_HOME/bin:$PATH
     fi
@@ -128,7 +126,7 @@ EOF
     #
     cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
 
-    sudo dnf -y install python3-cx-oracle
+    dnf -y install python3-cx-oracle
     pip --version
     pip install uv
 
