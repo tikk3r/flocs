@@ -60,3 +60,16 @@ DP3 by default now compresses metadata via compression of the ANTENNA table, the
 
 ## Crashes with JSONDecodeError or strange "File exists" errors
 The crash will be something like reported in [LINC issue 100](https://git.astron.nl/RD/LINC/-/work_items/100). It might be a genuine bug, but I have found that this is generally caused by newer versions of Toil and cwltool. Especially if you see "File exists" errors where what should be temporary files are located in e.g. the results_LINC_target folder. The currently confirmed working combination of Toil and cwltool for the flocs runners is Toil 9.2.0 with cwltool 3.1.20251031082601. These are implemented in the dependencies as of 29/04/2026. Installing flocs runners should thus in principle give you the correct versions.
+
+## Maximum number of network namespaces exceeded
+Some clusters or infrastructure may have hardened their security policies by disabling user network namespaces, due to recent ((07-08/2026 as of writing) CVEs. If you see an error like `Failed to create network namespace: maximum number of network namespaces exceeded, check /proc/sys/user/max_net_namespaces` with CWL workflows then this could be the cause. A workaround is to edit `singularity.py` of your cwltool. Look for
+
+```
+if self.networkaccess:
+    if runtime_context.custom_net:
+        runtime.extend(["--net", "--network", runtime_context.custom_net])
+else:
+    runtime.extend(["--net", "--network", "none"])
+```
+
+and remove or comment out the else clause.
