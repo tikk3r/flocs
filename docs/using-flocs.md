@@ -35,9 +35,10 @@ CWL workflows require NodeJS. If the `node` executable is already present, no fu
 ### Setting up LINC
 The LINC pipeline needs to be cloned and its location defined by `$LINC_DATA_ROOT`. On clusters that enforce memory limits, a custom setup is required at the moment:
 
-1. Clone the repository: `git clone https://git.astron.nl/RD/LINC.git`
-2. Enter it and `git rebase cwl-memory-hba-calibrator` to get the fixes for Calibrator runs.
-3. Subsequently `git rebase cwl-memory-hba-target` to get the fixes for Target runs.
+1. Clone the repository: `git clone https://git.astron.nl/RD/LINC.git` and enter the directory.
+1. Obtain the necessary branches: `git checkout cwl-memory-hba-calibrator && git checkout cwl-memory-hba-target && git checkout master`
+2. Apply the calibrator updates: `git rebase cwl-memory-hba-calibrator`
+3. Apply the target updates: `git rebase cwl-memory-hba-target`
 
 Finally, add `$LINC_DATA_ROOT:/opt/lofar/LINC` to your `APPTAINER_BINDPATH` environment variable.
 
