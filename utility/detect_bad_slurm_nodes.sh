@@ -6,7 +6,7 @@
 # Exit code: 1:0 -- some error
 # State: CANCELLED by 0 -- job killed by root, indicating issues with the node like sssd having failed
 TODAY=$(date +"%Y-%m-%d")
-MAX_RUNTIME=30 # seconds until Failure
+MAX_RUNTIME=300 # seconds until Failure
 JOB_PATTERN="toil_job"
 
 BAD_NODES=$(sacct -X -S now-6hour --format=JobID,JobName,State,NodeList,ElapsedRaw,ExitCode --noheader --parsable2 |
