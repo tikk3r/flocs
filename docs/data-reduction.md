@@ -10,7 +10,7 @@ nav_order: 4
 1. TOC
 {:toc}
 
-When a flocs pipeline run finishes a final copy named e.g. `<pipeline>_L<sasid>_<date>` will be created in the directory where the run was started, or in the specified `--outdir`. This holds for all pipelines in order to have an anchored output scheme throughout flocs.
+General note about output products: when a flocs pipeline run finishes a final copy named e.g. `<pipeline>_L<sasid>_<date>` will be created in the directory where the run was started, or in the specified `--outdir`. This holds for all pipelines in order to have an anchored output scheme throughout flocs.
 
 # Staging or downloading data
 Data can be searched for via [https://lta.lofar.eu](https://lta.lofar.eu) directly, or via [flocs-lta](https://github.com/FLOCSoft/flocs-lta). Use `flocs-lta search-id` if you know a specific SAS ID or `flocs-lta search-position` if you want to search by coordinates. See the help of flocs-lta and its subcommands to see the options for staging data. Once staged, the data can easily be downloaded with your StageIt staging id via `flocs-lta download <stagig id>`.
