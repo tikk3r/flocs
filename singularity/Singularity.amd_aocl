@@ -217,7 +217,7 @@ From: fedora:42
     uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
     uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
     uv pip install scikit_build_core setuptools_scm
-    uv pip install numpy
+    uv pip install "numpy<2.5"
     uv pip install --no-binary pandas pandas
     uv pip install --no-binary h5py h5py
     cat $INSTALLDIR/flocs/requirements.txt | xargs -n 1 uv pip install --no-build-isolation
