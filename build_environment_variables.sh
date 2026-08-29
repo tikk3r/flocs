@@ -21,7 +21,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export OMPI_ALLOW_RUN_AS_ROOT=1
 
 # Build settings
-export CPPSTD=c++17
+export CPPSTD=c++20
 export OMP_NUM_THREADS=1
 export OMP_MAX_THREADS=1
 export OPENBLAS_NUM_THREADS=1
