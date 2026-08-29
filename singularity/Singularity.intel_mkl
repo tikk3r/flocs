@@ -8,11 +8,11 @@ From: fedora:42
 %arguments
     HAS_CUDA=true
     HAS_MKL=true
-    MARCH=sandybridge
-    MTUNE=sandybridge
+    MARCH=haswell
+    MTUNE=haswell
     NOAVX512=true
     DEBUG=false
-    OPENBLASTARGET=SANDYBRIDGE
+    OPENBLASTARGET=HASWELL
     INSTALL_CASA=false
     INSTALLDIR=/opt/lofar
 
