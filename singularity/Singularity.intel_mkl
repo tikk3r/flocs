@@ -15,6 +15,7 @@ From: fedora:42
     OPENBLASTARGET=HASWELL
     INSTALL_CASA=false
     INSTALLDIR=/opt/lofar
+    BLA_VENDOR=Intel10_64lp
 
 %post
     export HAS_CUDA={{ HAS_CUDA }}
@@ -42,92 +43,30 @@ From: fedora:42
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
 
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/build_environment_variables.sh -O $INSTALLDIR/build_environment_variables.sh
-    source $INSTALLDIR/build_environment_variables.sh
-
-    export CC=`which gcc`
-    export CXX=`which g++`
-
-    if [ $HAS_MKL = false ]; then
-        # Install OpenBLAS
-        mkdir -p /opt/OpenBLAS
-        cd /opt/OpenBLAS
-        git clone https://github.com/OpenMathLib/OpenBLAS.git src
-        cd src && git checkout $OPENBLAS_VERSION
-        mkdir build && cd build
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=/opt/OpenBLAS -DBUILD_TESTING=OFF -DTARGET=$OPENBLAS_TARGET -DUSE_THREAD=1 -DNUM_THREADS=$NUM_THREADS -DNUM_CORES=$NUM_THREADS -DBUILD_SHARED_LIBS=ON \
-            -DNO_AVX512=$NOAVX512 ..
-        make -j$J
-        make install
-        rm -rf /opt/OpenBLAS/src
-    fi
-
     if [ $DEBUG = true ]; then
         dnf -y install gdb valgrind mc
         debuginfo-install -y libstdc++
     fi
 
-    #
-    # Install HDF5 with parallel support
-    #
-    export CC=`which mpicc`
-    export CXX=`which mpic++`
-    mkdir /opt/hdf5
-    cd /opt/hdf5
-    export HDF5_VERSION_USCORE=${HDF5_VERSION//./_}
-    wget --progress=bar:force:noscroll https://support.hdfgroup.org/releases/hdf5/v${HDF5_VERSION_USCORE%_*}/v${HDF5_VERSION_USCORE}/downloads/hdf5-${HDF5_VERSION}.tar.gz
-    gunzip hdf5-${HDF5_VERSION}.tar.gz
-    tar xf hdf5-${HDF5_VERSION}.tar
-    cd hdf5-${HDF5_VERSION}/
-    # Thread safety required for WSClean's parallel gridding with facets.
-    ./configure -prefix=/opt/hdf5 --enable-build-mode=production --enable-threadsafe --enable-shared --disable-sharedlib-rpath --disable-hl --enable-cxx -enable-unsupported
-    make -j $J
-    #make check
-    make install
-    cd /opt/hdf5
-    rm -r hdf5-1.*
-    export CC=`which gcc`
-    export CXX=`which g++`
-    export HDF5_DIR=/opt/hdf5
+    cd $INSTALLDIR
+    git clone --recurse-submodules https://github.com/tikk3r/flocs.git
+    source $INSTALLDIR/flocs/build_environment_variables.sh
 
-    if [ $HAS_MKL = true ]; then
-        #
-        # Install Intel MKL
-        #
-tee > /tmp/oneAPI.repo << EOF
-[oneAPI]
-name=Intel® oneAPI repository
-baseurl=https://yum.repos.intel.com/oneapi
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-EOF
-        sudo mv /tmp/oneAPI.repo /etc/yum.repos.d/
-        dnf -y install intel-oneapi-mkl intel-oneapi-mkl-devel
-        # We don't compile with the Intel toolchain
-        mv /opt/intel/oneapi/compiler/latest/lib/libiomp5.so /opt/intel/oneapi/mkl/latest/lib/
-        rm -rf /opt/intel/oneapi/compiler
-        # We don't statically link nor use SYCL
-        find /opt/intel/oneapi \( -type f -o -type l \) \( -name "*.a" -o -name "libmkl_sycl*" \) -delete
-        source /opt/intel/oneapi/mkl/latest/env/vars.sh
-    fi
+    $INSTALLDIR/flocs/installers/install_hdf5.sh
 
     if [ $HAS_CUDA = true ]; then
-        #
-        # Install CUDA 13.0
-        #
-        sudo dnf -y config-manager addrepo --from-repofile=https://developer.download.nvidia.com/compute/cuda/repos/fedora42/x86_64/cuda-fedora42.repo
-        sudo dnf -y clean all
-        sudo dnf -y install cuda-13-0
-        export CUDA_HOME=/usr/local/cuda
-        export PATH=$CUDA_HOME/bin:$PATH
+        $INSTALLDIR/flocs/installers/install_cuda.sh
         if [ $DEBUG = false ]; then
             rm -rf /opt/nvidia/
         fi
     fi
 
+    if [ $HAS_MKL = true ]; then
+        $INSTALLDIR/flocs/installers/install_intel_mkl.sh
+    fi
+
     if [ $HAS_MKL = false ]; then
+        $INSTALLDIR/flocs/installers/install_openblas.sh
         flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so
         export FLEXIBLAS=OPENBLAS
         if [ $DEBUG = true ]; then
@@ -135,140 +74,31 @@ EOF
         fi
     fi
 
-    # MultiNest
-    cd $INSTALLDIR
-    mkdir MultiNest
-    git clone https://github.com/JohannesBuchner/MultiNest MultiNest-src
-    cd MultiNest-src/build
-    if [ $HAS_MKL = true ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest -DBLA_VENDOR=Intel10_64lp ..
-    else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/MultiNest ..
-    fi
-    make install
-    cd $INSTALLDIR
-    rm -rf MultiNest-src
+    $INSTALLDIR/flocs/installers/install_multinest.sh
 
     #
     # Setup the Python environment.
     #
-    sudo dnf -y install python3-cx-oracle python3.12 python3.12-devel
-    pip install uv
-    export PATH="/root/.local/bin:$PATH"
-
-    uv tool install shadems --with "pyarrow,dask<2025"
-    uv tool install lofar-vlbi-plot --with "python-casacore"
-    uv tool install breizorro
-
-    # Install the normal Python environment.
-    uv venv --seed --python=python3.12 $INSTALLDIR/pyenv-py3
-    # Without this the environment doesn't load.
-    sed -i "29,41d" $INSTALLDIR/pyenv-py3/bin/activate
-    source $INSTALLDIR/pyenv-py3/bin/activate
+    $INSTALLDIR/flocs/installers/setup_python_env.sh
 
     #
     # Install Casapy
     #
     if [ $INSTALL_CASA = true ]; then
-       dnf -y install fuse fuse-libs git-lfs
-    
-       mkdir -p /opt/casa
-       cd /opt/casa
-       wget https://casa.nrao.edu/download/distro/casa/release/rhel/casa-6.7.0-31-py3.12.el8.tar.xz
-       unxz casa-6.7.0-31-py3.12.el8.tar.xz
-       tar xf casa-6.7.0-31-py3.12.el8.tar
-       rm -f casa-6.7.0-31-py3.12.el8.tar
-       echo export PATH=/opt/casa/casa-6.7.0-31-py3.12.el8/bin/:\$PATH  >> $INSTALLDIR/init.sh
-       
-       pip install casaconfig==1.3.1
-       pip install casatasks==6.7.0.31
-       pip install casatestutils==6.7.0.31
-       pip install casadata==2025.3.17
-       cd $INSTALLDIR
+        $INSTALLDIR/flocs/installers/install_casa.sh
     fi    
 
-    git clone --recurse-submodules https://github.com/tikk3r/flocs.git
-    git clone https://github.com/mattyowl/astLib.git
-    export CC=`which gcc-14`
-    patch astLib/setup.py flocs/patches/astlib.patch
-    uv pip install --upgrade pip wheel Cython "setuptools>=59.5.0,<71"
-    uv pip install ./astLib
-    rm -rf ./astLib
-    export CC=`which gcc`
-    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-    uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
-    uv pip install scikit_build_core setuptools_scm
-    uv pip install "numpy<2.5"
-    uv pip install --no-binary pandas pandas
-    uv pip install --no-binary h5py h5py
-    cat $INSTALLDIR/flocs/requirements.txt | xargs -n 1 uv pip install --no-build-isolation
-    # Install facetselfcal this way to make sure data gets installed.
-    cd /opt/lofar
-    git clone https://github.com/rvweeren/lofar_facet_selfcal.git
-    cd lofar_facet_selfcal
-    cd ..
-    uv pip install ./lofar_facet_selfcal
-    # Install this separately since it keeps forcefully downgrading numpy.
-    #pip install --no-deps lofarSun
-    uv pip install ./flocs
-
     # Install Boost here to ensure Boost Numpy is built
-    cd $INSTALLDIR
-    wget https://archives.boost.io/release/1.89.0/source/boost_1_89_0.tar.gz
-    tar -xzf boost_1_89_0.tar.gz
-    cd boost_1_89_0
-
-    # Build Boost with Python 3.12
-    ./bootstrap.sh --with-libraries=python
-    # https://www.boost.org/doc/libs/1_89_0/tools/build/doc/html/index.html
-    sudo ./b2 -j $J --without-test python=3.12 threading=multi cflags="`python3.12-config --cflags`" cxxflags="`python3.12-config --includes`" linkflags="`python3.12-config --libs`" install
-    cd $INSTALLDIR
-    rm -rf boost_1_89_0.tar.gz boost_1_89_0
+    $INSTALLDIR/flocs/installers/install_boost.sh
 
     #
     # Install LTA client
     #
-    cd $INSTALLDIR
-    wget --progress=bar:force:noscroll https://lta.lofar.eu/software/lofar_lta-2.8.0.tar.gz
-    tar xf lofar_lta-*
-    cd lofar_lta-2.8.0
-    uv pip install .
-    cd ..
-    rm lofar_lta*.tar.gz
-    rm -rf lofar_lta-2.8.0/
+    $INSTALLDIR/flocs/installers/install_lofar_lta.sh
 
-    #
-    # Install Montage
-    #
-    #mkdir -p /opt/montage
-    #cd /opt/montage
-    #wget --progress=bar:force:noscroll https://github.com/Caltech-IPAC/Montage/archive/v6.0.tar.gz -O Montage_v6.0.tar.gz
-    #tar xf Montage_v6.0.tar.gz
-    #cd Montage-6.0
-    #make -j $J
-    #rm -rf /opt/montage/Montage_v6.0.tar.gz
-    
+    #$INSTALLDIR/flocs/installers/install_montage.sh
 
-    #
-    # Install difmap
-    #
-    #mkdir -p $INSTALLDIR/difmap
-    #cd $INSTALLDIR/difmap
-    ##wget --progress=bar:force:noscroll ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.5e.tar.gz
-    #wget --progress=bar:force:noscroll https://github.com/tikk3r/flocs/blob/master/misc/difmap2.5e.tar.gz?raw=true -O difmap2.5e.tar.gz
-    #tar xf difmap2.5e.tar.gz
-    #cd uvf_difmap
-    #wget https://raw.githubusercontent.com/nealjackson/loop3_difmap/master/corplt.c -O difmap_src/corplt.c
-
-    #sed -i.bak -e '97d' configure
-    #sed -i.bak -e '97 i PGPLOT_LIB=/usr/lib64/libpgplot.so.5' configure
-    #./configure linux-i486-gcc
-    #export PGPLOT_LIB=/usr/lib64/libpgplot.so.5
-    #export OLD_CFLAGS=$CFLAGS
-    #export CFLAGS="-L/usr/lib64/libpgplot.so.5"
-    #CC=`which gcc` ./makeall
-    #rm -rf $INSTALLDIR/difmap/*.tar.gz
-    #export CFLAGS=$OLD_CFLAGS
+    #$INSTALLDIR/flocs/installers/install_difmap.sh
 
     #
     # Install PyBDSF
@@ -370,19 +200,7 @@ EOF
     rm -rf $INSTALLDIR/aoflagger/build
     rm -rf $INSTALLDIR/aoflagger/src
 
-    #
-    # Install LofarStMan
-    #
-    mkdir -p $INSTALLDIR/lofarstman
-    cd $INSTALLDIR/lofarstman
-    git clone https://github.com/lofar-astron/LofarStMan.git
-    cd LofarStMan
-    mkdir build && cd build
-    cmake $CMAKE_ADD_OPTION -DCASACORE_ROOT_DIR=$INSTALLDIR/casacore -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofarstman ..
-    make -j$J
-    make install
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/lofarstman/LofarStMan
+    $INSTALLDIR/flocs/installers/install_lofarstman.sh
 
     #
     # Install EveryBeam library
@@ -490,15 +308,9 @@ EOF
     export CC=`which gcc`
     export CXX=`which g++`
 
-    #
-    # Install DS9
-    #
-    mkdir -p $INSTALLDIR/ds9/bin
-    cd $INSTALLDIR/ds9
-    wget --progress=bar:force:noscroll https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.7.tar.gz
-    tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
-    rm ds9*.tar.gz
+    $INSTALLDIR/flocs/installers/install_ds9.sh
 
+    $INSTALLDIR/flocs/installers/install_stilts.sh
     #
     # Install STILTS
     #
@@ -515,76 +327,17 @@ EOF
     uv pip --no-cache-dir install owlcat --no-deps
 
     #
-    # Install the standalone StationResponse libraries. DDFacet still uses these.
+    # Install the old standalone StationResponse libraries. DDFacet still uses these.
     #   
-    echo Installing LOFARBeam...
-    mkdir -p $INSTALLDIR/LOFARBeam/build
-    cd $INSTALLDIR/LOFARBeam
-    git clone https://github.com/lofar-astron/LOFARBeam.git src
-    cd src
-    sed -i "s/-std=c++11/-std=${CPPSTD}/" CMakeLists.txt
-    echo export LOFARBEAM_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ../build
-    # Install in the existing lofar python folder
-    mkdir -p /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/
-    touch /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/__init__.py
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
-    make -j $J
-    make install
-    cd $INSTALLDIR
-    rm -rf $INSTALLDIR/LOFARBeam
+    $INSTALLDIR/flocs/installers/install_lofarbeam.sh
 
-    #
-    # Install DDFacet
-    #
-    cd $INSTALLDIR
-    git clone --single-branch -b v1.0.0.0 https://github.com/saopicc/DDFacet.git
-    sed -i '669s/None:/None and weights is not 1:/' DDFacet/DDFacet/Data/ClassVisServer.py
-    uv pip install --no-deps DDFacet/
+    $INSTALLDIR/flocs/installer/install_ddfacet.sh
 
-    #
-    # Install killMS
-    #
-    cd $INSTALLDIR
-    git clone --single-branch -b v3.3.0 https://github.com/saopicc/killMS.git
-    sed -i '558s/$/ parent_affinity=GDPredict["Parallel"]["MainProcessAffinity"],/' killMS/killMS/kMS.py
-    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/SmoothSols.py
-    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/InterpSols.py
-    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/Weights/W_Imag.py
-    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/Weights/W_TimeCov.py
-    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/Weights/W_ImagCov.py
-    uv pip install --no-deps killMS/
+    $INSTALLDIR/flocs/installers/install_killms.sh
 
-    #   
-    # Install DynSpecMS
-    #   
-    cd $INSTALLDIR && git clone https://github.com/cyriltasse/DynSpecMS.git
-    cd $INSTALLDIR/DynSpecMS && git checkout ApplyBeam
+    $INSTALLDIR/flocs/installers/install_dynspecms.sh
 
-    #
-    # Install ddf-pipeline
-    #
-    rm -rf $INSTALLDIR/ddf-pipeline
-    cd $INSTALLDIR && git clone https://github.com/mhardcastle/ddf-pipeline.git
-    cd ddf-pipeline && git checkout $DDFPIPELINE_VERSION && cd ..
-    cd $INSTALLDIR
-    sed -i "s/DDF.py/DDF.py --Misc-IgnoreDeprecationMarking=1/" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/--Beam-PhasedArrayMode/--Beam-LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/--PhasedArrayMode/--LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/bootstrap.py
-    sed -i '353s/readonly=True/readonly=False/' $INSTALLDIR/ddf-pipeline/utils/auxcodes.py
-    mkdir $INSTALLDIR/DDFCatalogues
-    cd $INSTALLDIR/DDFCatalogues
-    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/VLSS.fits
-    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/wenss.fits
-    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/B2.fits
-    wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/NVSS.fits
-    #wget --progress=bar:force:noscroll https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
-    wget --progress=bar:force:noscroll https://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
-    cd $INSTALLDIR
-
-    sed -i 's/SafeConfigParser/ConfigParser/g' /opt/lofar/ddf-pipeline/utils/options.py
+    $INSTALLDIR/flocs/installers/install_ddf-pipeline.sh
 
     #
     # Install lotss-query
