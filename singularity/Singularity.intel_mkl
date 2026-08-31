@@ -94,15 +94,7 @@ From: fedora:42
         #
         # Install Intel MKL
         #
-tee > /tmp/oneAPI.repo << EOF
-[oneAPI]
-name=Intel® oneAPI repository
-baseurl=https://yum.repos.intel.com/oneapi
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-EOF
+        wget https://raw.githubusercontent.com/tikk3r/flocs/refs/heads/fedora-py3/repos/oneAPI.repo -O /tmp/oneAPI.repo
         sudo mv /tmp/oneAPI.repo /etc/yum.repos.d/
         dnf -y install intel-oneapi-mkl intel-oneapi-mkl-devel
         # We don't compile with the Intel toolchain
