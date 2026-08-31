@@ -62,13 +62,13 @@ From: fedora:42
     #
     mkdir /opt/aocl
     cd /opt/aocl
-    wget --progress=bar:force:noscroll  https://download.amd.com/developer/eula/aocl/aocl-5-1/aocl-linux-aocc-5.1.0.tar.gz
-    tar xf aocl-linux-aocc-5.1.0.tar.gz
+    wget --progress=bar:force:noscroll  https://download.amd.com/developer/eula/aocl/aocl-5-1/aocl-linux-aocc-${AOCL_VERSION}.tar.gz
+    tar xf aocl-linux-aocc-${AOCL_VERSION}.tar.gz
     rm aocl-linux-*.tar.gz
-    cd aocl-linux-aocc-5.1.0
+    cd aocl-linux-aocc-${AOCL_VERSION}
     ./install.sh -t /opt/aocl -i lp64
-    source /opt/aocl/5.1.0/aocc/amd-libs.cfg
-    export CPATH=/opt/aocl/5.1.0/aocc/include:$CPATH
+    source /opt/aocl/${AOCL_VERSION}/aocc/amd-libs.cfg
+    export CPATH=/opt/aocl/${AOCL_VERSION}/aocc/include:$CPATH
     # Added with Fedora 42 update, otherwise EveryBeam crashes on import.
     find /opt/aocl/5.1.0/aocc/ -name "libamdlibm*.so" -exec execstack -c {} \;
     rm -rf /opt/aocl/5.1.0/aocc/lib_ILP64/
@@ -97,8 +97,8 @@ From: fedora:42
     make install
     cd $INSTALLDIR
     rm -rf /opt/fftw
-    rm -rf /opt/aocl/aocl-linux-aocc-5.1.0
-    ls /opt/aocl/5.1.0/aocc/lib/
+    rm -rf /opt/aocl/aocl-linux-aocc-${AOCL_VERSION}
+    ls /opt/aocl/${AOCL_VERSION}/aocc/lib/
     #
     # End AMD installs
     #
