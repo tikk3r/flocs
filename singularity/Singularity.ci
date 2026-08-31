@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:40
+From: fedora:42
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -38,8 +38,6 @@ From: fedora:40
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
-    # Necessary for nomacs
-    sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 
     wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/build_environment_variables.sh -O $INSTALLDIR/build_environment_variables.sh
     source $INSTALLDIR/build_environment_variables.sh
@@ -126,38 +124,61 @@ EOF
     #
     # Setup the Python environment.
     #
-    cd $INSTALLDIR && git clone --single-branch -b fedora-py3 https://github.com/tikk3r/flocs.git
-
-    sudo dnf -y install python3-cx-oracle
-    pip --version
+    sudo dnf -y install python3-cx-oracle python3.12 python3.12-devel
     pip install uv
+    export PATH="/root/.local/bin:$PATH"
+
+    uv tool install shadems --with "pyarrow,dask<2025"
+    uv tool install lofar-vlbi-plot
+
+    uv tool install breizorro
 
     # Install the normal Python environment.
-    uv venv --seed $INSTALLDIR/pyenv-py3 --python=python3
-    # Without this strange bash errors appear with singularity shell from apptainer with 1.1.6-1.el8.
-    printf "unset \$PROMPT_COMMAND\n$(cat $INSTALLDIR/pyenv-py3/bin/activate)" > $INSTALLDIR/pyenv-py3/bin/activate
+    uv venv --seed --python=python3.12 $INSTALLDIR/pyenv-py3
+    # Without this the environment doesn't load.
+    sed -i "29,41d" $INSTALLDIR/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
 
-    uv pip install --upgrade pip wheel Cython
-    uv pip install "numpy<2"
+    git clone --recurse-submodules https://github.com/tikk3r/flocs.git $INSTALLDIR/flocs
+    git clone https://github.com/mattyowl/astLib.git
+    export CC=`which gcc-14`
+    patch astLib/setup.py $INSTALLDIR/flocs/patches/astlib.patch
+    uv pip install --upgrade pip wheel Cython "setuptools>=59.5.0,<71"
+    uv pip install ./astLib
+    rm -rf ./astLib
+    export CC=`which gcc`
+    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+    uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
+    uv pip install scikit_build_core setuptools_scm
+    uv pip install numpy
     uv pip install --no-binary pandas pandas
     uv pip install --no-binary h5py h5py
-    uv pip install -r $INSTALLDIR/flocs/requirements_ci.txt
+    cat $INSTALLDIR/flocs/requirements_ci.txt | xargs -n 1 uv pip install --no-build-isolation
     # Install facetselfcal this way to make sure data gets installed.
     cd /opt/lofar
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
-    uv pip install lofar_facet_selfcal
-    rm -rf lofar_facet_selfcal
+    uv pip install ./lofar_facet_selfcal
+    # Install this separately since it keeps forcefully downgrading numpy.
+    #pip install --no-deps lofarSun
+    uv pip install ./flocs
 
     #
     # Install PyBDSF
     #
-    mkdir -p ${INSTALLDIR}/pybdsf
-    cd ${INSTALLDIR}/pybdsf && git clone https://github.com/lofar-astron/pybdsf && cd ${INSTALLDIR}/pybdsf/pybdsf && git checkout ${PYBDSF_VERSION} && echo export PYBDSF_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
-    cd ${INSTALLDIR}/pybdsf/pybdsf
-    uv pip install .
+    uv pip install bdsf
+
+    # Install Boost here to ensure Boost Numpy is built
     cd $INSTALLDIR
-    rm -rf $INSTALLDIR/pybdsf/pybdsf
+    wget https://archives.boost.io/release/1.89.0/source/boost_1_89_0.tar.gz
+    tar -xzf boost_1_89_0.tar.gz
+    cd boost_1_89_0
+
+    # Build Boost with Python 3.12
+    ./bootstrap.sh --with-libraries=python
+    # https://www.boost.org/doc/libs/1_89_0/tools/build/doc/html/index.html
+    sudo ./b2 -j $J --without-test python=3.12 threading=multi cflags="`python3.12-config --cflags`" cxxflags="`python3.12-config --includes`" linkflags="`python3.12-config --libs`" install
+    cd $INSTALLDIR
+    rm -rf boost_1_89_0.tar.gz boost_1_89_0
 
     #
     # Install CASAcore
@@ -181,6 +202,7 @@ EOF
             -DBUILD_PYTHON3=True \
             -DBUILD_DYSCO=ON \
             -DBLA_VENDOR=Intel10_64lp \
+            -DBUILD_TESTING=OFF \
             ../src
     else
         cmake $CMAKE_ADD_OPTION \
@@ -233,19 +255,19 @@ EOF
     # Install AOFlagger
     #
     mkdir -p ${INSTALLDIR}/aoflagger/build
-    cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagger/src && git checkout ${AOFLAGGER_VERSION} && echo export AOFLAGGER_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
+    cd ${INSTALLDIR}/aoflagger && git clone https://gitlab.com/aroffringa/aoflagger.git src && cd ${INSTALLDIR}/aoflagg-DBUILT_TESTING=OFF ../src && git checkout ${AOFLAGGER_VERSION} && echo export AOFLAGGER_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ] && [ $HAS_MKL = true ]; then
         cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
-            -DBUILD_SHARED_LIBS=ON -DPORTABLE=True -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so ../src
+            -DBUILD_SHARED_LIBS=ON -DPORTABLE=True -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so -DBUILT_TESTING=OFF ../src
     elif [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ] && [ $HAS_MKL = false ]; then
         cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
-            -DBUILD_SHARED_LIBS=ON -DPORTABLE=True ../src
+            -DBUILD_SHARED_LIBS=ON -DPORTABLE=True -DBUILT_TESTING=OFF ../src
     elif [ $HAS_MKL = true ]; then
         cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
-            -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so ../src
+            -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False -DBLAS_iomp5_LIBRARY=${MKLROOT}/lib/libiomp5.so -DBUILT_TESTING=OFF ../src
     else
         cd ${INSTALLDIR}/aoflagger/build && cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=${INSTALLDIR}/aoflagger/ -DCASACORE_ROOT_DIR=${INSTALLDIR}/casacore \
-            -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False ../src
+            -DBUILD_SHARED_LIBS=ON -DTARGET_CPU=$MARCH -DPORTABLE=False -DBUILT_TESTING=OFF ../src
     fi
     cd ${INSTALLDIR}/aoflagger/build && make -s -j ${J}
     cd ${INSTALLDIR}/aoflagger/build && make install
@@ -318,9 +340,9 @@ EOF
     echo export DP3_VERSION=$(git rev-parse --short HEAD) >> $INSTALLDIR/init.sh
     cd $INSTALLDIR/DP3/build
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DMETADATA_COMPRESSION_DEFAULT=True -DUSE_FAST_PREDICT=ON ../src
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DMETADATA_COMPRESSION_DEFAULT=True -DUSE_FAST_PREDICT=ON -DPython3_FIND_VIRTUALENV=ONLY -DBUILD_TESTING=OFF ../src
     else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DMETADATA_COMPRESSION_DEFAULT=True -DUSE_FAST_PREDICT=ON ../src
+        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DMETADATA_COMPRESSION_DEFAULT=True -DUSE_FAST_PREDICT=ON -DPython3_FIND_VIRTUALENV=ONLY -DBUILD_TESTING=OFF ../src
     fi
     # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install
@@ -328,7 +350,7 @@ EOF
     rm -rf $INSTALLDIR/DP3/build
     rm -rf $INSTALLDIR/DP3/src
     mkdir $INSTALLDIR/DP3/usermodules
-    wget https://raw.githubusercontent.com/jurjen93/lofar_helpers/master/dp3_helpers/polconv.py -O $INSTALLDIR/DP3/usermodules/polconv.py
+    cp $INSTALLDIR/lofar_facet_selfcal/submods/polconv.py $INSTALLDIR/DP3/usermodules/polconv.py
 
     #
     # Install LoSoTo
@@ -378,10 +400,8 @@ EOF
     #
     mkdir -p /opt/lofar/runners
     cd /opt/lofar/
-    cp flocs/runners/run* ./runners/
     cp -r flocs/utility /opt/lofar/
     rm -rf flocs
-    chmod 755 /opt/lofar/runners/*.sh
     chmod 755 /opt/lofar/utility/*.sh
     cd $INSTALLDIR
 
@@ -417,7 +437,6 @@ EOF
     # echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/DP3/bin:\$PATH  >> $INSTALLDIR/init.sh
     echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
     echo export PATH=/opt/hdf5/bin:\$PATH  >> $INSTALLDIR/init.sh

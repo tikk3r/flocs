@@ -24,7 +24,6 @@ blurhash
 boost
 boto3
 botocore
-breizorro
 cachetools
 certifi
 chardet
@@ -78,7 +77,7 @@ nmmn
 nose
 numdifftools
 numexpr
-numpy<2
+"numpy<2.5"
 oauthlib
 pluggy
 polars
@@ -98,6 +97,7 @@ pylru
 pymultinest
 pymysql
 pyparsing
+pyproj
 pyregion
 pytest
 python-dateutil

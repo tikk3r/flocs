@@ -8,11 +8,11 @@ From: fedora:42
 %arguments
     HAS_CUDA=true
     HAS_MKL=true
-    MARCH=sandybridge
-    MTUNE=sandybridge
+    MARCH=haswell
+    MTUNE=haswell
     NOAVX512=true
     DEBUG=false
-    OPENBLASTARGET=SANDYBRIDGE
+    OPENBLASTARGET=HASWELL
     INSTALL_CASA=false
     INSTALLDIR=/opt/lofar
 
@@ -122,6 +122,9 @@ EOF
         sudo dnf -y install cuda-13-0
         export CUDA_HOME=/usr/local/cuda
         export PATH=$CUDA_HOME/bin:$PATH
+        if [ $DEBUG = false ]; then
+            rm -rf /opt/nvidia/
+        fi
     fi
 
     if [ $HAS_MKL = false ]; then
@@ -153,8 +156,9 @@ EOF
     pip install uv
     export PATH="/root/.local/bin:$PATH"
 
-    uv tool install shadems
-    uv tool install lofar-vlbi-plot
+    uv tool install shadems --with "pyarrow,dask<2025"
+    uv tool install lofar-vlbi-plot --with "python-casacore"
+    uv tool install breizorro
 
     # Install the normal Python environment.
     uv venv --seed --python=python3.12 $INSTALLDIR/pyenv-py3
@@ -194,13 +198,15 @@ EOF
     uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
     uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
     uv pip install scikit_build_core setuptools_scm
-    uv pip install "numpy<2"
+    uv pip install "numpy<2.5"
     uv pip install --no-binary pandas pandas
     uv pip install --no-binary h5py h5py
     cat $INSTALLDIR/flocs/requirements.txt | xargs -n 1 uv pip install --no-build-isolation
     # Install facetselfcal this way to make sure data gets installed.
     cd /opt/lofar
     git clone https://github.com/rvweeren/lofar_facet_selfcal.git
+    cd lofar_facet_selfcal
+    cd ..
     uv pip install ./lofar_facet_selfcal
     # Install this separately since it keeps forcefully downgrading numpy.
     #pip install --no-deps lofarSun
@@ -334,7 +340,7 @@ EOF
             -DLIB_ONLY=True \
             ../src
     fi
-    make -j $j
+    make -j $J
     make install
     rm -rf $INSTALLDIR/sagecal/build
     rm -rf $INSTALLDIR/sagecal/src
@@ -453,6 +459,7 @@ EOF
     git clone https://github.com/revoltek/losoto.git src
     cd src
     git checkout $LOSOTO_VERSION
+    echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
     uv pip install --no-deps .
     cd $INSTALLDIR
     rm -rf $INSTALLDIR/losoto
@@ -488,9 +495,17 @@ EOF
     #
     mkdir -p $INSTALLDIR/ds9/bin
     cd $INSTALLDIR/ds9
-    wget --progress=bar:force:noscroll https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.7b1.tar.gz
+    wget --progress=bar:force:noscroll https://ds9.si.edu/download/fedora38x86/ds9.fedora38x86.8.7.tar.gz
     tar xf ds9*.tar.gz -C $INSTALLDIR/ds9/bin
     rm ds9*.tar.gz
+
+    #
+    # Install STILTS
+    #
+    mkdir -p $INSTALLDIR/stilts
+    cd $INSTALLDIR/stilts
+    wget https://www.star.bris.ac.uk/~mbt/stilts/stilts.jar
+    wget https://www.star.bris.ac.uk/~mbt/stilts/stilts
 
     echo "Installation directory contents:"
     ls ${INSTALLDIR}
@@ -523,7 +538,8 @@ EOF
     # Install DDFacet
     #
     cd $INSTALLDIR
-    git clone --single-branch -b v0.9.1 https://github.com/saopicc/DDFacet.git
+    git clone --single-branch -b v1.0.0.0 https://github.com/saopicc/DDFacet.git
+    sed -i '669s/None:/None and weights is not 1:/' DDFacet/DDFacet/Data/ClassVisServer.py
     uv pip install --no-deps DDFacet/
 
     #
@@ -531,6 +547,12 @@ EOF
     #
     cd $INSTALLDIR
     git clone --single-branch -b v3.3.0 https://github.com/saopicc/killMS.git
+    sed -i '558s/$/ parent_affinity=GDPredict["Parallel"]["MainProcessAffinity"],/' killMS/killMS/kMS.py
+    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/SmoothSols.py
+    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/InterpSols.py
+    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/Weights/W_Imag.py
+    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/Weights/W_TimeCov.py
+    sed -i 's/affinity=0/affinity=0, parent_affinity="disable"/' killMS/killMS/Weights/W_ImagCov.py
     uv pip install --no-deps killMS/
 
     #   
@@ -559,7 +581,7 @@ EOF
     wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/B2.fits
     wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/NVSS.fits
     #wget --progress=bar:force:noscroll https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
-    wget --progress=bar:force:noscroll http://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
+    wget --progress=bar:force:noscroll https://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
     cd $INSTALLDIR
 
     sed -i 's/SafeConfigParser/ConfigParser/g' /opt/lofar/ddf-pipeline/utils/options.py
@@ -589,108 +611,26 @@ EOF
 
     cd $INSTALLDIR
     mv flocs/utility .
-    rm -rf flocs
 
     #
     # Finaly cleanup of unnecessary stuff
     # 
     rm -rf lofar_facet_selfcal
     rm -rf /var/cache/dnf/*
-    rm -rf /var/cache/yum/*
+    rm -rf /var/cache/libdnf5/*
     rm -rf /var/log/*
     uv cache clean
     dnf -y clean all
     
     #
-    # init-lofar
+    # Final initialisation steps for the container.
     #
     ln -s $INSTALLDIR/pyenv-py3/bin/h5plot /usr/bin/h5plot
-
-    # Store version information.
-    echo export FLOCS_VERSION=$FLOCS_VERSION >> $INSTALLDIR/init.sh
-    echo export LOSOTO_VERSION=$LOSOTO_VERSION >> $INSTALLDIR/init.sh
-    if [ $HAS_MKL = false ]; then
-        echo export OPENBLAS_VERSION=$OPENBLAS_VERSION >> $INSTALLDIR/init.sh
-    fi
-    echo export HDF5_USE_FILE_LOCKING=$HDF5_USE_FILE_LOCKING >> $INSTALLDIR/init.sh
-
-    echo export MARCH=$MARCH >> $INSTALLDIR/init.sh
-    echo export MTUNE=$MTUNE >> $INSTALLDIR/init.sh
-    echo $'export MARCH_MACHINE=$(gcc -march=native -Q --help=target | grep "\-march=" | head -n 1 | awk \'{print $2}\')' >> $INSTALLDIR/init.sh
-    echo $'export MTUNE_MACHINE=$(gcc -mtune=native -Q --help=target | grep "\-mtune=" | head -n 1 | awk \'{print $2}\')' >> $INSTALLDIR/init.sh
-    echo $'if [ "$MARCH_MACHINE" != "$MARCH" ]; then echo "WARNING - software has been build with -march=$MARCH but current machine reports -march=$MARCH_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
-    echo $'if [ "$MTUNE_MACHINE" != "$MTUNE" ]; then echo "WARNING - software has been build with -mtune=$MTUNE but current machine -mtune=$MTUNE_MACHINE.\nIf you encounter strange behaviour or Illegal instruction warnings, consider building a container with the appropriate architecture set."; fi' >> $INSTALLDIR/init.sh
-    echo export INSTALLDIR=$INSTALLDIR >> $INSTALLDIR/init.sh
-    echo export PYTHONPATH=\$INSTALLDIR/VLBI-cwl/scripts:\$INSTALLDIR/LINC/scripts:\$INSTALLDIR/lofar/lib64/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/lib/python$PYTHON_VERSION/site-packages:\$INSTALLDIR/DP3/usermodules:\$INSTALLDIR/EveryBeam/lib64/python$PYTHON_VERSION/site-packages:\$PYTHONPATH >> $INSTALLDIR/init.sh
-    echo export PYTHONPATH=\$INSTALLDIR/aoflagger/lib:\$PYTHONPATH >> $INSTALLDIR/init.sh
-    # echo export PATH=/opt/montage/Montage-6.0/bin:\$PATH  >> $INSTALLDIR/init.sh
-    echo export PATH=/root/.local/bin/:\$PATH  >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/aoflagger/bin:\$PATH  >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/casacore/bin:\$PATH  >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/ds9/bin:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/DP3/bin:\$PATH  >> $INSTALLDIR/init.sh
-    # echo export PATH=\$INSTALLDIR/difmap/uvf_difmap:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=/opt/hdf5/bin:\$PATH  >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/wsclean/bin:\$PATH  >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/runners:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/LINC/scripts:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/utility:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/MultiNest/bin:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=/usr/lib64/openmpi/bin:\$PATH >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/VLBI-cwl/scripts:\$PATH >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=\$INSTALLDIR/aoflagger/lib:\$INSTALLDIR/casacore/lib:\$INSTALLDIR/DP3/lib:\$INSTALLDIR/EveryBeam/lib:/opt/hdf5/lib:\$INSTALLDIR/idg/lib:\$INSTALLDIR/lofar/lib:\$INSTALLDIR/lofar/lib64:\$LD_LIBRARY_PATH  >> $INSTALLDIR/init.sh
-    if [ $HAS_MKL = false ]; then
-        echo export LD_LIBRARY_PATH=/opt/OpenBLAS/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    fi
-    echo export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=\$INSTALLDIR/sagecal/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=\$INSTALLDIR/lofarstman/lib64/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    echo export LD_LIBRARY_PATH=\$INSTALLDIR/MultiNest/lib/:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    # OPENBLAS_NUM_THREADS=1 is required for WSClean
-    echo export NCPU=\$\(nproc\) >> $INSTALLDIR/init.sh
-    echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
-    echo export OPENBLAS_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
-    echo export OMP_NUM_THREADS=\$NCPU >> $INSTALLDIR/init.sh
-    echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
-    echo export HAS_CUDA=$HAS_CUDA >> $INSTALLDIR/init.sh
-    if [ $HAS_CUDA = true ]; then
-        echo export CUDA_HOME=/usr/local/cuda >> $INSTALLDIR/init.sh
-        echo export PATH=\$CUDA_HOME/bin:\$PATH >> $INSTALLDIR/init.sh
-        echo export LD_LIBRARY_PATH=\$CUDA_HOME/lib64:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    fi
-    echo export HAS_MKL=$HAS_MKL >> $INSTALLDIR/init.sh
-    if [ $HAS_MKL = false ]; then
-        echo flexiblas add OPENBLAS /opt/OpenBLAS/lib64/libopenblas.so >> $INSTALLDIR/init.sh
-        echo export FLEXIBLAS=OPENBLAS >> $INSTALLDIR/init.sh
-    fi
-    # Needed for shadems
-    echo export NUMBA_CACHE_DIR=/tmp >> $INSTALLDIR/init.sh
-
-    echo export EVERYBEAM_DATADIR=\$INSTALLDIR/EveryBeam/share/everybeam >> $INSTALLDIR/init.sh
-    echo export LINC_DATA_ROOT=/opt/lofar/LINC >> $INSTALLDIR/init.sh
-    echo export HDF5_DIR=/opt/hdf5 >> $INSTALLDIR/init.sh
-
-    echo . \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
     # For some reason this doesn't work.
     # echo . /opt/intel/oneapi/mkl/latest/env/vars.sh >> $INSTALLDIR/init.sh
-
-    echo "measures.directory: $INSTALLDIR/casacore/data" > $INSTALLDIR/.casarc 
-    echo export CASARCFILES=\$INSTALLDIR/.casarc >> $INSTALLDIR/init.sh
-    if [ $HAS_MKL = true ]; then
-        echo export MKLROOT=$MKLROOT >> $INSTALLDIR/init.sh
-        echo export PATH=\$MKLROOT/bin:\$PATH >> $INSTALLDIR/init.sh
-        echo export LD_LIBRARY_PATH=\$MKLROOT/lib:\$LD_LIBRARY_PATH >> $INSTALLDIR/init.sh
-    fi
-
-
-    echo "# DDF environment settings" >> $INSTALLDIR/init.sh
-    echo export DDF_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
-    echo export DDF_PIPELINE_CATALOGS=$INSTALLDIR/DDFCatalogues >> $INSTALLDIR/init.sh
-    echo export KILLMS_DIR=$INSTALLDIR >> $INSTALLDIR/init.sh
-    echo export PYTHONPATH=\$INSTALLDIR/lotss-hba-survey:\$INSTALLDIR/lotss-query:\$INSTALLDIR/ddf-pipeline/scripts:$INSTALLDIR/ddf-pipeline/utils:$INSTALLDIR/DDFacet/DDFacet:$INSTALLDIR/DynSpecMS:\$PYTHONPATH >> $INSTALLDIR/init.sh
-    echo export PATH=\$INSTALLDIR/DynSpecMS/:\$INSTALLDIR/ddf-pipeline/scripts:\$PATH >> $INSTALLDIR/init.sh
-    echo "if echo \$(hostname) | grep -qi leiden; then export DDF_PIPELINE_CLUSTER="paracluster"; else export DDF_PIPELINE_CLUSTER=; fi" >> $INSTALLDIR/init.sh
+    bash $INSTALLDIR/flocs/construct_init.sh
+    echo . \$INSTALLDIR/pyenv-py3/bin/activate >> $INSTALLDIR/init.sh
+    rm -rf $INSTALLDIR/flocs
 
 %help
     This Apptainer (formerly Singularity) image contains a variety of LOFAR software. In order to run your pipelines, you may need to know where the software is installed. The root directory is /opt/lofar, with most software installed as follows:
