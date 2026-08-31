@@ -29,6 +29,9 @@ export OPENBLAS_NUM_THREADS=1
 export BLIS_NUM_THREADS=$OPENBLAS_NUM_THREADS
 export NUM_THREADS=256
 
+export CC=`which gcc`
+export CXX=`which g++`
+
 # MARCH and MTUNE are set apptainer arguments. These are assumed to be defined when this script is sourced.
 if [ "$NOAVX512" = "true" ]; then
     export FFLAGS="-march=${MARCH} -mtune=${MTUNE} -mno-avx512f"
