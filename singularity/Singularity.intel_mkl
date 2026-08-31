@@ -581,7 +581,7 @@ EOF
     wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/B2.fits
     wget --progress=bar:force:noscroll https://www.extragalactic.info/bootstrap/NVSS.fits
     #wget --progress=bar:force:noscroll https://lambda.gsfc.nasa.gov/data/foregrounds/tgss_adr/TGSSADR1_7sigma_catalog.fits
-    wget --progress=bar:force:noscroll http://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
+    wget --progress=bar:force:noscroll https://tgssadr.strw.leidenuniv.nl/catalogs/TGSSADR1_7sigma_catalog.fits
     cd $INSTALLDIR
 
     sed -i 's/SafeConfigParser/ConfigParser/g' /opt/lofar/ddf-pipeline/utils/options.py
