@@ -591,8 +591,6 @@ From: fedora:42
     cd ddf-pipeline && git checkout $DDFPIPELINE_VERSION && cd ..
     cd $INSTALLDIR
     sed -i "s/DDF.py/DDF.py --Misc-IgnoreDeprecationMarking=1/" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/--Beam-PhasedArrayMode/--Beam-LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
-    sed -i "s/--PhasedArrayMode/--LOFARBeamMode/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
     sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/pipeline.py
     sed -i "s/pybdsm\.srl\.fits/pybdsf\.srl\.fits/g" $INSTALLDIR/ddf-pipeline/scripts/bootstrap.py
     sed -i '353s/readonly=True/readonly=False/' $INSTALLDIR/ddf-pipeline/utils/auxcodes.py
