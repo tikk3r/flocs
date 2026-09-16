@@ -73,3 +73,14 @@ else:
 ```
 
 and remove or comment out the else clause.
+
+## GUI applications fail with "Failed to open display"
+Can be an issue with Wayland. You can run something like
+
+```
+apptainer shell \
+--bind /run/user/$(id -u)/$WAYLAND_DISPLAY:/run/user/$(id -u)/$WAYLAND_DISPLAY \
+--env WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
+--env XDG_RUNTIME_DIR=/run/user/$(id -u) \
+flocs_v6.2.3_sandybridge_sandybridge.sif
+```
