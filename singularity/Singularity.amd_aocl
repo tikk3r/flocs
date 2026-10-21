@@ -183,7 +183,7 @@ From: fedora:42
     # Install the normal Python environment.
     uv venv --seed --python=python3.12 $INSTALLDIR/pyenv-py3
     # Without this the environment doesn't load.
-    sed -i "29,41d" $INSTALLDIR/pyenv-py3/bin/activate
+    sed -i '/^# Get script path/,/^fi$/d' /opt/lofar/pyenv-py3/bin/activate
     source $INSTALLDIR/pyenv-py3/bin/activate
 
     #
