@@ -154,7 +154,7 @@ EOF
     #
     # Setup the Python environment.
     #
-    sudo dnf -y install python3-cx-oracle python3.12 python3.12-devel
+    sudo dnf -y install python3-oracledb python3.12 python3.12-devel
     pip install uv
     export PATH="/root/.local/bin:$PATH"
 
