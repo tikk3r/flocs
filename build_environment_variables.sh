@@ -6,12 +6,12 @@ export DDFPIPELINE_VERSION=35bd158
 export DP3_VERSION=ed805756
 export EVERYBEAM_VERSION=dc002080
 export HDF5_VERSION=1.14.5
-export IDG_VERSION=49f49a24
+export IDG_VERSION=d7193fc8
 export LOSOTO_VERSION=2.7.1
 export OPENBLAS_VERSION=v0.3.34
 export PYBDSF_VERSION=62938a6
 export PYTHON_CASACORE_VERSION=3.6.1
-export WSCLEAN_VERSION=c9e333e6
+export WSCLEAN_VERSION=c54f62fd
 
 # Expert settings below. Generally these won't have to be touched.
 # General environment settings.
