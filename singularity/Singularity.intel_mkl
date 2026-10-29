@@ -612,6 +612,18 @@ EOF
     mv flocs/utility .
 
     #
+    # Install Rapthor
+    #
+    cd $INSTALLDIR/
+    git clone https://git.astron.nl/RD/rapthor.git
+    cd rapthor
+    git checkout $RAPTHOR_VERSION
+    echo export RAPTHOR_VERSION=$RAPTHOR_VERSION >> $INSTALLDIR/init.sh
+    uv pip install --no-deps .
+    cd $INSTALLDIR
+    rm -rf $INSTALLDIR/rapthor
+
+    #
     # Finaly cleanup of unnecessary stuff
     # 
     rm -rf lofar_facet_selfcal
