@@ -529,7 +529,7 @@ EOF
     # Install in the existing lofar python folder
     mkdir -p /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/
     touch /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/__init__.py
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS:-} -include $PWD/lofarbeam_compat.h" ../src
     make -j $J
     make install
     cd $INSTALLDIR
