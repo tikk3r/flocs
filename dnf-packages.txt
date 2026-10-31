@@ -9,6 +9,7 @@ bzip2
 bzip2-devel
 cfitsio
 cfitsio-devel
+ccache
 cmake
 dnf-plugins-core
 execstack
