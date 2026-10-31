@@ -452,6 +452,7 @@ From: fedora:44
         -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
         -DMETADATA_COMPRESSION_DEFAULT=True \
         -DPython3_FIND_VIRTUALENV=ONLY \
+        -DTRIGDX_USE_MKL=ON \
         ../src
     fi
     make -s -j $J && make install
