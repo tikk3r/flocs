@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:42
+From: fedora:44
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -31,10 +31,13 @@ From: fedora:42
     # System installs
     #
     dnf -y update
+    dnf -y install git
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install wget
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
-    dnf -y install $(<$INSTALLDIR/dnf-packages.txt)
+
+    git clone --recurse-submodules https://github.com/tikk3r/flocs.git@flocs-7 $INSTALLDIR/flocs
+    dnf -y install $(<$INSTALLDIR/flocs/dnf-packages.txt)
+
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
@@ -342,7 +345,21 @@ EOF
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DMETADATA_COMPRESSION_DEFAULT=True -DUSE_FAST_PREDICT=ON -DPython3_FIND_VIRTUALENV=ONLY -DBUILD_TESTING=OFF ../src
     else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DMETADATA_COMPRESSION_DEFAULT=True -DUSE_FAST_PREDICT=ON -DPython3_FIND_VIRTUALENV=ONLY -DBUILD_TESTING=OFF ../src
+        cmake \
+        $CMAKE_ADD_OPTION \
+        -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 \
+        -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so \
+        -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include \
+        -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include \
+        -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so \
+        -DTARGET_CPU=${MARCH} \
+        -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
+        -DMETADATA_COMPRESSION_DEFAULT=True \
+        -DUSE_FAST_PREDICT=ON \
+        -DPython3_FIND_VIRTUALENV=ONLY \
+        -DBUILD_TESTING=OFF \
+        -DTRIGDX_USE_MKL=ON \
+        ../src
     fi
     # Boost 1.75 requires c++14, so override this during make
     make -s -j $J && make install

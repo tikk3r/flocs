@@ -9,7 +9,8 @@ bzip2
 bzip2-devel
 cfitsio
 cfitsio-devel
-cmake3
+ccache
+cmake
 dnf-plugins-core
 execstack
 f2py
@@ -18,7 +19,6 @@ fftw-libs
 flex
 fpack
 gcc
-gcc-14
 gcc-c++
 gcc-gfortran
 gdal

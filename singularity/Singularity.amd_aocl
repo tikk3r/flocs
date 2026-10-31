@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:42
+From: fedora:44
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -31,10 +31,12 @@ From: fedora:42
     # System installs
     #
     dnf -y update
+    dnf -y install git
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install wget
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
-    dnf -y install $(<$INSTALLDIR/dnf-packages.txt)
+
+    git clone --recurse-submodules https://github.com/tikk3r/flocs.git@flocs-7 $INSTALLDIR/flocs
+    dnf -y install $(<$INSTALLDIR/flocs/dnf-packages.txt)
 
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
@@ -450,6 +452,7 @@ From: fedora:42
         -DLAPACK_flexiblas_LIBRARY=${AOCL_ROOT}/lib/libflame.so \
         -DMETADATA_COMPRESSION_DEFAULT=True \
         -DPython3_FIND_VIRTUALENV=ONLY \
+        -DTRIGDX_USE_MKL=ON \
         ../src
     fi
     make -s -j $J && make install
@@ -549,7 +552,7 @@ From: fedora:42
     # Install in the existing lofar python folder
     mkdir -p /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/
     touch /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/__init__.py
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS:-} -include $PWD/lofarbeam_compat.h" ../src
     make -j $J
     make install
     cd $INSTALLDIR
@@ -631,6 +634,18 @@ From: fedora:42
 
     cd $INSTALLDIR
     mv flocs/utility .
+
+    #
+    # Install Rapthor
+    #
+    cd $INSTALLDIR/
+    git clone https://git.astron.nl/RD/rapthor.git
+    cd rapthor
+    git checkout $RAPTHOR_VERSION
+    echo export RAPTHOR_VERSION=$RAPTHOR_VERSION >> $INSTALLDIR/init.sh
+    uv pip install --no-deps .
+    cd $INSTALLDIR
+    rm -rf $INSTALLDIR/rapthor
 
     #
     # Finaly cleanup of unnecessary stuff

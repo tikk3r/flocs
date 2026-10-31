@@ -1,17 +1,18 @@
-export FLOCS_VERSION="6.3.0"
+export FLOCS_VERSION="7.0.0"
 export AOCL_VERSION=5.1.0
-export AOFLAGGER_VERSION=2c22cfee
-export CASACORE_VERSION=ef9a25f
+export AOFLAGGER_VERSION=811f8e09
+export CASACORE_VERSION=v3.8.2
 export DDFPIPELINE_VERSION=35bd158
-export DP3_VERSION=ed805756
-export EVERYBEAM_VERSION=dc002080
+export DP3_VERSION=5b026b69
+export EVERYBEAM_VERSION=2164af9a
 export HDF5_VERSION=1.14.5
-export IDG_VERSION=49f49a24
-export LOSOTO_VERSION=2.7.1
+export IDG_VERSION=d7193fc8
+export LOSOTO_VERSION=f1c18be
 export OPENBLAS_VERSION=v0.3.34
-export PYBDSF_VERSION=62938a6
+export PYBDSF_VERSION=9101f8d
 export PYTHON_CASACORE_VERSION=3.6.1
-export WSCLEAN_VERSION=c9e333e6
+export RAPTHOR_VERSION=45c1c978
+export WSCLEAN_VERSION=a4b583b7
 
 # Expert settings below. Generally these won't have to be touched.
 # General environment settings.
@@ -28,6 +29,7 @@ export OMP_MAX_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 export BLIS_NUM_THREADS=$OPENBLAS_NUM_THREADS
 export NUM_THREADS=256
+export MKL_THREADING_LAYER=GNU
 
 # MARCH and MTUNE are set apptainer arguments. These are assumed to be defined when this script is sourced.
 if [ "$NOAVX512" = "true" ]; then
@@ -49,7 +51,7 @@ if [ "$DEBUG" = "true" ]; then
 else
     export CMAKE_ADD_OPTION="-Wno-dev"
 fi
-export CPLUS_INCLUDE_PATH="/usr/local/include/boost:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/15:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
+export CPLUS_INCLUDE_PATH="/usr/local/include/boost:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/include/c++/16:/usr/include/python${PYTHON_VERSION}:$INSTALLDIR/casacore/include:/usr/include/cfitsio:$INSTALLDIR/idg/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype:/usr/include/freetype2/freetype/config"
 export CPATH="/usr/local/include/boost:/usr/include/python${PYTHON_VERSION}:/opt/hdf5/include:/opt/OpenBLAS/include:/usr/include/openmpi-x86_64:/usr/local/cuda/include:${INSTALLDIR}/casacore/include:$INSTALLDIR/idg/include:$INSTALLDIR/aoflagger/include:$INSTALLDIR/EveryBeam/include:/usr/include/wcslib:/usr/include/freetype2/freetype/config"
 export CMAKE_PREFIX_PATH="/opt/hdf5:/opt/OpenBLAS:$INSTALLDIR/aoflagger:$INSTALLDIR/casacore:$INSTALLDIR/lofar:$INSTALLDIR/idg:/usr/lib64/openmpi:$INSTALLDIR/EveryBeam"
 export LD_LIBRARY_PATH="/usr/local/lib:/opt/hdf5/lib:$INSTALLDIR/lofarstman/lib64:/opt/OpenBLAS/lib64:$INSTALLDIR/aoflagger/lib:$INSTALLDIR/casacore/lib:$INSTALLDIR/idg/lib:/usr/lib64/openmpi/lib:$INSTALLDIR/EveryBeam/lib:$INSTALLDIR/sagecal/lib:$LD_LIBRARY_PATH"
