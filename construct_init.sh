@@ -31,6 +31,7 @@ echo export OPENBLAS_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
 echo export OMP_NUM_THREADS=\$NCPU >> $INSTALLDIR/init.sh
 echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
 echo export BLIS_NUM_THREADS=\$OPENBLAS_NUM_THREADS >> $INSTALLDIR/init.sh
+echo export MKL_THREADING_LAYER=GNU >> $INSTALLDIR/init.sh
 
 #
 # Vendor math libraries and CUDA
