@@ -29,6 +29,7 @@ export OMP_MAX_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 export BLIS_NUM_THREADS=$OPENBLAS_NUM_THREADS
 export NUM_THREADS=256
+export MKL_THREADING_LAYER=GNU
 
 # MARCH and MTUNE are set apptainer arguments. These are assumed to be defined when this script is sourced.
 if [ "$NOAVX512" = "true" ]; then
