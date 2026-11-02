@@ -3,7 +3,7 @@ export AOCL_VERSION=5.1.0
 export AOFLAGGER_VERSION=811f8e09
 export CASACORE_VERSION=v3.8.2
 export DDFPIPELINE_VERSION=35bd158
-export DP3_VERSION=5b026b69
+export DP3_VERSION=a062674f
 export EVERYBEAM_VERSION=2164af9a
 export HDF5_VERSION=1.14.5
 export IDG_VERSION=d7193fc8
@@ -12,7 +12,7 @@ export OPENBLAS_VERSION=v0.3.34
 export PYBDSF_VERSION=9101f8d
 export PYTHON_CASACORE_VERSION=3.6.1
 export RAPTHOR_VERSION=45c1c978
-export WSCLEAN_VERSION=a4b583b7
+export WSCLEAN_VERSION=d296c15c
 
 # Expert settings below. Generally these won't have to be touched.
 # General environment settings.
