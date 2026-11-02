@@ -525,6 +525,8 @@ EOF
     cd $INSTALLDIR/stilts
     wget https://www.star.bris.ac.uk/~mbt/stilts/stilts.jar
     wget https://www.star.bris.ac.uk/~mbt/stilts/stilts
+    chmod +x stilts
+    chmod +x stilts.jar
 
     echo "Installation directory contents:"
     ls ${INSTALLDIR}
