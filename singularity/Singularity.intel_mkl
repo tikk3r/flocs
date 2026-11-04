@@ -321,7 +321,16 @@ EOF
     #
     # In case anything was installed previously
     uv pip install --no-deps --no-binary python-casacore "python-casacore==${PYTHON_CASACORE_VERSION}"
-    
+
+    #
+    # Install katdal (MeerKAT data access).
+    # Pin numpy and h5py to what is already installed so the source-built h5py is kept.
+    #
+    python -c "import numpy, h5py; print(f'numpy=={numpy.__version__}\nh5py=={h5py.__version__}')" > /tmp/katdal-constraints.txt
+    uv pip install katdal -c /tmp/katdal-constraints.txt
+    rm /tmp/katdal-constraints.txt
+    python -c "import katdal; print('katdal', katdal.__version__)"    
+
     #
     # Install SAGECal
     #
