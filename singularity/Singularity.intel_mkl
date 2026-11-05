@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:42
+From: fedora:44
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -33,10 +33,12 @@ From: fedora:42
     # System installs
     #
     dnf -y update
+    dnf -y install git
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install wget
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
-    dnf -y install $(<$INSTALLDIR/dnf-packages.txt)
+   
+    git clone --recurse-submodules https://github.com/tikk3r/flocs.git@flocs-7 $INSTALLDIR/flocs
+    dnf -y install $(<$INSTALLDIR/flocs/dnf-packages.txt)
 
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
@@ -152,7 +154,7 @@ EOF
     #
     # Setup the Python environment.
     #
-    sudo dnf -y install python3-cx-oracle python3.12 python3.12-devel
+    sudo dnf -y install python3-oracledb python3.12 python3.12-devel
     pip install uv
     export PATH="/root/.local/bin:$PATH"
 
@@ -187,14 +189,13 @@ EOF
        cd $INSTALLDIR
     fi    
 
-    git clone --recurse-submodules https://github.com/tikk3r/flocs.git
     git clone https://github.com/mattyowl/astLib.git
-    export CC=`which gcc-14`
-    patch astLib/setup.py flocs/patches/astlib.patch
+    #export CC=`which gcc-14`
+    #patch astLib/setup.py flocs/patches/astlib.patch
     uv pip install --upgrade pip wheel Cython "setuptools>=59.5.0,<71"
     uv pip install ./astLib
     rm -rf ./astLib
-    export CC=`which gcc`
+    #export CC=`which gcc`
     uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
     uv pip install --no-build-isolation git+https://github.com/sara-nl/cortExchange#egg=cortexchange
     uv pip install scikit_build_core setuptools_scm
@@ -446,7 +447,25 @@ EOF
     if [ $MARCH = 'x86-64' ] && [ $MTUNE = 'generic' ]; then
         cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DPORTABLE=True -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DMETADATA_COMPRESSION_DEFAULT=True -DPython3_FIND_VIRTUALENV=ONLY ../src
     else
-        cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so -DTARGET_CPU=${MARCH} -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ -DMETADATA_COMPRESSION_DEFAULT=True -DPython3_FIND_VIRTUALENV=ONLY ../src
+        cmake $CMAKE_ADD_OPTION \
+        -DCMAKE_INSTALL_PREFIX:PATH=$INSTALLDIR/DP3 \
+        -DIDGAPI_LIBRARIES=$INSTALLDIR/idg/lib/libidg-api.so \
+        -DIDGAPI_INCLUDE_DIRS=$INSTALLDIR/idg/include \
+        -DAOFLAGGER_INCLUDE_DIR=$INSTALLDIR/aoflagger/include \
+        -DAOFLAGGER_LIB=$INSTALLDIR/aoflagger/lib/libaoflagger.so \
+        -DTARGET_CPU=${MARCH} \
+        -DLIBDIRAC_PREFIX=$INSTALLDIR/sagecal/ \
+        -DMETADATA_COMPRESSION_DEFAULT=True \
+        -DPython3_FIND_VIRTUALENV=ONLY \
+        -DTRIGDX_USE_MKL=ON \
+        -DBLAS_LIBRARIES="${MKLROOT}/lib/libmkl_intel_lp64.so;${MKLROOT}/lib/libmkl_gnu_thread.so;${MKLROOT}/lib/libmkl_core.so;gomp;pthread;m;dl" \
+        -DLAPACK_LIBRARIES="${MKLROOT}/lib/libmkl_intel_lp64.so;${MKLROOT}/lib/libmkl_gnu_thread.so;${MKLROOT}/lib/libmkl_core.so;gomp;pthread;m;dl" \
+        -DOMP_LIBRARY=/usr/lib/gcc/x86_64-redhat-linux/16/libgomp.so \
+        -DBLA_VENDOR=Intel10_64lp \
+        -DMKL_ARCH=intel64 \
+        -DMKL_INTERFACE=lp64 \
+        -DMKL_THREADING=gnu_thread \
+        ../src
     fi
     make -s -j $J && make install
     cd $INSTALLDIR
@@ -515,6 +534,8 @@ EOF
     cd $INSTALLDIR/stilts
     wget https://www.star.bris.ac.uk/~mbt/stilts/stilts.jar
     wget https://www.star.bris.ac.uk/~mbt/stilts/stilts
+    chmod +x stilts
+    chmod +x stilts.jar
 
     echo "Installation directory contents:"
     ls ${INSTALLDIR}
@@ -537,7 +558,13 @@ EOF
     # Install in the existing lofar python folder
     mkdir -p /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/
     touch /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/__init__.py
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
+# Compatibility header: expose std::string as unqualified string.
+# This avoids modifying any LOFARBeam source files.
+cat > lofarbeam_compat.h <<'EOF'
+#include <string>
+using std::string;
+EOF
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS:-} -include $PWD/lofarbeam_compat.h" ../src
     make -j $J
     make install
     cd $INSTALLDIR
@@ -618,6 +645,18 @@ EOF
 
     cd $INSTALLDIR
     mv flocs/utility .
+
+    #
+    # Install Rapthor
+    #
+    cd $INSTALLDIR/
+    git clone https://git.astron.nl/RD/rapthor.git
+    cd rapthor
+    git checkout $RAPTHOR_VERSION
+    echo export RAPTHOR_VERSION=$RAPTHOR_VERSION >> $INSTALLDIR/init.sh
+    uv pip install --no-deps .
+    cd $INSTALLDIR
+    rm -rf $INSTALLDIR/rapthor
 
     #
     # Finaly cleanup of unnecessary stuff

@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:42
+From: fedora:44
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -31,10 +31,13 @@ From: fedora:42
     # System installs
     #
     dnf -y update
+    dnf -y install git
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install wget
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
-    dnf -y install $(<$INSTALLDIR/dnf-packages.txt)
+
+    git clone --recurse-submodules https://github.com/tikk3r/flocs.git@flocs-7 $INSTALLDIR/flocs
+    dnf -y install $(<$INSTALLDIR/flocs/dnf-packages.txt)
+
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
