@@ -42,8 +42,7 @@ From: fedora:44
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
 
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/build_environment_variables.sh -O $INSTALLDIR/build_environment_variables.sh
-    source $INSTALLDIR/build_environment_variables.sh
+    source $INSTALLDIR/flocs/build_environment_variables.sh
 
     export CC=`which gcc`
     export CXX=`which g++`
