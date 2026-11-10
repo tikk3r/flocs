@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: fedora:42
+From: fedora:44
 
 %environment
     export INSTALLDIR=/opt/lofar
@@ -31,17 +31,18 @@ From: fedora:42
     # System installs
     #
     dnf -y update
+    dnf -y install git
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install wget
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/dnf-packages.txt -O $INSTALLDIR/dnf-packages.txt
-    dnf -y install $(<$INSTALLDIR/dnf-packages.txt)
+
+    git clone --recurse-submodules --branch v7.0.0 --single-branch https://github.com/tikk3r/flocs.git $INSTALLDIR/flocs
+    dnf -y install $(<$INSTALLDIR/flocs/dnf-packages.txt)
 
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     dnf -y install oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
     rm oracle-instantclient-basic-*.rpm
 
-    wget https://raw.githubusercontent.com/tikk3r/flocs/fedora-py3/build_environment_variables.sh -O $INSTALLDIR/build_environment_variables.sh
-    source $INSTALLDIR/build_environment_variables.sh
+    source $INSTALLDIR/flocs/build_environment_variables.sh
 
     export CC=`which gcc`
     export CXX=`which g++`
@@ -536,6 +537,8 @@ From: fedora:42
     cd $INSTALLDIR/stilts
     wget https://www.star.bris.ac.uk/~mbt/stilts/stilts.jar
     wget https://www.star.bris.ac.uk/~mbt/stilts/stilts
+    chmod +x stilts
+    chmod +x stilts.jar
 
     echo "Installation directory contents:"
     ls ${INSTALLDIR}
@@ -558,7 +561,13 @@ From: fedora:42
     # Install in the existing lofar python folder
     mkdir -p /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/
     touch /opt/lofar/lofar/lib64/python${PYTHON_VERSION}/site-packages/lofar/__init__.py
-    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar ../src
+# Compatibility header: expose std::string as unqualified string.
+# This avoids modifying any LOFARBeam source files.
+cat > lofarbeam_compat.h <<'EOF'
+#include <string>
+using std::string;
+EOF
+    cmake $CMAKE_ADD_OPTION -DCMAKE_INSTALL_PREFIX=$INSTALLDIR/lofar -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS:-} -include $PWD/lofarbeam_compat.h" ../src
     make -j $J
     make install
     cd $INSTALLDIR
@@ -640,6 +649,18 @@ From: fedora:42
 
     cd $INSTALLDIR
     mv flocs/utility .
+
+    #
+    # Install Rapthor
+    #
+    cd $INSTALLDIR/
+    git clone https://git.astron.nl/RD/rapthor.git
+    cd rapthor
+    git checkout $RAPTHOR_VERSION
+    echo export RAPTHOR_VERSION=$RAPTHOR_VERSION >> $INSTALLDIR/init.sh
+    uv pip install --no-deps .
+    cd $INSTALLDIR
+    rm -rf $INSTALLDIR/rapthor
 
     #
     # Finaly cleanup of unnecessary stuff

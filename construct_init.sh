@@ -25,12 +25,13 @@ echo $'if [ "$MTUNE_MACHINE" != "$MTUNE" ]; then echo "WARNING - software has be
 
 # Settings that control threading of BLAS libraries etc.
 # OPENBLAS_NUM_THREADS=1 is required for WSClean
-echo export NCPU=\$\(nproc\) >> $INSTALLDIR/init.sh
+echo 'export NCPU=${SLURM_CPUS_PER_TASK:-$(nproc)}' >> $INSTALLDIR/init.sh
 echo export OPENBLAS_NUM_THREADS=1 >> $INSTALLDIR/init.sh
 echo export OPENBLAS_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
 echo export OMP_NUM_THREADS=\$NCPU >> $INSTALLDIR/init.sh
 echo export OMP_MAX_THREADS=\$NCPU >> $INSTALLDIR/init.sh
 echo export BLIS_NUM_THREADS=\$OPENBLAS_NUM_THREADS >> $INSTALLDIR/init.sh
+echo export MKL_THREADING_LAYER=GNU >> $INSTALLDIR/init.sh
 
 #
 # Vendor math libraries and CUDA
