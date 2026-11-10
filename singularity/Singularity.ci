@@ -35,7 +35,7 @@ From: fedora:44
     dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     dnf -y install wget
 
-    git clone --recurse-submodules https://github.com/tikk3r/flocs.git@flocs-7 $INSTALLDIR/flocs
+    git clone --recurse-submodules --branch v7.0.0 --single-branch https://github.com/tikk3r/flocs.git $INSTALLDIR/flocs
     dnf -y install $(<$INSTALLDIR/flocs/dnf-packages.txt)
 
     wget --progress=bar:force:noscroll https://download.oracle.com/otn_software/linux/instantclient/2360000/oracle-instantclient-basic-23.6.0.24.10-1.el9.x86_64.rpm
