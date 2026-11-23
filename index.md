@@ -6,8 +6,7 @@ nav_order: 1
 This page documents my [LOFAR containers], very creatively named "Frits' LoFAR Containers" or FLoCs. These containers package a collection of common LOFAR software that is used for imaging science with both Dutch and international array. Pre-built containers are publicly available through a webdav hosted on [SURF]. For instructions on running a pipeline, for example, see [Using the containers](https://tikk3r.github.io/flocs/docs/using-containers.html#pipeline-use). These containers form a basis for the larger [FLOCSoft](https://github.com/FLOCSoft) software ecosystem.
 
 # Latest containers
-[Download v6.2.3 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.2.3_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[Download v6.2.3 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.2.3_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v7.0.0 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v7.0.0_haswell_haswell.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 
 [View recipes on GitHub][LOFAR containers]{: .btn .fs-5 .mb-4 .mb-md-0 }
@@ -15,7 +14,9 @@ This page documents my [LOFAR containers], very creatively named "Frits' LoFAR C
 # Previous containers
 
 ## Version 6.X
-# Latest containers
+[Download v6.2.3 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.2.3_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Download v6.2.3 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.2.3_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+
 [Download v6.2.2 (Intel Sandy Bridge)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.2.2_sandybridge_sandybridge.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Download v6.2.2 (AMD Zen 2)](https://public.spider.surfsara.nl/project/lofarvwf/fsweijen/containers/flocs_v6.2.2_znver2_znver2.sif){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 

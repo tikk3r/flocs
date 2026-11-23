@@ -13,6 +13,34 @@ nav_order: 5
 1. TOC
 {:toc}
 
+## v7.0.0
+
+Update base container to Fedora 44.
+
+N.B. LOFAR LTA software is not included in this release due to LTA unavailability.
+
+**Fixes**
+* Attempt better threading management by setting MKL's threading layer to GNU.
+* LOFARBeam installation with new casacore.
+* Set NCPU based on Slurm before falling back to nproc.
+
+**Updates**
+* Added katdal
+* Added Rapthor
+* Enable MKL for TrigDx in DP3
+* Updated oracle-cx to oracledb
+* Updated AOFLAGGER to 654fa747
+* Updated CASACORE to v3.8.2
+* Updated DDFPIPELINE to 35bd158
+* Updated DP3 to ee0624f1 (important StationAdder polarisation fix)
+* Updated EVERYBEAM to ea7d3776
+* Updated IDG to 77090676
+* Updated LOSOTO to c79c978 (new clock tec separation)
+* Updated OPENBLAS to v0.3.34
+* Updated PYBDSF to ee27009
+* Updated RAPTHOR to 9ee2eb81
+* Updated WSCLEAN to fad83f66
+
 ## v6.2.3
 
 **Bugfixes**
